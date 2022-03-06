@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>勾股OA安装</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="{__LAYUI__}/css/layui.css" media="all">
+	<style>
+		body {
+			width: 100%;
+			height: 100%;
+			background: url("{__IMG__}/bg.jpg");
+			background-size: cover;
+			background: url("{__IMG__}/bg_pattern.png"), #7b4397;
+			background: url("{__IMG__}/bg_pattern.png"), -webkit-linear-gradient(to left, #34a853, #4285f4);
+			/* Chrome 10-25, Safari 5.1-6 */
+			background: url("{__IMG__}bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
+			/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+		}
+	</style>
+</head>
+
+<body>
+	<div style="width:200px;margin: 20px auto;"><img src="{__IMG__}/login_logo.png" alt="勾股OA安装" width="200"></div>
+	<div style="width:888px;margin:0 auto 30px;">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header layui-bg-red" style="border-radius:6px 6px 0 0; position:relative;">
+				<div class="layui-logo" style="color: #fff; width:100px;">安装引导</div>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">v{:CMS_VERSION}</li>
+				</ul>
+			</div>
+			<div style="padding:20px; background-color:#fff;line-height: 27px; border-radius:0 0 6px 6px">
+				<p>勾股OA是一套基于ThinkPHP{:TP_VERSION} + Layui{:LAYUI_VERSION} + MySql打造的轻量级、高性能OA办公系统。简单实用,系统集成了系统设置、人事管理模块、消息管理模块、日常办公、财务管理等基础模块。系统易于功能扩展，方便二次开发，让开发者更专注于业务深度需求的开发，帮助开发者简单高效降低二次开发成本，通过二次开发之后可以用来做CRM，ERP，业务管理等系统。<br><br>
+					<strong>免责声明：</strong><br>
+					1、使用勾股OA系统构建的网站的任何信息内容以及导致的任何版权纠纷和法律争议及后果，本(勾股OA)系统不承担任何责任。<br>
+					2、您一旦安装使用勾股OA系统，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。
+				</p>
+				<div style="margin:10px auto;width: 90px;">
+					<a href="/index.php?s=install/index/step2" class="layui-btn layui-bg-blue">接受协议</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="{__LAYUI__}/layui.js" charset="utf-8"></script>
+</body>
+
+</html>

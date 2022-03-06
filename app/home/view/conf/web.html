@@ -1,0 +1,133 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">系统配置</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">系统名称<font>*</font>
+			</td>
+			<td>
+				<input type="hidden" name="id" value="{$id}">
+				<input type="text" name="admin_title" lay-verify="required" autocomplete="off" placeholder="请输入系统名称" lay-reqText="请输入系统名称" class="layui-input" {notempty name="$config.admin_title"} value="{$config.admin_title}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">网站名称<font>*</font>
+			</td>
+			<td>
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入网站平台名称" lay-reqText="请输入网站名称" class="layui-input" {notempty name="$config.title"} value="{$config.title}" {/notempty}>
+			</td>
+			<td rowspan="3" class="layui-td-gray2">系统LOGO</td>
+			<td rowspan="3" style="width: 240px;">
+				<div class="layui-upload" style="width: 240px;">
+					<div class="layui-upload-list" id="demo1" style="width: 100%; height:100px; overflow: hidden;">
+						<img src='{notempty name="$config.logo"}{$config.logo}{/notempty}' style="max-width: 100%; width: 100%;" />
+						<input type="hidden" name="logo" {notempty name="$config.logo"} value="{$config.logo}" {/notempty}>
+					</div>
+					<button type="button" class="layui-btn layui-btn-normal" style="width: 100%;"
+						id="test1">上传LOGO</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">网站域名<font>*</font>
+			</td>
+			<td>
+				<input type="text" name="domain" lay-verify="required" autocomplete="off" placeholder="请输入网站域名" lay-reqText="请输入网站域名" class="layui-input" {notempty name="$config.domain"} value="{$config.domain}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">ICP备案号</td>
+			<td>
+				<input type="text" name="icp" autocomplete="off" placeholder="请输入ICP备案号" class="layui-input" {notempty name="$config.icp"} value="{$config.icp}" {/notempty}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">SEO关键词<font>*</font>
+			</td>
+			<td>
+				<input type="text" name="keywords" lay-verify="required" autocomplete="off" placeholder="多个关键词用“,”隔开" lay-reqText="请输入SEO关键字" class="layui-input" {notempty name="$config.keywords"} value="{$config.keywords}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">公安备案号</td>
+			<td>
+				<input type="text" name="beian" autocomplete="off" placeholder="请输入公安备案号" class="layui-input" {notempty name="$config.beian"} value="{$config.beian}" {/notempty}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">SEO描述<font>*</font>
+			</td>
+			<td colspan="5">
+				<textarea name="desc" lay-verify="required" placeholder="请输入网站描述" lay-reqText="请输入网站描述" class="layui-textarea">{notempty name="$config.desc"}{$config.desc} {/notempty}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">统计代码</td>
+			<td colspan="5">
+				<textarea name="code" placeholder="请输入完整的统计代码" class="layui-textarea">{notempty name="$config.code"} value={$config.code}{/notempty}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">版权信息</td>
+			<td colspan="3">
+				<input type="text" name="copyright" autocomplete="off" placeholder="请输入版权信息" lay-reqText="请输入版权信息" class="layui-input"{notempty name="$config.copyright"} value="{$config.copyright}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">代码版本号<font>*</font>
+			</td>
+			<td>
+				<input type="text" lay-verify="required" name="version" autocomplete="off" placeholder="请输入版本号" lay-reqText="请输入版本号" class="layui-input" {notempty name="$config.version"} value="{$config.version}" {/notempty}>
+			</td>
+		</tr>
+	</table>
+
+	<div style="padding: 10px 0">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form,
+			layer = layui.layer,
+			upload = layui.upload;
+
+
+		//logo上传
+		var uploadInst = upload.render({
+			elem: '#test1',
+			url: "/api/index/upload",
+			done: function (res) {
+				//如果上传失败
+				if (res.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				layer.msg('上传成功');
+				$('#demo1 input').attr('value', res.data.filepath);
+				$('#demo1 img').attr('src', res.data.filepath);
+			}
+		});
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			$.ajax({
+				url: "/home/conf/edit",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function(){
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,284 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div id="barDate" class="layui-input-inline">
+			<div class="layui-input-inline" style="width:110px;">
+				<input type="text" class="layui-input" id="start_time" placeholder="选择时间区间" readonly name="start_time">
+			</div>
+			~
+			<div class="layui-input-inline" style="width:110px;">
+				<input type="text" class="layui-input" id="end_time" placeholder="选择时间区间" readonly name="end_time">
+			</div>
+		</div>
+		<div class="layui-input-inline">
+			<select name="check_status">
+				<option value="">请选择状态</option>
+				<option value="2">审核通过,待开具</option>
+				<option value="5">已开具</option>
+				<option value="10">已作废</option>
+			</select>
+		</div>
+		<button class="layui-btn layui-btn-danger" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-container">
+    <h3 class="h3-title" style="height:32px;">发票列表</h3>
+</div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns=null;
+	function init(layui) {
+		var table = layui.table,
+			rightpage = layui.rightpage,
+			form = layui.form,
+			laydate = layui.laydate;
+		//日期范围
+		laydate.render({
+			elem: '#barDate',
+			range: ['#start_time', '#end_time']
+		});
+		
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			let f=data.field;
+			tableIns.reload({where:{check_status:f.check_status,start_time:f.start_time,end_time:f.end_time},page:{curr:1}});
+			return false;
+		});
+
+		tableIns = table.render({
+			elem: '#test',
+			title: '发票列表',
+			toolbar: '#toolbarDemo',
+			url: "/finance/invoice/checkedlist", //数据接口		
+			page: true, //开启分页
+			limit: 20,
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'invoice_title',
+						title: '开票抬头',
+						minWidth: 300,
+						templet:function(d){
+							var html='';
+							if(d.type==1){
+								html='<span class="layui-badge layui-bg-blue">企业</span> '+d.invoice_title;
+							}
+							else if(d.type==2){
+								html='<span class="layui-badge layui-bg-green">个人</span> '+d.invoice_title;
+							}
+							return html;
+						}
+					},{
+						field: 'amount',
+						title: '开票金额(元)',
+						align: 'right',
+						style: 'color:#1E9FFF',
+						width: 100,
+					},{
+						field: 'invoice_type',
+						title: '开票类型',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='-';
+							if(d.invoice_type==1){
+								html='<span style="color:#1E9FFF">专票</span>';
+							}
+							else if(d.invoice_type==2){
+								html='<span style="color:#5FB878">普票</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'check_status',
+						title: '发票状态',
+						align: 'center',
+						width: 100,
+						templet:function(d){
+							var html='<span style="color:#FF5722">待审</span>';
+							if(d.check_status==1){
+								html='<span style="color:#FFB800">审核中</span>';
+							}
+							else if(d.check_status==2){
+								html='<span style="color:#5FB878">待开具</span>';
+							}
+							else if(d.check_status==3){
+								html='<span style="color:#FF5722">审核不通过</span>';
+							}
+							else if(d.check_status==4){
+								html='<span style="color:#FF5722">撤销</span>';
+							}
+							else if(d.check_status==5){
+								html='<span style="color:#1E9FFF">已开具</span>';
+							}
+							else if(d.check_status==10){
+								html='<span style="color:#FF5722">已作废</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'name',
+						title: '申请人',
+						align: 'center',
+						width: 100
+					},{
+						field: 'department_name',
+						title: '所属部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '申请时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'open_name',
+						title: '开票人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'open_time',
+						title: '开票时间',
+						align: 'center',
+						width: 100
+					},{
+						field: 'code',
+						title: '发票号码',
+						align: 'center',
+						width: 132
+					}, {
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 168,
+						align: 'center',
+						templet:function(d){
+							//0待审、1审批中、2通过、3失败、4撤销、5已开具、10已作废
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为开票</span>';
+							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disabled">作废</span>';
+							html+=btn1;
+							if(d.check_status==2){
+								html+=btn2;
+							}
+							if(d.check_status==5 && d.open_admin_id==login_user){
+								html+=btn2+btn3;
+							}
+							html+='</div>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				rightpage.open("/finance/invoice/view?id="+data.id,"900px");
+				return;
+			}
+			if(obj.event === 'open'){
+				layer.open({
+					type: 1
+					,title: '标记为已开票'
+					,area: '368px;'
+					,id: 'LAY_module' //设定一个id，防止重复弹出
+					,btn: ['确定', '取消']
+					,btnAlign: 'c'
+					,content: '<div style="padding-top:15px;">\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">发票号码</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" name="code" autocomplete="off" value="'+data.code+'" placeholder="请输入发票号码" class="layui-input">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">开票日期</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" id="open_time" name="open_time" autocomplete="off" value="'+data.open_time+'" placeholder="请选择实际开票日期" class="layui-input">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">物流单号</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" name="delivery" autocomplete="off" value="'+data.delivery+'" placeholder="请输入物流快递单号" class="layui-input">\
+								  </div>\
+								</div>\
+							  </div>'
+					,success:function(){
+						laydate.render({
+							elem: '#open_time',
+							showBottom:false
+						});
+					}
+					,yes: function(index){
+						let code = $('#LAY_module').find('[name="code"]').val();
+						let open_time = $('#LAY_module').find('[name="open_time"]').val();
+						let delivery = $('#LAY_module').find('[name="delivery"]').val();
+						$.ajax({
+							url: "/finance/invoice/open",
+							type: 'post',
+							data: {
+								id: data.id,
+								code: code,
+								open_time: open_time,
+								delivery: delivery
+							},
+							success: function(e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									layer.close(index);
+									tableIns.reload();
+								}
+							}
+						})
+					}
+					,btn2: function(){
+						layer.closeAll();
+					}
+				});			
+			}
+			if (obj.event === 'disabled') {
+				layer.confirm('确定作废该发票吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/finance/invoice/tovoid",
+						data: {
+							id: data.id,
+							check_status:10
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" use="['table','form']" callback="init" /}
+{/block}
+<!-- /脚本 -->

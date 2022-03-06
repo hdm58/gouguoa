@@ -1,0 +1,438 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+{include file="/approve/add_style" /}
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">外出审批</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">外出地点<font>*</font></td>
+			<td colspan="5"><input type="text" name="address" value="" autocomplete="off" placeholder="请输入外出地点" lay-verify="required" lay-reqText="请输入外出地点" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">开始时间 <span style="color: red">*</span></td>
+			<td>
+				<input id="start_time_a" name="start_time_a" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+			</td>
+			<td>
+				<select lay-filter="time_b" id="start_time_b" name="start_time_b">
+					<option value="">--请选择--</option>
+					<option value="09:00">09:00</option>
+					<option value="09:30">09:30</option>
+					<option value="10:00">10:00</option>
+					<option value="10:30">10:30</option>
+					<option value="11:00">11:00</option>
+					<option value="11:30">11:30</option>
+					<option value="12:00">12:00</option>
+					<option value="13:30">13:30</option>
+					<option value="14:00">14:00</option>
+					<option value="14:30">14:30</option>
+					<option value="15:00">15:00</option>
+					<option value="15:30">15:30</option>
+					<option value="16:00">16:00</option>
+					<option value="16:30">16:30</option>
+					<option value="17:00">17:00</option>
+					<option value="17:30">17:30</option>
+					<option value="18:00">18:00</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">结束时间 <span style="color: red">*</span></td>
+			<td>
+				<input id="end_time_a" name="end_time_a" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+			</td>
+			<td>
+				<input type="hidden" name="duration" value="">
+				<select lay-filter="time_b" id="end_time_b" name="end_time_b">
+					<option value="">--请选择--</option>
+					<option value="09:00">09:00</option>
+					<option value="09:30">09:30</option>
+					<option value="10:00">10:00</option>
+					<option value="10:30">10:30</option>
+					<option value="11:00">11:00</option>
+					<option value="11:30">11:30</option>
+					<option value="12:00">12:00</option>
+					<option value="13:30">13:30</option>
+					<option value="14:00">14:00</option>
+					<option value="14:30">14:30</option>
+					<option value="15:00">15:00</option>
+					<option value="15:30">15:30</option>
+					<option value="16:00">16:00</option>
+					<option value="16:30">16:30</option>
+					<option value="17:00">17:00</option>
+					<option value="17:30">17:30</option>
+					<option value="18:00">18:00</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">外出时长</td>
+			<td colspan="2" id="hours">-</td>
+			<td class="layui-td-gray">外出天数</td>
+			<td colspan="2" id="days">-</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">外出事由<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入外出事由" class="layui-textarea" lay-verify="required" lay-reqText="请输入外出事由"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="5">
+				<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
+				<option value="">--请选择--</option>
+				{volist name="flows" id="vo"}
+				  <option value="{$vo.id}" title="{$vo.check_type}">{$vo.name}</option>
+				{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr id="flow_tr">
+			<td class="layui-td-gray">审核人<font>*</font></td>
+			<td colspan="5">
+				<input type="hidden" name="check_admin_ids" value=""><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input">
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">外出地点<font>*</font></td>
+			<td colspan="5"><input type="text" name="address" value="{$detail.address}" autocomplete="off" placeholder="请输入外出地点" lay-verify="required" lay-reqText="请输入外出地点" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">开始时间 <span style="color: red">*</span></td>
+			<td>
+				<input id="start_time_a" name="start_time_a" autocomplete="off" class="layui-input" value="{$detail.start_time_a}" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+			</td>
+			<td>
+				<select lay-filter="time_b" id="start_time_b" name="start_time_b" lay-verify="required" lay-reqText="请选择具体时间">
+					<option value="">--请选择--</option>
+					<option value="09:00" {eq name="$detail.start_time_b" value="09:00"}selected=""{/eq}>09:00</option>
+					<option value="09:30" {eq name="$detail.start_time_b" value="09:30"}selected=""{/eq}>09:30</option>
+					<option value="10:00" {eq name="$detail.start_time_b" value="10:00"}selected=""{/eq}>10:00</option>
+					<option value="10:30" {eq name="$detail.start_time_b" value="10:30"}selected=""{/eq}>10:30</option>
+					<option value="11:00" {eq name="$detail.start_time_b" value="11:00"}selected=""{/eq}>11:00</option>
+					<option value="11:30" {eq name="$detail.start_time_b" value="11:30"}selected=""{/eq}>11:30</option>
+					<option value="12:00" {eq name="$detail.start_time_b" value="12:00"}selected=""{/eq}>12:00</option>
+					<option value="13:30" {eq name="$detail.start_time_b" value="13:30"}selected=""{/eq}>13:30</option>
+					<option value="14:00" {eq name="$detail.start_time_b" value="14:00"}selected=""{/eq}>14:00</option>
+					<option value="14:30" {eq name="$detail.start_time_b" value="14:30"}selected=""{/eq}>14:30</option>
+					<option value="15:00" {eq name="$detail.start_time_b" value="15:00"}selected=""{/eq}>15:00</option>
+					<option value="15:30" {eq name="$detail.start_time_b" value="15:30"}selected=""{/eq}>15:30</option>
+					<option value="16:00" {eq name="$detail.start_time_b" value="16:00"}selected=""{/eq}>16:00</option>
+					<option value="16:30" {eq name="$detail.start_time_b" value="16:30"}selected=""{/eq}>16:30</option>
+					<option value="17:00" {eq name="$detail.start_time_b" value="17:00"}selected=""{/eq}>17:00</option>
+					<option value="17:30" {eq name="$detail.start_time_b" value="17:30"}selected=""{/eq}>17:30</option>
+					<option value="18:00" {eq name="$detail.start_time_b" value="18:00"}selected=""{/eq}>18:00</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">结束时间 <span style="color: red">*</span></td>
+			<td>
+				<input id="end_time_a" name="end_time_a" autocomplete="off" class="layui-input" value="{$detail.end_time_a}" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+			</td>
+			<td>
+				<input type="hidden" name="duration" value="{$detail.duration}">
+				<select lay-filter="time_b" id="end_time_b" name="end_time_b" lay-verify="required" lay-reqText="请选择具体时间">
+					<option value="">--请选择--</option>
+					<option value="09:00" {eq name="$detail.end_time_b" value="09:00"}selected=""{/eq}>09:00</option>
+					<option value="09:30" {eq name="$detail.end_time_b" value="09:30"}selected=""{/eq}>09:30</option>
+					<option value="10:00" {eq name="$detail.end_time_b" value="10:00"}selected=""{/eq}>10:00</option>
+					<option value="10:30" {eq name="$detail.end_time_b" value="10:30"}selected=""{/eq}>10:30</option>
+					<option value="11:00" {eq name="$detail.end_time_b" value="11:00"}selected=""{/eq}>11:00</option>
+					<option value="11:30" {eq name="$detail.end_time_b" value="11:30"}selected=""{/eq}>11:30</option>
+					<option value="12:00" {eq name="$detail.end_time_b" value="12:00"}selected=""{/eq}>12:00</option>
+					<option value="13:30" {eq name="$detail.end_time_b" value="13:30"}selected=""{/eq}>13:30</option>
+					<option value="14:00" {eq name="$detail.end_time_b" value="14:00"}selected=""{/eq}>14:00</option>
+					<option value="14:30" {eq name="$detail.end_time_b" value="14:30"}selected=""{/eq}>14:30</option>
+					<option value="15:00" {eq name="$detail.end_time_b" value="15:00"}selected=""{/eq}>15:00</option>
+					<option value="15:30" {eq name="$detail.end_time_b" value="15:30"}selected=""{/eq}>15:30</option>
+					<option value="16:00" {eq name="$detail.end_time_b" value="16:00"}selected=""{/eq}>16:00</option>
+					<option value="16:30" {eq name="$detail.end_time_b" value="16:30"}selected=""{/eq}>16:30</option>
+					<option value="17:00" {eq name="$detail.end_time_b" value="17:00"}selected=""{/eq}>17:00</option>
+					<option value="17:30" {eq name="$detail.end_time_b" value="17:30"}selected=""{/eq}>17:30</option>
+					<option value="18:00" {eq name="$detail.end_time_b" value="18:00"}selected=""{/eq}>18:00</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">外出时长</td>
+			<td colspan="2" id="hours">共{$detail.duration}工时</td>
+			<td class="layui-td-gray">外出天数</td>
+			<td colspan="2" id="days">共{$detail.days}天,{$detail.hours}小时</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">外出事由<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入外出事由" class="layui-textarea" lay-verify="required" lay-reqText="请输入外出事由">{$detail.content}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="5">
+				<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
+				<option value="">--请选择--</option>
+				{volist name="flows" id="vo"}
+				  <option value="{$vo.id}" title="{$vo.check_type}">{$vo.name}</option>
+				{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr id="flow_tr">
+			<td class="layui-td-gray">审核人<font>*</font></td>
+			<td colspan="5">
+				<input type="hidden" name="check_admin_ids" value=""><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input">
+			</td>
+		</tr>
+	</table>
+	{/eq}
+	<div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$id}">
+		<input type="hidden" name="type" value="{$type}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+/**
+ * 工时计算
+  */
+function leaveTime() {
+	var data_1 = $('#start_time_a').val();
+	var data_1_1 = $('#start_time_b').val();
+	var data_2 = $('#end_time_a').val();
+	var data_2_1 = $('#end_time_b').val();
+	if(data_1=='' || data_1_1=='' || data_2=='' || data_2_1==''){
+		return 0;
+	}	
+
+    var start = new Date(data_1+' '+data_1_1); 
+    var end = new Date(data_2+' '+data_2_1); 
+    var startHour = start.getHours(); //16
+    var startMin = start.getMinutes(); 
+    var endHour = end.getHours();
+	var endMin = end.getMinutes(); 
+	
+    var startDate = start.setHours(0, 0, 0);
+    var endDate = end.setHours(0, 0, 0);
+	if(endDate<startDate){
+		return 0;
+	}
+    var dayNum = parseInt(Math.abs(endDate - startDate) / 1000 / 60 / 60 / 24);
+	
+    var hour = 0;
+    if (startDate == endDate) {
+        var date = new Date(startDate);
+        var week = date.getDay();
+        if (week != 0 && week != 6) {
+			hour= (endHour-startHour)*10-startMin/6+endMin/6;
+			if (startHour <= 12 && endHour>12) {
+				hour= hour-15;
+			}
+        }
+    } else {
+        for (var i = 0; i <= dayNum; i++) {
+            var DateTime = startDate + 60 * 60 * 24 * 1000*i
+            var date = new Date(DateTime);
+            var week = date.getDay();
+            if (week != 0 && week != 6) {
+                if (DateTime == startDate) {
+					hour+= (18-startHour)*10-(startMin/6);
+					if (startHour <= 12) {
+						hour= hour-15;
+					}
+                } else if (DateTime > startDate && DateTime < endDate) {
+                    hour += 75;
+                } else if (DateTime == endDate){
+                    hour+= (endHour-9)*10+endMin/6;
+					if (endHour > 12) {
+						hour= hour-15;
+					}
+                }
+            }
+        }
+    }
+	if(hour<0){
+		hour=0;
+	}
+    return hour; 
+}
+
+
+	function init(layui){
+		var form = layui.form
+		,laydate = layui.laydate
+		,employeepicker = layui.employeepicker
+		,layer = layui.layer;
+		  
+		//日期时间范围
+		laydate.render({
+			elem: '#start_time_a',
+			type: 'date',
+			format: 'yyyy-MM-dd',
+			showBottom: false,
+			done:function(){
+				var hours = leaveTime();
+				if(hours == 0){
+					$('#hours,#days').html('-');
+				}
+				else{
+					$('#hours').html('共'+hours/10+'小时');
+					var days = 0;
+					if(hours>75){
+						days = parseInt(hours/75);
+					}
+					$('#days').html('共'+days+'天，'+(hours%75)/10+'小时');
+				}
+				$('[name="duration"]').val(hours/10);
+			}
+		});
+
+		//日期时间范围
+		laydate.render({
+			elem: '#end_time_a',
+			type: 'date',
+			format: 'yyyy-MM-dd',
+			showBottom: false,
+			done:function(){
+				var hours = leaveTime();
+				if(hours == 0){
+					$('#hours,#days').html('-');
+				}
+				else{
+					$('#hours').html('共'+hours/10+'小时');
+					var days = 0;
+					if(hours>=75){
+						days = parseInt(hours/75);
+					}
+					$('#days').html('共'+days+'天，'+(hours%75)/10+'小时');
+				}
+				$('[name="duration"]').val(hours/10);
+			}
+		});
+		
+		form.on('select(time_b)', function(data){
+			var hours = leaveTime();
+			if(hours == 0){
+				$('#hours,#days').html('-');
+			}
+			else{
+				$('#hours').html('共'+hours/10+'小时');
+				var days = 0;
+				if(hours>=75){
+					days = parseInt(hours/75);
+				}
+				$('#days').html('共'+days+'天，'+(hours%75)/10+'小时');
+			}
+			$('[name="duration"]').val(hours/10);
+		});
+		
+		//选择人员		
+		$('.layui-form').on('click','[name="check_admin_name"]',function(){
+			if($('[name="flow_id"]').val()==''){
+				layer.msg('请先选择审批流程');
+				return false;
+			}
+			employeepicker.init({
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				type:0,
+				callback:function(ids,names){
+					$('[name="check_admin_ids"]').val(ids),
+					$('[name="check_admin_name"]').val(names);
+				}
+			});
+		})
+		  
+		//监听提交
+		form.on('submit(webform)', function(data){
+			console.log(data.field);
+			//return false;
+			$.ajax({
+				url: "/oa/approve/add",
+				type:'post',
+				data:data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {	
+						parent.tableIns.reload();
+						setTimeout(function(){							
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+		
+		form.on('select(flowtype)', function(data){
+			var check_type = data.elem[data.elem.selectedIndex].title;
+			var formHtml='<td class="layui-td-gray">审核人<font>*</font></td>\
+			<td colspan="5">\
+				<input type="hidden" name="check_admin_ids" value=""><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input">\
+			</td>';
+			if(check_type == 2){
+				$('#flow_tr').html(formHtml);
+				form.render();
+			}
+			else{
+				$.ajax({
+					url: "/api/index/get_flow_users",
+					type:'post',
+					data:{id:data.value},
+					success: function (e) {
+						if (e.code == 0) {
+							var flowLi='';
+							for(var a=0;a<e.data.length;a++){
+								var userList='',sign_type = '';
+								if(e.data[a].flow_type==1){
+									userList+= '<li style="padding:3px 0">当前部门负责人</li>';
+								}
+								else if(e.data[a].flow_type==2){
+									userList+= '<li style="padding:3px 0">上级部门负责人</li>';
+								}
+								else{
+									if(e.data[a].flow_type==3){
+										sign_type= ' <span class="layui-badge layui-bg-blue">或签</span>'
+									}
+									if(e.data[a].flow_type==4){
+										sign_type= ' <span class="layui-badge layui-bg-blue">会签</span>'
+									}
+									for(var b=0;b<e.data[a].user_id_info.length;b++){
+										userList+= '<li style="padding:3px 0"><img src="'+e.data[a].user_id_info[b].thumb+'" style="width:24px; height:24px; border-radius:50%; margin-right:8px;" />'+e.data[a].user_id_info[b].name+'</li>';
+									}
+								}
+								flowLi+='<li class="layui-timeline-item">\
+									<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
+									<div class="layui-timeline-content">\
+									  <p class="layui-timeline-title"><strong>第'+(a+1)+'级审批</strong>'+sign_type+'</p>\
+									  <ul>'+userList+'</ul>\
+									</div>\
+								</li>';
+							}
+							
+							formHtml = '<td class="layui-td-gray">审批流程</td>\
+										<td colspan="5">\
+											<ul id="flowList" class="layui-timeline">'+flowLi+'</ul>\
+										</td>';
+							$('#flow_tr').html(formHtml);
+						}
+					}
+				})
+			}
+
+		});	
+		
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['formSelects','employeepicker']" callback="init" /}
+{/block}
+<!-- /脚本 -->

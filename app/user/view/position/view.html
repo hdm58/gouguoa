@@ -1,0 +1,87 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.checkbox16 .layui-form-checkbox span{font-size:15px;font-weight:800;}
+.layui-checkbox-disabled span,.layui-checkbox-disabled[lay-skin=primary] span{color: #666666!important;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">岗位信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray2">岗位名称</td>
+			<td>
+				{$detail.title}
+			</td>
+			<td class="layui-td-gray2">岗位工时单价</td>
+			<td>
+				{$detail.work_price}
+			</td>
+			<td class="layui-td-gray2">状态</td>
+			<td>
+				{eq name="$detail.status" value="1" }正常{/eq}
+				{eq name="$detail.status" value="0" }禁止登录{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">用户角色</td>
+			<td colspan="5">
+				{volist name="$group" id="v"}
+					{eq name="$v.checked" value="1" }{$v.title},{/eq} 
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">岗位备注</td>
+			<td colspan="5">
+				{$detail.remark}
+			</td>
+		</tr>
+	</table>
+	<h3 class="h3-title2">岗位权限</h3>
+	<table class="layui-table layui-table-form">
+		{volist name="role_rule" id="vo"}
+		<tr>
+			<td style="font-weight:800">
+			  <input type="checkbox" disabled value="{$vo.id}" title="{$vo.title}" {eq name="$vo.checked" value="true" }checked{/eq}>
+			</td>
+			{notempty name="vo.children"}
+				<td>
+					<div style="padding:0 0 0 10px;">
+					{volist name="vo.children" key="k" id="voo"}
+						<div class="checkbox16" style="padding:10px 0;">
+							<input type="checkbox" disabled lay-filter="rule" name="rule[]" value="{$voo.id}" lay-skin="primary" title="{$voo.title}" {eq name="$voo.checked" value="true" }checked{/eq}>
+						</div>
+						{notempty name="voo.children"}
+							<div style="padding:0 0 3px; {if condition='$k != count($vo.children)'}margin-bottom:3px; padding-bottom:16px; border-bottom:1px solid #eee;{/if}">
+							{volist name="voo.children" id="vooo"}
+								<div class="layui-input-inline" style="margin-right:10px;">
+									<input type="checkbox" disabled data-rule="{$voo.id}" name="rule[]" value="{$vooo.id}" lay-skin="primary" title="{$vooo.title}" {eq name="$vooo.checked" value="true" }checked{/eq}>
+								</div>
+							{/volist}
+							</div>
+						{/notempty}
+					{/volist}
+					</div>
+				</td>
+			{/notempty}
+		</tr>
+		{/volist}
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			form = layui.form;
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

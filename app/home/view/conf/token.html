@@ -1,0 +1,192 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">Token配置</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">Token签发组织</td>
+			<td>
+				<input type="hidden" value="{$id}" name="id">
+				<input type="text" name="iss" autocomplete="off" placeholder="请输入签发组织" lay-reqText="请输入签发组织" class="layui-input"{notempty name="$config.iss"} value="{$config.iss}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">Token签发作者
+			</td>
+			<td>
+				<input type="text" name="aud" autocomplete="off" placeholder="请输入签发作者" lay-reqText="请输入签发作者" class="layui-input" {notempty name="$config.aud"} value="{$config.aud}" {/notempty}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">Token Secrect</td>
+			<td>
+				<input type="text" name="secrect" autocomplete="off" placeholder="请输入secrect" lay-reqText="请输入secrect" class="layui-input"{notempty name="$config.secrect"} value="{$config.secrect}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">Token过期时间
+			</td>
+			<td>
+				<input type="text" name="exptime" autocomplete="off" placeholder="请输入过期时间" lay-reqText="请输入过期时间" class="layui-input" {notempty name="$config.exptime"} value="{$config.exptime}" {/notempty}>
+			</td>
+		</tr>
+	</table>
+	<div style="padding:20px 0;">
+		<span class="layui-btn layui-btn-sm"  onclick="testReg();">Api测试注册</span>
+		<span class="layui-btn layui-btn-sm"  onclick="testLogin();">Api测试登录</span>
+		<span class="layui-btn layui-btn-sm"  onclick="testToken();">Token测试</span>	
+	</div>
+	<div style="padding:20px; background-color:#f2f2f2;word-wrap:break-word">
+		测试结果：
+		<div id="res"></div>
+	</div>
+	<div style="padding: 20px 0">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form,
+			layer = layui.layer;
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			$.ajax({
+				url: "/home/conf/edit",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function(){
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+		//监听返回
+		$('.body-content').on('click', '[lay-event="back"]', function () {
+			history.back(-1);
+			return false;
+		});	
+	}
+	
+	var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhcGkuZ291Z3VjbXMuY29tIiwiYXVkIjoiZ291Z3VjbXMiLCJpYXQiOjE2MjczMTY1MTgsImV4cCI6MTYyNzMyMDExOCwidWlkIjoxfQ.3soLDbwrEqn4EZtpD4h05FmvmMtJEh1LtE1vZ_ANcnI';
+	function testToken(){
+		$.ajax({
+			headers: {
+				Token: token
+			},
+			url: "/home/api/index/demo",
+			type: "get",
+			success: function (res) {
+				$('#res').html(JSON.stringify(res));
+				if(res.code == 111){
+					layer.msg(res.msg);
+				}
+			}
+		});
+	}
+	
+	function testReg(){
+		var content='<form class="layui-form" style="width:400px"><div style="padding:10px 15px">\
+						<p style="padding:10px 0">用户名：</p>\
+						<p><input name="username" type="text" class="layui-input" value=""/></p>\
+						<p style="padding:10px 0">密 码：</p>\
+						<p><input name="password" type="password" class="layui-input" value=""/></p>\
+						<p style="padding:10px 0">重复密码：</p>\
+						<p><input name="newpassword" type="password" class="layui-input" value=""/></p>\
+						</div>\
+					</form>';
+		layer.open({
+			type:1,
+			title:'API测试用户注册',
+			area:['432px','360px'],
+			content:content,
+			btnAlign: 'c',
+			btn: ['注册'],
+			yes: function(idx){
+				var username = $('[name="username"]').val();
+				var password = $('[name="password"]').val();
+				var newpassword = $('[name="newpassword"]').val();
+				if(username==''){
+					layer.msg('请填写用户名');
+					return;
+				}
+				if(password==''){
+					layer.msg('请填写密码');
+					return;
+				}
+				if(password != newpassword){
+					layer.msg('两次密码填写不一致');
+					return;
+				}
+				$.ajax({
+					url: "/home/api/index/reg",
+					type:'post',
+					data:{username:username,pwd:password},
+					success:function(res){
+						$('#res').html(JSON.stringify(res));
+						layer.msg(res.msg);
+						if(res.code==1){
+							token = res.data.token;
+							layer.close(idx);
+						}
+					}
+				})			
+			}
+		})	
+	}
+	
+	
+	function testLogin(){
+			var content='<form class="layui-form" style="width:400px"><div style="padding:10px 15px">\
+							<p style="padding:10px 0">用户名：</p>\
+							<p><input name="username" type="text" class="layui-input" value="hdm58"/></p>\
+							<p style="padding:10px 0">密 码：</p>\
+							<p><input name="password" type="password" class="layui-input" value="123456"/></p>\
+							</div>\
+						</form>';
+			layer.open({
+				type:1,
+				title:'API测试用户登录',
+				area:['432px','300px'],
+				content:content,
+				btnAlign: 'c',
+				btn: ['登录'],
+				yes: function(idx){
+					var username = $('[name="username"]').val();
+					var password = $('[name="password"]').val();
+					if(username==''){
+						layer.msg('请填写用户名');
+						return;
+					}
+					if(password==''){
+						layer.msg('请填写密码');
+						return;
+					}
+					$.ajax({
+						url: "/home/api/index/login",
+						type:'post',
+						data:{username:username,password:password},
+						success:function(res){
+							$('#res').html(JSON.stringify(res));
+							layer.msg(res.msg);
+							if(res.code==1){
+								token = res.data.token;
+								layer.close(idx);
+							}
+						}
+					})			
+				}
+			})	
+		}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

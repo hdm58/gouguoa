@@ -1,0 +1,125 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="status">
+	<i class="layui-icon {{#  if(d.status == 1){ }}layui-icon-ok{{#  } else { }}layui-icon-close{{#  } }}"></i>
+</script>
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加岗位</button>
+	</div>
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</button><button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			layer = layui.layer,
+			rightpage = layui.rightpage,
+			table = layui.table;
+		tableIns= table.render({
+			elem: '#test',
+			title: '岗位列表',
+			toolbar: '#toolbarDemo',
+			url: "/user/position/index", //数据接口				
+			page: false, //开启分页
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'title',
+						title: '岗位名称',
+						align: 'center',
+						width: 120
+					},{
+						field: 'groupName',
+						title: '权限角色'
+					},{
+						field: 'remark',
+						title: '备注'
+					},{
+						field: 'work_price',
+						title: '岗位工时单价(元)',
+						align: 'center',
+						width: 132
+					}, {
+						field: 'status',
+						title: '状态',
+						toolbar: '#status',
+						align: 'center',
+						width: 60
+					}, {
+						field: 'right',
+						title: '操作',
+						toolbar: '#barDemo',
+						width: 132,
+						align: 'center'
+					}
+				]
+			]
+		});
+
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			if (obj.event === 'add') {
+				rightpage.open("/user/position/add",'900px');
+				return;
+			}
+		});
+		//监听行工具事件
+		table.on('tool(test)', function (obj) {
+			var data = obj.data;
+			if(obj.event === 'view'){
+				rightpage.open('/user/position/view?id='+data.id);
+				return;
+			}
+			if(obj.event === 'edit'){
+				rightpage.open('/user/position/add?id='+data.id,'900px');
+				return;
+			}
+			if (obj.event === 'del') {
+				if (data.id == 1) {
+					layer.msg('超级岗位不能删除');
+					return;
+				}
+				layer.confirm('您确定要删除该岗位', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					$.ajax({
+						url: "/user/position/delete",
+						data: {
+							id: data.id
+						},
+						success: function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

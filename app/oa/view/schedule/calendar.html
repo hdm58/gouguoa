@@ -1,0 +1,415 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/fullcalendar/main.min.css"/>
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
+<style>
+#calendar {width: 100%;margin: 0 auto;
+-moz-user-select: none; /*火狐*/
+-webkit-user-select: none; /*webkit浏览器*/
+-ms-user-select: none; /*IE10*/
+-khtml-user-select: none; /*早期浏览器*/
+user-select: none;}
+.fc .fc-toolbar.fc-header-toolbar{margin-bottom:0;border:1px solid #ddd; border-bottom:none;padding:15px 12px;background-color:#fafafa;}
+.fc-col-header{background-color:#fafafa;}
+.fc .fc-button-primary {
+    color: #fff;
+    background-color: #1E9FFF;
+    border-color: #1E9FFF;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active {
+    color: #fff;
+    background-color: #FBBC05;
+    border-color: #FBBC05;
+}
+.fc .fc-button-primary:focus, .fc .fc-button-primary:not(:disabled).fc-button-active:focus, .fc .fc-button-primary:not(:disabled):active:focus {
+	box-shadow: 0 0 0 0;
+}
+.fc .fc-button-primary:hover{color:#fff; background-color:#52B5FF; border-color:#52B5FF;}
+.fc-daygrid-event-harness{cursor:pointer;}
+.fc .fc-daygrid-week-number{font-size:12px;}
+/*今天背景色和字体颜色 */
+.fc .fc-daygrid-day.fc-day-today .fc-event-title,.fc .fc-daygrid-day.fc-day-today .fc-event-time,.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{
+	font-weight:800;
+	color:#FF5722;
+}
+/*星期六,星期天背景色和字体颜色
+.fc-day-sat,.fc-day-sun{
+    background-color: #fafafa;
+}
+*/
+.fc-h-event .fc-event-main{color:#333}
+
+.calendar-select{width:100px; height:38px; position:absolute; top:31px; right:255px; z-index:100;}
+.calendar-select .layui-input{height: 36px; line-height: 1.2;}
+.layui-tags-span {padding: 3px 6px;font-size: 12px; background-color:#fff; border-radius: 3px; margin:2px 0; margin-right: 5px; border: 1px solid #e6e6e6; display: inline-block;}
+.layui-layer-content .layui-table-view .layui-table td,.layui-layer-content .layui-table-view .layui-table th{padding:1px 0;}
+.layui-unselect dl {max-height:188px;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<script src="{__STATIC__}/fullcalendar/main.min.js"></script>
+<div class="body-table">
+	<div id="calendar"></div>
+	<div class="calendar-select">
+		<div class="layui-input-inline" style="width: 90px;"><input type="text" placeholder="请选择员工" class="layui-input" data-event="select" autocomplete="off"/></div>		
+	</div>
+</div>
+<!-- /主体 -->
+{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script type="text/javascript">
+	var uid=0;	
+	function addZero(num){
+		if(num<10){
+			num='0'+num;
+		}
+		return num;
+	}
+	function init(layui){
+		var layer = layui.layer
+		,employeepicker = layui.employeepicker
+		,form = layui.form
+		,laydate = layui.laydate;
+		
+		// 选择员工
+		$('.body-table').on('click','[data-event="select"]',function(){
+			var that = $(this);
+			var names = that.val(), ids = $('[name="uid"]').val();
+			employeepicker.init({
+				ids: ids,
+				names: names,
+				type: 0,
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				callback: function (ids, names, dids, departments) {
+					uid = ids;
+					that.val(names);
+					calendar.refetchEvents({
+						url: '/oa/schedule/index?uid='+uid
+					});
+				}
+			})
+		});
+		  
+		function addEvent(detail){
+			var content='<form class="layui-form" style="width:868px">\
+							<table class="layui-table" style="margin:15px 15px 0;">\
+								<tr>\
+									<td class="layui-td-gray2">工作时间范围 <span style="color: red">*</span></td>\
+									<td>\
+										<input id="start_time_a" name="start_time_a" value="'+detail.start_time_a+'" style="width:100px; display:inline-block;" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" lay-reqText="请选择"><div style="display: inline-block; margin-left:3px; width: 80px;"><select lay-filter="start_time_b" id="start_time_b"></select></div> 至 <input id="end_time_a" name="end_time_a" value="'+detail.end_time_a+'" style="width:100px; display:inline-block;" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" lay-reqText="请选择"><div style="display: inline-block; margin-left:3px; width: 80px;"><select lay-filter="end_time_b" id="end_time_b"></select></div>\
+									</td>\
+									<td class="layui-td-gray">工作类型 <span style="color: red">*</span></td>\
+									<td>\
+										<input type="radio" name="labor_type" lay-filter="labor_type" value="1" title="案头工作"><input type="radio" name="labor_type" value="2" lay-filter="labor_type" title="外勤工作">\
+									</td>\
+								</tr>\
+								<tr>\
+									<td class="layui-td-gray2">工作内容 <span style="color: red">*</span></td>\
+									<td colspan="3"><input name="title" class="layui-input" value="" lay-verify="required" lay-reqText="请完成工作内容"></td>\
+								</tr>\
+								<tr>\
+									<td class="layui-td-gray2">工作详细描述</td>\
+									<td colspan="3">\
+										<textarea name="remark" form-input="remark" class="layui-textarea" style="min-height:120px;"></textarea>\
+									</td>\
+								</tr>\
+							</table>\
+						</form>';
+			layer.open({
+				type:1,
+				title:'添加工作记录',
+				area:['900px','390px'],
+				content:content,
+				success:function(){
+					//日期时间范围
+					laydate.render({
+						elem: '#start_time_a',
+						type: 'date',
+						min: -7,
+						max:0,
+						format: 'yyyy-MM-dd',
+						showBottom: false,
+						done:function(a,b,c){
+							$('#end_time_a').val(a);
+							detail.start_time_a=a;
+							detail.end_time_a=a;
+						}
+					});
+
+					//日期时间范围
+					laydate.render({
+						elem: '#end_time_a',
+						type: 'date',
+						min: -7,
+						max:0,
+						format: 'yyyy-MM-dd',
+						showBottom: false,
+						done:function(a,b,c){
+							$('#start_time_a').val(a);
+							detail.start_time_a=a;
+							detail.end_time_a=a;
+						}
+					});
+					$('#start_time_b,#end_time_b').empty();
+					
+					var hourArray=[];
+					for(var h=0;h<24;h++){
+						var t=h<10?'0'+h:h
+						var t_1=t+':00',t_2=t+':15',t_3=t+':30',t_4=t+':45';
+						hourArray.push(t_1,t_2,t_3,t_4);
+					}
+					
+					var html_1='', html_2='',def_h1='08:30',def_h2='09:00';
+					for(var s=0;s<hourArray.length;s++){
+						var check_1='',check_2='';
+						if(hourArray[s]==def_h1){
+							check_1='selected';
+						}
+						if(hourArray[s]==def_h2){
+							check_2='selected';
+						}
+						html_1 += '<option value="'+hourArray[s]+'" '+check_1+'>'+hourArray[s]+'</option>';
+						html_2 += '<option value="'+hourArray[s]+'" '+check_2+'>'+hourArray[s]+'</option>';
+					}
+					
+					$('#start_time_b').append(html_1);
+					$('#end_time_b').append(html_2);
+					form.render();
+					
+					$('[name="title"]').on('input',function(){
+						var _val=$(this).val();
+						detail.title=_val;
+					});	
+					form.on('select(start_time_b)', function(data){
+						detail.start_time_b=data.value;
+						console.log(data);
+					});
+					form.on('select(end_time_b)', function(data){
+						detail.end_time_b=data.value;
+					});
+					$('[form-input="remark"]').on('input',function(){
+						var _val=$(this).val();
+						detail.remark=_val;
+					});			
+					form.on('radio(labor_type)', function(data){
+					   detail.labor_type=data.value;
+					});						
+				},
+				btn: ['确定提交'],
+				btnAlign:'c',
+				yes: function(idx){
+					if(detail.start_time=='' || detail.end_time==''){
+						layer.msg('请选择工作时间范围');
+						return;
+					}
+					if(detail.labor_type==0){
+						layer.msg('请选择工作类型');
+						return;
+					}
+					if(detail.title==''){
+						layer.msg('请填写工作内容');
+						return;
+					}
+					console.log(detail);
+					$.ajax({
+						url: "/oa/schedule/add",
+						type:'post',
+						data:detail,
+						success:function(e){
+							layer.msg(e.msg);
+							if(e.code==0){								
+								layer.close(idx);								
+								setTimeout(function(){
+									window.location.reload();
+								},1000)	
+							}
+						}
+					})			
+				}
+			})	
+		}
+		
+		
+		//查看工作记录
+		function viewEvent(){
+			var work_type='-';
+			if(detail.labor_type==2){
+				work_type='外勤工作';
+			}
+			else if(detail.labor_type==1){
+				work_type='案头工作';
+			}
+			var content='<form class="layui-form" style="width:770px">\
+							<table class="layui-table" style="margin:12px 15px 0;">\
+								<tr>\
+									<td class="layui-td-gray2">工作内容</td>\
+									<td>'+detail.title+'</td>\
+									<td class="layui-td-gray">工作类别</td>\
+									<td>'+work_type+'</td>\
+								</tr>\
+								<tr id="tr_date_range">\
+									<td class="layui-td-gray2">工作时间范围</td>\
+									<td>'+detail.start_time+' '+detail.start_time_1+' 至 '+detail.end_time_1+'，共'+detail.labor_time+'工时</td>\
+									<td class="layui-td-gray">执行人</td>\
+									<td>'+detail.user+'</td>\
+								</tr>\
+								<tr>\
+									<td class="layui-td-gray2">工作描述</td>\
+									<td colspan="3">'+detail.remark+'</td>\
+								</tr>\
+							</table>\
+						</form>';
+			layer.open({
+				type:1,
+				title:'查看工作记录',
+				area:['800px','336px'],
+				content:content,
+				success:function(){
+					
+				},
+				btn: ['关闭'],
+				btnAlign: 'c',
+				yes: function(idx){
+					layer.close(idx);			
+				}
+			})	
+		}
+		
+		//请求事件api数据
+		function eventApi(id){
+			if(id==0){
+				return false;
+			}
+			$.ajax({
+				url: "/oa/schedule/detail",
+				type:'post',
+				data:{id:id},
+				success:function(res){					
+					detail=res.data;
+					viewEvent();
+				}
+			});	
+		}
+
+
+		//日历
+		var calendarEl = document.getElementById('calendar');
+		var calendar = new FullCalendar.Calendar(calendarEl, {
+			views: {
+				dayGrid: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', window.innerHeight-30);
+					}
+				},
+				timeGrid: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', 'auto');
+					}
+				},
+				week: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', 'auto');
+					}
+				},
+				day: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', 'auto');
+					}
+				}
+			},
+			//initialDate: '2020-09-12',//默认显示日期
+			initialView: 'dayGridMonth',//默认显示月视图
+			customButtons: {
+				clear: {
+					text: '清空员工', click: function () {
+						uid = 0;
+						$('[data-event="select"]').val('');
+						calendar.refetchEvents({
+							url: '/oa/schedule/index?uid='+uid
+						});
+					}
+				}
+            },
+			headerToolbar: {
+				left: 'prev,next',
+				center: 'title',
+				right: 'clear dayGridMonth,timeGridWeek,listWeek'
+			},
+			height: 'auto',//自动高度
+			navLinks: true, // can click day/week names to navigate views
+			editable: false,//确定是否可以拖拉调整日历事件的时间。
+			selectable: false,//拖拉选择日期
+			selectMirror: false,//是否在用户拖动时绘制"占位符"事件。
+			dateClick: function(arg) {
+				console.log(arg);
+				var dateStr	= arg.date.getFullYear()+'-'+addZero(arg.date.getMonth()+1)+'-'+addZero(arg.date.getDate());			
+				var detail={};
+				detail['id']=0;
+				detail['title']='';
+				detail['labor_type']=0;
+				detail['start_time_a']=dateStr;
+				detail['end_time_a']=dateStr;		
+				detail['start_time_b']='08:30';
+				detail['end_time_b']='09:00';		
+				detail['remark']='';
+				detail['type']=0;
+				detail['remind_type']=0;
+				//console.log(detail);	
+				addEvent(detail);
+			},
+			nowIndicator: true,
+			weekNumbers: true,// 是否开启周数
+			firstDay: 1,
+			displayEventEnd: false, //所有视图显示结束时间
+			eventTimeFormat: { // like '14:30:00'
+				hour: '2-digit',
+				minute: '2-digit',
+				//second: '2-digit',
+				meridiem: false,
+				hour12: false //设置时间为24小时
+			},
+			locale: 'zh-cn',//语言
+			buttonText: {
+				//按钮文本
+				today: '今天',
+				month: '月',
+				week: '周',
+				day: '日',
+				list: '记录列表',
+			},
+			weekText: '周',
+			allDayText: '全天',
+			moreLinkText: function(n) {
+				return '另外 ' + n + ' 个'
+			},
+			noEventsText: '没有事件显示',
+			events: function(fetchInfo, successCallback, failureCallback ){
+				$.ajax({
+					type:"POST",
+					url: "/oa/schedule/calendar",
+					dataType:"json",
+					data:{start:fetchInfo.startStr,end:fetchInfo.endStr,uid:uid},
+					success:function(result){
+						//console.info(result);
+						successCallback(result);
+					},
+					error:function(){
+						failureCallback();
+					}
+				})
+			},
+			eventClick: function(info) {
+				//console.log(info.event);
+				eventApi(info.event.id);
+			}
+		});
+		calendar.render();
+	}
+	</script>
+	{include file="../../base/view/common/layui" base='base' extend="['employeepicker','dtree']" callback="init" /}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,91 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
+		<tr style="background-color: #f5f5f5; text-align: center;">
+			<th style=" text-align: center; font-weight: 800;"><span>文件名称</span></th>
+			<th style=" text-align: center; font-weight: 800;"><span>分卷</span></th>
+			<th style=" text-align: center; font-weight: 800;"><span>文件大小</span></th>
+			<th style=" text-align: center; font-weight: 800;"><span>文件格式</span></th>
+			<th style=" text-align: center; font-weight: 800;"><span>分隔符</span></th>
+			<th style=" text-align: center; font-weight: 800; width:222px"><span>操作</span></th>
+		</tr>			
+		{empty name="list"}
+		<tr>
+			<td colspan="6" align="center">暂无备份数据</td>
+		</tr>
+		{/empty}
+			{volist name="list" id="vo" key="k"}
+			<tr style="background-color: #fafafa;">
+				<td colspan="6"><strong>备份时间：{$vo.time}</strong></td>
+			</tr>
+			{volist name="vo.data" id="voo"}
+			<tr>
+				<td>
+					{:date("Ymd",$voo.time)}{$voo.compress}{:date("His",$voo.time)}{$voo.compress}{$voo.part}.sql
+				</td>				
+				<td align="center"><span>{$voo.part}</span></td>
+				<td align="center"><span>{:format_bytes($voo.size)}</span></td>
+				<td align="center"><span>.sql</span></td>
+				<td align="center"><span>{$voo.compress}</span></td>
+				<td align="center" data-id='{$voo.time}'>
+					<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="import">数据还原</a>
+					<a class="layui-btn layui-btn-xs" href='/database/downfile?name={:date("Ymd",$voo.time)}{$voo.compress}{:date("His",$voo.time)}{$voo.compress}{$voo.part}.sql'>备份下载</a><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">备份删除</a>
+				</td>
+			</tr>
+			{/volist}
+			{/volist}
+	</table>
+</div>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var table = layui.table,
+			form = layui.form;
+		//监听行工具事件
+		$('[lay-event="import"]').on('click',function(){
+			var id=$(this).parent().data('id');
+			layer.confirm('确认要还原该备份吗?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					$.ajax({
+						url: "/home/database/import?id="+id,
+						success: function (res) {
+							layer.msg(res.msg);
+						}
+					})
+					layer.close(index);
+				});
+		})
+
+		$('[lay-event="del"]').on('click',function(){
+			var id=$(this).parent().data('id');
+			layer.confirm('确认要删除该备份吗?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					$.ajax({
+						url: "/home/database/del",
+						data: {'id':id},
+						success: function (res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+		})
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

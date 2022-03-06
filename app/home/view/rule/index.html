@@ -1,0 +1,95 @@
+{extend name="../../base/view/common/base"/}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table" style="margin-bottom:0;">
+	<div class="layui-form-bar">
+		<button class="layui-btn layui-btn-normal layui-btn-sm add-menu">+ 添加菜单/节点</button>
+	</div>
+	<div>
+		<table class="layui-hide" id="treeTable" lay-filter="treeTable"></table>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var ptable = null, treeGrid = null,rightpage=null, layer = null, tableId = "treeTable";
+	function init(layui) {
+		treeGrid = layui.treeGrid;
+		rightpage = layui.rightpage;
+		layer = layui.layer;
+		ptable = treeGrid.render({
+			id: tableId
+			, elem: '#' + tableId
+			, idField: 'id'
+			, url: "/home/rule/index"
+			, cellMinWidth: 80
+			, treeId: 'id'//树形id字段名称
+			, treeUpId: 'pid'//树形父id字段名称
+			, treeShowName: 'title'//以树形式显示的字段
+			, cols: [[
+				{ field: 'id', width: 80, title: 'ID号', align: 'center'}
+				, { field: 'sort', width: 80, title: '排序',align: 'center'}
+				, { field: 'title', width: 160, title: '菜单/节点名称'}
+				, { field: 'pid', title: '父ID', width: 80, align: 'center' }
+				, { field: 'src', title: 'URL链接'}
+				, { field: 'menu', width: 100, title: '是否是菜单',align: 'center', templet: function (d) {
+						var html = '<span style="color:#fbbc05">否</span>';
+						if(d.menu=='1'){
+							html = '<span style="color:#12bb37">是</span>';
+						}
+						return html;
+					}
+				}
+				, {field: 'name', width: 110, title: '操作日志名称',align: 'center'}
+				, {field: 'module_title', width: 110, title: '所属模块',align: 'center'}
+				, {width: 200, title: '操作', align: 'center'
+					, templet: function (d) {
+						var html = '<span class="layui-btn-group"><button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="add">添加子菜单/节点</button><button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></span>';
+						return html;
+					}
+				}
+			]]
+			, page: false
+		});
+		//表头工具栏事件
+		$('.add-menu').on('click',function(){
+			rightpage.open("/home/rule/add",'900px');
+			return;
+		});
+
+		//操作按钮
+		treeGrid.on('tool(' + tableId + ')', function (obj) {
+			if (obj.event === 'add') {
+				rightpage.open('/home/rule/add?pid='+obj.data.id,'900px');
+				return;
+			}
+			if (obj.event === 'edit') {
+				rightpage.open('/home/rule/add?id='+obj.data.id,'900px');
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
+					$.ajax({
+						url: "/home/rule/delete",
+						type: 'post',
+						data: { id: obj.data.id },
+						success: function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="['treeGrid','rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

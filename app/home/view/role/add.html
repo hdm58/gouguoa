@@ -1,0 +1,142 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<style>
+.checkbox16 .layui-form-checkbox span{font-size:15px;font-weight:800;}
+#rule .layui-checkbox-disabled span {color: #666666!important;}
+</style>
+<form class="layui-form page-content">
+	<h3 class="h3-title">权限角色</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">角色名称<font>*</font>
+			</td>
+			<td>
+				<input type="hidden" name="id" value="{$id}" />
+			<input class="layui-input" type="text" name="title" lay-verify="required" lay-reqText="请输入角色名称" {notempty name="$role.title"
+				}value="{$role.title}" {/notempty} placeholder="请输入角色名称" autocomplete="off" />
+			</td>
+			<td class="layui-td-gray2">状态<font>*</font>
+			</td>
+			<td>
+			{if condition="$id eq 0"}
+			<input type="radio" name="status" value="1" title="正常" checked>
+			<input type="radio" name="status" value="-1" title="禁用">
+			{else/}
+			<input type="radio" name="status" value="1" title="正常" {eq name="$role.status" value="1" }checked{/eq}>
+			<input type="radio" name="status" value="-1" title="禁用" {eq name="$role.status" value="-1" }checked{/eq}>
+			{/if}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top">权限配置</td>
+			<td colspan="3">	
+				<table style="width:100%" id="rule">
+					<tr>
+						<td style="text-align:left; background-color:#f8f8f8; width:160px;">选择可操作的顶级权限 <font style="color:red">↓</font></td>
+						<td style="text-align:left; background-color:#f8f8f8;">选择可操作的子级权限  <font style="color:red">↓</font></td>
+					</tr>
+					{volist name="role_rule" id="vo"}
+					<tr>
+						<td style="font-weight:800;">
+						  <input type="checkbox" name="rule[]" value="{$vo.id}" title="{$vo.title}" {eq name="$vo.checked" value="true" }checked{/eq}>
+						</td>
+						{notempty name="vo.children"}
+							<td>
+								<div style="padding:0 0 0 10px;">
+								{volist name="vo.children" key="k" id="voo"}
+									<div class="checkbox16" style="padding:10px 0;">
+										<input type="checkbox" lay-filter="rule" name="rule[]" value="{$voo.id}" lay-skin="primary" title="{$voo.title}" {eq name="$voo.checked" value="true" }checked{/eq}>
+									</div>
+									{notempty name="voo.children"}
+										<div style="padding:0 0 3px; {if condition='$k != count($vo.children)'}margin-bottom:3px; padding-bottom:16px; border-bottom:1px solid #eee;{/if}">
+										{volist name="voo.children" id="vooo"}
+											<div class="layui-input-inline" style="margin-right:10px;">
+												<input type="checkbox" data-rule="{$voo.id}" name="rule[]" value="{$vooo.id}" lay-skin="primary" title="{$vooo.title}" {eq name="$vooo.checked" value="true" }checked{/eq}>
+											</div>
+										{/volist}
+										</div>
+									{/notempty}
+								{/volist}
+								</div>
+							</td>
+						{/notempty}
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align: top;">备注内容
+			</td>
+			<td colspan="3">
+				<textarea name="desc" placeholder="请输入备注" class="layui-textarea">{notempty name="$role.desc" }{$role.desc}{/notempty}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div style="padding: 10px 0">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var tree = layui.tree;
+		var form = layui.form;
+		var layer = layui.layer;
+		//监听提交
+		form.on('submit(webform)', function (obj) {
+			console.log(obj.field);
+			$.ajax({
+				url: "/home/role/add",
+				data: obj.field,
+				type: 'post',
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						parent.tableIns.reload();
+						setTimeout(function(){
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			});
+			return false;
+		});
+		
+		
+		//监听多选框点击事件  通过 lay-filter="menu"来监听
+		form.on('checkbox(menu)', function (data) {
+		　　let val = data.value;
+			if(data.elem.checked){
+				//判断当前多选框是选中还是取消选中
+				$("input[data-menu='"+val+"']").prop("checked", true);//true:选中 false:不选中
+			}
+			else{
+				$("input[data-menu='"+val+"']").prop("checked", false);
+			}
+			form.render();//实时渲染选中和不选中的样式
+		});
+		
+		//监听多选框点击事件  通过 lay-filter="rule"来监听
+		form.on('checkbox(rule)', function (data) {
+		　　let val = data.value;
+			if(data.elem.checked){
+				//判断当前多选框是选中还是取消选中
+				$("input[data-rule='"+val+"']").prop("checked", true);//true:选中 false:不选中
+			}
+			else{
+				$("input[data-rule='"+val+"']").prop("checked", false);
+			}
+			form.render();//实时渲染选中和不选中的样式
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

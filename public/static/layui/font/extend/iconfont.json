@@ -1,0 +1,1577 @@
+{
+  "id": "2936988",
+  "name": "oa",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "8574208",
+      "name": "学生异动",
+      "font_class": "xueshengyidong",
+      "unicode": "e6e9",
+      "unicode_decimal": 59113
+    },
+    {
+      "icon_id": "8574209",
+      "name": "报考",
+      "font_class": "baokao",
+      "unicode": "e6ea",
+      "unicode_decimal": 59114
+    },
+    {
+      "icon_id": "8574211",
+      "name": "成绩",
+      "font_class": "chengji",
+      "unicode": "e6eb",
+      "unicode_decimal": 59115
+    },
+    {
+      "icon_id": "8574212",
+      "name": "阅卷",
+      "font_class": "yuejuan",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
+    },
+    {
+      "icon_id": "8574213",
+      "name": "考核设置",
+      "font_class": "kaoheshezhi",
+      "unicode": "e6ed",
+      "unicode_decimal": 59117
+    },
+    {
+      "icon_id": "8574233",
+      "name": "论文管理",
+      "font_class": "lunwenguanli",
+      "unicode": "e6ee",
+      "unicode_decimal": 59118
+    },
+    {
+      "icon_id": "8574234",
+      "name": "申报",
+      "font_class": "shenbao",
+      "unicode": "e6ef",
+      "unicode_decimal": 59119
+    },
+    {
+      "icon_id": "8574236",
+      "name": "课程",
+      "font_class": "kecheng",
+      "unicode": "e6f0",
+      "unicode_decimal": 59120
+    },
+    {
+      "icon_id": "8574237",
+      "name": "题库",
+      "font_class": "tiku",
+      "unicode": "e6f1",
+      "unicode_decimal": 59121
+    },
+    {
+      "icon_id": "8574241",
+      "name": "教务设置",
+      "font_class": "jiaowushezhi",
+      "unicode": "e6f2",
+      "unicode_decimal": 59122
+    },
+    {
+      "icon_id": "8574242",
+      "name": "自定义设置",
+      "font_class": "zidingyishezhi",
+      "unicode": "e6f3",
+      "unicode_decimal": 59123
+    },
+    {
+      "icon_id": "8710313",
+      "name": "超级统计",
+      "font_class": "chaojitongji",
+      "unicode": "e6f4",
+      "unicode_decimal": 59124
+    },
+    {
+      "icon_id": "8710316",
+      "name": "招生统计",
+      "font_class": "zhaoshengtongji",
+      "unicode": "e6f5",
+      "unicode_decimal": 59125
+    },
+    {
+      "icon_id": "8710320",
+      "name": "推广统计",
+      "font_class": "tuiguangtongji",
+      "unicode": "e6f6",
+      "unicode_decimal": 59126
+    },
+    {
+      "icon_id": "8710324",
+      "name": "学习统计",
+      "font_class": "xuexitongji",
+      "unicode": "e6f7",
+      "unicode_decimal": 59127
+    },
+    {
+      "icon_id": "8710326",
+      "name": "地区数据统计",
+      "font_class": "diqushujutongji",
+      "unicode": "e6f8",
+      "unicode_decimal": 59128
+    },
+    {
+      "icon_id": "8710329",
+      "name": "数据导入",
+      "font_class": "shujudaoru",
+      "unicode": "e6f9",
+      "unicode_decimal": 59129
+    },
+    {
+      "icon_id": "8710363",
+      "name": "成考管理",
+      "font_class": "chengkaoguanli",
+      "unicode": "e6fb",
+      "unicode_decimal": 59131
+    },
+    {
+      "icon_id": "8710444",
+      "name": "远程管理",
+      "font_class": "yuanchengguanli",
+      "unicode": "e6fe",
+      "unicode_decimal": 59134
+    },
+    {
+      "icon_id": "8710455",
+      "name": "书籍管理",
+      "font_class": "shujiguanli",
+      "unicode": "e6ff",
+      "unicode_decimal": 59135
+    },
+    {
+      "icon_id": "8710489",
+      "name": "过程性考核",
+      "font_class": "guochengxingkaohe",
+      "unicode": "e700",
+      "unicode_decimal": 59136
+    },
+    {
+      "icon_id": "8710519",
+      "name": "学分认定",
+      "font_class": "xuefenrending",
+      "unicode": "e701",
+      "unicode_decimal": 59137
+    },
+    {
+      "icon_id": "8710528",
+      "name": "课程订单",
+      "font_class": "kechengdingdan",
+      "unicode": "e702",
+      "unicode_decimal": 59138
+    },
+    {
+      "icon_id": "8710536",
+      "name": "问题反馈",
+      "font_class": "wentifankui",
+      "unicode": "e703",
+      "unicode_decimal": 59139
+    },
+    {
+      "icon_id": "8710538",
+      "name": "资产",
+      "font_class": "zichan",
+      "unicode": "e704",
+      "unicode_decimal": 59140
+    },
+    {
+      "icon_id": "8710540",
+      "name": "KPI管理",
+      "font_class": "KPIguanli",
+      "unicode": "e705",
+      "unicode_decimal": 59141
+    },
+    {
+      "icon_id": "8710547",
+      "name": "项目管理",
+      "font_class": "xiangmuguanli",
+      "unicode": "e706",
+      "unicode_decimal": 59142
+    },
+    {
+      "icon_id": "8710560",
+      "name": "微信公众号",
+      "font_class": "weixingongzhonghao",
+      "unicode": "e707",
+      "unicode_decimal": 59143
+    },
+    {
+      "icon_id": "8710565",
+      "name": "安全设置",
+      "font_class": "anquanshezhi",
+      "unicode": "e708",
+      "unicode_decimal": 59144
+    },
+    {
+      "icon_id": "8710642",
+      "name": "服务中心",
+      "font_class": "fuwuzhongxin",
+      "unicode": "e709",
+      "unicode_decimal": 59145
+    },
+    {
+      "icon_id": "8710650",
+      "name": "企业服务",
+      "font_class": "qiyefuwu",
+      "unicode": "e70a",
+      "unicode_decimal": 59146
+    },
+    {
+      "icon_id": "8710673",
+      "name": "网课服务",
+      "font_class": "wangkefuwu",
+      "unicode": "e70b",
+      "unicode_decimal": 59147
+    },
+    {
+      "icon_id": "8710677",
+      "name": "收费管理",
+      "font_class": "shoufeiguanli",
+      "unicode": "e70c",
+      "unicode_decimal": 59148
+    },
+    {
+      "icon_id": "8710679",
+      "name": "权限设置",
+      "font_class": "quanxianshezhi",
+      "unicode": "e70d",
+      "unicode_decimal": 59149
+    },
+    {
+      "icon_id": "8827470",
+      "name": "教务统计",
+      "font_class": "jiaowutongji",
+      "unicode": "e70f",
+      "unicode_decimal": 59151
+    },
+    {
+      "icon_id": "8827474",
+      "name": "教学统计",
+      "font_class": "jiaoxuetongji",
+      "unicode": "e710",
+      "unicode_decimal": 59152
+    },
+    {
+      "icon_id": "8827479",
+      "name": "收费统计",
+      "font_class": "shoufeitongji",
+      "unicode": "e711",
+      "unicode_decimal": 59153
+    },
+    {
+      "icon_id": "8827489",
+      "name": "服务统计",
+      "font_class": "fuwutongji",
+      "unicode": "e713",
+      "unicode_decimal": 59155
+    },
+    {
+      "icon_id": "8827490",
+      "name": "通知统计",
+      "font_class": "tongzhitongji",
+      "unicode": "e714",
+      "unicode_decimal": 59156
+    },
+    {
+      "icon_id": "8827501",
+      "name": "考核统计",
+      "font_class": "kaohetongji",
+      "unicode": "e715",
+      "unicode_decimal": 59157
+    },
+    {
+      "icon_id": "8827503",
+      "name": "用户活跃度",
+      "font_class": "yonghuhuoyuedu",
+      "unicode": "e716",
+      "unicode_decimal": 59158
+    },
+    {
+      "icon_id": "8827511",
+      "name": "学生报名",
+      "font_class": "xueshengbaoming",
+      "unicode": "e717",
+      "unicode_decimal": 59159
+    },
+    {
+      "icon_id": "8827513",
+      "name": "学生录取",
+      "font_class": "xueshengluqu",
+      "unicode": "e718",
+      "unicode_decimal": 59160
+    },
+    {
+      "icon_id": "8827518",
+      "name": "学生注册",
+      "font_class": "xueshengzhuce",
+      "unicode": "e719",
+      "unicode_decimal": 59161
+    },
+    {
+      "icon_id": "8827519",
+      "name": "在籍学生",
+      "font_class": "zaijixuesheng",
+      "unicode": "e71a",
+      "unicode_decimal": 59162
+    },
+    {
+      "icon_id": "8827523",
+      "name": "花名册",
+      "font_class": "huamingce",
+      "unicode": "e71b",
+      "unicode_decimal": 59163
+    },
+    {
+      "icon_id": "8827524",
+      "name": "服务分类管理",
+      "font_class": "fenleiguanli",
+      "unicode": "e71c",
+      "unicode_decimal": 59164
+    },
+    {
+      "icon_id": "8827680",
+      "name": "学生服务列表",
+      "font_class": "fuwuliebiao",
+      "unicode": "e71d",
+      "unicode_decimal": 59165
+    },
+    {
+      "icon_id": "8827692",
+      "name": "通知分类管理",
+      "font_class": "fenleiliebiao",
+      "unicode": "e71e",
+      "unicode_decimal": 59166
+    },
+    {
+      "icon_id": "8827697",
+      "name": "通知列表",
+      "font_class": "tongzhiliebiao",
+      "unicode": "e71f",
+      "unicode_decimal": 59167
+    },
+    {
+      "icon_id": "8827700",
+      "name": "教学计划",
+      "font_class": "jiaoxuejihua",
+      "unicode": "e720",
+      "unicode_decimal": 59168
+    },
+    {
+      "icon_id": "8827702",
+      "name": "教学安排",
+      "font_class": "jiaoxueanpai",
+      "unicode": "e721",
+      "unicode_decimal": 59169
+    },
+    {
+      "icon_id": "8827704",
+      "name": "成绩管理",
+      "font_class": "chengjiguanli",
+      "unicode": "e722",
+      "unicode_decimal": 59170
+    },
+    {
+      "icon_id": "8827714",
+      "name": "图片管理",
+      "font_class": "tupianguanli",
+      "unicode": "e723",
+      "unicode_decimal": 59171
+    },
+    {
+      "icon_id": "8827722",
+      "name": "考试计划",
+      "font_class": "kaoshijihua",
+      "unicode": "e724",
+      "unicode_decimal": 59172
+    },
+    {
+      "icon_id": "8827726",
+      "name": "考试配置",
+      "font_class": "kaoshipeizhi",
+      "unicode": "e725",
+      "unicode_decimal": 59173
+    },
+    {
+      "icon_id": "8827732",
+      "name": "学习中心管理",
+      "font_class": "xuexizhongxinguanli",
+      "unicode": "e726",
+      "unicode_decimal": 59174
+    },
+    {
+      "icon_id": "8827763",
+      "name": "考核管理",
+      "font_class": "kaoheguanli",
+      "unicode": "e728",
+      "unicode_decimal": 59176
+    },
+    {
+      "icon_id": "8827768",
+      "name": "教师管理",
+      "font_class": "jiaoshiguanli",
+      "unicode": "e729",
+      "unicode_decimal": 59177
+    },
+    {
+      "icon_id": "8827784",
+      "name": "网课管理",
+      "font_class": "wangkeguanli",
+      "unicode": "e72a",
+      "unicode_decimal": 59178
+    },
+    {
+      "icon_id": "8827789",
+      "name": "补录结算",
+      "font_class": "bulujiesuan",
+      "unicode": "e72b",
+      "unicode_decimal": 59179
+    },
+    {
+      "icon_id": "8827791",
+      "name": "毕业管理",
+      "font_class": "biyeguanli",
+      "unicode": "e72c",
+      "unicode_decimal": 59180
+    },
+    {
+      "icon_id": "8827794",
+      "name": "考核指标",
+      "font_class": "kaohezhibiao",
+      "unicode": "e72d",
+      "unicode_decimal": 59181
+    },
+    {
+      "icon_id": "15562222",
+      "name": "企业管理",
+      "font_class": "qiyeguanli",
+      "unicode": "e77e",
+      "unicode_decimal": 59262
+    },
+    {
+      "icon_id": "15562223",
+      "name": "初步管理",
+      "font_class": "chubuguanli",
+      "unicode": "e77f",
+      "unicode_decimal": 59263
+    },
+    {
+      "icon_id": "15562224",
+      "name": "呼叫报表",
+      "font_class": "hujiaobaobiao",
+      "unicode": "e780",
+      "unicode_decimal": 59264
+    },
+    {
+      "icon_id": "15562225",
+      "name": "扫描电镜",
+      "font_class": "saomiaodianjing",
+      "unicode": "e781",
+      "unicode_decimal": 59265
+    },
+    {
+      "icon_id": "15562226",
+      "name": "结账",
+      "font_class": "jiezhang",
+      "unicode": "e782",
+      "unicode_decimal": 59266
+    },
+    {
+      "icon_id": "15562227",
+      "name": "销售报表",
+      "font_class": "xiaoshoubaobiao",
+      "unicode": "e783",
+      "unicode_decimal": 59267
+    },
+    {
+      "icon_id": "15562228",
+      "name": "凭证",
+      "font_class": "pingzheng",
+      "unicode": "e784",
+      "unicode_decimal": 59268
+    },
+    {
+      "icon_id": "15562229",
+      "name": "合同异动",
+      "font_class": "hetongyidong",
+      "unicode": "e785",
+      "unicode_decimal": 59269
+    },
+    {
+      "icon_id": "15562231",
+      "name": "销售品",
+      "font_class": "xiaoshoupin",
+      "unicode": "e787",
+      "unicode_decimal": 59271
+    },
+    {
+      "icon_id": "15562232",
+      "name": "学术管理",
+      "font_class": "xueshuguanli",
+      "unicode": "e788",
+      "unicode_decimal": 59272
+    },
+    {
+      "icon_id": "15562233",
+      "name": "易耗品",
+      "font_class": "yihaopin",
+      "unicode": "e789",
+      "unicode_decimal": 59273
+    },
+    {
+      "icon_id": "15562234",
+      "name": "任务管理",
+      "font_class": "renwuguanli",
+      "unicode": "e78a",
+      "unicode_decimal": 59274
+    },
+    {
+      "icon_id": "15562235",
+      "name": "电商",
+      "font_class": "dianshang",
+      "unicode": "e78b",
+      "unicode_decimal": 59275
+    },
+    {
+      "icon_id": "15562236",
+      "name": "名片报表",
+      "font_class": "mingpianbaobiao_1",
+      "unicode": "e78c",
+      "unicode_decimal": 59276
+    },
+    {
+      "icon_id": "15562237",
+      "name": "固定资产",
+      "font_class": "gudingzichan",
+      "unicode": "e78d",
+      "unicode_decimal": 59277
+    },
+    {
+      "icon_id": "15562238",
+      "name": "动态管理",
+      "font_class": "dongtaiguanli",
+      "unicode": "e78e",
+      "unicode_decimal": 59278
+    },
+    {
+      "icon_id": "15562239",
+      "name": "基础配置",
+      "font_class": "jichupeizhi",
+      "unicode": "e78f",
+      "unicode_decimal": 59279
+    },
+    {
+      "icon_id": "15562240",
+      "name": "呼叫统计",
+      "font_class": "hujiaotongji",
+      "unicode": "e790",
+      "unicode_decimal": 59280
+    },
+    {
+      "icon_id": "15562241",
+      "name": "销售报表",
+      "font_class": "xiaoshoubaobiao_1",
+      "unicode": "e791",
+      "unicode_decimal": 59281
+    },
+    {
+      "icon_id": "15562242",
+      "name": "大数据",
+      "font_class": "dashuju",
+      "unicode": "e792",
+      "unicode_decimal": 59282
+    },
+    {
+      "icon_id": "15562243",
+      "name": "活动管理",
+      "font_class": "huodongguanli",
+      "unicode": "e793",
+      "unicode_decimal": 59283
+    },
+    {
+      "icon_id": "15562244",
+      "name": "呼叫设置",
+      "font_class": "hujiaoshezhi",
+      "unicode": "e794",
+      "unicode_decimal": 59284
+    },
+    {
+      "icon_id": "15562245",
+      "name": "分销市场",
+      "font_class": "fenxiaoshichang",
+      "unicode": "e795",
+      "unicode_decimal": 59285
+    },
+    {
+      "icon_id": "15562246",
+      "name": "成绩统计",
+      "font_class": "chengjitongji",
+      "unicode": "e796",
+      "unicode_decimal": 59286
+    },
+    {
+      "icon_id": "15562247",
+      "name": "推广设置",
+      "font_class": "tuiguangshezhi",
+      "unicode": "e797",
+      "unicode_decimal": 59287
+    },
+    {
+      "icon_id": "15562248",
+      "name": "课程中心",
+      "font_class": "kechengzhongxin",
+      "unicode": "e798",
+      "unicode_decimal": 59288
+    },
+    {
+      "icon_id": "15562249",
+      "name": "合同设置",
+      "font_class": "hetongshezhi",
+      "unicode": "e799",
+      "unicode_decimal": 59289
+    },
+    {
+      "icon_id": "15562250",
+      "name": "课程包管理",
+      "font_class": "kechengbaoguanli",
+      "unicode": "e79a",
+      "unicode_decimal": 59290
+    },
+    {
+      "icon_id": "15562251",
+      "name": "用户管理",
+      "font_class": "yonghuguanli",
+      "unicode": "e79b",
+      "unicode_decimal": 59291
+    },
+    {
+      "icon_id": "15562252",
+      "name": "用户画像",
+      "font_class": "yonghuhuaxiang",
+      "unicode": "e79c",
+      "unicode_decimal": 59292
+    },
+    {
+      "icon_id": "15562253",
+      "name": "帐号管理",
+      "font_class": "zhanghaoguanli",
+      "unicode": "e79d",
+      "unicode_decimal": 59293
+    },
+    {
+      "icon_id": "15562254",
+      "name": "SEM管理",
+      "font_class": "SEMguanli",
+      "unicode": "e79e",
+      "unicode_decimal": 59294
+    },
+    {
+      "icon_id": "15562255",
+      "name": "预算",
+      "font_class": "yusuan",
+      "unicode": "e79f",
+      "unicode_decimal": 59295
+    },
+    {
+      "icon_id": "15562256",
+      "name": "名片报表",
+      "font_class": "mingpianbaobiao",
+      "unicode": "e7a0",
+      "unicode_decimal": 59296
+    },
+    {
+      "icon_id": "15562257",
+      "name": "订单管理",
+      "font_class": "dingdanguanli",
+      "unicode": "e7a1",
+      "unicode_decimal": 59297
+    },
+    {
+      "icon_id": "15562258",
+      "name": "推广管理",
+      "font_class": "tuiguangguanli",
+      "unicode": "e7a2",
+      "unicode_decimal": 59298
+    },
+    {
+      "icon_id": "15562259",
+      "name": "专题管理",
+      "font_class": "zhuantiguanli",
+      "unicode": "e7a3",
+      "unicode_decimal": 59299
+    },
+    {
+      "icon_id": "15562260",
+      "name": "信息流",
+      "font_class": "xinxiliu",
+      "unicode": "e7a4",
+      "unicode_decimal": 59300
+    },
+    {
+      "icon_id": "15562261",
+      "name": "销售设置",
+      "font_class": "xiaoshoushezhi",
+      "unicode": "e7a5",
+      "unicode_decimal": 59301
+    },
+    {
+      "icon_id": "18486333",
+      "name": "素材管理",
+      "font_class": "sucaiguanli",
+      "unicode": "e7a9",
+      "unicode_decimal": 59305
+    },
+    {
+      "icon_id": "18486347",
+      "name": "学生导入",
+      "font_class": "xueshengdaoru",
+      "unicode": "e7aa",
+      "unicode_decimal": 59306
+    },
+    {
+      "icon_id": "18486348",
+      "name": "商品管理",
+      "font_class": "shangpinguanli",
+      "unicode": "e7ab",
+      "unicode_decimal": 59307
+    },
+    {
+      "icon_id": "18486365",
+      "name": "排课管理",
+      "font_class": "paikeguanli",
+      "unicode": "e7ac",
+      "unicode_decimal": 59308
+    },
+    {
+      "icon_id": "18486366",
+      "name": "信息导入",
+      "font_class": "xinxidaoru",
+      "unicode": "e7ad",
+      "unicode_decimal": 59309
+    },
+    {
+      "icon_id": "18486367",
+      "name": "收费配置",
+      "font_class": "shoufeipeizhi",
+      "unicode": "e7ae",
+      "unicode_decimal": 59310
+    },
+    {
+      "icon_id": "18486368",
+      "name": "用户权限",
+      "font_class": "yonghuquanxian",
+      "unicode": "e7af",
+      "unicode_decimal": 59311
+    },
+    {
+      "icon_id": "18486369",
+      "name": "在籍学生管理",
+      "font_class": "zaijixueshengguanli",
+      "unicode": "e7b0",
+      "unicode_decimal": 59312
+    },
+    {
+      "icon_id": "18486370",
+      "name": "学号管理",
+      "font_class": "xuehaoguanli",
+      "unicode": "e7b1",
+      "unicode_decimal": 59313
+    },
+    {
+      "icon_id": "18486371",
+      "name": "课程资源管理",
+      "font_class": "kechengziyuanguanli",
+      "unicode": "e7b2",
+      "unicode_decimal": 59314
+    },
+    {
+      "icon_id": "18486372",
+      "name": "面授教学安排",
+      "font_class": "mianshoujiaoxueanpai",
+      "unicode": "e7b3",
+      "unicode_decimal": 59315
+    },
+    {
+      "icon_id": "18486373",
+      "name": "账房",
+      "font_class": "zhangfang",
+      "unicode": "e7b4",
+      "unicode_decimal": 59316
+    },
+    {
+      "icon_id": "18486374",
+      "name": "开课管理",
+      "font_class": "kaikeguanli",
+      "unicode": "e7b5",
+      "unicode_decimal": 59317
+    },
+    {
+      "icon_id": "18486375",
+      "name": "毕业统计",
+      "font_class": "biyetongji",
+      "unicode": "e7b6",
+      "unicode_decimal": 59318
+    },
+    {
+      "icon_id": "18486377",
+      "name": "招生准备",
+      "font_class": "zhaoshengzhunbei",
+      "unicode": "e7b8",
+      "unicode_decimal": 59320
+    },
+    {
+      "icon_id": "18486379",
+      "name": "排课设置",
+      "font_class": "paikeshezhi",
+      "unicode": "e7b9",
+      "unicode_decimal": 59321
+    },
+    {
+      "icon_id": "18486380",
+      "name": "班级管理",
+      "font_class": "banjiguanli",
+      "unicode": "e7ba",
+      "unicode_decimal": 59322
+    },
+    {
+      "icon_id": "18486382",
+      "name": "精品课堂",
+      "font_class": "jingpinketang",
+      "unicode": "e7bb",
+      "unicode_decimal": 59323
+    },
+    {
+      "icon_id": "18486383",
+      "name": "员工提点",
+      "font_class": "yuangongtidian",
+      "unicode": "e7bc",
+      "unicode_decimal": 59324
+    },
+    {
+      "icon_id": "18486384",
+      "name": "考试安排",
+      "font_class": "kaoshianpai",
+      "unicode": "e7bd",
+      "unicode_decimal": 59325
+    },
+    {
+      "icon_id": "18486551",
+      "name": "网络教学安排",
+      "font_class": "wangluojiaoxueanpai",
+      "unicode": "e7bf",
+      "unicode_decimal": 59327
+    },
+    {
+      "icon_id": "18493044",
+      "name": "入学成绩",
+      "font_class": "ruxuechengji",
+      "unicode": "e7c3",
+      "unicode_decimal": 59331
+    },
+    {
+      "icon_id": "18493065",
+      "name": "面授教学",
+      "font_class": "mianshoujiaoxue",
+      "unicode": "e7c6",
+      "unicode_decimal": 59334
+    },
+    {
+      "icon_id": "18493071",
+      "name": "教师教室管理",
+      "font_class": "jiaoshijiaoshiguanli",
+      "unicode": "e7c7",
+      "unicode_decimal": 59335
+    },
+    {
+      "icon_id": "18493074",
+      "name": "录取管理",
+      "font_class": "luquguanli",
+      "unicode": "e7c8",
+      "unicode_decimal": 59336
+    },
+    {
+      "icon_id": "18493075",
+      "name": "录取成绩",
+      "font_class": "luquchengji",
+      "unicode": "e7c9",
+      "unicode_decimal": 59337
+    },
+    {
+      "icon_id": "18493080",
+      "name": "资源",
+      "font_class": "ziyuan",
+      "unicode": "e7ca",
+      "unicode_decimal": 59338
+    },
+    {
+      "icon_id": "18493083",
+      "name": "课件",
+      "font_class": "kejian",
+      "unicode": "e7cc",
+      "unicode_decimal": 59340
+    },
+    {
+      "icon_id": "18493085",
+      "name": "外部课件",
+      "font_class": "waibukejian",
+      "unicode": "e7cd",
+      "unicode_decimal": 59341
+    },
+    {
+      "icon_id": "18493087",
+      "name": "日志管理",
+      "font_class": "rizhiguanli",
+      "unicode": "e7ce",
+      "unicode_decimal": 59342
+    },
+    {
+      "icon_id": "18493091",
+      "name": "模版管理",
+      "font_class": "mobanguanli",
+      "unicode": "e7cf",
+      "unicode_decimal": 59343
+    },
+    {
+      "icon_id": "18493288",
+      "name": "学历认证",
+      "font_class": "xuelirenzheng",
+      "unicode": "e7d1",
+      "unicode_decimal": 59345
+    },
+    {
+      "icon_id": "18493306",
+      "name": "异议处理",
+      "font_class": "yiyichuli",
+      "unicode": "e7d2",
+      "unicode_decimal": 59346
+    },
+    {
+      "icon_id": "18493315",
+      "name": "论文申报",
+      "font_class": "lunwenshenbao",
+      "unicode": "e7d3",
+      "unicode_decimal": 59347
+    },
+    {
+      "icon_id": "18493322",
+      "name": "论文设置",
+      "font_class": "lunwenshezhi",
+      "unicode": "e7d4",
+      "unicode_decimal": 59348
+    },
+    {
+      "icon_id": "18493393",
+      "name": "教学点设置",
+      "font_class": "jiaoxuedianshezhi",
+      "unicode": "e7d5",
+      "unicode_decimal": 59349
+    },
+    {
+      "icon_id": "18493447",
+      "name": "补录沉降",
+      "font_class": "buluchenjiang",
+      "unicode": "e7d6",
+      "unicode_decimal": 59350
+    },
+    {
+      "icon_id": "18493458",
+      "name": "模块设置",
+      "font_class": "mokuaishezhi",
+      "unicode": "e7d7",
+      "unicode_decimal": 59351
+    },
+    {
+      "icon_id": "18493462",
+      "name": "资料管理",
+      "font_class": "ziliaoguanli",
+      "unicode": "e7d8",
+      "unicode_decimal": 59352
+    },
+    {
+      "icon_id": "18493464",
+      "name": "集团管理",
+      "font_class": "jituanguanli",
+      "unicode": "e7d9",
+      "unicode_decimal": 59353
+    },
+    {
+      "icon_id": "18493465",
+      "name": "应用管理",
+      "font_class": "yingyongguanli",
+      "unicode": "e7da",
+      "unicode_decimal": 59354
+    },
+    {
+      "icon_id": "18493468",
+      "name": "官网试卷",
+      "font_class": "guanwangshijuan",
+      "unicode": "e7db",
+      "unicode_decimal": 59355
+    },
+    {
+      "icon_id": "18493471",
+      "name": "我的网课",
+      "font_class": "wodewangke",
+      "unicode": "e7dc",
+      "unicode_decimal": 59356
+    },
+    {
+      "icon_id": "18493474",
+      "name": "脚本管理",
+      "font_class": "jiaobenguanli",
+      "unicode": "e7dd",
+      "unicode_decimal": 59357
+    },
+    {
+      "icon_id": "18493477",
+      "name": "专业管理员",
+      "font_class": "zhuanyeguanliyuan",
+      "unicode": "e7de",
+      "unicode_decimal": 59358
+    },
+    {
+      "icon_id": "18493480",
+      "name": "学生成绩",
+      "font_class": "xueshengchengji",
+      "unicode": "e7df",
+      "unicode_decimal": 59359
+    },
+    {
+      "icon_id": "18494025",
+      "name": "服务管理",
+      "font_class": "fuwuguanli",
+      "unicode": "e7e2",
+      "unicode_decimal": 59362
+    },
+    {
+      "icon_id": "18494028",
+      "name": "代金券",
+      "font_class": "daijinquan",
+      "unicode": "e7e3",
+      "unicode_decimal": 59363
+    },
+    {
+      "icon_id": "18494030",
+      "name": "呼叫中心",
+      "font_class": "hujiaozhongxin",
+      "unicode": "e7e4",
+      "unicode_decimal": 59364
+    },
+    {
+      "icon_id": "18494031",
+      "name": "引进收费",
+      "font_class": "yinjinshoufei",
+      "unicode": "e7e5",
+      "unicode_decimal": 59365
+    },
+    {
+      "icon_id": "18494033",
+      "name": "应缴清单",
+      "font_class": "yingjiaoqingdan",
+      "unicode": "e7e6",
+      "unicode_decimal": 59366
+    },
+    {
+      "icon_id": "18494034",
+      "name": "对账单",
+      "font_class": "duizhangdan",
+      "unicode": "e7e7",
+      "unicode_decimal": 59367
+    },
+    {
+      "icon_id": "18494036",
+      "name": "商机管理",
+      "font_class": "shangjiguanli",
+      "unicode": "e7e8",
+      "unicode_decimal": 59368
+    },
+    {
+      "icon_id": "18494037",
+      "name": "企微会话存档",
+      "font_class": "qiyehuihuacundang",
+      "unicode": "e7e9",
+      "unicode_decimal": 59369
+    },
+    {
+      "icon_id": "18494048",
+      "name": "用户设置",
+      "font_class": "yonghushezhi",
+      "unicode": "e7ea",
+      "unicode_decimal": 59370
+    },
+    {
+      "icon_id": "18494050",
+      "name": "消息设置",
+      "font_class": "xiaoxishezhi",
+      "unicode": "e7ec",
+      "unicode_decimal": 59372
+    },
+    {
+      "icon_id": "18494051",
+      "name": "营销设置",
+      "font_class": "yingxiaoshezhi",
+      "unicode": "e7ed",
+      "unicode_decimal": 59373
+    },
+    {
+      "icon_id": "18494056",
+      "name": "服务市场",
+      "font_class": "fuwushichang",
+      "unicode": "e7ee",
+      "unicode_decimal": 59374
+    },
+    {
+      "icon_id": "18494060",
+      "name": "素材资源",
+      "font_class": "sucaiziyuan",
+      "unicode": "e7ef",
+      "unicode_decimal": 59375
+    },
+    {
+      "icon_id": "18494089",
+      "name": "营销玩法",
+      "font_class": "yingxiaowanfa",
+      "unicode": "e7f0",
+      "unicode_decimal": 59376
+    },
+    {
+      "icon_id": "18494111",
+      "name": "推广",
+      "font_class": "tuiguang",
+      "unicode": "e7f1",
+      "unicode_decimal": 59377
+    },
+    {
+      "icon_id": "18494112",
+      "name": "用户列表",
+      "font_class": "yonghuliebiao",
+      "unicode": "e7f2",
+      "unicode_decimal": 59378
+    },
+    {
+      "icon_id": "8387574",
+      "name": "资源管理",
+      "font_class": "ziyuanguanli",
+      "unicode": "e692",
+      "unicode_decimal": 59026
+    },
+    {
+      "icon_id": "8387603",
+      "name": "课程管理",
+      "font_class": "kechengguanli",
+      "unicode": "e693",
+      "unicode_decimal": 59027
+    },
+    {
+      "icon_id": "8387606",
+      "name": "课程包",
+      "font_class": "kechengbao",
+      "unicode": "e694",
+      "unicode_decimal": 59028
+    },
+    {
+      "icon_id": "8387646",
+      "name": "题库管理",
+      "font_class": "tikuguanli",
+      "unicode": "e695",
+      "unicode_decimal": 59029
+    },
+    {
+      "icon_id": "8387654",
+      "name": "网课市场",
+      "font_class": "wangkeshichang",
+      "unicode": "e696",
+      "unicode_decimal": 59030
+    },
+    {
+      "icon_id": "8387659",
+      "name": "工单",
+      "font_class": "gongdan",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "8387662",
+      "name": "访客管理",
+      "font_class": "fangkeguanli",
+      "unicode": "e698",
+      "unicode_decimal": 59032
+    },
+    {
+      "icon_id": "8387718",
+      "name": "线索管理",
+      "font_class": "xiansuoguanli",
+      "unicode": "e699",
+      "unicode_decimal": 59033
+    },
+    {
+      "icon_id": "8387737",
+      "name": "客户管理",
+      "font_class": "kehuguanli",
+      "unicode": "e69a",
+      "unicode_decimal": 59034
+    },
+    {
+      "icon_id": "8387740",
+      "name": "集团客户",
+      "font_class": "jituankehu",
+      "unicode": "e69b",
+      "unicode_decimal": 59035
+    },
+    {
+      "icon_id": "8387742",
+      "name": "跟进记录",
+      "font_class": "genjinjilu",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "8387743",
+      "name": "呼叫管理",
+      "font_class": "hujiaoguanli",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "8387803",
+      "name": "工作台",
+      "font_class": "gongzuotai",
+      "unicode": "e69e",
+      "unicode_decimal": 59038
+    },
+    {
+      "icon_id": "8387806",
+      "name": "数据报表",
+      "font_class": "shujubaobiao",
+      "unicode": "e69f",
+      "unicode_decimal": 59039
+    },
+    {
+      "icon_id": "8387807",
+      "name": "访客报表",
+      "font_class": "fangkebaobiao",
+      "unicode": "e6a0",
+      "unicode_decimal": 59040
+    },
+    {
+      "icon_id": "8387808",
+      "name": "账簿管理",
+      "font_class": "zhangbuguanli",
+      "unicode": "e6a1",
+      "unicode_decimal": 59041
+    },
+    {
+      "icon_id": "8387809",
+      "name": "账簿管理_子系统",
+      "font_class": "zhangbuguanli_zi",
+      "unicode": "e6a2",
+      "unicode_decimal": 59042
+    },
+    {
+      "icon_id": "8387811",
+      "name": "账簿管理_子系统",
+      "font_class": "zhangbuguanli_zixitong_A",
+      "unicode": "e6a3",
+      "unicode_decimal": 59043
+    },
+    {
+      "icon_id": "8387812",
+      "name": "合同管理",
+      "font_class": "hetongguanli",
+      "unicode": "e6a4",
+      "unicode_decimal": 59044
+    },
+    {
+      "icon_id": "8387816",
+      "name": "运营者管理",
+      "font_class": "yunyingzheguanli",
+      "unicode": "e6a5",
+      "unicode_decimal": 59045
+    },
+    {
+      "icon_id": "8387819",
+      "name": "招聘管理",
+      "font_class": "zhaopinguanli",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "8387821",
+      "name": "工资管理",
+      "font_class": "gongziguanli",
+      "unicode": "e6a7",
+      "unicode_decimal": 59047
+    },
+    {
+      "icon_id": "8387824",
+      "name": "我的审批",
+      "font_class": "wodeshenpi",
+      "unicode": "e6a8",
+      "unicode_decimal": 59048
+    },
+    {
+      "icon_id": "8387827",
+      "name": "标准模版设置",
+      "font_class": "biaozhunmobanshezhi",
+      "unicode": "e6a9",
+      "unicode_decimal": 59049
+    },
+    {
+      "icon_id": "8387829",
+      "name": "基础设置",
+      "font_class": "jichushezhi",
+      "unicode": "e6aa",
+      "unicode_decimal": 59050
+    },
+    {
+      "icon_id": "8387835",
+      "name": "财务设置",
+      "font_class": "caiwushezhi",
+      "unicode": "e6ab",
+      "unicode_decimal": 59051
+    },
+    {
+      "icon_id": "8387838",
+      "name": "产品设置",
+      "font_class": "chanpinshezhi",
+      "unicode": "e6ac",
+      "unicode_decimal": 59052
+    },
+    {
+      "icon_id": "8387841",
+      "name": "审批设置",
+      "font_class": "shenpishezhi",
+      "unicode": "e6ad",
+      "unicode_decimal": 59053
+    },
+    {
+      "icon_id": "8387842",
+      "name": "目标管理",
+      "font_class": "mubiaoguanli",
+      "unicode": "e6ae",
+      "unicode_decimal": 59054
+    },
+    {
+      "icon_id": "8387843",
+      "name": "站点设置",
+      "font_class": "zhandianshezhi",
+      "unicode": "e6af",
+      "unicode_decimal": 59055
+    },
+    {
+      "icon_id": "8387856",
+      "name": "人事设置",
+      "font_class": "renshishezhi",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "8387864",
+      "name": "CRM设置",
+      "font_class": "CRMshezhi",
+      "unicode": "e6b1",
+      "unicode_decimal": 59057
+    },
+    {
+      "icon_id": "8387868",
+      "name": "名片设置",
+      "font_class": "mingpianshezhi",
+      "unicode": "e6b2",
+      "unicode_decimal": 59058
+    },
+    {
+      "icon_id": "8387869",
+      "name": "网校设置",
+      "font_class": "wangxiaoshezhi",
+      "unicode": "e6b3",
+      "unicode_decimal": 59059
+    },
+    {
+      "icon_id": "8471135",
+      "name": "我的点评",
+      "font_class": "wodedianping",
+      "unicode": "e6b4",
+      "unicode_decimal": 59060
+    },
+    {
+      "icon_id": "8471145",
+      "name": "我的学生",
+      "font_class": "wodexuesheng",
+      "unicode": "e6b5",
+      "unicode_decimal": 59061
+    },
+    {
+      "icon_id": "8471169",
+      "name": "联系记录",
+      "font_class": "lianxijilu",
+      "unicode": "e6b8",
+      "unicode_decimal": 59064
+    },
+    {
+      "icon_id": "8471181",
+      "name": "投诉提问",
+      "font_class": "tousutiwen",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
+      "icon_id": "8471188",
+      "name": "培训计划",
+      "font_class": "peixunjihua",
+      "unicode": "e6ba",
+      "unicode_decimal": 59066
+    },
+    {
+      "icon_id": "8471193",
+      "name": "费用查询",
+      "font_class": "feiyongchaxun",
+      "unicode": "e6bb",
+      "unicode_decimal": 59067
+    },
+    {
+      "icon_id": "8471198",
+      "name": "学生缴费",
+      "font_class": "xueshengjiaofei",
+      "unicode": "e6bc",
+      "unicode_decimal": 59068
+    },
+    {
+      "icon_id": "8471207",
+      "name": "记账",
+      "font_class": "jizhang",
+      "unicode": "e6bd",
+      "unicode_decimal": 59069
+    },
+    {
+      "icon_id": "8471221",
+      "name": "查账",
+      "font_class": "chaxun",
+      "unicode": "e6be",
+      "unicode_decimal": 59070
+    },
+    {
+      "icon_id": "8471233",
+      "name": "查账",
+      "font_class": "chazhang",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "8471236",
+      "name": "报表",
+      "font_class": "baobiao",
+      "unicode": "e6c0",
+      "unicode_decimal": 59072
+    },
+    {
+      "icon_id": "8471255",
+      "name": "设置",
+      "font_class": "shezhi",
+      "unicode": "e6c2",
+      "unicode_decimal": 59074
+    },
+    {
+      "icon_id": "8471320",
+      "name": "招生报表",
+      "font_class": "daqiajilu",
+      "unicode": "e6ce",
+      "unicode_decimal": 59086
+    },
+    {
+      "icon_id": "8471348",
+      "name": "打卡记录",
+      "font_class": "wangluobanji",
+      "unicode": "e6d3",
+      "unicode_decimal": 59091
+    },
+    {
+      "icon_id": "8471363",
+      "name": "网络班级",
+      "font_class": "wangxiaoshezhi1",
+      "unicode": "e6d6",
+      "unicode_decimal": 59094
+    },
+    {
+      "icon_id": "8471373",
+      "name": "小程序",
+      "font_class": "houtaishezhi",
+      "unicode": "e6d8",
+      "unicode_decimal": 59096
+    },
+    {
+      "icon_id": "8471401",
+      "name": "后台设置",
+      "font_class": "zhaoshengshezhi",
+      "unicode": "e6db",
+      "unicode_decimal": 59099
+    },
+    {
+      "icon_id": "8471419",
+      "name": "招生设置",
+      "font_class": "xiaoxizhongxin",
+      "unicode": "e6df",
+      "unicode_decimal": 59103
+    },
+    {
+      "icon_id": "8471685",
+      "name": "消息中心",
+      "font_class": "zhaoshengbaobiao",
+      "unicode": "e6e1",
+      "unicode_decimal": 59105
+    },
+    {
+      "icon_id": "8524999",
+      "name": "菜单管理",
+      "font_class": "caidanguanli",
+      "unicode": "e6e2",
+      "unicode_decimal": 59106
+    },
+    {
+      "icon_id": "8525001",
+      "name": "集团设置",
+      "font_class": "jituanshezhi",
+      "unicode": "e6e3",
+      "unicode_decimal": 59107
+    },
+    {
+      "icon_id": "8525011",
+      "name": "市场管理",
+      "font_class": "shichangguanli",
+      "unicode": "e6e4",
+      "unicode_decimal": 59108
+    },
+    {
+      "icon_id": "8525013",
+      "name": "创建系统",
+      "font_class": "chuangjianxitong",
+      "unicode": "e6e5",
+      "unicode_decimal": 59109
+    },
+    {
+      "icon_id": "8525045",
+      "name": "工单管理",
+      "font_class": "gongdanguanli",
+      "unicode": "e6e6",
+      "unicode_decimal": 59110
+    },
+    {
+      "icon_id": "8525057",
+      "name": "短信",
+      "font_class": "duanxin",
+      "unicode": "e6e7",
+      "unicode_decimal": 59111
+    },
+    {
+      "icon_id": "8525060",
+      "name": "帮助中心",
+      "font_class": "bangzhuzhongxin",
+      "unicode": "e6e8",
+      "unicode_decimal": 59112
+    }
+  ]
+}

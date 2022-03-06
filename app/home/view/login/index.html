@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="renderer" content="webkit" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>{:get_system_config('web','admin_title')}</title>
+		<link rel="stylesheet" href="{__LAYUI__}/css/layui.css?v={:get_system_config('web','version')}" media="all">
+		<style type="text/css">
+			html,body {width: 100%;height: 100%;background: #34a853;}
+			input:-webkit-autofill {
+				-webkit-box-shadow: 0 0 0px 1000px white inset;
+			}
+			#container {width: 100%;height: 100%;position: fixed;top: 0;left: 0;z-index: 999;color: #ffffff;
+				background: url({__IMG__}/bg.jpg);
+				background-size: cover;
+				background: url("{__IMG__}/bg_pattern.png"), -webkit-linear-gradient(to left, #34a853, #4285f4);
+				/* Chrome 10-25, Safari 5.1-6 */
+				background: url("{__IMG__}/bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
+				/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			}
+			.container h2 {font-size: 36px;padding: 36px 0;font-weight: 500;}
+			.login {width: 400px;text-align: center;position: absolute;top: 50%;left: 50%;margin-top: -240px;margin-left: -200px;border-radius: 12px;box-shadow: 0 2px 6px rgba(26, 26, 26, .36);
+			}
+			.login .top {width: 400px;height: 117px;background-color: #fbbc05;border-radius: 12px 12px 0 0;line-height: 117px;text-align: center;overflow: hidden;
+				-webkit-transform: rotate(0deg);
+				-moz-transform: rotate(0deg);
+				-ms-transform: rotate(0deg);
+				-o-transform: rotate(0deg);
+				transform: rotate(0deg);
+			}
+			.login .top .bg1 {display: inline-block;width: 72px;height: 72px;background: #fff;opacity: .1;border-radius: 0 72px 0 0;position: absolute;left: 0;top: 42px;}
+			.login .top .bg2 {display: inline-block;width: 92px;height: 92px;background: #fff;opacity: .1;border-radius: 50%;position: absolute;right: -16px;top: -16px;}
+			.login .bottom {background-color: #fff;padding: 30px 25px;border-radius: 0 0 12px 12px;}
+			
+			.layui-input,.layui-textarea {height: 44px;border: 1px solid #ddd;}
+			.captcha_img img{width:142px; height:44px; cursor:pointer;}
+			.layui-btn {height: 48px;font-size: 16px;margin-top: 5px;background-color: #FF6347!important}
+			.foot {position: absolute; font-size: 12px; bottom: 28px;text-align: center;width: 100%;color: #d3e8fa;}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<div class="login">
+				<div class="top">
+					<img src="{__IMG__}/login_logo.png" height="60" width="200">
+					<span class="bg1"></span>
+					<span class="bg2"></span>
+				</div>
+				<div class="bottom">
+					<form class="layui-form" id="gougu-login">
+						<div class="layui-form-item">
+							<input type="text" name="username" lay-verify="required" value="" placeholder="请输入账户" lay-reqText="请输入账户" autocomplete="off" class="layui-input">
+						</div>
+						<div class="layui-form-item">
+							<input type="password" name="password" lay-verify="required" value="" placeholder="请输入密码" lay-reqText="请输入密码" autocomplete="off" class="layui-input">
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-inline" style="width:188px;">
+								<input type="text" name="captcha" lay-verify="required" placeholder="验证码" lay-reqText="请输入验证码" autocomplete="off" class="layui-input">
+							</div>
+							<div class="layui-input-inline captcha_img" style="width:142px; height:44px; margin-right:0">
+								{:captcha_img()}
+								<input type="hidden" value="{:make_token()}"/>
+							</div>
+						</div>
+						
+						<button id="login-submit" class="layui-btn layui-btn-fluid layui-bg-cyan" lay-submit lay-filter="login-submit">登入系统</button>
+					</form>
+				</div>
+			</div>
+			<div class="foot">
+			{:get_system_config('web','copyright')} <a id="beian" href="//www.beian.miit.gov.cn" target="_blank"
+				rel="nofollow" style="margin-left: 15px;color:#d3e8fa;">{:get_system_config('web','icp')}</a>，Powered by GouguCMS
+			</div>
+		</div>
+		<script src="{__LAYUI__}/layui.js?v={:get_system_config('web','version')}"></script>
+		<script type="text/javascript">
+			layui.use(['form'], function() {
+				var form = layui.form,
+					$ = layui.$;
+					layer = layui.layer;
+				// 登录过期的时候，跳出ifram框架
+				if (top.location != self.location) top.location = self.location;
+				form.on('submit(login-submit)', function(data) {
+					$.ajax({
+						url: "/home/login/login_submit",
+						data: $('#gougu-login').serialize(),
+						type: 'post',
+						async: false,
+						success: function(res) {
+							layer.tips(res.msg, '#login-submit');
+							if (res.code === 0) {
+								setTimeout(function() {
+								//	parent.document.location.reload();
+									parent.document.location.href="/";
+								}, 1500);
+							} else {
+								$('[alt="captcha"]').click();
+							}
+						}
+					})
+					return false;
+				});
+			});
+		</script>
+	</body>
+</html>

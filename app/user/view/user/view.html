@@ -1,0 +1,190 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.checkbox16 .layui-form-checkbox span{font-size:15px;font-weight:800;}
+.layui-checkbox-disabled span,.layui-checkbox-disabled[lay-skin=primary] span{color: #666666!important;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<form class="layui-form page-content">
+	<h3 class="h3-title">员工信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">登录账号</td>
+			<td>
+				{$detail.username}
+			</td>
+			<td class="layui-td-gray">登录密码</td>
+			<td>
+				{empty name="$detail.reg_pwd"}
+					密码已重置
+					<span class="layui-btn layui-btn-normal layui-btn-xs" onclick="resetPsw({$detail.id});">重设新密码</span>
+				{else/}
+					{$detail.reg_pwd}
+					<span class="layui-btn layui-btn-normal layui-btn-xs" onclick="copyToClip('{$detail.reg_pwd}');">复制初始密码</span>
+				{/empty}
+			</td>
+			<td class="layui-td-gray">员工状态</td>
+			<td>
+				{eq name="$detail.status" value="0"}<span style="color:#FF5722">禁止登录</span>{/eq}
+				{eq name="$detail.status" value="1"}<span style="color:#009688">正常</span>{/eq}
+				{eq name="$detail.status" value="2"}<span style="color:#FFB800">已离职</span>{/eq}
+			</td>
+			<td rowspan="3" class="layui-td-gray">头像</td>
+			<td rowspan="3" valign="top" style="width: 100px;">
+				<div class="layui-upload">
+					<img src="{$detail.thumb}" style="width:100px; height:100px; max-width:100%" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>
+				{$detail.name}
+			</td>
+			<td class="layui-td-gray">手机号码</td>
+			<td>
+				{$detail.mobile}
+			</td>
+			<td class="layui-td-gray">性别</td>
+			<td>
+				{eq name="$detail.sex" value="0"}未知{/eq}
+				{eq name="$detail.sex" value="1"}男{/eq}
+				{eq name="$detail.sex" value="2"}女{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所在部门</td>
+			<td>{$detail.department}</td>
+			<td class="layui-td-gray">岗位职称</td>
+			<td>{$detail.position}</td>
+			<td class="layui-td-gray">入职日期</td>
+			<td>
+				{$detail.entry_time | date='Y-m-d'}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工类型</td>
+			<td>
+				{eq name="$detail.type" value="3"}<span style="color:#5FB878">实 习 生</span>{/eq}
+				{eq name="$detail.type" value="2"}<span style="color:#01AAED">试用员工</span>{/eq}
+				{eq name="$detail.type" value="1"}<span style="color:#393D49">正式员工</span>{/eq}
+			</td>
+			<td class="layui-td-gray2">最后登录时间</td>
+			<td>
+				{$detail.last_login_time}
+			</td>
+			<td class="layui-td-gray">最后登录IP</td>
+			<td>
+				{$detail.last_login_ip}
+			</td>
+			<td class="layui-td-gray2">累计登录次数</td>
+			<td>
+				{$detail.login_num}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工简介</td>
+			<td colspan="7">
+				{$detail.desc}
+			</td>
+		</tr>
+	</table>
+	<h3 class="h3-title2">用户权限</h3>
+	<table class="layui-table layui-table-form">
+		{volist name="role_rule" id="vo"}
+		<tr>
+			<td style="font-weight:800">
+			  <input type="checkbox" disabled value="{$vo.id}" title="{$vo.title}" {eq name="$vo.checked" value="true" }checked{/eq}>
+			</td>
+			{notempty name="vo.children"}
+				<td>
+					<div style="padding:0 0 0 10px;">
+					{volist name="vo.children" key="k" id="voo"}
+						<div class="checkbox16" style="padding:10px 0;">
+							<input type="checkbox" disabled lay-filter="rule" name="rule[]" value="{$voo.id}" lay-skin="primary" title="{$voo.title}" {eq name="$voo.checked" value="true" }checked{/eq}>
+						</div>
+						{notempty name="voo.children"}
+							<div style="padding:0 0 3px; {if condition='$k != count($vo.children)'}margin-bottom:3px; padding-bottom:16px; border-bottom:1px solid #eee;{/if}">
+							{volist name="voo.children" id="vooo"}
+								<div class="layui-input-inline" style="margin-right:10px;">
+									<input type="checkbox" disabled data-rule="{$voo.id}" name="rule[]" value="{$vooo.id}" lay-skin="primary" title="{$vooo.title}" {eq name="$vooo.checked" value="true" }checked{/eq}>
+								</div>
+							{/volist}
+							</div>
+						{/notempty}
+					{/volist}
+					</div>
+				</td>
+			{/notempty}
+		</tr>
+		{/volist}
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			form = layui.form;
+		//监听返回
+		$('.body-content').on('click', '[lay-event="back"]', function () {
+			//TAB.sonDelete();
+			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			parent.layer.close(index);//关闭弹出的子页面窗口
+			return false;
+		});
+	}
+	
+	//重设密码
+	function resetPsw(id){
+		layer.confirm('确定要重设该用户的密码？', {
+			icon: 3,
+			title: '提示'
+		}, function (index) {
+			$.ajax({
+				url: "/user/admin/reset_psw",
+				data: {
+					id: id
+				},
+				success: function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						setTimeout(function(){
+							location.reload();
+						},2000);
+					}							
+				}
+			})
+			layer.close(index);
+		});
+	}
+	
+	//拷贝密码
+	function copyToClip(content) {
+		if (navigator.clipboard) {
+			navigator.clipboard.writeText(content);
+		} else {
+			var copy_textarea = document.createElement('textarea');
+			copy_textarea.style.position = 'fixed';
+			copy_textarea.style.clip = 'rect(0 0 0 0)';
+			copy_textarea.style.top = '10px';
+			copy_textarea.value = content;
+			document.body.appendChild(copy_textarea);
+			copy_textarea.select();
+			document.execCommand('copy', true);
+			document.body.removeChild(copy_textarea);
+		}
+		if (content != '') {
+			layer.msg('复制成功');
+		}
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

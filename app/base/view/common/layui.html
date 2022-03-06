@@ -1,0 +1,23 @@
+	<script src="{__LAYUI__}/layui.js?v={:get_system_config('web','version')}"></script>
+	<script>
+		var base="{__LAYUI__}/plugin/";
+		{if condition=" '[base]'!=='base' "}
+			base=[base];
+		{/if}
+		var extendArray=[extend];
+		var callback=[callback];
+		var extend={};
+		if(extendArray){
+			if(extendArray.length>0){
+				for(var i=0;i<extendArray.length;i++){
+					extend[extendArray[i]]=extendArray[i];
+				}
+			}
+		}
+		layui.config({
+		  base: base,
+		  version:"{:get_system_config('web','version')}"
+		}).extend(extend).use(extendArray, function(){
+			callback(layui);
+		});
+	</script>

@@ -1,0 +1,91 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">汇报详情</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">汇报类型</td>
+			<td>{$detail.type_title}</td>
+			<td class="layui-td-gray">汇报人</td>
+			<td>{$detail.person_name}</td>
+			<td class="layui-td-gray">汇报时间</td>
+			<td>{$detail.send_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">接收人</td>
+			<td colspan="5">{$detail.users}</td>
+		</tr>
+		{notempty name="$detail.read_users"}
+		<tr>
+			<td class="layui-td-gray">已读回执</td>
+			<td colspan="5">{$detail.read_users}</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">工作内容</td>
+			<td colspan="5">
+				{$detail.works}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">工作计划</td>
+			<td colspan="5">
+				{$detail.plans}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">其他事项</td>
+			<td colspan="5">
+				{$detail.remark}
+			</td>
+		</tr>
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">相关附件</td>
+			<td colspan="5">
+				<table class="layui-table" style="max-width: 800px;">
+					<thead>
+					  <tr>
+					  <th width="70%">文件名</th>
+					  <th width="20%" style="text-align:center">文件大小</th>
+					  <th width="10%" style="text-align:center">操作</th>
+					</tr>
+					</thead>
+					<tbody>							
+						{volist name="detail.file_array" id="vo"}
+							<tr>
+								<td>{$vo.name}</td>
+								<td style="text-align: center;">{$vo.filesize/1048576|round=2}MB</td>
+								<td style="text-align: center;"><a class="layui-btn layui-btn-xs layui-btn-normal" href="{$vo.filepath}" target="_blank">下载</a></td>
+							</tr>
+						{/volist}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{gt name="$detail.update_time" value="0"}
+	<div style="color:#999; padding:10px 0">该汇报于 {$detail.update_time_str} 进行过编辑</div>
+	{/gt}
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+		function init(layui){
+		//监听返回
+		$('.body-content').on('click','[lay-event="back"]',function () {
+			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			parent.layer.close(index);//关闭弹出的子页面窗口
+			return false;
+		});
+	}
+		
+	</script>
+	{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

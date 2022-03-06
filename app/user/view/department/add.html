@@ -1,0 +1,101 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">部门架构</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">部门名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入部门名称" lay-reqText="请输入部门名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">上级部门<font>*</font></td>
+			<td>
+				<select name="pid" lay-verify="required" lay-reqText="请选择上级部门">
+					<option value="0">作为顶级部门</option>
+					{volist name="department" id="v"}
+					<option value="{$v.id}" {eq name="$pid" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">部门联系电话</td>
+			<td colspan="3">
+				<input type="text" name="phone" placeholder="请输入部门联系电话，可空" autocomplete="off" class="layui-input">
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">部门名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入部门名称" lay-reqText="请输入部门名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">上级部门<font>*</font></td>
+			<td>
+				<select name="pid" lay-verify="required" lay-reqText="请选择上级部门">
+					<option value="0">作为顶级部门</option>
+					{volist name="department" id="v"}
+					<option value="{$v.id}" {eq name="$detail.pid" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">部门负责人</td>
+			<td>
+				<select name="leader_id">
+					<option value="0">请选择部门负责人</option>
+					{volist name="users" id="v"}
+					<option value="{$v.id}" {eq name="detail.leader_id" value="$v.id"} selected{/eq}>{$v.name}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray2">部门联系电话</td>
+			<td>
+				<input type="text" name="phone" value="{$detail.phone}" placeholder="请输入部门联系电话，可空" autocomplete="off" class="layui-input">
+			</td>
+		</tr>
+	</table>
+	{/eq}
+	<div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form,
+			layer = layui.layer;
+
+		//监听提交
+		form.on('submit(webform)', function(data) {
+			$.ajax({
+				url: "/user/department/add",
+				type: 'post',
+				data: data.field,
+				success: function(e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function(){
+							parent.location.reload();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

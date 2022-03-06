@@ -1,0 +1,273 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__LAYUI__}/plugin/formSelects/formSelects-v4.css">
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
+<style>
+.layui-form-pane .layui-form-label{color:#999; width:80px; padding:8px 3px;}
+.layui-form-item .layui-inline{margin-right:3px; margin-bottom:10px;}
+.layui-form-item{margin-bottom:5px;}
+.layui-form-item .layui-btn-danger{display:none; margin-top:-8px}
+.layui-form-item:hover .layui-btn-danger{display:inline-block;}
+.select-1,.select-2{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">付款申请审批</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray2">付款金额<font>*</font></td>
+			<td><input type="text" name="amount" value="" autocomplete="off" placeholder="请输入付款金额" lay-verify="required|number" lay-reqText="请输入付款金额" class="layui-input"></td>
+			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td>
+				<select name="detail_type" lay-verify="required" lay-reqText="请选择">
+				  <option value="">--请选择--</option>
+					<option value="1">银行卡</option>
+					<option value="2">现金</option>
+					<option value="3">汇票</option>
+					<option value="4">电汇</option>
+					<option value="5">贷记</option>
+					<option value="6">支票</option>
+					<option value="7">其他</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">付款日期 <span style="color: red">*</span></td>
+			<td>
+				<input id="detail_time" name="detail_time" autocomplete="off" readonly class="layui-input" value="" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">收款人全称<font>*</font></td>
+			<td><input type="text" name="name" value="" autocomplete="off" placeholder="请输入收款人全称" lay-verify="required" lay-reqText="请输入收款人全称" class="layui-input"></td>
+			<td class="layui-td-gray">银行账号<font>*</font></td>
+			<td><input type="text" name="bank" value="" autocomplete="off" placeholder="请输入银行账号" lay-verify="required|number" lay-reqText="请输入银行账号" class="layui-input"></td>
+			<td class="layui-td-gray">开户行 <span style="color: red">*</span></td>
+			<td>
+				<input name="address" autocomplete="off" class="layui-input" value="" lay-verify="required" placeholder="请输入开户行" lay-reqText="请输入开户行">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">付款事由<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入申请事由" class="layui-textarea" lay-verify="required" lay-reqText="请输入申请事由"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注</td>
+			<td colspan="5">
+				<textarea name="remark" placeholder="请输入备注" class="layui-textarea"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="5">
+				<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
+				<option value="">--请选择--</option>
+				{volist name="flows" id="vo"}
+				  <option value="{$vo.id}" title="{$vo.check_type}">{$vo.name}</option>
+				{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr id="flow_tr">
+			<td class="layui-td-gray">审核人<font>*</font></td>
+			<td colspan="5">
+				<input type="hidden" name="check_admin_ids" value="" readonly><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input" readonly>
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray2">付款金额<font>*</font></td>
+			<td><input type="text" name="amount" value="{$detail.amount}" autocomplete="off" placeholder="请输入费用金额" lay-verify="required|number" lay-reqText="请输入费用金额" class="layui-input"></td>
+			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td>
+				<select name="detail_type" lay-verify="required" lay-reqText="请选择">
+				  <option value="">--请选择--</option>
+					<option value="1" {eq name="$detail.detail_type" value="1"}selected=""{/eq}>银行卡</option>
+					<option value="2" {eq name="$detail.detail_type" value="2"}selected=""{/eq}>现金</option>
+					<option value="3" {eq name="$detail.detail_type" value="3"}selected=""{/eq}>汇票</option>
+					<option value="4" {eq name="$detail.detail_type" value="4"}selected=""{/eq}>电汇</option>
+					<option value="5" {eq name="$detail.detail_type" value="5"}selected=""{/eq}>贷记</option>
+					<option value="6" {eq name="$detail.detail_type" value="6"}selected=""{/eq}>支票</option>
+					<option value="7" {eq name="$detail.detail_type" value="7"}selected=""{/eq}>其他</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">付款日期 <span style="color: red">*</span></td>
+			<td>
+				<input id="detail_time" name="detail_time" autocomplete="off" class="layui-input" value="{$detail.detail_time}" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">收款人全称<font>*</font></td>
+			<td><input type="text" name="name" value="{$detail.name}" autocomplete="off" placeholder="请输入收款人全称" lay-verify="required" lay-reqText="请输入收款人全称" class="layui-input"></td>
+			<td class="layui-td-gray">银行账号<font>*</font></td>
+			<td><input type="text" name="bank" value="{$detail.bank}" autocomplete="off" placeholder="请输入银行账号" lay-verify="required|number" lay-reqText="请输入银行账号" class="layui-input"></td>
+			<td class="layui-td-gray">开户行 <span style="color: red">*</span></td>
+			<td>
+				<input name="address" autocomplete="off" class="layui-input" value="{$detail.address}" lay-verify="required" placeholder="请输入开户行" lay-reqText="请输入开户行">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">付款事由<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入付款事由" class="layui-textarea" lay-verify="required" lay-reqText="请输入付款事由">{$detail.content}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注</td>
+			<td colspan="5">
+				<textarea name="remark" placeholder="请输入备注" class="layui-textarea">{$detail.remark}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="5">
+				<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
+				<option value="">--请选择--</option>
+				{volist name="flows" id="vo"}
+				  <option value="{$vo.id}" title="{$vo.check_type}">{$vo.name}</option>
+				{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr id="flow_tr">
+			<td class="layui-td-gray">审核人<font>*</font></td>
+			<td colspan="5">
+				<input type="hidden" name="check_admin_ids" value="" readonly><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input" readonly>
+			</td>
+		</tr>
+	</table>
+	{/eq}
+	<div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$id}">
+		<input type="hidden" name="type" value="{$type}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui){
+		var form = layui.form
+		,laydate = layui.laydate
+		,employeepicker = layui.employeepicker
+		,layer = layui.layer;
+		  
+		//日期时间范围
+		laydate.render({
+			elem: '#detail_time',
+			type: 'date',
+			format: 'yyyy-MM-dd',
+			showBottom: false
+		});
+		
+		//选择人员		
+		$('.layui-form').on('click','[name="check_admin_name"]',function(){
+			if($('[name="flow_id"]').val()==''){
+				layer.msg('请先选择审批流程');
+				return false;
+			}
+			employeepicker.init({
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				type:0,
+				callback:function(ids,names){
+					$('[name="check_admin_ids"]').val(ids),
+					$('[name="check_admin_name"]').val(names);
+				}
+			});
+		})
+		  
+		//监听提交
+		form.on('submit(webform)', function(data){
+			console.log(data.field);
+			//return false;
+			$.ajax({
+				url: "/oa/approve/add",
+				type:'post',
+				data:data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {	
+						parent.tableIns.reload();
+						setTimeout(function(){							
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+		
+		form.on('select(flowtype)', function(data){
+			var check_type = data.elem[data.elem.selectedIndex].title;
+			var formHtml='<td class="layui-td-gray">审核人<font>*</font></td>\
+			<td colspan="5">\
+				<input type="hidden" name="check_admin_ids" value="" readonly><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input" readonly>\
+			</td>';
+			if(check_type == 2){
+				$('#flow_tr').html(formHtml);
+				form.render();
+			}
+			else{
+				$.ajax({
+					url: "/api/index/get_flow_users",
+					type:'post',
+					data:{id:data.value},
+					success: function (e) {
+						if (e.code == 0) {
+							var flowLi='';
+							for(var a=0;a<e.data.length;a++){
+								var userList='',sign_type = '';
+								if(e.data[a].flow_type==1){
+									userList+= '<li style="padding:3px 0">当前部门负责人</li>';
+								}
+								else if(e.data[a].flow_type==2){
+									userList+= '<li style="padding:3px 0">上级部门负责人</li>';
+								}
+								else{
+									if(e.data[a].flow_type==3){
+										sign_type= ' <span class="layui-badge layui-bg-blue">或签</span>'
+									}
+									if(e.data[a].flow_type==4){
+										sign_type= ' <span class="layui-badge layui-bg-blue">会签</span>'
+									}
+									for(var b=0;b<e.data[a].user_id_info.length;b++){
+										userList+= '<li style="padding:3px 0"><img src="'+e.data[a].user_id_info[b].thumb+'" style="width:24px; height:24px; border-radius:50%; margin-right:8px;" />'+e.data[a].user_id_info[b].name+'</li>';
+									}
+								}
+								flowLi+='<li class="layui-timeline-item">\
+									<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
+									<div class="layui-timeline-content">\
+									  <p class="layui-timeline-title"><strong>第'+(a+1)+'级审批</strong>'+sign_type+'</p>\
+									  <ul>'+userList+'</ul>\
+									</div>\
+								</li>';
+							}
+							
+							formHtml = '<td class="layui-td-gray">审批流程</td>\
+										<td colspan="5">\
+											<ul id="flowList" class="layui-timeline">'+flowLi+'</ul>\
+										</td>';
+							$('#flow_tr').html(formHtml);
+						}
+					}
+				})
+			}
+
+		});	
+		
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['formSelects','employeepicker']" callback="init" /}
+{/block}
+<!-- /脚本 -->

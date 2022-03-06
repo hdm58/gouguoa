@@ -1,0 +1,51 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="page-content">
+	<h3 class="h3-title">公告详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">公告标题</td>
+			<td>{$note.title}</td>
+			<td class="layui-td-gray2">公告分类</td>
+			<td>
+				{volist name=":set_recursion(note_cate())" id="v"}
+					{eq name="$note.cate_id" value="$v.id" }{$v.title}{/eq}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">公告展示期间</td>
+			<td>{$note.start_time | date='Y-m-d'} - {$note.end_time | date='Y-m-d'}</td>
+			<td class="layui-td-gray2">状态</td>
+			<td>
+				{eq name="$note.status" value="1" }正常{/eq}
+				{eq name="$note.status" value="0" }禁用{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联链接</td>
+			<td>{$note.src}</td>
+			<td class="layui-td-gray">排序</td>
+			<td>{$note.sort}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top;">公告内容</td>
+			<td colspan="3">{$note.content|raw}</td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+function init(layui) {
+
+}
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

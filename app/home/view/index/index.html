@@ -1,0 +1,168 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__LAYUI__}/font/extend/iconfont.css?v={:get_system_config('web','version')}">
+<link rel="stylesheet" href="{__CSS__}/gougucms.css?v={:get_system_config('web','version')}">
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="layui-layout-body">
+	<div class="layui-layout layui-layout-admin">
+		<div class="layui-header">
+			<div class="layui-logo" ittab-home><img src="{__IMG__}/syslogo.png" width="166" alt="{:get_system_config('web','admin_title')}" /></div>
+			<ul class="layui-layout-right">
+				<li class="layui-nav-item" lay-unselect>
+					<a href="javascript:;" ittab-refresh class="refreshThis" id="ittab-refresh" title="刷新当前页">
+						<i class="layui-icon layui-icon-refresh"></i>
+					</a>
+				</li>
+				<li class="layui-nav-item" lay-unselect>
+					<a href="javascript:;" ittab-notice class="noticeThis menu-active" data-src="/message/index/inbox" id="ittab-refresh" data-title="已收消息" title="消息通知">
+						<i class="layui-icon layui-icon-notice"></i>
+					</a>
+					<div id="msgNum" class="msg-num"><a data-title="已收消息" class="menu-active" data-src="/message/index/inbox" title="未读消息">0</a></div>
+				</li>
+				<li class="layui-nav-item" lay-unselect>
+					<a href="javascript:;" ittab-logout title="{:get_login_admin('nickname')}-点击退出登录">
+						<img src="{:get_login_admin('thumb')}" class="layui-nav-img" onerror="javascript:this.src='{__IMG__}/nonepic360x360.jpg';this.onerror=null;">
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="layui-side menulist-bg-gray">
+			<div class="menulist">
+				<div class="menulist-top">
+					<a href="/" title="返回首页" style="background-color: #E94335"><i class="layui-icon layui-icon-home"></i></a><a href="javascript:;" title="修改个人信息" style="background-color:#fbbc05" data-title="修改个人信息" data-id="10000" data-src="/api/index/edit_personal" class="menu-active"><i class="layui-icon layui-icon-username"></i></a><a href="javascript:;" title="修改密码" data-id="100001" style="background-color:#4285f4" data-title="修改密码" data-src="/api/index/edit_password" class="menu-active"><i class="layui-icon layui-icon-password"></i></a><a href="javascript:;" ittab-del-cache id="ittab-del-cache" style="margin-top:2px;" title="清空缓存" style="background-color:#12bb37"><i class="layui-icon layui-icon-fonts-clear"></i></a>
+				</div>
+				
+				<ul class="layui-nav layui-nav-tree layui-inline" lay-shrink="all">
+					{foreach name="menu" item="a"}
+						<li class="layui-nav-item">
+							<a href="javascript:;" class="menu-active" data-id="{$a.id}" data-title="{$a.title}" data-src="/{$a.src}"><i class="iconfont {$a.icon}"></i> {$a.title}</a>
+							{notempty name="$a.list"}
+								<dl class="layui-nav-child">
+								{foreach name="$a.list" item="b"}
+									<dd>
+									<a href="javascript:;" class="menu-active menu-b" data-id="{$b.id}" data-title="{$b.title}" data-src="/{$b.src}">{$b.title}</a>
+									{notempty name="$b.list"}
+										<dl class="layui-nav-child">
+										{foreach name="$b.list" item="c"}
+											<dd>
+											<a href="javascript:;" class="menu-active menu-c" data-id="{$c.id}" data-title="{$c.title}" data-src="/{$c.src}">{$c.title}</a>
+											{notempty name="$c.list"}
+												<dl class="layui-nav-child">
+												{foreach name="$c.list" item="d"}
+													<dd><a href="javascript:;" class="menu-active menu-d" data-id="{$d.id}" data-title="{$d.title}" data-src="/{$d.src}">{$d.title}</a></dd>
+												{/foreach}
+												</dl>
+											{/notempty}
+											</dd>
+										{/foreach}
+										</dl>
+									{/notempty}
+									</dd>
+								{/foreach}
+								</dl>
+							{/notempty}
+						</li>			
+					{/foreach}
+				</ul>
+			</div>
+		</div>
+
+		<div class="layui-body">
+			<div class="layui-tab layui-tab-brief gougu-admin-tab" lay-filter="gougu-admin-tab" lay-unauto="" lay-allowClose="true" style="height: 100%;">
+				<ul class="layui-tab-title">
+					<li class="layui-this ittab-tab-home" lay-id="0">首页</li>
+				</ul>
+				<div class="layui-icon layui-icon-prev" id="left_button" title="向左滚动菜单"></div>
+				<div class="layui-icon layui-icon-next" id="right_button" title="向右滚动菜单"></div>
+				<div class="layui-tab-content" style="height: 100%;">
+					<div class="layui-tab-item layui-show">
+						<iframe id="0" data-frameid="0" name="myiframe" src="/home/index/main" frameborder="0" align="left" width="100%" height="100%" scrolling="yes"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- /主体 -->
+{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var msgStatus=0,isClose=0,msgNum = 0;
+	function init(layui) {
+		var layer = layui.layer;
+		$("[ittab-logout]").on("click", function () {
+			layer.confirm('确认注销登录吗?', { icon: 7, title: '警告' }, function (index) {
+				//注销
+				$.ajax({
+					url: "/home/login/login_out",
+					success: function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							setTimeout(function () {
+								location.href = "/home/login/index"
+							}, 1000)
+						}
+					}
+				})
+				layer.close(index);
+			});
+		});
+	};
+	//轮循获取消息
+	var getStatus = setInterval(function () {
+		$.ajax({
+			url: "/home/index/index",
+			type:'post',
+			success:function(e){
+				if(e.code==0 && e.data!=''){
+					if(e.data.msg_num>0){
+						$('#msgNum').show().find('a').html(e.data.msg_num);
+					}
+					else{
+						$('#msgNum').hide().find('a').html(0);
+					}
+					if(isClose==0){
+						var html = '<ul id="messageul" style="line-height:24px;">';						
+						$.each(e.data, function(key, value) {
+							if(key!='msg_num'){
+								html += '<li style="cursor:pointer;">'+value+'</li>';
+							}							
+						});
+						html +='</ul>'; 
+						if(msgStatus==1){
+							$('#msgBox').html(html);
+						}else{
+							layer.open({
+								type: 1
+								,title:'消息提醒'
+								,offset: 'rb'
+								,area:['240px','168px']
+								,content: '<div id="msgBox" style="padding:10px 15px;">'+html+'</div>'
+								,btnAlign: 'c' //按钮居中
+								,shade: 0 //不显示遮罩
+								,success:function(){
+									msgStatus=1;
+								}
+								,cancel:function(){
+									msgStatus=0;
+									isClose=1;
+								}
+							});
+						}
+					}
+				}else{
+					msgStatus=0;
+					layer.closeAll();
+				}
+			}
+		})
+	}, 10000);
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['gougucms']" callback="init" /}
+{/block}
+<!-- /脚本 -->

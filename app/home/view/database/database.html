@@ -1,0 +1,152 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-group">
+		<span class="layui-btn layui-btn-sm layui-btn-normal" lay-event="backup">数据备份</span><span class="layui-btn layui-btn-sm" lay-event="optimize">数据优化</span><span class="layui-btn layui-btn-danger layui-btn-sm" lay-event="repair">数据修复</span>
+  	</div>
+	<span id="dataTips" style="font-size:12px; margin-left:10px"></span>  
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var table = layui.table,
+			form = layui.form;
+
+		var tableIns = table.render({
+			elem: '#test',
+			title: '数据备份',
+			toolbar: '#toolbarDemo',
+			url: "/home/database/database", //数据接口
+			page: false,
+			cols: [
+				[ //表头
+					{type: 'checkbox'},
+					{
+						field: 'name',
+						title: '数据表',
+						width: 220
+					}, {
+						field: 'engine',
+						title: '存储引擎',
+						align: 'center',
+						width: 90
+					}, {
+						field: 'row_format',
+						title: '行格式',
+						align: 'center',
+						width: 90
+					}, {
+						field: 'rows',
+						title: '行数',
+						align: 'center',
+						width: 100,
+					}, {
+						field: 'data_size',
+						title: '字节数',
+						align: 'center',
+						width: 120
+					}, {
+						field: 'data_length',
+						title: '数据大小',
+						align: 'center',
+						width: 120
+					}, {
+						field: 'comment',
+						title: '数据表注释'
+					}, {
+						field: 'create_time',
+						title: '创建时间',
+						width: 160,
+						align: 'center'
+					}
+				]
+			],
+			done:function(res, curr, count){
+				$('#dataTips').html(res.msg);
+			}
+		});
+
+		//监听行工具事件
+		table.on('toolbar(test)', function (obj) {
+			var checkData = table.checkStatus(obj.config.id).data;
+			var len = checkData.length;
+			var ids='';
+			if(len==0){
+				layer.msg('请先选择表');
+				return false;
+			}
+			for(var i=0;i<len;i++){
+				if(i==0){
+					ids+=checkData[i].name;
+				}
+				else{
+					ids+=','+checkData[i].name;
+				}			   
+			}
+			if (obj.event === 'backup') {
+				layer.confirm('确认要备份选中的'+len+'个数据表吗?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					$.ajax({
+						url: "/home/database/backup",
+						data: {'id':ids},
+						success: function (res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}else if (obj.event === 'optimize') {
+				layer.confirm('确认要优化选中的'+len+'个数据表吗?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					$.ajax({
+						url: "/home/database/optimize",
+						data: {'id':ids},
+						success: function (res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}else if (obj.event === 'repair') {
+				layer.confirm('确认要修复选中的'+len+'个数据表吗?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					$.ajax({
+						url: "/home/database/repair",
+						data: {'id':ids},
+						success: function (res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

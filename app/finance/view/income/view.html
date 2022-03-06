@@ -1,0 +1,344 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.check-items{overflow-x: auto; padding: 10px 0;}
+.flow-flex-row {box-direction: row;
+	box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+}
+.flow-flexbox { width: 100%;text-align: left;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    display: -webkit-flex;
+    box-align: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+.check-item{width: auto; -ms-flex-negative: 0; flex-shrink: 0;}
+.check-item i{font-size:20px; margin-right:3px; color:#4285f4;}
+.check-item span{color:#999;margin:0 3px;}
+.layui-icon[data-ok]{color:#34a853}
+.layui-icon[data-no]{color:#FF5722;}
+.check-item-status{color:#999; font-size:12px; margin-left:3px;}
+
+.flow-tips{padding:6px 10px;}
+.flow-tips li{padding:5px 0;}
+.flow-tips li i{color:#4285f4;}
+.flow-tips li span{color:#999; font-size:12px; margin-left:4px;}
+
+.flow-record{padding:10px 10px 0;}
+.flow-record .layui-icon {font-size:20px;}
+.flow-record .layui-timeline-item{padding-bottom:10px;}
+.layui-timeline-content ul{font-size:12px;}
+.check-status{color:#999; margin-left:5px;}
+.check-remark{padding:6px; margin-top:6px; margin-bottom:10px; border-radius:4px; background-color:#f5f5f5;}
+
+.layui-table-min th{font-size:13px; text-align:center; background-color:#f8f8f8;}
+.layui-table-min td{font-size:13px; padding:6px;text-align:center;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="page-content">
+	<h3 class="h3-title">发票信息</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">发票金额(元)</td>
+			<td>
+				{$detail.amount}
+			</td>
+			<td class="layui-td-gray">发票类型</td>
+			<td>
+			{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
+			{eq name="$detail.invoice_type" value="2"}增值税普通发票{/eq}
+			</td>
+			<td class="layui-td-gray">发票主体</td>
+			<td>
+				{volist name=":finance_invoice_subject()" id="vo"}
+				{eq name="$vo.id" value="$detail.invoice_subject"}{$vo.title}{/eq}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">抬头类型</td>
+			<td>
+				{eq name="$detail.type" value="1"}企业{/eq}
+				{eq name="$detail.type" value="2"}个人{/eq}
+			</td>
+			<td class="layui-td-gray">发票抬头</td>
+			<td>{$detail.invoice_title}</td>
+			<td class="layui-td-gray">电话号码</td>
+			<td>{$detail.invoice_phone}</td>
+		</tr>
+		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
+			<td class="layui-td-gray2">纳税人识别号</td>
+			<td>{$detail.invoice_tax}</td>
+			<td class="layui-td-gray">开户行</td>
+			<td>{$detail.invoice_bank}</td>
+			<td class="layui-td-gray">银行账号</td>
+			<td>{$detail.invoice_account}</td>
+		</tr>
+		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
+			<td class="layui-td-gray2">银行营业网点</td>
+			<td>{$detail.invoice_banking}</td>
+			<td class="layui-td-gray">地址</td>
+			<td colspan="3">{$detail.invoice_address}</td>
+		</tr>
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">发票状态</td>
+			<td colspan="5">
+				{if condition="($detail.check_status == 0)"}
+					<span style="color:#009688">待审</span>
+				{elseif condition="($detail.check_status == 1)"}
+					<span style="color:#009688">审核中</span>
+				{elseif condition="($detail.check_status == 2)"}
+					<span style="color:#1E9FFF">审核通过,待开具</span>
+				{elseif condition="($detail.check_status == 3)"}
+					<span style="color:#FF5722">审核不通过  【原因：{$detail.check_remark}】</span>
+				{elseif condition="($detail.check_status == 4)"}
+					<span style="color:#FF5722">撤销  【原因：{$detail.check_remark}】</span>
+				{elseif condition="($detail.check_status == 5)"}
+					<span style="color:#1E9FFF">已开具</span>
+				{elseif condition="($detail.check_status == 10)"}
+					<span style="color:#FF5722">已作废</span>
+				{/if}
+				<span id="showRecord" class="layui-btn layui-btn-xs layui-btn-radius layui-btn-normal" style="margin-left:10px;">查看审批记录</span>
+			</td>
+		</tr>
+		{if condition="$detail.open_admin_id > 0"}
+		<tr>
+			<td class="layui-td-gray2">开票人</td>
+			<td>{$detail.open_admin}</td>
+			<td class="layui-td-gray2">开票时间</td>
+			<td>{$detail.open_time}</td>
+			<td class="layui-td-gray2">发票号码</td>
+			<td>{$detail.code}</td>
+		</tr>
+		{/if}
+	</table>
+	
+	<h3 class="h3-title2">到账信息</h3>
+	<form class="layui-form">
+		<table class="layui-table">
+			<tr>
+				<td class="layui-td-gray">到账状态</td>
+				<td>
+					{if condition="($detail.is_cash == 0)"}
+						<span style="color:#FF5722">未到账</span>
+					{elseif condition="($detail.is_cash == 1)"}
+						<span style="color:#1E9FFF">部分到账</span>
+					{elseif condition="($detail.is_cash == 2)"}
+						<span style="color:#009688">全部到账</span>
+					{/if}
+				</td>
+				<td class="layui-td-gray2">未到账金额(元)</td>
+				<td style="color:#FF5722">{$detail.not_income}</td>
+				<td class="layui-td-gray2">已到账金额(元)</td>
+				<td style="color:#1E9FFF">{$detail.enter_amount}</td>
+			</tr>
+			<tr>
+				<td class="layui-td-gray">到账记录</td>
+				<td colspan="5">
+					<table class="layui-table layui-table-min">
+						<tr>
+							<th style="width:150px;">到账日期</th>
+							<th style="width:150px;">到帐金额(元)</th>
+							<th>备注</th>
+							<th style="width:100px;">登记人</th>
+							<th style="width:150px;">登记时间</th>
+						</tr>
+						{empty name="$detail.income"}
+						<tr class="none_interfix">
+							<td colspan="5" style="text-align: center;">暂无到账记录</td>
+						</tr>
+						{else/}
+						{volist name="$detail.income" id="vo"}
+						<tr class="more_interfix">
+							<td>{$vo.enter_time | date='Y-m-d'}</td>
+							<td>{$vo.amount}</td>
+							<td style="text-align:left;">{$vo.remarks}</td>
+							<td>{$vo.admin}</td>
+							<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						</tr>
+						{/volist}
+						{/empty}
+					</table
+				</td>
+			</tr>
+		</table>
+	</form>
+	<input type="hidden" name="id" value="{$detail.id}">
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+function init(layui) {
+	var dropdown = layui.dropdown;
+	//获取审核信息
+	$.ajax({
+		url: "/api/index/get_flow_nodes",
+		type:'post',
+		data:{id:$('[name="id"]').val(),type:3},
+		success: function (e) {
+			if (e.code == 0) {	
+				console.log(e);
+				let flowHtml='',list = e.data,record_list='';
+				for(var f=0;f<list.length;f++){
+					//审批流程
+					let checkUser = '',
+					iconRight ='<span class="layui-icon layui-icon-right"></span>',
+					iconStatus ='<i class="layui-icon layui-icon-time"></i>',
+					strStatus ='<div class="check-item-status">待审核</div>';
+					if(f == list.length-1){
+						iconRight ='';
+					}
+					if(list[f].flow_type == 1 || list[f].flow_type == 2){
+						checkUser=list[f].flow_type == 1?'部门负责人':'上级部门负责人';
+						if(list[f].check_list.length>0){
+							if(list[f].check_list[0].status == 1){
+								iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+								strStatus ='<div class="check-item-status">通过</div>';
+							}
+							else if(list[f].check_list[0].status == 2){
+								iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+								strStatus ='<div class="check-item-status">拒绝</div>';
+							}
+						}
+					}
+					else if(list[f].flow_type == 0 ){
+						checkUser=list[f].user_id_info[0].name;
+						if(list[f].check_list.length>0){
+							iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+							strStatus ='<div class="check-item-status">拒绝</div>';
+							for(var m=0;m<list[f].check_list.length;m++){
+								if(list[f].check_list[m].status == 1){
+									iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+									strStatus ='<div class="check-item-status">通过</div>';
+								}
+							}
+						}
+					}
+					else if(list[f].flow_type == 3 ){
+						checkUser='多人或签';
+						if(list[f].user_id_info.length>0){
+							iconStatus ='<i class="layui-icon layui-icon-time"></i>';
+							strStatus ='<div class="check-item-status">待审核</div>';
+							for(var m=0;m<list[f].user_id_info.length;m++){
+								if(list[f].user_id_info[m].status == 1){
+									iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+									strStatus ='<div class="check-item-status">通过</div>';
+									break;
+								}
+								if(list[f].user_id_info[m].status == 2){
+									iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+									strStatus ='<div class="check-item-status">拒绝</div>';
+								}
+							}
+						}
+					}
+					else if(list[f].flow_type == 4){
+						checkUser='多人会签';
+						if(list[f].user_id_info.length>0){
+							iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+							strStatus ='<div class="check-item-status">通过</div>';
+							for(var m=0;m<list[f].user_id_info.length;m++){
+								if(list[f].user_id_info[m].status == 2){
+									iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+									strStatus ='<div class="check-item-status">拒绝</div>';
+									break;
+								}
+								if(list[f].user_id_info[m].status == 0){
+									iconStatus ='<i class="layui-icon layui-icon-time"></i>';
+									strStatus ='<div class="check-item-status">待审核</div>';
+								}
+							}
+						}
+					}
+					flowHtml+= '<div class="flow-flexbox check-item flow-flex-row" id="flow'+f+'">'+iconStatus+'\
+						<div class="check-item-name">'+checkUser+'</div>'+strStatus+iconRight+'\
+					</div>';
+					
+					
+					//审批历史数据						
+					var sign_type = '',user_check_list='';
+					if(list[f].check_list.length>0){
+						if(list[f].flow_type==3){
+							sign_type= ' <span class="layui-badge layui-bg-blue">或签</span>'
+						}
+						if(list[f].flow_type==4){
+							sign_type= ' <span class="layui-badge layui-bg-blue">会签</span>'
+						}
+						for(var b=0;b<list[f].check_list.length;b++){
+							var status_str = '通过了此申请';
+							if(list[f].check_list[b].status == 2){
+								status_str = '拒绝了此申请';
+							}
+							user_check_list+= '<li style="padding:3px 0"><img src="'+list[f].check_list[b].thumb+'" style="width:22px; height:22px; border-radius:50%; margin-right:8px;" />'+list[f].check_list[b].name+'<span class="check-status">'+list[f].check_list[b].check_time_str+status_str+'</span><div class="check-remark">'+list[f].check_list[b].content+'</div></li>';
+						}
+					
+						record_list+='<li class="layui-timeline-item">\
+									<i class="layui-icon layui-timeline-axis">&#x1005;</i>\
+									<div class="layui-timeline-content">\
+									  <p class="layui-timeline-title">第'+(f+1)+'级'+sign_type+'</p>\
+									  <ul>'+user_check_list+'</ul>\
+									</div>\
+								</li>';							
+					}
+				}
+				
+				$('#flowList').append(flowHtml);
+				if(record_list == ''){
+					record_list='<div style="text-align:center; color:#999; padding:10px 10px 20px;">无审批记录</div>';
+				}
+				dropdown.render({
+					elem: '#showRecord'
+					,trigger: 'click'
+					,content: ['<div class="flow-record">'
+					  ,'<ul>'+record_list+'</ul>'
+					,'</div>'].join('')
+				});
+				
+				for(var f=0;f<list.length;f++){
+					if(list[f].flow_type == 3 || list[f].flow_type == 4){
+						var user_list= '';
+						for(var a=0;a<list[f].user_id_info.length;a++){
+							if(list[f].user_id_info[a].status==0){
+								user_list+='<li><i class="layui-icon layui-icon-time"></i> '+list[f].user_id_info[a].name+'<span>待审核此申请</span></li>';
+							}
+							else if(list[f].user_id_info[a].status==1){
+								user_list+='<li><i class="layui-icon layui-icon-ok-circle" data-ok=""></i><span>'+list[f].user_id_info[a].check_time+'</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+list[f].user_id_info[a].name+'<span>已通过此申请</span></li>';
+							}else if(list[f].user_id_info[a].status==2){
+								user_list+='<li><i class="layui-icon layui-icon-close" data-no=""></i><span>'+list[f].user_id_info[a].check_time+'</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+list[f].user_id_info[a].name+'<span>已拒绝此申请</span></li>';
+							}										
+						}
+						dropdown.render({
+							elem: '#flow'+f
+							,trigger: 'hover'
+							,content: ['<div class="flow-tips">'
+							  ,'<ul>'+user_list+'</ul>'
+							,'</div>'].join('')
+						});
+					}
+				}					
+			}
+		}
+	})	 
+}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

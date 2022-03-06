@@ -1,0 +1,242 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	{if condition="$id eq 0"}
+	<h3 class="h3-title">添加员工信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">员工姓名<font>*</font></td>
+			<td>
+				<input type="text" name="name" lay-verify="required" placeholder="请输入员工姓名" lay-reqText="请输入员工姓名" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">手机号码<font>*</font></td>
+			<td>
+				<input type="text" name="mobile" lay-verify="required" placeholder="可使用手机号码登录" lay-reqText="请输入手机" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">初始密码</td>
+			<td>
+				{$reg_pwd}
+				<input type="hidden" name="reg_pwd" value="{$reg_pwd}" lay-verify="required">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">入职日期<font>*</font></td>
+			<td>
+				<input type="text" id="entry_time" name="entry_time" readonly lay-verify="required" placeholder="请选择入职日期" lay-reqText="请选择入职日期" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">员工性别<font>*</font></td>
+			<td>
+				<input type="radio" name="sex" value="1" title="男">
+				<input type="radio" name="sex" value="2" title="女">
+			</td>
+			<td rowspan="3" class="layui-td-gray2">头像<br /><span style="font-size: 12px;">(如若不上传<br />系统将自动生成)</span></td>
+			<td rowspan="3" valign="top" style="width: 100px;">
+				<div class="layui-upload" style="width: 100px;">
+					<div class="layui-upload-list" id="demo1" style="width: 100%; height:100px; overflow: hidden;">
+						<img src="/static/home/images/nonepic600x600.jpg" height="100" style="max-width: 100%; width: 100%;" />
+						<input type="hidden" name="thumb" value="">
+					</div>
+					<button type="button" class="layui-btn layui-btn-normal" style="width: 100%;" id="test1">上传头像</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所在部门<font>*</font></td>
+			<td>
+				<select name="did" lay-verify="required" lay-reqText="请选择所属部门">
+					<option value="">请选择所属部门</option>
+					{volist name="department" id="v"}
+						<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">岗位职称<font>*</font></td>
+			<td>
+				<select name="position_id" lay-verify="required" lay-reqText="请选择岗位职称">
+					<option value="">请选择岗位职称</option>
+					{volist name="position" id="v"}
+						<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>				
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工类型<font>*</font></td>
+			<td colspan="3">
+				<input type="radio" name="type" value="3" title="实习">
+				<input type="radio" name="type" value="2" title="试用">
+				<input type="radio" name="type" value="1" title="正式">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">账号状态</td>
+			<td colspan="5">
+				<input type="radio" name="status" value="0" title="禁止登录">
+				<input type="radio" name="status" value="1" title="正常" checked>
+				<input type="radio" name="status" value="2" title="离职">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工简介</td>
+			<td colspan="7">
+				<textarea name="desc" placeholder="请输入员工简介" class="layui-textarea"></textarea>
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<h3 class="h3-title">编辑员工信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray2">员工姓名<font>*</font></td>
+			<td>
+				<input type="text" name="name" value="{$detail.name}" lay-verify="required" placeholder="请输入员工姓名" lay-reqText="请输入员工姓名" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">登录账号</td>
+			<td>
+				{$detail.username}
+			</td>
+			<td class="layui-td-gray2">初始密码</td>
+			<td>
+				{empty name="$detail.reg_pwd"}
+					密码已重置
+				{else/}
+					{$detail.reg_pwd}
+				{/empty}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">手机号码<font>*</font></td>
+			<td>
+				<input type="text" name="mobile" value="{$detail.mobile}" lay-verify="required" placeholder="可使用手机号码登录" lay-reqText="请输入手机" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">员工性别<font>*</font></td>
+			<td>
+				<input type="radio" name="sex" value="1" title="男" {eq name="$detail.sex" value="1"}checked{/eq}>
+				<input type="radio" name="sex" value="2" title="女" {eq name="$detail.sex" value="2"}checked{/eq}>
+			</td>
+			<td rowspan="3" class="layui-td-gray2">头像<br /><span style="font-size: 12px;">(如若不上传<br />系统将自动生成)</span></td>
+			<td rowspan="3" valign="top" style="width: 100px;">
+				<div class="layui-upload" style="width: 100px;">
+					<div class="layui-upload-list" id="demo1" style="width: 100%; height:100px; overflow: hidden;">
+						<img src="{$detail.thumb}" height="100" style="max-width: 100%; width: 100%;" />
+						<input type="hidden" name="thumb" value="{$detail.thumb}">
+					</div>
+					<button type="button" class="layui-btn layui-btn-normal" style="width: 100%;" id="test1">上传头像</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">所在部门<font>*</font></td>
+			<td>
+				<select name="did" lay-verify="required" lay-reqText="请选择所属部门">
+					<option value="">请选择所属部门</option>
+					{volist name="department" id="v"}
+						<option value="{$v.id}" {eq name="$v.id" value="$detail.did"}selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray2">岗位职称<font>*</font></td>
+			<td>
+				<select name="position_id" lay-verify="required" lay-reqText="请选择岗位职称">
+					<option value="">请选择岗位职称</option>
+					{volist name="position" id="v"}
+						<option value="{$v.id}" {eq name="$v.id" value="$detail.position_id"}selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>				
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">入职日期<font>*</font></td>
+			<td>
+				<input type="text" id="entry_time" value="{$detail.entry_time|time_format=###,'Y-m-d'}" name="entry_time" readonly lay-verify="required" placeholder="请选择入职日期" lay-reqText="请选择入职日期" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">员工类型<font>*</font></td>
+			<td>
+				<input type="radio" name="type" value="3" title="实习" {eq name="$detail.type" value="3"}checked{/eq}>
+				<input type="radio" name="type" value="2" title="试用" {eq name="$detail.type" value="2"}checked{/eq}>
+				<input type="radio" name="type" value="1" title="正式" {eq name="$detail.type" value="1"}checked{/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">账号状态</td>
+			<td colspan="5">
+				{eq name="$detail.status" value="0"}<span style="color:#FF5722">禁止登录</span>{/eq}
+				{eq name="$detail.status" value="1"}<span style="color:#009688">正常</span>{/eq}
+				{eq name="$detail.status" value="2"}<span style="color:#FFB800">已离职</span>{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">员工简介</td>
+			<td colspan="7">
+				<textarea name="desc" placeholder="请输入员工简介" class="layui-textarea">{$detail.desc}</textarea>
+			</td>
+		</tr>
+	</table>
+	{/if}
+
+
+	<div style="padding: 10px 0">
+		<input type="hidden" value="{$id}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			form = layui.form,
+			layer = layui.layer,
+			laydate = layui.laydate,
+			upload = layui.upload;
+
+		//日期选择
+		laydate.render({
+			elem: '#entry_time',
+			max:7,
+			showBottom: false
+		});
+		//头像上传
+		var uploadInst = upload.render({
+			elem: "#test1",
+			url: "/api/index/upload",
+			done: function (e) {
+				//如果上传失败
+				if (e.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				$('#demo1 input').attr('value', e.data.filepath);
+				$('#demo1 img').attr('src', e.data.filepath);
+			}
+		});
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			$.ajax({
+				url: "/user/user/add",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						parent.tableIns.reload();
+						setTimeout(function(){
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+	}
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

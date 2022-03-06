@@ -1,0 +1,122 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	{eq name="$id" value="0"}
+	<h3 class="h3-title">新增公告</h3>
+	{else/}
+	<h3 class="h3-title">编辑公告</h3>
+	{/eq}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">公告标题<font>*</font></td>
+			<td>
+				<input type="text" name="title" lay-verify="required" lay-reqText="请输入公告标题" placeholder="请输入公告标题" class="layui-input"
+			  {notempty name="$note.title" }value="{$note.title}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">公告分类<span style="color: red">*</span></td>
+			<td>
+				<select name="cate_id" lay-verify="required" lay-reqText="请选择分类">
+					<option value="">请选择分类</option>
+					{notempty name="$note.cate_id"}
+						{volist name=":set_recursion(note_cate())" id="v"}
+						<option value="{$v.id}" {eq name="$note.cate_id" value="$v.id" }selected{/eq}>{$v.title}</option>
+						{/volist}
+					{else/}
+						{volist name=":set_recursion(note_cate())" id="v"}
+						<option value="{$v.id}">{$v.title}</option>
+						{/volist}
+					{/notempty}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">公告展示期间<span style="color: red">*</span></td>
+			<td id="date">
+				<div class="layui-input-inline">
+					<input type="text" id="start_time" name="start_time" readonly lay-verify="required" lay-reqText="请选择公告展示开始时间" placeholder="请选择时间" class="layui-input" {notempty name="$note.start_time" }value="{$note.start_time | date='Y-m-d'}" {/notempty}>
+				</div>
+				-
+				<div class="layui-input-inline">
+					<input type="text" id="end_time" name="end_time" readonly lay-verify="required" lay-reqText="请选择公告展示结束时间" placeholder="请选择时间" class="layui-input" {notempty name="$note.end_time" }value="{$note.end_time | date='Y-m-d'}" {/notempty}>
+				</div>
+			</td>
+			<td class="layui-td-gray2">状态<span style="color: red">*</span></td>
+			<td>
+				{if condition="$id eq 0"}
+				<input type="radio" name="status" value="1" title="正常" checked>
+				<input type="radio" name="status" value="0" title="禁用">
+				{else/}
+				<input type="radio" name="status" value="1" title="正常" {eq name="$note.status" value="1" }checked{/eq}>
+				<input type="radio" name="status" value="0" title="禁用" {eq name="$note.status" value="0" }checked{/eq}>
+				{/if}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联链接</td>
+			<td>
+				<input type="text" name="src" placeholder="请输入链接" class="layui-input" {notempty
+			  name="$note.src" }value="{$note.src}" {/notempty}>
+			</td>
+			<td class="layui-td-gray">排序</td>
+			<td>
+				<input type="text" name="sort" placeholder="请输入排序，数字" class="layui-input" {notempty
+			  name="$note.sort" }value="{$note.sort}" {/notempty}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top;">公告内容<span style="color: red">*</span></td>
+			<td colspan="3">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" lay-verify="required" lay-reqText="请完善文章内容"
+            style="border:0;padding:0">{notempty name="$note.content" }{$note.content}{/notempty}</textarea>
+			</td>
+		</tr>
+	</table>
+
+	<div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$id}" />
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+function init(layui) {
+    var form = layui.form
+      , layer = layui.layer
+	  ,laydate = layui.laydate;
+
+	//日期范围
+	laydate.render({
+		elem: '#date',
+		range: ['#start_time', '#end_time']
+	});
+    //监听提交
+    form.on('submit(webform)', function (data) {
+		$.ajax({
+			url: "/note/index/add",
+			type: 'post',
+			data: data.field,
+			success: function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					parent.tableIns.reload();
+					setTimeout(function(){
+						parent.layui.rightpage.close();
+					},1000);
+				}
+			}
+		})
+		return false;
+    });
+}
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{include file="../../base/view/common/ueditor" id="container" name="content" width="776" height="400" toolbar="[]" /}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,159 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">功能菜单/节点</h3>
+	{if condition="$id eq 0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">父级菜单/节点<font>*</font></td>
+			<td>
+				<select name="pid" lay-verify="required" lay-reqText="请选择父级菜单/节点">
+					<option value="0">作为顶级菜单/节点</option>
+					{volist name=":set_recursion(admin_rule())" id="v"}
+					<option value="{$v.id}" {eq name="pid" value="$v.id" }selected="" {/eq}>{$v.title} </option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray2">所属功能模块<font>*</font></td>
+			<td>
+				<select name="module" lay-verify="required" lay-reqText="请选择所属功能模块">
+					<option value="">请选择</option>
+					{volist name=":admin_module()" id="v"}
+					<option value="{$v.name}">{$v.title} </option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">菜单/节点名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入菜单/节点名称" lay-reqText="请输入菜单/节点名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">菜单/节点URL</td>
+			<td>
+				<input type="text" name="src" placeholder="请输入菜单/节点URL，可空" autocomplete="off" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">操作日志名称<font>*</font></td>
+			<td>
+				<input type="text" name="name" lay-verify="required" placeholder="请输入操作日志名称" lay-reqText="请输入操作日志名称" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">是否是左侧菜单<font>*</font></td>
+			<td>
+				<input type="radio" name="menu" value="1" title="是">
+				<input type="radio" name="menu" value="2" title="不是">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">排序</td>
+			<td>
+				<input type="text" name="sort" value="0" placeholder="请输入数字，越小越靠前" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray3">图标</td>
+			<td>
+				<input type="text" name="icon" style="width:150px; display:inline" placeholder="请输入图标，可空" autocomplete="off" class="layui-input">	
+				如：icon-jichuguanli<a href="{__LAYUI__}/font/extend/demo_index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">父级菜单/节点<font>*</font></td>
+			<td>
+				<select name="pid" lay-verify="required" lay-reqText="请选择父级菜单/节点">
+					<option value="0">作为顶级节点</option>
+					{volist name=":set_recursion(admin_rule())" id="v"}
+					<option value="{$v.id}" {eq name="$detail.pid" value="$v.id" }selected="" {/eq}>{$v.title} </option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray2">所属功能模块<font>*</font></td>
+			<td>
+				<select name="module" lay-verify="required" lay-reqText="请选择所属功能模块">
+					<option value="">请选择</option>
+					{volist name=":admin_module()" id="v"}
+					<option value="{$v.name}" {eq name="$detail.module" value="$v.name" }selected="" {/eq}>{$v.title} </option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">菜单/节点名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入菜单/节点名称" lay-reqText="请输入菜单/节点名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">菜单/节点URL</td>
+			<td>
+				<input type="text" name="src" value="{$detail.src}" placeholder="请输入菜单/节点URL，可空" autocomplete="off" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">操作日志名称<font>*</font></td>
+			<td>
+				<input type="text" name="name" value="{$detail.name}" lay-verify="required" placeholder="请输入操作日志名称" lay-reqText="请输入操作日志名称" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">是否左侧菜单<font>*</font></td>
+			<td>
+				<input type="radio" name="menu" value="1" title="是" {eq name="$detail.menu" value="1"} checked{/eq}>
+				<input type="radio" name="menu" value="2" title="不是" {eq name="$detail.menu" value="2"} checked{/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">排序</td>
+			<td>
+				<input type="text" name="sort" value="{$detail.sort}" placeholder="请输入数字，越小越靠前" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray2">图标</td>
+			<td>
+				<input style="width:150px; display:inline" type="text" name="icon" value="{$detail.icon}" placeholder="请输入图标，可空" autocomplete="off" class="layui-input">			
+				如：icon-jichuguanli<a href="{__LAYUI__}/font/extend/demo_index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+		</tr>
+	</table>
+	{/if}
+	<div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form,
+			layer = layui.layer;
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			if(data.field.src!='' && data.field.module!=''){
+				if(data.field.src.indexOf(data.field.module.toLowerCase()+'/')!=0){
+					layer.msg('输入的菜单/节点URL与所属功能模块不匹配');
+					return false;
+				}
+			}
+			$.ajax({
+				url: "/home/rule/add",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						//parent.rightpage.close();
+						parent.location.reload();
+					}
+				}
+			})
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

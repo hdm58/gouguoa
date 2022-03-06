@@ -1,0 +1,135 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-normal layui-btn-sm addNew" type="button">+ 添加审批类型</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui){
+		var table=layui.table,
+		rightpage = layui.rightpage,
+		layer=layui.layer;
+			
+		tableIns = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,title:'审批模块列表'
+			,url: "/home/cate/flow_type"
+			,page: false //开启分页
+			,limit: 20
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '审批类型名称'}
+				,{field:'name',title: '审批类型标识'}
+				,{field:'icon',title: '审批类型图标'}
+				,{field:'type', title: '所属分类',width:100,align:'center',templet: function(d){
+					var html='';
+					if(d.type==1){
+						html = '假勤';
+					}
+					else if(d.type==2){
+						html = '行政';
+					}else if(d.type==3){
+						html = '财务';
+					}else if(d.type==4){
+						html = '人事';
+					}else if(d.type==5){
+						html = '其他';
+					}else if(d.type==6){
+						html = '报销';
+					}else if(d.type==7){
+						html = '发票';
+					}
+					return html;
+				}}
+				,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+					var html1='<span>正常</span>';
+					var html2='<span style="color:#FF5722">禁用</span>';
+					if(d.status==1){
+						return html1;
+					}
+					else{
+						return html2;
+					}
+				}}
+				,{width:100,title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+					var btn2='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="open">启用</a>';
+					if(d.status==1){
+						html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
+					}
+					else{
+						html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(test)',function (obj) {
+			if(obj.event === 'edit'){
+				rightpage.open("/home/cate/flow_type_add?id="+obj.data.id,'900px');
+			}
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该模块吗?', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						url: "/home/cate/flow_type_check",
+						type: 'post',
+						data: {
+							id: obj.data.id,
+							status: 0
+						},
+						success: function(e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								tableIns.reload();
+							}
+						}
+					}) 
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该模块吗?', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						url: "/home/cate/flow_type_check",
+						type: 'post',
+						data: {
+							id: obj.data.id,
+							status: 1
+						},
+						success: function(e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								tableIns.reload();
+							}
+						}
+					}) 
+					layer.close(index);
+				});
+			}
+		});
+		
+		$('.body-table').on('click','.addNew',function(){
+			rightpage.open("/home/cate/flow_type_add",'900px');
+			return;
+		});		
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

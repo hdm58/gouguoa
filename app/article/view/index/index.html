@@ -1,0 +1,116 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div class="layui-input-inline">
+			<select name="article_cate_id">
+				<option value="">请选择知识文章分类</option>
+				{volist name=":set_recursion(article_cate())" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:300px;">
+			<input type="text" name="keywords" placeholder="标题/分类/描述/内容" class="layui-input" autocomplete="off" />
+		</div>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</span></div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			table = layui.table,
+			rightpage = layui.rightpage,
+			form = layui.form;
+
+		var tableIns = table.render({
+			elem: '#test',
+			title: '文章列表',
+			toolbar: '#toolbarDemo',
+			url: "/article/index/index", //数据接口
+			page: true, //开启分页
+			limit: 20,
+			cols: [
+				[ //表头
+					{
+						field: 'id',
+						title: '编号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'sort',
+						title: '排序',
+						align: 'center',
+						width: 66
+					}, {
+						field: 'cate_title',
+						title: '分类',
+						align: 'center',
+						width: 120
+					}, {
+						field: 'title',
+						title: '文章标题'
+					},{
+						field: 'read',
+						title: '阅读量',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'user',
+						title: '发布人',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'department',
+						title: '部门',
+						align: 'center',
+						width: 100
+					}, {
+						field: 'right',
+						title: '操作',
+						toolbar: '#barDemo',
+						width: 60,
+						align: 'center'
+					}
+				]
+			]
+		});
+		
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if(obj.event === 'view'){
+				rightpage.open('/article/index/view?id='+data.id,'900px');
+				return;
+			}
+		});
+
+		//监听搜索提交
+		form.on('submit(webform)', function(data) {
+			tableIns.reload({
+				where: {
+					keywords: data.field.keywords,
+					article_cate_id: data.field.article_cate_id
+				},
+				page: {
+					curr: 1
+				}
+			});
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

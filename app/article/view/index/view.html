@@ -1,0 +1,84 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__STATIC__}/ueditor/third-party/SyntaxHighlighter/prism.css?v=1"/>
+<script src="{__STATIC__}/ueditor/third-party/SyntaxHighlighter/prism.js?v=1"></script>
+<style>
+.detial-content{padding:6px 16px; color:#333; font-size: 16px!important; line-height: 1.68!important; max-width:1000px;}
+.detial-content p{padding: 6px 0;}
+.detial-content img{max-width:98%!important; border: 1px solid #e6e6e6; -webkit-box-shadow: 0 2px 6px rgba(26,26,26,.08); box-shadow: 0 2px 6px rgba(26,26,26,.08); border-radius: 3px;}
+.detial-content .gougu-video{width: 640px!important; height: 410px!important; margin:10px auto!important; border: 12px solid #F7F7F7; border-radius: 6px;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-content">
+	<h3 class="h3-title">知识文章详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">文章标题</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray">文章分类</td>
+			<td>
+				{volist name=":set_recursion(article_cate())" id="v"}
+					{eq name="$detail.article_cate_id" value="$v.id" }{$v.title}{/eq}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关键字</td>
+			<td colspan="3">{$detail.keyword_names}</td>
+			<td class="layui-td-gray">阅读量</td>
+			<td>{$detail.read}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发布时间</td>
+			<td>{$detail.create_time | date='Y-m-d H:i:s'}</td>
+			<td class="layui-td-gray">发布人</td>
+			<td>{$detail.user}</td>
+			<td class="layui-td-gray">部门</td>
+			<td>{$detail.department}</td>
+		</tr>
+		{notempty name="$detail.origin_url"}
+		<tr>
+			<td class="layui-td-gray">来源链接</td>
+			<td colspan="5">{$detail.origin_url}</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">文章内容</td>
+			<td colspan="5"><div class="detial-content">{$detail.content|raw}</div></td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+function init(layui) {
+    var $codepre = $("pre[class]");
+	if($codepre.length>0){
+		for(var i = 0;i<$codepre.length;i++){
+			var item = $codepre.eq(i);
+			var language = "";
+			item.attr("class").replace(/brush:([^;]+)/,function(a,b){
+				language = b;
+			});
+			if(language){
+				var codehtml = item.html();
+				var code = $("<code>");
+				code.attr("class","language-"+language+" line-numbers");
+				//codehtml= unhtml(codehtml);
+				code.html(codehtml);
+				item.html(code);
+				Prism.highlightElement(code[0]);
+			}
+		}
+	}
+}
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

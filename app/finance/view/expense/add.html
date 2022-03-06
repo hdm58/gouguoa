@@ -1,0 +1,359 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
+<style>
+.layui-form-pane .layui-form-label{color:#999; width:80px; padding:8px 3px;}
+.layui-form-item .layui-inline{margin-right:3px; margin-bottom:10px;}
+.layui-form-item{margin-bottom:5px;}
+.layui-form-item .layui-btn-danger{display:none; margin-top:-8px}
+.layui-form-item:hover .layui-btn-danger{display:inline-block;}
+.select-1,.select-2{display:none;}
+.layui-table-min th{font-size:13px; text-align:center; background-color:#f8f8f8;}
+.layui-table-min td{font-size:13px; padding:6px;text-align:center;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">报销信息</h3>
+	{if condition="($id == 0)"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">报销人</td>
+			<td>
+				{$user.name}
+			</td>
+			<td class="layui-td-gray2">报销部门</td>
+			<td colspan="3">
+				{$user.department}			
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">报销凭证编号<span style="color: red">*</span></td>
+			<td>
+				<input type="text" name="code" autocomplete="off" lay-verify="required" placeholder="报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value="">	
+			</td>
+			<td class="layui-td-gray2">原始单据日期<span style="color: red">*</span></td>
+			<td>
+				<input type="text" class="layui-input" id="expense_time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="">	
+			</td>
+			<td class="layui-td-gray">入账月份<span style="color: red">*</span></td>
+			<td>
+				<input type="text" class="layui-input" id="income_month" name="income_month" lay-verify="required" placeholder="请选择入账月份" lay-reqText="请选择入账月份" readonly value="">	
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">报销选项<span style="color: red">*</span></td>
+			<td colspan="5">	
+				<div>
+					<table id="interfix" class="layui-table layui-table-min">
+						<tr>
+							<th width="100">报销金额</th>
+							<th width="120">报销项目</th>
+							<th>备注信息</th>
+							<th width="60">操作</th>
+						</tr>
+						<tr class="more_interfix">
+							<td><input type="text" name="amount[]" value="" class="layui-input" lay-verify="required|number" lay-reqText="请完善报销金额"></td>
+							<td style="text-align:left">
+								<select name="cate_id[]" lay-verify="required" lay-reqText="请选择报销项目">
+									<option value="">请选择</option>
+									{volist name="$expense_cate" id="vo"}
+									  <option value="{$vo.id}">{$vo.title}</option>
+									{/volist}
+								</select>
+							</td>
+							<td><input type="text" name="remarks[]" class="layui-input" value=""><input type="hidden" name="expense_id[]" class="layui-input" value="0"></td>
+							<td><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" lay-event="del">删除</a></td>
+						</tr>
+					</table>
+				</div>
+				<button class="layui-btn layui-btn-normal layui-btn-sm" type="button" id="addInterfix">+报销选项</button>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="5">
+				<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
+				<option value="">--请选择--</option>
+				{volist name="flows" id="vo"}
+				  <option value="{$vo.id}" title="{$vo.check_type}">{$vo.name}</option>
+				{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr id="flow_tr">
+			<td class="layui-td-gray">审核人<font>*</font></td>
+			<td colspan="5">
+				<input type="hidden" name="check_admin_ids" value="" readonly><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input" readonly>
+			</td>
+		</tr>
+	</table>
+	{else/}
+		<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">报销人</td>
+			<td>{$expense.create_user}</td>
+			<td class="layui-td-gray2">报销部门</td>
+			<td  colspan="3">{$expense.department}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">报销凭证编号<span style="color: red">*</span></td>
+			<td>
+				<input type="text" name="code" autocomplete="off" lay-verify="required" placeholder="报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value="{$expense.code}">	
+			</td>
+			<td class="layui-td-gray2">原始单据日期<span style="color: red">*</span></td>
+			<td>
+				<input type="text" class="layui-input" id="expense_time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="{$expense.expense_time}">	
+			</td>
+			<td class="layui-td-gray">入账月份<span style="color: red">*</span></td>
+			<td>
+				<input type="text" class="layui-input" id="income_month" name="income_month" lay-verify="required" placeholder="请选择入账月份" lay-reqText="请选择入账月份" readonly value="{$expense.income_month}">	
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">报销选项<span style="color: red">*</span></td>
+			<td colspan="5">	
+				<div>
+					<table id="interfix" class="layui-table layui-table-min">
+						<tr>
+							<th width="100">报销金额</th>
+							<th width="120">报销类别</th>
+							<th>备注信息</th>
+							<th width="60">操作</th>
+						</tr>
+						{volist name="$expense.list" id="val"}
+						<tr class="more_interfix">
+							<td><input type="text" name="amount[]" value="{$val.amount}" class="layui-input" lay-verify="required|number" lay-reqText="请完善报销金额"></td>
+							<td style="text-align:left">
+								<select name="cate_id[]" lay-verify="required" lay-reqText="请选择报销项目">
+									<option value="">请选择</option>
+									{volist name="$expense_cate" id="vo"}
+									  <option value="{$vo.id}" {eq name="$vo.id" value="$val.cate_id"} selected{/eq}>{$vo.title}</option>
+									{/volist}
+								</select>
+							</td>
+							<td><input type="text" name="remarks[]" class="layui-input" value="{$val.remarks}"><input type="hidden" name="expense_id[]" class="layui-input" value="{$val.id}"></td>
+							<td><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="{$val.id}" lay-event="del">删除</a></td>
+						</tr>
+						{/volist}
+					</table>
+				</div>
+				<button class="layui-btn layui-btn-normal layui-btn-sm" type="button" id="addInterfix">+报销选项</button>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="5">
+				<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
+				<option value="">--请选择--</option>
+				{volist name="flows" id="vo"}
+				  <option value="{$vo.id}" title="{$vo.check_type}">{$vo.name}</option>
+				{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr id="flow_tr">
+			<td class="layui-td-gray">审核人<font>*</font></td>
+			<td colspan="5">
+				<input type="hidden" name="check_admin_ids" value="" readonly><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input" readonly>
+			</td>
+		</tr>
+	</table>
+	{/if}
+
+	<div class="layui-form-item" style="padding-top:10px;">
+		<input name="id" id="id" type="hidden" value="{$id}">
+		<button class="layui-btn" lay-submit="" lay-filter="webform">保存并提交审核</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+<div id="selectTem" style="display:none;">
+	<select name="cate_id[]" lay-verify="required" lay-reqText="请选择报销项目">
+		<option value="">请选择</option>
+		{volist name="$expense_cate" id="vo"}
+		  <option value="{$vo.id}">{$vo.title}</option>
+		{/volist}
+	</select>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	function init(layui){
+		var form = layui.form
+		  ,layer = layui.layer
+		  ,table = layui.table
+		  ,employeepicker = layui.employeepicker
+		  ,laydate = layui.laydate;
+
+		laydate.render({
+			elem: '#income_month',
+			type:'month',
+			showBottom: false
+		});
+		  
+		laydate.render({
+			elem: '#expense_time',
+			max:0,
+			showBottom: false
+		});
+		//监听提交
+		form.on('submit(webform)', function(data){
+		  	var interfix = $('.more_interfix');
+			if(interfix.length <1 ){ 
+				layer.msg('至少要保留一个报销选项');
+				return false;
+			}
+			layer.confirm('审核期间不能编辑修改，确定报销数据无误？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/finance/expense/add",
+						type:'post',
+						data:data.field,
+						success:function(e){
+							layer.msg(e.msg);
+							if(e.code==0){
+								window.setTimeout(function(){
+									parent.location.reload();
+								},1200)	
+							}
+						}
+					})
+					layer.close(index);
+				});
+			return false;
+		});
+		
+		//选择人员		
+		$('.layui-form').on('click','[name="check_admin_name"]',function(){
+			if($('[name="flow_id"]').val()==''){
+				layer.msg('请先选择审批流程');
+				return false;
+			}
+			employeepicker.init({
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				type:0,
+				callback:function(ids,names){
+					$('[name="check_admin_ids"]').val(ids),
+					$('[name="check_admin_name"]').val(names);
+				}
+			});
+		})
+		
+		form.on('select(flowtype)', function(data){
+			var check_type = data.elem[data.elem.selectedIndex].title;
+			var formHtml='<td class="layui-td-gray">审核人<font>*</font></td>\
+			<td colspan="5">\
+				<input type="hidden" name="check_admin_ids" value="" readonly><input type="text" name="check_admin_name" value="" autocomplete="off" placeholder="请选择审核人" lay-verify="required" lay-reqText="请选择审核人" class="layui-input" readonly>\
+			</td>';
+			if(check_type == 2){
+				$('#flow_tr').html(formHtml);
+				form.render();
+			}
+			else{
+				$.ajax({
+					url: "/api/index/get_flow_users",
+					type:'post',
+					data:{id:data.value},
+					success: function (e) {
+						if (e.code == 0) {
+							var flowLi='';
+							for(var a=0;a<e.data.length;a++){
+								var userList='',sign_type = '';
+								if(e.data[a].flow_type==1){
+									userList+= '<li style="padding:3px 0">当前部门负责人</li>';
+								}
+								else if(e.data[a].flow_type==2){
+									userList+= '<li style="padding:3px 0">上级部门负责人</li>';
+								}
+								else{
+									if(e.data[a].flow_type==3){
+										sign_type= ' <span class="layui-badge layui-bg-blue">或签</span>'
+									}
+									if(e.data[a].flow_type==4){
+										sign_type= ' <span class="layui-badge layui-bg-blue">会签</span>'
+									}
+									for(var b=0;b<e.data[a].user_id_info.length;b++){
+										userList+= '<li style="padding:3px 0"><img src="'+e.data[a].user_id_info[b].thumb+'" style="width:24px; height:24px; border-radius:50%; margin-right:8px;" />'+e.data[a].user_id_info[b].name+'</li>';
+									}
+								}
+								flowLi+='<li class="layui-timeline-item">\
+									<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
+									<div class="layui-timeline-content">\
+									  <p class="layui-timeline-title"><strong>第'+(a+1)+'级审批</strong>'+sign_type+'</p>\
+									  <ul>'+userList+'</ul>\
+									</div>\
+								</li>';
+							}
+							
+							formHtml = '<td class="layui-td-gray">审批流程</td>\
+										<td colspan="5">\
+											<ul id="flowList" class="layui-timeline">'+flowLi+'</ul>\
+										</td>';
+							$('#flow_tr').html(formHtml);
+						}
+					}
+				})
+			}
+
+		});	
+		
+		//添加报销信息表格
+		$('#addInterfix').on('click',function(){
+			var html = '';
+			var selectTem=$('#selectTem').html();
+			html += '<tr class="more_interfix">\
+							<td><input type="text" name="amount[]" class="layui-input" lay-verify="required|number" lay-reqText="请完善报销金额"></td>\
+							<td style="text-align:left">'+selectTem+'</td>\
+							<td><input type="text" name="remarks[]" class="layui-input"><input type="hidden" name="expense_id[]" class="layui-input" value="0"></td>\
+							<td><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" lay-event="del">删除</a></td>\
+						</tr>';
+			$("#interfix").append(html).find('.tr-none').remove();
+			form.render();
+		});
+
+		$('#interfix').on('click', '[lay-event="del"]', function() {
+			if($('.more_interfix').length<2){
+				layer.msg('至少保留一个报销选项');
+				return false;
+			}
+			var that=$(this);
+			var _id = that.data('id');
+			if(_id>0){
+				layer.confirm('确定删除该报销数据项？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/api/index/del_expense_interfix",
+						data: {
+							id: _id
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								that.parents(".more_interfix").remove();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			else{
+				that.parents(".more_interfix").remove();
+			}
+		});
+
+	}
+		
+	</script>
+{include file="../../base/view/common/layui" base='base' extend="['employeepicker']" callback="init" /}
+{/block}
+<!-- /脚本 -->

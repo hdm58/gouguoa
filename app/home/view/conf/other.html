@@ -1,0 +1,62 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">其他配置</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">开发者</td>
+			<td>
+				<input type="hidden" value="{$id}" name="id">
+				<input type="text" name="author" autocomplete="off" placeholder="请输入开发者" lay-reqText="请输入开发者" class="layui-input"{notempty name="$config.author"} value="{$config.author}" {/notempty}>
+			</td>
+			<td class="layui-td-gray2">开发版本号
+			</td>
+			<td>
+				<input type="text" name="version" autocomplete="off" placeholder="请输入版本号" lay-reqText="请输入版本号" class="layui-input" {notempty name="$config.version"} value="{$config.version}" {/notempty}>
+			</td>
+		</tr>
+	</table>
+
+	<div style="padding: 10px 0">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form,
+			layer = layui.layer;
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			$.ajax({
+				url: "/home/conf/edit",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function(){
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+		//监听返回
+		$('.body-content').on('click', '[lay-event="back"]', function () {
+			history.back(-1);
+			return false;
+		});	
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

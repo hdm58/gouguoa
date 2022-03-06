@@ -1,0 +1,284 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<div class="layui-tab layui-tab-brief" lay-filter="demoTab">
+	  <ul class="layui-tab-title">
+		<li class="layui-this" style="font-size:15px;"><strong>发送的汇报</strong></li>
+		<li style="font-size:15px;"><strong>接受的汇报</strong></li>
+	  </ul>
+	  <div class="layui-tab-content" style="padding:0">
+		<div class="layui-tab-item layui-show">
+			<form class="layui-form layui-form-bar">
+				<div class="layui-inline" id="date">
+					<div class="layui-input-inline" style="width:112px">
+					  <input type="text" autocomplete="off" id="start_time" name="start_time" class="layui-input" placeholder="接收开始日期">
+					</div>
+					~
+					<div class="layui-input-inline" style="width:112px">
+					  <input type="text" autocomplete="off" id="end_time" name="end_time" class="layui-input" placeholder="接收结束日期">
+					</div>
+				</div>
+				<div class="layui-input-inline" style="width:136px">
+					<select name="read">
+						<option value="">选择状态</option>
+						<option value="1">未读</option>
+						<option value="2">已读</option>
+					</select>
+				</div>
+				<div class="layui-input-inline" style="width:136px">
+					<select name="type">
+						<option value="">选择类型</option>
+						<option value="1">日报</option>
+						<option value="2">周报</option>
+						<option value="2">月报</option>
+					</select>
+				</div>
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+			</form>
+			<table class="layui-hide" id="test" lay-filter="test"></table>
+		</div>
+		<div class="layui-tab-item">
+			<form class="layui-form layui-form-bar">
+				<div class="layui-inline" id="date1">
+					<div class="layui-input-inline" style="width:112px">
+					  <input type="text" autocomplete="off" id="start_time1" name="start_time" class="layui-input" placeholder="接收开始日期">
+					</div>
+					~
+					<div class="layui-input-inline" style="width:112px">
+					  <input type="text" autocomplete="off" id="end_time1" name="end_time" class="layui-input" placeholder="接收结束日期">
+					</div>
+				</div>
+				<div class="layui-input-inline" style="width:136px">
+					<select name="read">
+						<option value="">选择状态</option>
+						<option value="1">未读</option>
+						<option value="2">已读</option>
+					</select>
+				</div>
+				<div class="layui-input-inline" style="width:136px">
+					<select name="type">
+						<option value="">选择类型</option>
+						<option value="1">日报</option>
+						<option value="2">周报</option>
+						<option value="2">月报</option>
+					</select>
+				</div>
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform1">提交搜索</button>
+			</form>
+			<table class="layui-hide" id="test1" lay-filter="test1"></table>
+		</div>
+	  </div>
+	</div>
+	
+</div>
+
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>新建汇报</button>
+	</div>
+</script>
+
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">查看</button>
+  <button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>
+</script>
+<script type="text/html" id="barDemo1">
+<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">查看</button>
+  <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui){
+		var table = layui.table
+			,form = layui.form
+			,element = layui.element
+			,rightpage = layui.rightpage
+			,laydate = layui.laydate;
+	  
+		element.on('tab(demoTab)', function(data){
+			console.log(this); //当前Tab标题所在的原始DOM元素
+			console.log(data.index); //得到当前Tab的所在下标
+			console.log(data.elem); //得到当前的Tab大容器
+		});
+	  
+		//日期范围
+		laydate.render({
+			elem: '#date',
+			range: ['#start_time', '#end_time']
+		});
+
+		var tableIns = table.render({
+			elem: '#test',
+			toolbar: '#toolbarDemo',
+			title:'工作汇报列表',
+			url: "/oa/work/index", //数据接口
+			where:{'send':1},
+			page: true ,//开启分页
+			limit: 20,
+			cellMinWidth: 80, //全局定义常规单元格的最小宽度
+			cols: [[ //表头
+			  {field:'id',title: '序号',width:80,align:'center'},
+			  {field: 'type_title', title: '汇报类型',width:88,align:'center'},
+			  {field: 'person_name', title: '接收人', width:240},
+			  {field: 'works', title: '工作内容'},
+			  {field: 'create_time', title: '汇报时间', align:'center',width:160},
+			  {field: 'files', title: '附件(个)',align:'center', width:80},
+			  {field: 'right', title: '操作',fixed:'right', toolbar: '#barDemo', width:132, align:'center'}
+			]],
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'edit'){
+				rightpage.open('/oa/work/add?id='+data.id,'900px');
+				return;
+			}
+			if(obj.event === 'del'){
+				layer.confirm('确定要删除该汇报吗?', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						url: "/oa/work/delete",
+						data:{id:data.id},
+						success:function(e){
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'view'){
+				rightpage.open('/oa/work/read?id='+data.id,'900px');
+				return;
+			}
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			addNew();
+		});
+		 
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			let f=data.field;
+			tableIns.reload({where:{send:1,start_time:f.start_time,end_time:f.end_time,type:f.type,read:f.read},page:{curr:1}});
+			return false;
+		});
+		
+		
+		
+		//日期范围
+		laydate.render({
+			elem: '#date1',
+			range: ['#start_time1', '#end_time1']
+		});
+
+		var tableIns1 = table.render({
+			elem: '#test1',
+			toolbar: '#toolbarDemo',
+			title:'工作汇报列表',
+			url: "/oa/work/index", //数据接口
+			where:{'send':0},
+			page: true ,//开启分页
+			limit: 20,
+			cellMinWidth: 80, //全局定义常规单元格的最小宽度
+			cols: [[ //表头
+			  {field:'id',title: '序号',width:80,align:'center'},
+			  {field: 'type_title', title: '汇报类型',width:88,align:'center'},
+			  {field: 'from_name', title: '汇报人', width:100,align:'center'},
+			  {field: 'works', title: '工作内容'},
+			  {field: 'send_time', title: '汇报时间', align:'center',width:160},
+			  {field: 'read_time', title: '是否已读',align:'center', width:86,templet:function(d){
+							var html='<span style="color:#5FB878">已读</span>';
+							if(d.read_time==0){
+								html='<span style="color:#FF5722">未读</span>';
+							}
+							return html;
+						}},
+			  {field: 'files', title: '附件(个)',align:'center', width:86},
+			  {field: 'right', title: '操作',fixed:'right', toolbar: '#barDemo1', width:100, align:'center'}
+			]]
+		});
+		
+		//监听行工具事件
+		table.on('tool(test1)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'del'){
+				layer.confirm('确定要删除该汇报吗?', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						url: "/oa/work/delete",
+						data:{id:data.wid},
+						success:function(e){
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'view'){
+				rightpage.open('/oa/work/read?id='+data.wid,'900px');
+				return;
+			}
+		});
+		 
+		//监听搜索提交
+		form.on('submit(webform1)', function(data){
+			let f=data.field;
+			tableIns1.reload({where:{send:0,start_time:f.start_time,end_time:f.end_time,type:f.type,read:f.read},page:{curr:1}});
+			return false;
+		});		
+		
+		
+		//表头工具栏事件
+		table.on('toolbar(test1)', function(obj){
+			addNew();
+		});
+		
+		function addNew(){
+			var type=[{'id':1,'title':'日报'},{'id':2,'title':'周报'},{'id':3,'title':'月报'}];
+			layer.open({
+				title:'选择汇报类型',
+				type:1,
+				area:['360px','300px'],
+				content:'<div style="width:325px; padding:15px 15px 0"><div id="selectCoursr"></div></div>',
+				success:function(){
+					tableid=table.render({
+						elem: '#selectCoursr',
+						cols: [[ //标题栏
+							{type:'radio',title: '选择'},
+							{field: 'title', title: '汇报类型'}
+						]],
+						data: type
+					  });			
+				},
+				btn:['确定'],
+				yes: function(idx){
+					var checkStatus = table.checkStatus(tableid.config.id);
+					var data = checkStatus.data;
+					console.log(data);
+					if(data.length>0){
+						rightpage.open('/oa/work/add?type='+data[0].id,'900px');
+						layer.close(idx);
+					}
+					else{
+						layer.msg('请选择汇报类型');
+						return false;
+					}
+				}
+			})
+		}
+	}		
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

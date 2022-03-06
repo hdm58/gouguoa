@@ -1,0 +1,122 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">消息详情</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">信息主题</td>
+			<td colspan="5">{$detail.title}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">发送人</td>
+			<td>{$detail.person_name}</td>
+			<td class="layui-td-gray2">接收人类别</td>
+			<td>
+				{eq name="$detail.type" value="0"}-{/eq}
+				{eq name="$detail.type" value="1"}同事{/eq}
+				{eq name="$detail.type" value="2"}部门{/eq}
+				{eq name="$detail.type" value="3"}岗位{/eq}
+				{eq name="$detail.type" value="4"}全部{/eq}
+			</td>
+			<td class="layui-td-gray2">发送时间</td>
+			<td>{$detail.send_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">收件人</td>
+			<td colspan="5">{$detail.users}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top;">消息内容</td>
+			<td colspan="5">
+				{$detail.content}
+				{if condition="($detail.fid > 0)"}		
+				<table class="layui-table" style="margin-top:10px;">
+				<tr>
+					<td class="layui-td-gray2">引用消息内容</td>
+					<td style="color:#999">{$detail.from_content}</td>
+				</tr>
+				{notempty name="$detail.from_file_array"}
+				<tr>
+					<td class="layui-td-gray2" style="vertical-align:top">引用消息附件</td>
+					<td>
+						<table class="layui-table" style="max-width: 680px;">
+							<thead>
+								<th width="70%">文件名</th>
+								<th width="20%" style="text-align:center">文件大小</th>
+								<th width="10%" style="text-align:center">操作</th>
+							</thead>
+							<tbody>							
+								{volist name="$detail.from_file_array" id="vo"}
+									<tr>
+										<td>{$vo.name}</td>
+										<td style="text-align: center;">{$vo.filesize/1048576|round=2}MB</td>
+										<td style="text-align: center;"><a class="layui-btn layui-btn-xs layui-btn-normal" href="{$vo.filepath}" target="_blank">下载</a></td>
+									</tr>
+								{/volist}
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				{/notempty}
+				</table>
+				{/if}
+			</td>
+		</tr>
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top">相关附件</td>
+			<td colspan="5">
+				<table class="layui-table" style="max-width: 800px;">
+					<thead>
+					  <tr>
+					  <th width="70%">文件名</th>
+					  <th width="20%" style="text-align:center">文件大小</th>
+					  <th width="10%" style="text-align:center">操作</th>
+					</tr>
+					</thead>
+					<tbody>							
+						{volist name="detail.file_array" id="vo"}
+							<tr>
+								<td>{$vo.name}</td>
+								<td style="text-align: center;">{$vo.filesize/1048576|round=2}MB</td>
+								<td style="text-align: center;"><a class="layui-btn layui-btn-xs layui-btn-normal" href="{$vo.filepath}" target="_blank">下载</a></td>
+							</tr>
+						{/volist}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.read_users"}
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top">收件人已读回执</td>
+			<td colspan="5">{$detail.read_users}</td>
+		</tr>
+		{/notempty}
+	</table>
+	{if condition="($detail.template == 0) AND ($detail.pid != 0)"}
+	<div class="layui-form-item" style=" padding-top:10px;">
+		<a class="layui-btn" href="/message/index/reply?id={$detail.id}&type=1">回复</a>
+	</div>
+	{/if}
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+		function init(layui){
+		//监听返回
+		$('.body-content').on('click','[lay-event="back"]',function () {
+			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			parent.layer.close(index);//关闭弹出的子页面窗口
+			return false;
+		});
+	}
+		
+	</script>
+	{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

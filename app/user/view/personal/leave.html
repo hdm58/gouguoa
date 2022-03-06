@@ -1,0 +1,108 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div class="layui-input-inline">
+			<input type="text" name="keywords" placeholder="职业名称/备注" class="layui-input" autocomplete="off"/>
+		</div>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加离职档案记录</button> <span style="font-size:12px; margin-left:20px; color:#FF5722">删除离职档案即可恢复在职状态</span>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui) {
+		var table = layui.table
+			,rightpage = layui.rightpage
+			, form = layui.form;
+
+		tableIns = table.render({
+			elem: '#test'
+			, toolbar: '#toolbarDemo'
+			, url: "/user/personal/leave"
+			, page: true //开启分页
+			, limit: 20
+			, cols: [[
+				{ field: 'id', width: 80, title: '序号', align: 'center' }
+				, { field: 'name', width: 110, title: '离职员工姓名', align: 'center','style':'color:#FF5722'}
+				, { field: 'department', width: 120, title: '所在部门', align: 'center'}
+				, { field: 'position', width: 100, title: '职位', align: 'center'}
+				, { field: 'lead_admin', width: 90, title: '部门负责人', align: 'center'}
+				, { field: 'connect_names', width: 180, title: '交接人', align: 'center'}
+				, { field: 'quit_time', width: 100,title: '离职日期', align: 'center'}
+				, { field: 'remark', title: '离职原因'}
+				, {
+					width: 100, title: '操作',fixed:'right', align: 'center'
+					, templet: function (d) {
+						var html='<div class="layui-btn-group">';
+							html+='<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
+							html+='<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button>';
+						html+='</div>';
+						return html;
+					}
+				}
+			]]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'edit'){
+				rightpage.open('/user/personal/leave_add?id='+data.id,"900px");
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
+					$.ajax({
+						url: "/user/personal/leave_delete",
+						type: 'post',
+						data: { id: obj.data.id },
+						success: function (res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data; 
+			if (obj.event === 'add') {
+				rightpage.open("/user/personal/leave_add","900px");
+				return;
+			}
+		});
+
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			if(data.field.keywords) {
+			  tableIns.reload({where:{keywords:data.field.keywords},page:{curr:1}});			  
+			}
+			else{
+				location.reload();
+			}
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

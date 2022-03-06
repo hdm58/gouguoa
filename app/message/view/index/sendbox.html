@@ -1,0 +1,161 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div class="layui-inline" style="width:240px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off"/>
+		</div>
+		<div class="layui-inline" id="date">
+			<div class="layui-input-inline" style="width:112px">
+			  <input type="text" autocomplete="off" id="start_time" name="start_time" class="layui-input" placeholder="发送开始日期">
+			</div>
+			~
+			<div class="layui-input-inline" style="width:112px">
+			  <input type="text" autocomplete="off" id="end_time" name="end_time" class="layui-input" placeholder="发送结束日期">
+			</div>
+		</div>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form> 
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="mail_type">
+	<span class="layui-type{{d.mail_type}}">{{d.mail_type_title}}</span>
+</script>
+<script type="text/html" id="is_read">
+	<span class="layui-type{{d.is_read}}">{{d.is_read_title}}</span>
+</script>
+
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>新建消息</button>
+		<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del"><i class="layui-icon">&#xe640;</i>批量删除</button>
+	</div>
+</script>
+
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><span class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">查看</span><span class="layui-btn layui-btn-xs layui-btn-warm" lay-event="resend">转发</span><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+		var tableIns = null;
+		function init(layui){
+		  var table = layui.table
+		  ,form = layui.form
+		  ,rightpage = layui.rightpage
+		  ,laydate = layui.laydate;
+	  
+		 //日期范围
+		  laydate.render({
+			elem: '#date',
+			range: ['#start_time', '#end_time']
+		  });
+
+		  tableIns = table.render({
+			elem: '#test',
+			toolbar: '#toolbarDemo',
+			title:'发件箱',
+			url: "/message/index/sendbox", //数据接口
+			page: true ,//开启分页
+			limit: 20,
+			cellMinWidth: 80, //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+			cols: [[ //表头
+			  {type:'checkbox',fixed:'left'},
+			  {field: 'type_title', title: '接收人类型',width:100,align:'center'},
+			  {field: 'title', title: '消息主题'},
+			  {field: 'send_time', title: '发件时间', align:'center',width:160},
+			  {field: 'files', title: '附件(个)',align:'center', width:86},
+			  {field: 'right', title: '操作',fixed:'right', toolbar: '#barDemo', width:136, align:'center'}
+			]],
+			where:{type:1}
+		  });
+
+		 //监听行工具事件
+		  table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'del'){
+				layer.confirm('确定该信息要放入垃圾箱吗?', {icon: 3, title:'提示'}, function(index){
+					$.ajax({
+						url: "/message/index/check",
+						data:{ids:data.id,type:2,source:1},
+						success:function(e){
+							layer.msg(e.msg);
+							if(e.code==0){
+								tableIns.reload();
+							}		
+						}
+					})
+					layer.close(index);
+				})
+			}
+			if(obj.event === 'view'){
+				rightpage.open('/message/index/read?id='+data.id,'900px');
+				return;
+			}
+			if(obj.event === 'resend'){
+				rightpage.open('/message/index/reply?id='+data.id+'&type=2','900px');
+				return;
+			}
+		  });
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data; 
+			if (obj.event === 'add') {
+				rightpage.open("/message/index/add",'900px');
+				return;
+			}
+			if(data.length==0){
+				layer.msg('请选择要操作的消息');
+				return false;
+			}
+			var idArray=[],msg='是否执行该操作？',type=0;
+			for(var i=0;i<data.length;i++){
+				idArray.push(data[i].id);
+			}
+			switch(obj.event){
+				case 'del':
+					msg = '确定把选中的信息要放入垃圾箱吗?';
+					type = 2;
+				break;
+			};
+			
+			layer.confirm(msg, {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				$.ajax({
+					url: "/message/index/check",
+					data: {
+						ids: idArray.join(','),
+						type:type,
+						source:1
+					},
+					success: function (e) {
+						layer.msg(e.msg);
+						if(e.code==0){
+							tableIns.reload();
+						}							
+					}
+				})
+				layer.close(index);
+			});
+		});
+		  
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			let f=data.field;
+			tableIns.reload({where:{keywords:f.keywords,start_time:f.start_time,end_time:f.end_time},page:{curr:1}});
+			return false;
+		});
+	}
+		
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

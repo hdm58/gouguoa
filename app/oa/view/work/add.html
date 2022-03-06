@@ -1,0 +1,323 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
+<link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">工作汇报</h3>
+	{if condition="$id eq 0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">汇报类型</td>
+			<td>
+				{eq name="$type" value="1"}日报{/eq}
+				{eq name="$type" value="2"}周报{/eq}
+				{eq name="$type" value="3"}月报{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">接收人<span style="color: red">*</span></td>
+			<td>
+				<input type="text" name="person_name" value="" lay-verify="required" lay-reqText="请选择接收人" placeholder="请选择接收人" readonly class="layui-input">
+				<input type="hidden" name="uids" value="">
+			</td>
+		</tr>
+		{if condition="($type == 1)"}
+		<tr>
+			<td class="layui-td-gray2">今日工作<span style="color: red">*</span></td>
+			<td>
+				<textarea name="works" placeholder="请输入今日工作内容" class="layui-textarea" style="height: 120px;" lay-verify="required" lay-reqText="请输入今日工作内容"></textarea>
+			</td>
+		</tr>
+		<tr><td class="layui-td-gray2">明日计划</td>
+			<td>
+				<textarea name="plans" placeholder="请输入明日计划" class="layui-textarea" style="height: 120px;"></textarea>
+			</td>
+		</tr>
+		{elseif condition="($type == 2)"}
+		<tr>
+			<td class="layui-td-gray2">本周工作<span style="color: red">*</span></td>
+			<td>
+				<textarea name="works" placeholder="请输入本周工作内容" class="layui-textarea" style="height: 120px;" lay-verify="required" lay-reqText="请输入本周工作内容"></textarea>
+			</td>
+		</tr>
+		<tr><td class="layui-td-gray2">下周计划</td>
+			<td>
+				<textarea name="plans" placeholder="请输入下周计划" class="layui-textarea" style="height: 120px;"></textarea>
+			</td>
+		</tr>
+		{elseif condition="($type == 3)"}
+		<tr>
+			<td class="layui-td-gray2">本月工作<span style="color: red">*</span></td>
+			<td>
+				<textarea name="works" placeholder="请输入本月工作内容" class="layui-textarea" style="height: 120px;" lay-verify="required" lay-reqText="请输入本月工作内容"></textarea>
+			</td>
+		</tr>
+		<tr><td class="layui-td-gray2">下月计划</td>
+			<td>
+				<textarea name="plans" placeholder="请输入下月计划" class="layui-textarea" style="height: 120px;"></textarea>
+			</td>
+		</tr>
+		{/if}
+		<tr><td class="layui-td-gray2">其它事项</td>
+			<td>
+				<textarea name="remark" placeholder="请输入其它事项" class="layui-textarea" style="height: 120px;"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top">相关附件</td>
+			<td>
+				<div class="layui-upload" style="max-width: 800px;">
+					<button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="testList">选择文件并上传</button> <span style="color:#FF5722;margin-left: 10px;">最大只能上传{:get_system_info('upload_max_filesize')}的文件，超过{:get_system_info('upload_max_filesize')}请压缩成多个文件上传。</span>
+					<div class="layui-upload-list" style="display:none;">
+						<table class="layui-table">
+							<thead>
+							  <tr>
+								<th width="60%">文件名</th>
+								<th width="20%" style="text-align:center">文件大小</th>
+								<th width="20%" style="text-align:center">操作</th>
+								</tr>
+							</thead>
+							<tbody id="demoList"></tbody>
+						</table>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div style="padding-top:10px;">
+		<input type="hidden" value="{$id}" name="id">
+		<input type="hidden" value="{$type}" name="type">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即发送</button>
+	</div>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray2">汇报类型</td>
+			<td>
+				{eq name="$detail.type" value="1"}日报{/eq}
+				{eq name="$detail.type" value="2"}周报{/eq}
+				{eq name="$detail.type" value="3"}月报{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2">接收人</td>
+			<td>
+				{$detail.person_name}
+			</td>
+		</tr>
+		{if condition="($type == 1)"}
+		<tr>
+			<td class="layui-td-gray2">今日工作<span style="color: red">*</span></td>
+			<td>
+				<textarea name="works" placeholder="请输入今日工作内容" class="layui-textarea" style="height: 120px;" lay-verify="required" lay-reqText="请输入今日工作内容">{$detail.works}</textarea>
+			</td>
+		</tr>
+		<tr><td class="layui-td-gray2">明日计划</td>
+			<td>
+				<textarea name="plans" placeholder="请输入明日计划" class="layui-textarea" style="height: 120px;">{$detail.plans}</textarea>
+			</td>
+		</tr>
+		{elseif condition="($type == 2)"}
+		<tr>
+			<td class="layui-td-gray2">本周工作<span style="color: red">*</span></td>
+			<td>
+				<textarea name="works" placeholder="请输入本周工作内容" class="layui-textarea" style="height: 120px;" lay-verify="required" lay-reqText="请输入本周工作内容">{$detail.works}</textarea>
+			</td>
+		</tr>
+		<tr><td class="layui-td-gray2">下周计划</td>
+			<td>
+				<textarea name="plans" placeholder="请输入下周计划" class="layui-textarea" style="height: 120px;">{$detail.plans}</textarea>
+			</td>
+		</tr>
+		{elseif condition="($type == 3)"}
+		<tr>
+			<td class="layui-td-gray2">本月工作<span style="color: red">*</span></td>
+			<td>
+				<textarea name="works" placeholder="请输入本月工作内容" class="layui-textarea" style="height: 120px;" lay-verify="required" lay-reqText="请输入本月工作内容">{$detail.works}</textarea>
+			</td>
+		</tr>
+		<tr><td class="layui-td-gray2">下月计划</td>
+			<td>
+				<textarea name="plans" placeholder="请输入下月计划" class="layui-textarea" style="height: 120px;">{$detail.plans}</textarea>
+			</td>
+		</tr>
+		{/if}
+		<tr><td class="layui-td-gray2">其它事项</td>
+			<td>
+				<textarea name="remark" placeholder="请输入其它事项" class="layui-textarea" style="height: 120px;">{$detail.remark}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray2" style="vertical-align:top">相关附件</td>
+			<td>
+				<div class="layui-upload" style="max-width: 800px;">
+					<button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="testList">选择文件并上传</button> <span style="color:#FF5722;margin-left: 10px;">最大只能上传{:get_system_info('upload_max_filesize')}的文件，超过{:get_system_info('upload_max_filesize')}请压缩成多个文件上传。</span>
+					<div class="layui-upload-list" {empty name="$file_array"}style="display:none;"{/empty}>
+						<table class="layui-table">
+							<thead>
+								<tr>
+								<th width="60%">文件名</th>
+								<th width="20%" style="text-align:center">文件大小</th>
+								<th width="20%" style="text-align:center">操作</th>
+								</tr>
+							</thead>
+							<tbody id="demoList">
+							{notempty name="$file_array"}
+								{volist name="file_array" id="vo"}
+									<tr data-id="{$vo.file_id}" id="tr_{$vo.id}">
+										<td>{$vo.name}</td>
+									  	<td style="text-align: center;">{$vo.filesize/1048576|round=2}MB</td>
+										<td style="text-align: center;">
+											<a class="layui-btn layui-btn-xs layui-btn-danger demo-delete" data-id="{$vo.id}">删除</a>
+										</td>
+									</tr>
+								{/volist}
+							{/notempty}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div style="padding-top:10px;">
+		<input type="hidden" value="{$id}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform1">提交保存</button>
+	</div>
+	{/if}
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui){
+		var form = layui.form
+		,layer = layui.layer
+		,table = layui.table
+		,dtree = layui.dtree
+		,upload = layui.upload
+		,employeepicker = layui.employeepicker;
+
+		//监听发送
+		form.on('submit(webform)', function(data){
+			if(data.field.uids==login_user){
+				layer.msg('接收人不能是自己');
+				return false;
+			}
+			var file_ids = [];
+			var item_tr = $('#demoList').find('tr');
+			item_tr.each(function(index,item) {
+				var item_id = $(item).data('id');
+				if (item_id && item_id != '') {
+					file_ids.push(item_id);
+				}
+			});
+			console.log(file_ids.join(','));
+			data.field.file_ids = file_ids.join(',');
+			$.ajax({
+				url: "/oa/work/send",
+				type:'post',
+				data:data.field,
+				success:function(e){
+					layer.msg(e.msg);
+					if (e.code == 0) {						
+						setTimeout(function(){
+							parent.location.reload();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+		
+		//监听保存
+		form.on('submit(webform1)', function(data){
+			var file_ids = [];
+			var item_tr = $('#demoList').find('tr');
+			item_tr.each(function(index,item) {
+				var item_id = $(item).data('id');
+				if (item_id && item_id != '') {
+					file_ids.push(item_id);
+				}
+			});
+			console.log(file_ids.join(','));
+			data.field.file_ids = file_ids.join(',');
+			$.ajax({
+				url: "/oa/work/add",
+				type:'post',
+				data:data.field,
+				success:function(e){
+					layer.msg(e.msg);
+					if (e.code == 0) {						
+						setTimeout(function(){
+							parent.location.reload();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+
+		upload.render({ //允许上传的文件后缀
+			elem: '#testList'
+			,url: '/api/index/upload' //此处配置你自己的上传接口即可
+			,accept: 'file' //普通文件
+			,exts: 'jpeg|jpg|png|gif|doc|docx|ppt|pptx|xls|xlsx|pdf|zip|rar|7z' //只允许上传文件
+			,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+				layer.msg('上传中...',{time: 3600000});
+			}
+			,done: function(res, index, upload){
+			  layer.msg('上传成功');
+			  var timestamp=new Date().getTime();
+			  var tr = '<tr data-id="'+res.data.id+'" id="tr_'+timestamp+'">\
+					  <td>'+ res.data.name +'</td>\
+					  <td align="center">'+ (res.data.filesize/(1024*1024)).toFixed(2) +'MB</td>\
+					  <td align="center">\
+					  <span class="layui-btn layui-btn-xs layui-btn-danger demo-delete" data-id="'+timestamp+'">删除</span>\
+					  </td>\
+					</tr>';
+			  $('.layui-upload-list').show();
+				$('#demoList').append(tr);
+			}
+			,error: function(index, upload){
+				layer.msg('上传失败');
+			}
+		});
+		
+		$('#demoList').on('click','.demo-delete',function(){
+			let id = $(this).data('id');
+			layer.confirm('确定要删除该附件吗?', {icon: 3, title:'提示'}, function(index){
+				$('#tr_'+id).remove()
+				layer.close(index);
+			});
+		})
+
+		//选择对应人
+		$('[name="person_name"]').on('click',function(){
+			var ids=$('[name="uids"]').val(),names=$('[name="person_name"]').val(),idsArray=[],namesArray=[];
+			if(ids!=''){
+				idsArray=ids.split(',');
+				namesArray=names.split(',');
+			}
+			employeepicker.init({
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				ids:idsArray,
+				names:namesArray,
+				callback:function(ids,names){
+					$('[name="uids"]').val(ids.join(',')),
+					$('[name="person_name"]').val(names.join(','));
+				}
+			});
+		});
+	}
+		
+	</script>
+	{include file="../../base/view/common/layui" base='base' extend="['dtree','employeepicker']" callback="init" /}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="renderer" content="webkit"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+{block name="meta"}
+	<link rel="mobile-prefetch" href=""/>
+{/block}
+{block name="title"}
+	<title>{:get_system_config('web','admin_title')}</title>		
+{/block}
+{block name="keywords"}
+	<meta name="keywords" content="{:get_system_config('web','keywords')}"/>
+	<meta name="description" content="{:get_system_config('web','desc')}"/>
+{/block}
+{block name="css"}
+	<link rel="stylesheet" href="{__LAYUI__}/css/layui.css?v={:get_system_config('web','version')}" media="all">
+	<link rel="stylesheet" href="{__CSS__}/common.css?v={:get_system_config('web','version')}" media="all">
+{/block}
+{block name="style"}{/block}
+<script src="{__STATIC__}/jquery.min.js"></script>
+<script>
+	const login_user={$login_user};
+</script>
+{block name="js"}{/block}
+</head>
+<body class="main-body">
+	<!-- 主体 -->
+	{block name="body"}{/block}
+	<!-- /主体 -->
+
+	<!-- 底部 -->
+	{block name="footer"}{/block}
+	<!-- /底部 -->
+	
+	<!-- 脚本 -->
+	{block name="script"}{/block}
+	<!-- /脚本 -->
+	
+	<!-- 统计代码 -->
+	{block name="code"}{/block}
+	<!-- /统计代码 -->
+</body>
+</html>

@@ -1,0 +1,153 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-card-header{height:40px; line-height:40px; border-left:1px solid #eee; border-right:1px solid #eee; border-bottom:none}
+
+.square .layui-col-md4{border: 1px solid #f5f5f5; cursor:pointer;}
+.square .layui-col-md4 div{padding:16px 0; text-align:center; background-color:#fff}
+.square .layui-col-md4 i{font-size:24px; font-weight:800; display:block; padding-bottom:8px; color:#4285f4}
+.square .layui-col-md4:nth-child(3n-1){
+	border-left:0;border-right:0;
+}
+.square .layui-col-md4:nth-child(n+4){
+	margin-top: -1px;
+}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md3">
+			<div class="layui-card">
+				<div class="layui-card-header" style="border-bottom:1px solid #eee;"><h3 class="h3-title">审批新申请</h3></div>		
+				<div class="layui-card-header"><strong>假勤</strong></div>
+				<div class="square">
+					<div class="layui-row">
+						{volist name="list" id="vo"}
+							{eq name="vo.type" value="1"}
+								<div class="layui-col-md4" data-type="{$vo.id}" title="{$vo.title}"><div><i class="iconfont {$vo.icon}"></i>{$vo.title}</div></div>	
+							{/eq}
+						{/volist}
+					</div>
+				</div>
+				<div class="layui-card-header"><strong>行政</strong></div>
+				<div class="square">
+					<div class="layui-row">
+						{volist name="list" id="vo"}
+							{eq name="vo.type" value="2"}
+								<div class="layui-col-md4" data-type="{$vo.id}" title="{$vo.title}"><div><i class="iconfont {$vo.icon}"></i>{$vo.title}</div></div>	
+							{/eq}
+						{/volist}
+					</div>
+				</div>
+				<div class="layui-card-header"><strong>财务</strong></div>
+				<div class="square">
+					<div class="layui-row">
+						{volist name="list" id="vo"}
+							{eq name="vo.type" value="3"}
+								<div class="layui-col-md4" data-type="{$vo.id}" title="{$vo.title}"><div><i class="iconfont {$vo.icon}"></i>{$vo.title}</div></div>	
+							{/eq}
+						{/volist}
+					</div>
+				</div>
+				<div class="layui-card-header"><strong>人事</strong></div>
+				<div class="square">
+					<div class="layui-row">
+						{volist name="list" id="vo"}
+							{eq name="vo.type" value="4"}
+								<div class="layui-col-md4" data-type="{$vo.id}" title="{$vo.title}"><div><i class="iconfont {$vo.icon}"></i>{$vo.title}</div></div>	
+							{/eq}
+						{/volist}
+					</div>
+				</div>
+				<div class="layui-card-header"><strong>其他</strong></div>
+				<div class="square">
+					<div class="layui-row">
+						{volist name="list" id="vo"}
+							{eq name="vo.type" value="5"}
+								<div class="layui-col-md4" data-type="{$vo.id}" title="{$vo.title}"><div><i class="iconfont {$vo.icon}"></i>{$vo.title}</div></div>	
+							{/eq}
+						{/volist}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-md9">
+			<div class="layui-card">
+				<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+					<ul class="layui-tab-title">
+						<li class="layui-this">全部</li>
+						<li>待我审批</li>
+						<li>我已审批</li>
+					</ul>
+					<div class="layui-tab-content" style="padding:0">
+						<table class="layui-hide" id="test" lay-filter="test"></table>
+					</div>
+				</div> 
+			</div> 
+		</div>
+	</div>
+<script type="text/html" id="toolbarDemo">
+<h3 class="h3-title" style="height:32px;">审批列表</h3>
+</script>						
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+		var tableIns = null;
+		function init(layui){
+			var table=layui.table,
+			element=layui.element,
+			rightpage=layui.rightpage,
+			layer=layui.layer;
+			
+			element.on('tab(tab)', function(data){
+				tableIns.reload({where:{status:data.index},page:{curr:1}});
+				return false;
+			});
+			
+			
+			tableIns = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,title:'审批列表'
+			,url: "/oa/approve/list"
+			,page: true //开启分页
+			,limit: 20
+			,cellMinWidth: 60
+			,cols: [[
+					{field:'id',width:80, title: 'ID号', align:'center'}
+					,{field:'name',title: '申请人',width:90,align:'center'}
+					,{field:'create_time',title: '申请时间',width:132,align:'center'}
+					,{field:'flow_type',title: '审批类型',width:100, align:'center'}
+					,{field:'department_name',title: '所属部门',width:100,align:'center'}
+					,{field:'check_user',title: '当前审批人'}
+					,{field:'check_status', title: '审批状态',width:80,align:'center',templet: function(d){
+						var htmlArray = ['<span style="color:#666666">待审批</span>','<span style="color:#4285f4">审批中</span>','<span style="color:#34a853">已通过</span>','<span style="color:#FF5722">已拒绝</span>','<span style="color:#fbbc05">已撤销</span>'];
+						return htmlArray[d.check_status];
+					}}
+					,{width:60,title: '操作', align:'center',templet: function(d){
+						var btn='<a class="layui-btn layui-btn-xs" lay-event="view">详情</a>';
+						return btn;
+					}}
+				]]
+			});
+			
+			table.on('tool(test)',function (obj) {
+				if(obj.event === 'view'){		
+					rightpage.open('/oa/approve/view?id='+obj.data.id,'900px');
+				}
+			});
+			
+			$('.square').on('click','.layui-col-md4',function(){
+				var type=$(this).data('type');
+				rightpage.open('/oa/approve/add?type='+type,'900px');	
+			});
+
+		}
+	</script>
+	{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

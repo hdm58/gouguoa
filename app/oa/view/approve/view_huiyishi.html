@@ -1,0 +1,34 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+{include file="/approve/view_style" /}
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form page-content">
+	<h3 class="h3-title">会议室预定审批</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">会议室名称</td>
+			<td>{$detail.name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">预定时间</td>
+			<td>{$detail.start_time} 至 {$detail.end_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注</td>
+			<td colspan="3">{$detail.remark}</td>
+		</tr>
+	</table>
+	
+	{include file="/approve/view_step" /}
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+{include file="/approve/view_script" /}
+{include file="../../base/view/common/layui" base='base' extend="['employeepicker']" callback="init" /}
+{/block}
+<!-- /脚本 -->

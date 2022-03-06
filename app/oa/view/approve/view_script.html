@@ -1,0 +1,257 @@
+<script>
+	function init(layui){
+		var form = layui.form
+		,dropdown = layui.dropdown
+		,employeepicker = layui.employeepicker
+		,layer = layui.layer;
+		
+		//获取审核信息
+		$.ajax({
+			url: "/api/index/get_flow_nodes",
+			type:'post',
+			data:{id:$('[name="id"]').val()},
+			success: function (e) {
+				if (e.code == 0) {	
+					console.log(e);
+					let flowHtml='',list = e.data,record_list='';
+					for(var f=0;f<list.length;f++){
+						//审批流程
+						let checkUser = '',
+						iconRight ='<span class="layui-icon layui-icon-right"></span>',
+						iconStatus ='<i class="layui-icon layui-icon-time"></i>',
+						strStatus ='<div class="check-item-status">待审核</div>';
+						if(f == list.length-1){
+							iconRight ='';
+						}
+						if(list[f].flow_type == 1 || list[f].flow_type == 2){
+							checkUser=list[f].flow_type == 1?'部门负责人':'上级部门负责人';
+							if(list[f].check_list.length>0){
+								if(list[f].check_list[0].status == 1){
+									iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+									strStatus ='<div class="check-item-status">通过</div>';
+								}
+								else if(list[f].check_list[0].status == 2){
+									iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+									strStatus ='<div class="check-item-status">拒绝</div>';
+								}
+							}
+						}
+						else if(list[f].flow_type == 0 ){
+							checkUser=list[f].user_id_info[0].name;
+							if(list[f].check_list.length>0){
+								iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+								strStatus ='<div class="check-item-status">拒绝</div>';
+								for(var m=0;m<list[f].check_list.length;m++){
+									if(list[f].check_list[m].status == 1){
+										iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+										strStatus ='<div class="check-item-status">通过</div>';
+									}
+								}
+							}
+						}
+						else if(list[f].flow_type == 3 ){
+							checkUser='多人或签';
+							if(list[f].user_id_info.length>0){
+								iconStatus ='<i class="layui-icon layui-icon-time"></i>';
+								strStatus ='<div class="check-item-status">待审核</div>';
+								for(var m=0;m<list[f].user_id_info.length;m++){
+									if(list[f].user_id_info[m].status == 1){
+										iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+										strStatus ='<div class="check-item-status">通过</div>';
+										break;
+									}
+									if(list[f].user_id_info[m].status == 2){
+										iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+										strStatus ='<div class="check-item-status">拒绝</div>';
+									}
+																	
+								}
+							}
+						}
+						else if(list[f].flow_type == 4){
+							checkUser='多人会签';
+							if(list[f].user_id_info.length>0){
+								iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
+								strStatus ='<div class="check-item-status">通过</div>';
+								for(var m=0;m<list[f].user_id_info.length;m++){
+									if(list[f].user_id_info[m].status == 2){
+										iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
+										strStatus ='<div class="check-item-status">拒绝</div>';
+										break;
+									}
+									if(list[f].user_id_info[m].status == 0){
+										iconStatus ='<i class="layui-icon layui-icon-time"></i>';
+										strStatus ='<div class="check-item-status">待审核</div>';
+									}
+								}
+							}
+						}
+						flowHtml+= '<div class="flow-flexbox check-item flow-flex-row" id="flow'+f+'">'+iconStatus+'\
+							<div class="check-item-name">'+checkUser+'</div>'+strStatus+iconRight+'\
+						</div>';
+						
+						
+						//审批历史数据						
+						var sign_type = '',user_check_list='';
+						if(list[f].check_list.length>0){
+							if(list[f].flow_type==3){
+								sign_type= ' <span class="layui-badge layui-bg-blue">或签</span>'
+							}
+							if(list[f].flow_type==4){
+								sign_type= ' <span class="layui-badge layui-bg-blue">会签</span>'
+							}
+							for(var b=0;b<list[f].check_list.length;b++){
+								var status_str = '通过了此申请';
+								if(list[f].check_list[b].status == 2){
+									status_str = '拒绝了此申请';
+								}
+								user_check_list+= '<li style="padding:3px 0"><img src="'+list[f].check_list[b].thumb+'" style="width:22px; height:22px; border-radius:50%; margin-right:8px;" />'+list[f].check_list[b].name+'<span class="check-status">'+list[f].check_list[b].check_time_str+status_str+'</span><div class="check-remark">'+list[f].check_list[b].content+'</div></li>';
+							}
+						
+							record_list+='<li class="layui-timeline-item">\
+										<i class="layui-icon layui-timeline-axis">&#x1005;</i>\
+										<div class="layui-timeline-content">\
+										  <p class="layui-timeline-title">第'+(f+1)+'级'+sign_type+'</p>\
+										  <ul>'+user_check_list+'</ul>\
+										</div>\
+									</li>';							
+						}
+					}
+					
+					$('#flowList').append(flowHtml);
+					if(record_list == ''){
+						record_list='<div style="text-align:center; color:#999; padding:10px 10px 20px;">无审批记录</div>';
+					}
+					dropdown.render({
+						elem: '#showRecord'
+						,trigger: 'click'
+						,content: ['<div class="flow-record">'
+						  ,'<ul>'+record_list+'</ul>'
+						,'</div>'].join('')
+					});
+					
+					for(var f=0;f<list.length;f++){
+						if(list[f].flow_type == 3 || list[f].flow_type == 4){
+							var user_list= '';
+							for(var a=0;a<list[f].user_id_info.length;a++){
+								if(list[f].user_id_info[a].status==0){
+									user_list+='<li><i class="layui-icon layui-icon-time"></i> '+list[f].user_id_info[a].name+'<span>待审核此申请</span></li>';
+								}
+								else if(list[f].user_id_info[a].status==1){
+									user_list+='<li><i class="layui-icon layui-icon-ok-circle" data-ok=""></i><span>'+list[f].user_id_info[a].check_time+'</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+list[f].user_id_info[a].name+'<span>已通过此申请</span></li>';
+								}else if(list[f].user_id_info[a].status==2){
+									user_list+='<li><i class="layui-icon layui-icon-close" data-no=""></i><span>'+list[f].user_id_info[a].check_time+'</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+list[f].user_id_info[a].name+'<span>已拒绝此申请</span></li>';
+								}										
+							}
+							dropdown.render({
+								elem: '#flow'+f
+								,trigger: 'hover'
+								,content: ['<div class="flow-tips">'
+								  ,'<ul>'+user_list+'</ul>'
+								,'</div>'].join('')
+							});
+						}
+					}					
+				}
+			}
+		})	 
+		
+		//选择人员		
+		$('.layui-form').on('click','[name="check_admin_name"]',function(){
+			employeepicker.init({
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				type:0,
+				callback:function(ids,names){
+					$('[name="check_admin_ids"]').val(ids),
+					$('[name="check_admin_name"]').val(names);
+				}
+			});
+		})
+		
+		
+		//监听提交
+		$('#formBtn').on('click','span', function(data){
+			let id=$('[name="id"]').val();
+			let content=$('[name="content"]').val();
+			let check_status=$(this).data('status');
+			
+			let flow_type = $('input[name="flow_type"]').val();
+			let check_node=0,check_admin_ids=0;
+			if(flow_type == 0 && check_status==1){
+				check_node = $('input[name="check_node"]:checked').val();
+				check_admin_ids = $('input[name="check_admin_ids"]').val();
+				if(!check_node){
+					layer.msg('请选择下一审批节点');
+					return false;
+				}
+				if(check_node == 2 && check_admin_ids==''){
+					layer.msg('请选择下一审批人');
+					return false;
+				}
+			}			
+			
+			if(check_status ==1 || check_status==2){
+				if(content==''){
+					layer.msg('请输入审批意见');
+					return false;
+				}
+				let confirmTips='确定通过该审核？';
+				if(check_status==2){
+					confirmTips='确定拒绝该审核？';
+				}				
+				layer.confirm(confirmTips, function(index){
+					$.ajax({
+						url: "/oa/approve/check",
+						type:'post',
+						data:{
+							id:id,
+							check_node:check_node,
+							check_admin_ids:check_admin_ids,
+							status:check_status,
+							content:content
+						},
+						success: function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {	
+								parent.tableIns.reload();
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});   
+			}
+			else if(check_status ==3){			
+				layer.prompt({
+					formType: 2,
+					title: '请输入撤回理由',
+					area: ['500px', '120px'] //自定义文本域宽高
+				}, function(value, index, elem){
+					if(value==''){
+						layer.msg('请输入撤回理由');
+						return false;
+					}
+					$.ajax({
+						url: "/oa/approve/check",
+						type:'post',
+						data:{
+							id:id,
+							status:check_status,
+							content:value
+						},
+						success: function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {	
+								parent.tableIns.reload();
+								location.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			return false;
+		});
+	}
+</script>

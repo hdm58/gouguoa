@@ -1,0 +1,164 @@
+{extend name="../../base/view/common/base" /}
+<!-- 样式 -->
+{block name="style"}
+  <link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
+  <link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
+{/block}
+<!-- /样式 -->
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">人事调动</h3>
+	{if condition="$id eq 0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">调动员工<font>*</font></td>
+			<td>				
+				<input type="hidden" name="uid" value="0" autocomplete="off">
+				<input type="text" name="name" placeholder="请选择需要调动的员工" lay-reqText="请选择需要调动的员工" lay-verify="required" autocomplete="off" class="layui-input" readonly>
+			</td>
+			<td class="layui-td-gray">调出部门<font>*</font></td>
+			<td>				
+				<input type="hidden" name="from_did" value="0">
+				<input type="text" name="from_department" lay-verify="required" autocomplete="off" placeholder="请选择调出部门" lay-reqText="请选择调出部门"	class="layui-input" readonly>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">调动日期<font>*</font></td>
+			<td><input type="text" id="move_time" name="move_time" lay-verify="required" autocomplete="off" placeholder="请选择调动日期" lay-reqText="请选择调动日期" readonly class="layui-input">
+			</td>
+			<td class="layui-td-gray">调入部门<font>*</font></td>
+			<td>
+			<select name="to_did" lay-verify="required" lay-reqText="请选择调入部门">
+				<option value="">请选择调入部门</option>
+				{volist name="$department" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">调动描述</td>
+			<td colspan="3">				
+				<textarea name="remark" placeholder="请输入调动描述" class="layui-textarea"></textarea>
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">调动员工<font>*</font></td>
+			<td>				
+				{$detail.name}
+			</td>
+			<td class="layui-td-gray">调出部门<font>*</font></td>
+			<td>				
+				{$detail.from_department}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">调动日期<font>*</font></td>
+			<td>{$detail.move_time}
+			</td>
+			<td class="layui-td-gray">调入部门<font>*</font></td>
+			<td>
+			<select name="to_did" lay-verify="required" disabled lay-reqText="请选择调入部门">
+				<option value="">请选择调入部门</option>
+				{volist name="$department" id="v"}
+				<option value="{$v.id}" {eq name="$detail.to_did" value="$v.id"} selected{/eq}>{$v.title}</option>
+				{/volist}
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">调动描述</td>
+			<td colspan="3">				
+				<textarea name="remark" placeholder="请输入调动描述" class="layui-textarea">{$detail.remark}</textarea>
+			</td>
+		</tr>
+	</table>
+	{/if}
+	<div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$id}" />
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form
+			, layer = layui.layer
+			, laydate = layui.laydate
+			,employeepicker = layui.employeepicker;
+
+		laydate.render({
+			elem: '#move_time',
+			showBottom:false
+		});
+
+		$('.page-content').on('click','[name="from_department"]',function(){
+			var val=$(this).val();
+			if(val==''){
+				layer.msg('请先选择需要调动的员工');
+			}			
+		});
+		
+		
+		//选择员工弹窗	
+		$('.page-content').on('click','[name="name"]',function () {
+			var ids=$('[name="uid"]').val(),names=$('[name="name"]').val(),dids=$('[name="from_did"]').val(),departments=$('[name="from_department"]').val();
+			employeepicker.init({
+				ids:ids,
+				names:names,
+				dids:dids,
+				departments:departments,
+				department_url: "/api/index/get_department_tree",
+				employee_url: "/api/index/get_employee",
+				type:0,
+				callback:function(ids,names,dids,departments){
+					$('[name="uid"]').val(ids);
+					$('[name="name"]').val(names);
+					$('[name="from_did"]').val(dids);
+					$('[name="from_department"]').val(departments);
+				}
+			});
+		}); 
+
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			if(data.field.uid==0 || data.field.from_did==0){
+				layer.msg('请选择要调用的员工');
+				return false;
+			}
+			if(data.field.to_did==data.field.from_did){
+				layer.msg('要调入的部门和调出的部门不能是同一个部门');
+				return false;
+			}
+			$.ajax({
+				url: "/user/personal/change_add",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						parent.tableIns.reload();
+						setTimeout(function(){
+							parent.layui.rightpage.close();
+						},1000);
+					}
+				}
+			})
+			return false;
+		});
+	}
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['employeepicker']" callback="init" /}
+{/block}
+<!-- /脚本 -->

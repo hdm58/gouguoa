@@ -1,0 +1,174 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<div class="layui-tab layui-tab-brief" lay-filter="tab">
+		<ul class="layui-tab-title">
+			<li class="layui-this">全部</li>
+			<li>待我审批</li>
+			<li>我已审批</li>
+		</ul>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-container">
+    <h3 class="h3-title" style="height:32px;">发票列表</h3>
+</div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns=null;
+	function init(layui) {
+		var table = layui.table,
+			rightpage = layui.rightpage,
+			element=layui.element,
+			form = layui.form;
+
+		element.on('tab(tab)', function(data){
+			tableIns.reload({where:{status:data.index},page:{curr:1}});
+			return false;
+		});
+		tableIns = table.render({
+			elem: '#test',
+			title: '发票列表',
+			toolbar: '#toolbarDemo',
+			url: "/finance/invoice/list", //数据接口		
+			page: true, //开启分页
+			limit: 20,
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'invoice_title',
+						title: '开票抬头',
+						width: 320,
+						templet:function(d){
+							var html='';
+							if(d.type==1){
+								html='<span class="layui-badge layui-bg-blue">企业</span> '+d.invoice_title;
+							}
+							else if(d.type==2){
+								html='<span class="layui-badge layui-bg-green">个人</span> '+d.invoice_title;
+							}
+							return html;
+						}
+					},{
+						field: 'amount',
+						title: '开票金额(元)',
+						align: 'right',
+						style: 'color:#1E9FFF',
+						width: 100,
+					},{
+						field: 'invoice_type',
+						title: '开票类型',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='-';
+							if(d.invoice_type==1){
+								html='<span style="color:#1E9FFF">专票</span>';
+							}
+							else if(d.invoice_type==2){
+								html='<span style="color:#5FB878">普票</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'check_status',
+						title: '发票状态',
+						align: 'center',
+						width: 100,
+						templet:function(d){
+							var html='<span style="color:#FF5722">待审核</span>';
+							if(d.check_status==1){
+								html='<span style="color:#FFB800">审核中</span>';
+							}
+							else if(d.check_status==2){
+								html='<span style="color:#5FB878">待开具</span>';
+							}
+							else if(d.check_status==3){
+								html='<span style="color:#FF5722">审核不通过</span>';
+							}
+							else if(d.check_status==4){
+								html='<span style="color:#FF5722">撤销</span>';
+							}
+							else if(d.check_status==5){
+								html='<span style="color:#1E9FFF">已开具</span>';
+							}
+							else if(d.check_status==10){
+								html='<span style="color:#FF5722">已作废</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'name',
+						title: '申请人',
+						align: 'center',
+						width: 100
+					},{
+						field: 'department_name',
+						title: '所属部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '申请时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'check_user',
+						title: '当前审核人',
+						width: 200
+					},{
+						field: 'open_name',
+						title: '开票人',
+						align: 'center',
+						width: 100
+					},{
+						field: 'open_time',
+						title: '开票时间',
+						align: 'center',
+						width: 100
+					},{
+						field: 'code',
+						title: '发票号码',
+						align: 'center',
+						width: 136
+					}, {
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 80,
+						align: 'center',
+						templet:function(d){
+							//0待审、1审批中、2通过、3失败、4撤销、5已开具、10已作废
+							var html='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				rightpage.open("/finance/invoice/view?id="+data.id,"900px");
+				return;
+			}
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" use="['table','form']" callback="init" /}
+{/block}
+<!-- /脚本 -->

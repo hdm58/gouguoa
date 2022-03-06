@@ -1,0 +1,86 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div class="layui-input-inline">
+			<input type="text" name="keywords" placeholder="职业名称/备注" class="layui-input" autocomplete="off"/>
+		</div>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加人事调动记录</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui) {
+		var table = layui.table
+			,rightpage = layui.rightpage
+			, form = layui.form;
+
+		tableIns = table.render({
+			elem: '#test'
+			, toolbar: '#toolbarDemo'
+			, url: "/user/personal/change"
+			, page: true //开启分页
+			, limit: 20
+			, cols: [[
+				{ field: 'id', width: 80, title: '序号', align: 'center' }
+				, { field: 'name', width: 160, title: '员工姓名', align: 'center'}
+				, { field: 'adepartment', width: 200, title: '调出部门', align: 'center'}
+				, { field: 'bdepartment', width: 200, title: '调入部门',align: 'center'}
+				, { field: 'move_time', title: '调动日期', align: 'center'}
+				, { field: 'admin', title: '调动操作人',width: 160, align: 'center'}
+				, {
+					width: 80, title: '操作', align: 'center'
+					, templet: function (d) {
+						var html = '';
+						var delBtn = '<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
+						return delBtn;
+					}
+				}
+			]]
+		});
+		
+		//监听行工具事件
+		table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'edit'){
+				rightpage.open('/user/personal/change_add?id='+data.id,"900px");
+				return;
+			}
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			if (obj.event === 'add') {
+				rightpage.open("/user/personal/change_add","900px");
+				return;
+			}
+		});
+
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			if(data.field.keywords) {
+			  tableIns.reload({where:{keywords:data.field.keywords},page:{curr:1}});			  
+			}
+			else{
+				location.reload();
+			}
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

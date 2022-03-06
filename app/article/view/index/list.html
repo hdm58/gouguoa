@@ -1,0 +1,161 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div class="layui-input-inline">
+			<select name="article_cate_id">
+				<option value="">请选择知识文章分类</option>
+				{volist name=":set_recursion(article_cate())" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:300px;">
+			<input type="text" name="keywords" placeholder="标题/分类/描述/内容" class="layui-input" autocomplete="off" />
+		</div>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="status">
+	<i class="layui-icon {{#  if(d.status == 1){ }}layui-icon-ok{{#  } else { }}layui-icon-close{{#  } }}"></i>
+</script>
+<script type="text/html" id="is_share">
+	<i class="layui-icon {{#  if(d.is_share == 1){ }}layui-icon-ok{{#  } else { }}layui-icon-close{{#  } }}"></i>
+</script>
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-container">
+   <span class="layui-btn layui-btn-normal layui-btn-sm" title="添加文章" lay-event="add">+ 添加知识文章</span>
+</div>
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</span><span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span><span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span></div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			table = layui.table,
+			rightpage = layui.rightpage,
+			form = layui.form;
+
+		tableIns = table.render({
+			elem: '#test',
+			title: '文章列表',
+			toolbar: '#toolbarDemo',
+			url: "/article/index/list", //数据接口
+			page: true, //开启分页
+			limit: 20,
+			cols: [
+				[ //表头
+					{
+						field: 'id',
+						title: '编号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'sort',
+						title: '排序',
+						align: 'center',
+						width: 66
+					}, {
+						field: 'cate_title',
+						title: '分类',
+						align: 'center',
+						width: 120
+					}, {
+						field: 'title',
+						title: '文章标题'
+					},{
+						field: 'read',
+						title: '阅读量',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'status',
+						title: '状态',
+						toolbar: '#status',
+						align: 'center',
+						width: 66
+					}, {
+						field: 'is_home',
+						title: '是否共享',
+						toolbar: '#is_share',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'right',
+						title: '操作',
+						toolbar: '#barDemo',
+						width: 130,
+						align: 'center'
+					}
+				]
+			]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			if (obj.event === 'add') {
+				rightpage.open("/article/index/add");
+				return;
+			}
+		});
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if(obj.event === 'view'){
+				rightpage.open('/article/index/view?id='+data.id,'900px');
+				return;
+			}
+			if(obj.event === 'edit'){
+				rightpage.open('/article/index/add?id='+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/article/index/delete",
+						data: {
+							id: data.id
+						},
+						success: function(e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+
+		//监听搜索提交
+		form.on('submit(webform)', function(data) {
+			tableIns.reload({
+				where: {
+					keywords: data.field.keywords,
+					article_cate_id: data.field.article_cate_id
+				},
+				page: {
+					curr: 1
+				}
+			});
+			return false;
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

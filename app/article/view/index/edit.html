@@ -1,0 +1,145 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form page-content">
+	<h3 class="h3-title">编辑知识文章</h3>
+    <table class="layui-table">
+      <tr>
+        <td class="layui-td-gray">文章标题 <span style="color: red">*</span></td>
+        <td colspan="3"><input type="text" name="title" lay-verify="required" lay-reqText="请输入文章标题" autocomplete="off" placeholder="请输入文章标题"
+            class="layui-input" value="{$article.title}"></td>
+        <td class="layui-td-gray">文章分类<span style="color: red">*</span></td>
+        <td>
+          <select name="article_cate_id" lay-verify="required" lay-reqText="请选择分类">
+            <option value="">请选择分类</option>
+            {volist name=":set_recursion(article_cate())" id="v"}
+            <option value="{$v.id}" {eq name="$article.article_cate_id" value="$v.id" }selected{/eq}>{$v.title}</option>
+            {/volist}
+          </select>
+        </td>	
+      </tr>
+      <tr>
+        <td class="layui-td-gray">关键字<span style="color: red">*</span></td>
+        <td colspan="3">
+          <input type="text" id="keyword_name" name="keyword_names" autocomplete="off" lay-verify="required" lay-reqText="请选择关键字" placeholder="请选择关键字"
+            class="layui-input" value="{$article.keyword_names}" readonly>
+          <input type="hidden" id="keyword_id" name="keywords_id" autocomplete="off" value="{$article.keyword_ids}">
+        </td>
+		<td class="layui-td-gray">属性</td>
+        <td>
+          <select name="type">
+            <option value="">请选择属性</option>
+            <option value="1" {eq name="$article.type" value="1" }selected{/eq}>精华</option>
+            <option value="2" {eq name="$article.type" value="2" }selected{/eq}>热门</option>
+            <option value="3" {eq name="$article.type" value="3" }selected{/eq}>推荐</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="layui-td-gray">是否共享<span style="color: red">*</span></td>
+        <td>
+          <input type="radio" name="is_share" value="1" title="是" {eq name="$article.is_share" value="1" }checked{/eq}>
+          <input type="radio" name="is_share" value="0" title="否" {eq name="$article.is_share" value="0" }checked{/eq}>
+        </td>
+        <td class="layui-td-gray" style="width:50px">状态</td>
+        <td>
+          <input type="radio" name="status" value="1" title="正常" {eq name="$article.status" value="1" }checked{/eq}>
+          <input type="radio" name="status" value="0" title="下架" {eq name="$article.status" value="0" }checked{/eq}>
+        </td>
+        <td class="layui-td-gray">排序</td>
+        <td>
+          <input type="text" name="sort" placeholder="请输入排序，数字" autocomplete="off" class="layui-input" value="{$article.sort}">
+        </td>
+      </tr>
+      <tr>
+        <td class="layui-td-gray" style="vertical-align:top;">文章摘要</td>
+        <td colspan="3">
+          <textarea name="desc" placeholder="请输入摘要，不能超过200个字" class="layui-textarea">{$article.desc}</textarea>
+        </td>
+        <td class="layui-td-gray" style="vertical-align:top;">缩略图</td>
+        <td>
+          <div class="layui-upload">
+            <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="test1">缩略图(尺寸：240x136)</button>
+            <div class="layui-upload-list" id="demo1" style="width: 120px; height:66px; overflow: hidden;">
+              <img src="{:get_file($article.thumb)}" style="max-width: 100%; height:66px;" />
+              <input type="hidden" name="thumb" value="{$article.thumb}">
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="layui-td-gray" style="vertical-align:top;">文章内容<span style="color: red">*</span></td>
+        <td colspan="5">
+          <textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" lay-verify="required" lay-reqText="请完善文章内容"
+            style="border:0;padding:0">{$article.content}</textarea>
+        </td>
+      </tr>
+    </table>
+    <div style="padding: 10px 0">
+		<input type="hidden" name="id" value="{$article.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	function init(layui) {
+		var form = layui.form
+		  , layer = layui.layer
+		  , tagspicker = layui.tagpicker
+		  , upload = layui.upload;
+
+	var tags = new tagspicker({
+		'url': "/home/api/get_keyword_cate",
+		'target': 'keyword_name',
+		'tag_ids': 'keyword_id',
+		'tag_tags': 'keyword_name',
+		'height': 500,
+		'isDiy': 1
+	});
+
+    //封面上传
+    var uploadInst = upload.render({
+			elem: '#test1',
+			url: "/api/index/upload",
+			done: function (res) {
+				//如果上传失败
+				if (res.code == 1) {
+					return layer.msg('上传失败');
+				}
+				//上传成功
+				$('#demo1 input').attr('value', res.data.id);
+				$('#demo1 img').attr('src', res.data.filepath);
+			}
+    });
+
+    //监听提交
+    form.on('submit(webform)', function (data) {
+		$.ajax({
+			url: "/article/index/add",
+			type: 'post',
+			data: data.field,
+			success: function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					parent.tableIns.reload();
+					setTimeout(function(){
+						parent.layui.rightpage.close();
+					},1000);
+				}
+			}
+		})
+		return false;
+    });
+
+  }
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['tagpicker']" callback="init" /}
+{include file="../../base/view/common/ueditor" id="container" name="content" width="750" height="360" toolbar="[]" /}
+{/block}
+<!-- /脚本 -->

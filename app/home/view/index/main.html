@@ -1,0 +1,515 @@
+{extend name="../../base/view/common/base" /}
+
+{block name="style"}
+<style type="text/css">
+	.table-title {
+		font-size: 18px;
+		font-weight: 800;
+		padding: 15px 15px 0;
+	}
+	.panel-num table {
+		width: 100%;
+	}
+	.panel-num td {
+		text-align: center;
+		padding: 20px 0;
+		width: 20%;
+		border-left: 1px solid #eee
+	}
+
+	.panel-num .num-title {
+		padding-bottom: 10px;
+		color: #999;
+	}
+
+	.panel-num .num-num {
+		font-size: 28px;
+		font-weight: 300;
+		color: #009688;
+	}
+
+	.layui-timeline-title {
+		padding-bottom: 0;
+	}
+
+	.layui-timeline-item {
+		padding-bottom: 1px;
+	}
+
+	.layui-timeline-title span {
+		color: #999
+	}
+	.layui-timeline{
+		padding-bottom: 30px;
+	}
+	.panel-more {
+		width: 100%;
+		height: 48px;
+		line-height: 48px;
+		text-align: center;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+	}
+
+	.panel-more a {
+		color: #0088FF
+	}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="layui-row layui-col-space15">
+	<div class="layui-col-md8">
+		<div class="layui-row layui-col-space15">
+			<div class="layui-col-md12">
+				<div class="layui-card panel-num">
+					<table>
+						<tr>
+						  <td>
+							<div class="num-title">员工</div>
+							<div class="num-num">{$adminCount}</div>
+						  </td>
+						  <td>
+							<div class="num-title">知识</div>
+							<div class="num-num">{$articleCount}</div>
+						  </td>
+						  <td>
+							<div class="num-title">审批</div>
+							<div class="num-num">{$approveCount}</div>
+						  </td>
+						  <td>
+							<div class="num-title">报销</div>
+							<div class="num-num">{$expenseCount}</div>
+						  </td>
+						  <td>
+							<div class="num-title">发票</div>
+							<div class="num-num">{$invoiceCount}</div>
+						  </td>
+						</tr>
+					</table>
+				</div>
+				<div class="layui-card">
+					<div class="table-title">企业公告</div>
+					<div style="padding: 15px;">
+						<table id="Note" lay-filter="Note" class="layui-hide" style="margin-top:0"></table>
+					</div>
+				</div>
+				<div class="layui-card">
+					<div class="table-title">知识列表</div>
+					<div style="padding: 15px;">
+						<table id="Article" lay-filter="Article" class="layui-hide" style="margin-top:0"></table>
+					</div>
+				</div>
+				<div class="layui-card">
+					<div id="chartView" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="layui-card">
+					<div id="chartYear" style="width: 100%;height:240px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-col-md4">
+		<div class="layui-card">
+			<div class="table-title">系统信息</div>
+			<div class="layui-card-body">
+				<table class="layui-table" lay-skin="" lay-size="sm">
+					{if condition="($install == true)"}
+					<tr>
+						<td colspan="4" style="color: #E94335; background-color:#f5f5f5">提醒：发现app目录下的install文件夹没删除，为了系统的安全,请手动去删除。</td>
+					</tr>
+					{/if}
+					<tr>
+						<td class="layui-td-gray">服务器系统</td>
+						<td>{:get_system_info('os')}</td>
+						<td class="layui-td-gray">PHP版本</td>
+						<td>{:get_system_info('php')}</td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">上传限制</td>
+						<td>{:get_system_info('upload_max_filesize')}</td>
+						<td class="layui-td-gray">执行限制</td>
+						<td>{:get_system_info('max_execution_time')}</td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">ThinkPHP</td>
+						<td colspan="3">{:TP_VERSION}<a class="layui-badge layui-bg-blue" style="margin-left:10px"
+								href="https://www.kancloud.cn/manual/thinkphp6_0" target="_blank">TP6文档</a></td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">Layui</td>
+						<td colspan="3">{:LAYUI_VERSION}<a class="layui-badge layui-bg-blue" style="margin-left:10px"
+								href="https://www.layui.site/doc/" target="_blank">Layui文档</a></td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">勾股OA</td>
+						<td colspan="3">{:CMS_VERSION}<a class="layui-badge layui-bg-blue" style="margin-left:10px"
+							href="https://blog.gougucms.com/home/book/detail/bid/3.html" target="_blank">勾股OA文档</a></td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">BUG反馈</td>
+						<td><a href="mailto:hdm58@qq.com" target="_blank">hdm58@qq.com</a></td>
+						<td class="layui-td-gray">QQ交流群</td>
+						<td><a href="https://qm.qq.com/cgi-bin/qm/qr?k=verenlO-kEIhi6yi4mvD_Goye2KF50sa&authKey=NsYa9Dcx6R5EYzKYScW1XT8RfQskT/wtsVxtDNOyuMBRRkTpBpO5bmCVNbozQYFi&noverify=0" target="_blank">24641076</a></td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">同系开源软件</td>
+						<td colspan="3"><a class="layui-badge layui-bg-blue" style="margin-right:20px" href="https://gitee.com/gougucms/gougucms" target="_blank">勾股CMS</a><a class="layui-badge layui-bg-blue" style="margin-right:20px" href="https://gitee.com/gougucms/blog.git" target="_blank">勾股BLOG</a></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="layui-card">
+			<div class="table-title">员工动态</div>
+			<div class="layui-card-body">
+				<ul class="layui-timeline" id="logs"></ul>
+				<div class="panel-more"><a href="javascript:;">查看更多动态</a></div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="https://cdn.staticfile.org/echarts/5.3.0/echarts.min.js"></script>
+<script>
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			layer = layui.layer,
+			table = layui.table;
+
+		//公告
+		table.render({
+			elem: '#Note'
+			, url: "/api/index/get_note_list" //数据接口
+			, page: false //开启分页
+			, cols: [[ //表头
+				{ field: 'cate_title', title: '公告分类', align: 'center','width': 90 },
+				{ field: 'title', title: '公告标题'},
+				{ field: 'view', title: '操作','width': 60 , align: 'center', templet:function(d){
+					var html='<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</button>';
+					return html;
+				}},
+				{ field: 'create_time', title: '发布时间', align: 'center','width': 136}
+			]]
+		});
+		//文章
+		table.render({
+			elem: '#Article'
+			, url: "/api/index/get_article_list" //数据接口
+			, page: false //开启分页
+			, cols: [[ //表头
+				{ field: 'cate_title', title: '知识分类', align: 'center','width': 90 },
+				{ field: 'title', title: '知识标题'},
+				{ field: 'read', title: '访问量', align: 'center','width': 80 },
+				{ field: 'view', title: '操作','width': 60 , align: 'center', templet:function(d){
+					var html='<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</button>';
+					return html;
+				}},
+				{ field: 'create_time', title: '发布时间', align: 'center','width': 136}
+			]]
+		});
+		
+		$('.panel-more').on('click', function () {
+			TAB.sonAdd('/api/index/log_list','员工动态');
+			return;
+		});
+		
+		//监听行工具事件
+		table.on('tool(Note)', function (obj) {
+			var data = obj.data;			
+			if (obj.event === 'view') {
+				TAB.sonAdd('/note/index/view?id='+data.id,'公告详情');
+				return;
+			}
+		});
+		table.on('tool(Article)', function (obj) {
+			var data = obj.data;			
+			if (obj.event === 'view') {
+				TAB.sonAdd('/article/index/view?id='+data.id,'知识文章详情');
+				return;
+			}
+		});
+		
+		get_logs();
+		
+		get_view_data();
+	}
+
+
+	function get_logs() {
+		$.ajax({
+			url: "/api/index/log_list",
+			type: 'post',
+			data: {
+				page: 1,
+				limit: 20
+			},
+			success: function (e) {
+				if (e.code == 0) {
+					var html = '';
+					$.each(e.data, function (key, value) {
+						html += '<li class="layui-timeline-item">\
+										<i class="layui-icon layui-timeline-axis"></i>\
+										<div class="layui-timeline-content layui-text">\
+										  <div class="layui-timeline-title"><span title="'+ value.id + '">' + value.times + '</span>，' + value.content + '</div>\
+										</div>\
+									  </li>';
+					});
+					$('#logs').html(html);
+				}
+			}
+		})
+	}
+
+
+	function setHour(num) {
+		var str = num + ':00';
+		if (num < 10) {
+			str = '0' + num + ':00';
+		}
+		return str;
+	}
+	
+	var chartView = echarts.init(document.getElementById('chartView'));
+	function get_view_data() {
+		$.ajax({
+			url: "/api/index/get_view_data",
+			type: 'post',
+			data: {},
+			success: function (e) {
+				if (e.code == 0) {
+					var data_first = e.data.data_first;
+					var data_second = e.data.data_second;
+					archiveCalendar = e.data.data_three;
+					var myDate = new Date();
+					var nowHour = myDate.getHours(); //获取当前小时数(0-23)
+					var xData = [];
+					var yData1 = [];
+					var yData2 = [];
+					$.each(data_first, function (key, value) {
+						if (key <= nowHour) {
+							yData1.push(value);
+						}
+					});
+					$.each(data_second, function (key, value) {
+						xData.push(setHour(key));
+						yData2.push(value);
+					});
+					var ops = {
+						title: {
+							top: '15px',
+							text: '今日与昨日员工活跃度',
+							left: '12px',
+							textStyle: {
+								fontSize: '18',
+								color: '#333',
+							}
+						},
+						color: ["#1AAD19", "#1890FF"],
+						grid: {
+							left: '20px',
+							right: '30px',
+							bottom: '15px',
+							top: '60px',
+							containLabel: true
+						},
+						tooltip: {
+							trigger: 'axis',
+							axisPointer: {
+								type: 'cross',
+								crossStyle: {
+									color: '#999'
+								}
+							}
+						},
+						toolbox: {
+							show: true,
+						},
+						legend: {
+							data: ["今日", "昨日"],
+							top: '18px',
+						},
+						xAxis: [{
+							type: "category",
+							boundaryGap: !1,
+							data: xData,
+							axisLine: {
+								lineStyle: {
+									color: '#999999',
+									width: 1,
+								}
+							},
+						}],
+						yAxis: [{
+							type: "value",
+							axisLine: {
+								show: true,
+								lineStyle: {
+									color: '#999999',
+									width: 1,
+								}
+							},
+						}],
+						series: [{
+							name: "今日",
+							type: "line",
+							smooth: !0,
+							itemStyle: {
+								normal: {
+									areaStyle: {
+										type: "default",
+										opacity: 0.2
+									}
+								}
+							},
+							data: yData1
+						}, {
+							name: "昨日",
+							type: "line",
+							smooth: !0,
+							itemStyle: {
+								normal: {
+									areaStyle: {
+										type: "default",
+										opacity: 0.2
+									}
+								}
+							},
+							data: yData2
+						}]
+					}
+					chartView.setOption(ops);
+
+
+					let myChart = echarts.init(document.getElementById('chartYear'));
+					let option = {
+						title: {
+							top: '15px',
+							text: '近一年员工活跃度',
+							left: '12px',
+							textStyle: {
+								fontSize: '18',
+								color: '#333',
+							}
+						},
+						tooltip: {
+							padding: 6,
+							formatter: function (obj) {
+								var value = obj.value;
+								return '<div style="font-size: 12px;">' + value[0] + '员工活跃度：' + value[1] + '</div>';
+							}
+						},
+						visualMap: {
+							min: 0,
+							max: 300,
+							show: false,
+							inRange: {
+								color: ['#fafafa', '#1AAD19']
+							}
+						},
+						calendar: {
+							top: 75,
+							left: 52,
+							right: 20,
+							range: getRange(),
+							cellSize: ['auto', 21],
+							splitLine: {
+								lineStyle: {
+									color: '#aaa',
+									type: 'dashed'
+								}
+							},
+							itemStyle: {
+								borderWidth: 0.5
+							},
+							yearLabel: { show: false },
+							monthLabel: {
+								nameMap: 'cn',
+								fontSize: 12
+							},
+							dayLabel: {
+								show: true,
+								formatter: '{start}  1st',
+								fontWeight: 'lighter',
+								nameMap: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+								fontSize: 12
+							}
+						},
+						series: [{
+							type: 'heatmap',
+							coordinateSystem: 'calendar',
+							calendarIndex: 0,
+							data: getDay()
+						}]
+					};
+					myChart.setOption(option);
+
+					setTimeout(function () {
+						window.onresize = function () {
+							chartView.resize();
+							myChart.resize();
+						}
+					})
+					console.log(e.data);
+				}
+			}
+		})
+
+		var archiveCalendar = {};
+		function getRange() {
+			let today = new Date();
+			let tYear = today.getFullYear();
+			let tMonth = today.getMonth() + 1;
+			let tDate = today.getDate();
+			let dateFirst = tYear + "-" + tMonth + "-" + tDate;
+			let datelast = (tYear - 1) + "-" + tMonth + "-" + tDate;
+			let dataRange = [];
+			dataRange.push(dateFirst);
+			dataRange.push(datelast);
+			return dataRange;
+		}
+
+		function getDay() {
+			var today = new Date();
+			var dayArray = [];
+			for (var i = 0; i < 366; i++) {
+				var targetday_milliseconds = today.getTime() - 1000 * 60 * 60 * 24 * i;
+				var date = new Date(targetday_milliseconds);
+				dayArray.push(retunDay(date));
+			}
+			return dayArray;
+		}
+
+		function retunDay(day) {
+			var tYear = day.getFullYear();
+			var tMonth = day.getMonth();
+			var tDate = day.getDate();
+			tMonth = tMonth + 1;
+			if (tMonth.toString().length == 1) {
+				tMonth = "0" + tMonth;
+			}
+			if (tDate.toString().length == 1) {
+				tDate = "0" + tDate;
+			}
+			var dateStr = tYear + "-" + tMonth + "-" + tDate;
+			var dateArray = [];
+			dateArray.push(dateStr);
+			if (archiveCalendar[dateStr]) {
+				dateArray.push(archiveCalendar[dateStr]);
+			}
+			else {
+				dateArray.push(0);
+			}
+			return dateArray;
+		}
+	}
+
+</script>
+{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,126 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="status">
+	<i class="layui-icon {{#  if(d.status == 1){ }}layui-icon-ok{{#  } else { }}layui-icon-close{{#  } }}"></i>
+</script>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+    <span class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加公告</span>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</span><span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span><span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span></div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui) {
+		var table = layui.table,
+			rightpage = layui.rightpage,
+			form = layui.form;
+
+		tableIns = table.render({
+			elem: '#test',
+			title: '公告列表',
+			toolbar: '#toolbarDemo',
+			url: "/note/index/index", //数据接口		
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'sort',
+						title: '排序',
+						align: 'center',
+						width: 80
+					},{
+						field: 'cate_title',
+						title: '公告分类',
+						align: 'center',
+						width: 136
+					}, {
+						field: 'title',
+						title: '公告标题'
+					}, {
+						field: 'cate_title',
+						title: '公告展示期间',
+						align: 'center',
+						width: 196,
+						templet: function (d) {
+							var html = d.start_time + ' ~ ' + d.end_time;
+							return html;
+						}
+					},{
+						field: 'status',
+						title: '状态',
+						toolbar: '#status',
+						align: 'center',
+						width: 60
+					}, {
+						field: 'right',
+						title: '操作',
+						toolbar: '#barDemo',
+						width: 136,
+						align: 'center'
+					}
+				]
+			]
+		});
+
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			if (obj.event === 'add') {
+				rightpage.open("/note/index/add");
+				return;
+			}
+		})
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				rightpage.open("/note/index/view?id="+data.id,'900px');
+				return;
+			}
+			if (obj.event === 'edit') {
+				rightpage.open("/note/index/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定删除该公告吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/note/index/delete",
+						data: {
+							id: data.id
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 1) {
+								obj.del();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" use="['table','form']" callback="init" /}
+{/block}
+<!-- /脚本 -->

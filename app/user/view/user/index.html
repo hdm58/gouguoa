@@ -1,0 +1,354 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+  <style>
+	html,body{height: calc(100% - 12px);}
+	.layui-tree-entry{font-size:15px; line-height:24px}
+	.layui-tree-set{padding:2px 0}
+	.layui-tree-iconClick .layui-icon{color:#1E9FFF}
+	.layui-icon layui-icon-file{font-size:16px;}
+	.layui-tree-icon {height: 14px;line-height: 14px; width: 14px; text-align: center;border: 1px solid #1E9FFF; color:#1E9FFF}
+	.layui-tree-line .layui-tree-set .layui-tree-set:after{top:18px;}
+	.tree-left{width:200px; float:left; height:calc(100% - 30px); overflow: scroll; border:1px solid #eeeeee; background-color:#FAFAFA; padding:12px 12px 12px 5px;}
+	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
+  </style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div style="height: 100%">
+	<div class="tree-left">
+		<h3>企业组织架构</h3>
+		<div id="depament"></div>
+	</div>
+	<div class="body-table" style="margin-left:228px;">
+		<form class="layui-form layui-form-bar">
+			<div class="layui-input-inline" style="width:136px">
+				<select name="status">
+					<option value="">选择员工状态</option>
+					<option value="1">正常状态</option>
+					<option value="0">禁止登录</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:136px">
+				<select name="type">
+					<option value="">选择员工类型</option>
+					<option value="1">正式员工</option>
+					<option value="2">试用员工</option>
+					<option value="3">实习员工</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:240px">
+				<input type="text" name="keywords" placeholder="输入关键字，如：ID/姓名/手机号码" class="layui-input" autocomplete="off" />
+			</div>
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+		</form>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+
+<script type="text/html" id="thumb">
+	<img src="{{d.thumb}}" width="30" height="30" />
+</script>
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>添加员工</button>
+		<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="disable"><i class="layui-icon">&#x1006;</i>禁止登录</button>
+		<button class="layui-btn layui-btn-sm" lay-event="recovery"><i class="layui-icon">&#xe605;</i>恢复正常</button>
+	</div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns = null;
+	function init(layui) {
+		var TAB = parent.layui.tab,
+			tree = layui.tree,
+			table = layui.table,
+			rightpage = layui.rightpage,
+			form = layui.form;
+			
+			$.ajax({
+				url: "/api/index/get_department_tree",
+				type:'post',
+				success:function(res){					
+					//仅节点左侧图标控制收缩
+					tree.render({
+						elem: '#depament',
+						data: res.trees,
+						onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
+						click: function(obj){
+							//layer.msg(JSON.stringify(obj.data));
+							tableIns.reload({
+							   where: {did: obj.data.id}
+							   ,page:{curr:1}
+							});
+							$('[name="keywords"]').val('');
+							$('[name="status"]').val('');
+							$('[name="type"]').val('');
+							layui.form.render('select');
+						}
+					});	
+				}
+			})
+			
+			
+			
+		tableIns = table.render({
+			elem: '#test',
+			title: '员工列表',
+			toolbar: '#toolbarDemo',
+			url: "/user/user/index", //数据接口				
+			page: true, //开启分页
+			limit: 20,
+			cols: [
+				[
+					{type:'checkbox',fixed:'left'},
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'status',
+						title: '状态',
+						align: 'center',
+						width: 80,
+						templet: function (d) {
+							var html = '<span class="layui-badge layui-bg-green">正常</span>';
+							if(d.status == 2){
+								html = '<span class="layui-badge layui-bg-orange">已离职</span>'
+							}
+							else if(d.status == 0){
+								html = '<span class="layui-badge">被禁用</span>'
+							}
+							return html;
+						}
+					},{
+						field: 'type',
+						title: '员工类型',
+						align: 'center',
+						width: 80,
+						templet: function (d) {
+							var html = '<span style="color:#393D49">正式员工</span>';
+							if(d.type == 2){
+								html = '<span style="color:#01AAED">试用员工</span>'
+							}
+							else if(d.type == 3){
+								html = '<span style="color:#5FB878">实 习 生</span>'
+							}
+							return html;
+						}
+					}, {
+						field: 'username',
+						title: '登录账号',
+						width: 136
+					}, {
+						field: 'thumb',
+						title: '头像',
+						toolbar: '#thumb',
+						align: 'center',
+						width: 60
+					}, {
+						field: 'name',
+						title: '用户姓名',
+						align: 'center',
+						width: 80
+					},{
+						field: 'mobile',
+						title: '手机号码',
+						align: 'center',
+						width: 120
+					},{
+						field: 'sex',
+						title: '性别',
+						align: 'center',
+						width: 60,
+						templet: function (d) {
+							var html = '未知';
+							if(d.sex == 1){
+								html = '男'
+							}
+							else if(d.sex == 2){
+								html = '女'
+							}
+							return html;
+						}
+					},{
+						field: 'department',
+						title: '所在部门',
+						align: 'center',
+						width: 110
+					}, {
+						field: 'position',
+						title: '岗位职称',
+						align: 'center',
+						width: 110
+					}, {
+						field: 'entry_time',
+						title: '入职日期',
+						align: 'center',
+						width: 100
+					}, {
+						field: 'login_num',
+						title: '累计登录',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'last_login_time',
+						title: '最后登录时间',
+						align: 'center',
+						minWidth: 142
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 160,
+						align: 'center',
+						templet: function (d) {
+							var html = '';
+							var btn1 = '<span class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</span>';
+							var btn2 = '<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn3 = '<span class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy">复制密码</span>';
+							var btn4 = '<span class="layui-btn layui-btn-xs layui-btn-danger" lay-event="psw">重置密码</span>';
+							if(d.reg_pwd == ''){
+								html = '<div class="layui-btn-group">'+btn1+btn2+btn4+'</div>';
+							}
+							else{
+								html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+							}
+							return html;
+						}						
+					}
+				]
+			]
+		});
+
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data;
+			if (obj.event === 'add') {
+				rightpage.open("/user/user/add");
+				return;
+			}
+			if(data.length==0){
+				layer.msg('请选择要操作的员工');
+				return false;
+			}
+			var uidArray=[],msg='是否执行该操作？',type=0;
+			for(var i=0;i<data.length;i++){
+				uidArray.push(data[i].id);
+			}
+			switch(obj.event){
+				case 'disable':
+					msg = '您确定要把选中的员工设为禁止登录？';
+					type = 0;
+				break;
+				case 'recovery':
+					msg = '您确定要把选中的员工恢复正常？';
+					type = 1;
+				break;
+			};
+			
+			layer.confirm(msg, {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				$.ajax({
+					url: "/user/user/set",
+					data: {
+						ids: uidArray.join(','),
+						type:type
+					},
+					success: function (e) {
+						layer.msg(e.msg);
+						if(e.code==0){
+							tableIns.reload();
+						}							
+					}
+				})
+				layer.close(index);
+			});
+		});
+
+
+		//监听行工具事件
+		table.on('tool(test)', function (obj) {
+			var data = obj.data;			
+			if (obj.event === 'view') {
+				//TAB.sonAdd('/home/admin/view?id='+data.id,'员工详情');
+				rightpage.open('/user/user/view?id='+data.id);
+				return;
+			}
+			if(obj.event === 'edit'){
+				rightpage.open('/user/user/add?id='+data.id);
+			}
+			else if (obj.event === 'copy') {
+				copyToClip(data.reg_pwd);
+				return;
+			}
+			else if (obj.event === 'psw') {
+				resetPsw(data.id);
+				return;
+			}
+		});
+
+		//监听搜索提交
+		form.on('submit(webform)', function (data) {
+			tableIns.reload({
+				where: {
+					keywords: data.field.keywords,
+					status: data.field.status,
+					type: data.field.type
+				},
+				page: {
+					curr: 1
+				}
+			});
+			return false;
+		});
+	}
+	
+	
+	//重设密码
+	function resetPsw(id){
+		layer.confirm('确定要重设该用户的密码？', {
+			icon: 3,
+			title: '提示'
+		}, function (index) {
+			$.ajax({
+				url: "/user/user/reset_psw",
+				data: {
+					id: id
+				},
+				success: function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						tableIns.reload();
+					}							
+				}
+			})
+			layer.close(index);
+		});
+	}
+	
+	//拷贝密码
+	function copyToClip(content) {
+		var save = function(e){
+				e.clipboardData.setData('text/plain', content);
+				e.preventDefault();
+			}
+		document.addEventListener('copy', save);
+		document.execCommand('copy');
+		document.removeEventListener('copy',save);
+		if (content != '') {
+			layer.msg('复制成功');
+		}
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,181 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="body-table">
+	<form class="layui-form layui-form-bar">
+		<div id="barDate" class="layui-input-inline">
+			<div class="layui-input-inline" style="width:110px;">
+				<input type="text" class="layui-input" id="start_time" placeholder="选择时间区间" readonly name="start_time">
+			</div>
+			~
+			<div class="layui-input-inline" style="width:110px;">
+				<input type="text" class="layui-input" id="end_time" placeholder="选择时间区间" readonly name="end_time">
+			</div>
+		</div>
+		<div class="layui-input-inline">
+			<select name="is_cash">
+				<option value="">请选择状态</option>
+				<option value="0">未到账</option>
+				<option value="1">部分到账</option>
+				<option value="2">全部到账</option>
+			</select>
+		</div>
+		<button class="layui-btn layui-btn-danger" lay-submit="" lay-filter="webform">提交搜索</button>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var tableIns=null;
+	function init(layui) {
+		var table = layui.table,
+			rightpage = layui.rightpage,
+			form = layui.form,
+			laydate = layui.laydate;
+		//日期范围
+		laydate.render({
+			elem: '#barDate',
+			range: ['#start_time', '#end_time']
+		});
+		
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			let f=data.field;
+			tableIns.reload({where:{is_cash:f.is_cash,start_time:f.start_time,end_time:f.end_time},page:{curr:1}});
+			return false;
+		});
+
+		tableIns = table.render({
+			elem: '#test',
+			title: '到账列表',
+			toolbar: '#toolbarDemo',
+			url: "/finance/income/index", //数据接口		
+			page: true, //开启分页
+			limit: 20,
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					},{
+						field: 'is_cash',
+						title: '到账状态',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='<span style="color:#FF5722">未到账</span>';
+							if(d.is_cash==1){
+								html='<span style="color:#5FB878">部分到账</span>';
+							}
+							else if(d.is_cash==2){
+								html='<span style="color:#009688">全部到账</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'enter_amount',
+						title: '到账金额(元)',
+						align: 'right',
+						width: 100,
+					},{
+						field: 'check_time',
+						title: '最新到账时间',
+						align: 'center',
+						width: 136
+					}, {
+						field: 'invoice_title',
+						title: '发票抬头',
+						minWidth: 300,
+						templet:function(d){
+							var html='';
+							if(d.type==1){
+								html='<span class="layui-badge layui-bg-blue">企业</span> '+d.invoice_title;
+							}
+							else if(d.type==2){
+								html='<span class="layui-badge layui-bg-green">个人</span> '+d.invoice_title;
+							}
+							return html;
+						}
+					},{
+						field: 'amount',
+						title: '发票金额(元)',
+						align: 'right',
+						width: 100,
+					},{
+						field: 'invoice_type',
+						title: '开票类型',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='-';
+							if(d.invoice_type==1){
+								html='<span style="color:#1E9FFF">专票</span>';
+							}
+							else if(d.invoice_type==2){
+								html='<span style="color:#5FB878">普票</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'user',
+						title: '申请开票人',
+						align: 'center',
+						width: 100
+					},{
+						field: 'department',
+						title: '所属部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '申请时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'code',
+						title: '发票号码',
+						align: 'center',
+						width: 120
+					},{
+						field: 'open_time',
+						title: '开票时间',
+						align: 'center',
+						width: 136
+					}, {
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 142,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="add">到账管理</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">到账详情</span></div>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'add') {
+				rightpage.open("/finance/income/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'view') {
+				rightpage.open("/finance/income/view?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{include file="../../base/view/common/layui" base='base' extend="['rightpage']" use="['table','form']" callback="init" /}
+{/block}
+<!-- /脚本 -->
