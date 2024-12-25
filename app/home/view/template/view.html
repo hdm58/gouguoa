@@ -1,0 +1,39 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">消息模板详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">模板名称</td>
+			<td>{$detail.title|default=''}</td>
+			<td class="layui-td-gray">模板标识</td>
+			<td>{$detail.name|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">消息标题</td>
+			<td>{$detail.msg_title|default=''}</td>
+			<td class="layui-td-gray">消息链接</td>
+			<td>{$detail.msg_link|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">消息模板内容</td>
+			<td colspan="3">{$detail.msg_content|default=''}</td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

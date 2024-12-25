@@ -1,0 +1,44 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">会议室信息</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray-2">会议室名称</td>
+			<td colspan="3">{$detail.title}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">地址(楼层)</td>
+			<td colspan="3">{$detail.address}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">管 理 员</td>
+			<td>{$detail.keep_name}</td>
+			<td class="layui-td-gray-2">可容纳人数</td>
+			<td>{$detail.num}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">内置设备</td>
+			<td colspan="3">{$detail.device}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">相关描述</td>
+			<td colspan="3">{$detail.remark|default=''}</td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool;
+
+}
+</script>
+{/block}
+<!-- /脚本 -->

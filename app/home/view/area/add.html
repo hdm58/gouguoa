@@ -1,0 +1,86 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">省市区</h3>
+	{if condition="$id eq 0"}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">父级省市区<font>*</font></td>
+			<td>{$pname|default='顶级城市'}</td>
+			<td class="layui-td-gray-2">省市区名称<font>*</font></td>
+			<td><input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入省市区名称" lay-reqText="请输入省市区名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">省市区简称<font>*</font></td>
+			<td><input type="text" name="shortname" lay-verify="required" placeholder="请输入省市区简称" lay-reqText="请输入省市区简称" autocomplete="off" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">经度<font>*</font></td>
+			<td>
+				<input type="text" name="longitude" placeholder="请输入经度" lay-verify="required" lay-reqText="请输入经度" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">纬度<font>*</font></td>
+			<td>
+				<input type="text" name="latitude" placeholder="请输入纬度" lay-verify="required" lay-reqText="请输入纬度" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" value="0" placeholder="请输入数字，越大越靠前" autocomplete="off" class="layui-input"></td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">父级菜单/节点<font>*</font></td>
+			<td>{$detail.pname|default='顶级城市'}</td>
+			<td class="layui-td-gray-2">省市区名称<font>*</font></td>
+			<td><input type="text" name="name" value="{$detail.name}" lay-verify="required" autocomplete="off" placeholder="请输入省市区名称" lay-reqText="请输入省市区名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">省市区简称<font>*</font></td>
+			<td><input type="text" name="shortname" value="{$detail.shortname}" lay-verify="required" placeholder="请输入省市区简称" lay-reqText="请输入省市区简称" autocomplete="off" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">经度<font>*</font></td>
+			<td>
+				<input type="text" name="longitude" value="{$detail.longitude}" placeholder="请输入经度" lay-verify="required" lay-reqText="请输入经度" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">纬度<font>*</font></td>
+			<td>
+				<input type="text" name="latitude" value="{$detail.latitude}" placeholder="请输入纬度" lay-verify="required" lay-reqText="请输入纬度" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" value="{$detail.sort}" placeholder="请输入数字，越大越靠前" autocomplete="off" class="layui-input">
+			</td>
+		</tr>
+	</table>
+	{/if}
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$id}">
+		<input type="hidden" name="pid" value="{$pid}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					setTimeout(function(){
+						parent.location.reload();
+					},1000);									
+				}
+			}
+			tool.post("/home/area/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,64 @@
+<div class="bg-white">
+	<table class="layui-hide" id="task" lay-filter="task"></table>
+</div>
+<script type="text/html" id="toolbartask">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm" lay-event="add">+ 新建任务</button>
+  </div>
+</script>
+<script>
+function project_task(){
+	if($('#projectTab').find('li').eq(1).data('load') =='true'){
+		return false;
+	}
+	$('#projectTab').find('li').eq(1).data('load','true');
+	let tool = layui.tool, table = layui.tablePlus;
+	//项目任务
+	parent.layui.taskTable = table.render({
+		elem: '#task',
+		title: '任务列表',
+		toolbar: '#toolbartask',
+		cellMinWidth:80,
+		url: "/project/api/get_task",
+		where:{'project_id':project_id},
+		page: true, //开启分页
+		limit: 20,
+		cols:  [[
+			{field: 'id', title: '任务编号', width: 80, align: 'center', fixed: 'left', templet: function (d) {
+					return 'T' + d.id;
+				}
+			}
+			,{ field: 'status', title: '任务状态', align: 'center', width: 90, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					return html;
+					}
+				}
+			, { field: 'cate_name', title: '工作类型', width: 90, align: 'center'}
+			,{field:'title',title: '任务主题', minWidth: 300,templet:function(d){
+					var html = '<span class="layui-badge layui-bg-'+d.priority+'">'+d.priority_name+'</span> <a data-href="/project/task/view/id/'+d.id+'.html" class="side-a">'+d.title+'</a>';
+					return html;
+				}}
+			,{field:'director_name',title: '负责人', align:'center',width: 80}
+			,{field:'assist_admin_names',title: '协作人',width: 160}
+			,{field:'plan_hours',title: '预估工时', align:'center',width: 80}				
+			,{field:'end_time',title: '预计结束日期', width: 150,templet:function(d){
+				var html = d.end_time;	
+				if(d.delay>0){
+					html+= '<span class="red ml-1" style="font-size:12px;">逾期'+d.delay+'天</span>';	
+				}			
+				return html;
+			}}
+		]]
+	});
+	
+	//触发事件
+	table.on('toolbar(task)', function(obj){
+	  var checkStatus = table.checkStatus(obj.config.id);
+	  switch(obj.event){
+		case 'add':
+		  tool.side('/project/task/add?project_id='+project_id);
+		break;
+	  };
+	});
+}
+</script>

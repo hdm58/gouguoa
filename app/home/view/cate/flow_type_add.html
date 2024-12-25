@@ -1,22 +1,18 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">审批类型</h3>
+<form class="layui-form p-4">
+	<h3 class="pb-3">审批类型</h3>
 	{eq name="$id" value="0"}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">所属分类<font>*</font></td>
 			<td>
 				<select name="type" lay-verify="required" lay-reqText="请选择所属分类">
 				  <option value="">--请选择--</option>
-				  <option value="1">假勤</option>
-				  <option value="2">行政</option>
-				  <option value="3">财务</option>
-				  <option value="4">人事</option>
-				  <option value="5">其他</option>
-				  <option value="6">报销</option>
-				  <option value="7">发票</option>
+				  {volist name="$type" id="vo"}
+				  <option value="{$vo.id}">{$vo.title}</option>
+				  {/volist}
 				</select>
 			</td>
 			<td class="layui-td-gray">名称<font>*</font></td>
@@ -31,25 +27,35 @@
 			</td>
 			<td class="layui-td-gray">图标<font>*</font></td>
 			<td>
-				<input style="width:150px; display:inline" class="layui-input" type="text" name="icon" value="" placeholder="请输入审批类型图标" lay-verify="required" lay-reqText="请输入审批类型图标" >			
-				如：icon-jichuguanli<a href="/static/layui/font/extend/demo_index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+				<input style="width:200px; display:inline" class="layui-input" type="text" name="icon" value="" placeholder="请输入审批类型图标" lay-verify="required" lay-reqText="请输入审批类型图标" >			
+				如：icon-jichupeizhi<a href="{__GOUGU__}/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:360px;">
+					<select id="department_ids" name="department_ids" xm-selected="" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span style="color: red; font-size: 12px;">（如果不选，默认是全公司）</span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<span style="color: red; font-size: 12px;">注意：新增审批类型以后，需要对应新增模板文件，模板文件名称需与标识名称一致，建议复制现有的审批类型模板文件，然后根据需求修改对应的表单即可。</span>
 			</td>
 		</tr>
 	</table>
 	{else/}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">所属分类<font>*</font></td>
 			<td>
 				<select name="type" lay-verify="required" lay-reqText="请选择所属分类">
 				  <option value="">--请选择--</option>
-				  <option value="1" {eq name="$detail.type" value="1"}selected=""{/eq}>假勤</option>
-				  <option value="2" {eq name="$detail.type" value="2"}selected=""{/eq}>行政</option>
-				  <option value="3" {eq name="$detail.type" value="3"}selected=""{/eq}>财务</option>
-				  <option value="4" {eq name="$detail.type" value="4"}selected=""{/eq}>人事</option>
-				  <option value="5" {eq name="$detail.type" value="5"}selected=""{/eq}>其他</option>
-				  <option value="6" {eq name="$detail.type" value="6"}selected=""{/eq}>报销</option>
-				  <option value="7" {eq name="$detail.type" value="7"}selected=""{/eq}>发票</option>
+				  {volist name="$type" id="vo"}
+				  <option value="{$vo.id}" {eq name="$detail.type" value="$vo.id"}selected=""{/eq}>{$vo.title}</option>
+				  {/volist}
 				</select>
 			</td>
 			<td class="layui-td-gray">名称<font>*</font></td>
@@ -64,13 +70,22 @@
 			</td>
 			<td class="layui-td-gray">图标<font>*</font></td>
 			<td>
-				<input style="width:150px; display:inline" class="layui-input" type="text" name="icon" value="{$detail.icon}" placeholder="请输入审批类型图标" lay-verify="required" lay-reqText="请输入审批类型图标" >			
-				如：icon-jichuguanli<a href="/static/layui/font/extend/demo_index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+				<input style="width:200px; display:inline" class="layui-input" type="text" name="icon" value="{$detail.icon}" placeholder="请输入审批类型图标" lay-verify="required" lay-reqText="请输入审批类型图标" >			
+				<strong class="iconfont {$detail.icon}"></strong><a href="{__GOUGU__}/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:360px;">
+					<select id="department_ids" name="department_ids" xm-selected="{$detail.department_ids}" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span style="color: red; font-size: 12px;">（如果不选，默认是全公司）</span>
 			</td>
 		</tr>
 	</table>
 	{/eq}
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -82,30 +97,27 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui){
-		var form = layui.form
-		,layer = layui.layer;
-		  
+	const moduleInit = ['tool','formSelects'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,formSelects=layui.formSelects;
+		//选择应用部门
+		var selcted = $('#department_ids').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selcted,
+		});		
 		//监听提交
 		form.on('submit(webform)', function(data){
-			$.ajax({
-				url: "/home/cate/flow_type_add",
-				type:'post',
-				data:data.field,
-				success: function (e) {
-					layer.msg(e.msg);
-					if (e.code == 0) {	
-						parent.tableIns.reload();
-						setTimeout(function(){							
-							parent.layui.rightpage.close();
-						},1000);
-					}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);				
 				}
-			})
+			}
+			tool.post("/home/cate/flow_type_add", data.field, callback);
 			return false;
 		});
 	}
 </script>
-{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

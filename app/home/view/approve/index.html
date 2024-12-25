@@ -1,0 +1,89 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.body-card{background-color:#fff; border:1px solid #eee;}
+.card-header{height:44px; line-height:44px; text-indent:12px}
+.square .layui-col-md2{border: 1px solid #f5f5f5; border-left:0; cursor:pointer;}
+.square .layui-col-md2 div{padding:12px 0; height:50px; text-align:center; background-color:#fff; color:#666}
+.square .layui-col-md2 i{font-size:28px; font-weight:800; display:block; padding-bottom:3px; color:#4285f4}
+.square .layui-col-md2:nth-child(6n){border-right:0;}
+.square .layui-col-md2:nth-child(n+7){margin-top: -1px;}
+.square .layui-col-md2 div:hover{color:#4285f4; background-color:#fafafa}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="body-card">
+		<div class="card-header" style="border-bottom:1px solid #eee;"><h3 class="h3-title">审批新申请</h3></div>
+		{volist name="module" id="v" offset="0"}
+		{notempty name="$v.list"}
+		<div class="card-header"><strong>{$v.title}</strong></div>
+		<div class="square">
+			<div class="layui-row">
+				{volist name="$v.list" id="vo"}
+					<div class="layui-col-md2 side-a" data-href="{$vo.add_url}" title="{$vo.title}"><div><i class="iconfont {$vo.icon}"></i>{$vo.title}</div></div>	
+				{/volist}
+			</div>
+		</div>
+		{/notempty}
+		{/volist}
+		<div style="padding:16px 0; text-align:center; color:#ffb800">
+			如果是【日常办公数据管理员】，可查看全体员工的审批申请记录，去查<a href="javascript:;" data-href="/home/approve/all" class="side-a">『全部审批』</a>
+		</div>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+<h3 class="h3-title" style="height:28px;">审批列表</h3>
+</script>						
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool ,element=layui.element;
+			
+		element.on('tab(tab)', function(data){
+			layui.pageTable.reload({where:{status:data.index},page:{curr:1}});
+			return false;
+		});			
+			
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,defaultToolbar: false
+			,title:'审批列表'
+			,url: "/oa/approve/index"
+			,page: true //开启分页
+			,limit: 20
+			,cellMinWidth: 80
+			,cols: [[
+					{field:'id',width:80, title: 'ID号', align:'center'}
+					,{field:'types_name',title: '审批类型',width:100, align:'center'}
+					,{field:'check_status',title: '审核状态',width:110, align:'center',templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						return html;
+					}}
+					,{field:'admin_name',title: '申请人',width:90,align:'center'}
+					,{field:'create_time',title: '申请时间',width:150,align:'center'}
+					,{field:'department',title: '所属部门',width:120,align:'center'}
+					,{field:'check_users',title: '当前审批人'}
+					,{width:60,title: '操作', align:'center',templet: function(d){
+						var btn='<a class="layui-btn layui-btn-xs" lay-event="view">详情</a>';
+						return btn;
+					}}
+				]]
+			});
+			
+			table.on('tool(test)',function (obj) {
+				if(obj.event === 'view'){		
+					tool.side('/adm/'+obj.data.table_name+'/view?id='+obj.data.id);
+				}
+			});
+		}
+	</script>
+{/block}
+<!-- /脚本 -->

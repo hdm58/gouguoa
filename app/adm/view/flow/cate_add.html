@@ -1,0 +1,206 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">审批类型</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">类型名称<font>*</font></td>
+			<td><input type="text" name="title" value="" lay-verify="required" autocomplete="off" placeholder="请输入审批类型名称" lay-reqText="请输入类型名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">关联审批模块<font>*</font></td>
+			<td>
+				<select name="module_id" lay-verify="required" lay-reqText="请选择要关联的审批模块">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('flow_module')" id="vo"}
+						<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">类型标识<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+				<input type="text" name="name" value="" lay-verify="required" autocomplete="off" placeholder="请输入类型标识，如：official" lay-reqText="请输入类型标识，只能是小写字母" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：请输入类型标识注意只能是小写字母，唯一）</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">数据表名<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+				<input type="text" name="check_table" value="" lay-verify="required" autocomplete="off" placeholder="请输入关联的数据库表名称，如：official_docs" lay-reqText="请输入关联的数据库表名称" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：输入要关联的数据库表名称，注意不需要表前缀，输错无效）</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">新建审批链接<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+					<input type="text" name="add_url" value="" lay-verify="required" autocomplete="off" placeholder="请输入新建审批链接，如：adm/official/add" lay-reqText="请输入新建审批链接" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：输入新建审批链接，可在【系统管理】的【功能节点】查找，输错无效）</span></td>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">查看审批链接<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+					<input type="text" name="view_url" value="" lay-verify="required" autocomplete="off" placeholder="请输入查看审批链接，如：adm/official/view" lay-reqText="请输入查看审批链接" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：输入查看审批链接，可在【系统管理】的【功能节点】查找，输错无效）</span></td>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+					<select id="department_ids" name="department_ids" xm-selected="" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span class="red" style="font-size:12px;">（如果不选，默认是全公司）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">展示图标<font>*</font></td>
+			<td>
+				<div class="layui-input-inline" style="width:50%;">
+					<input class="layui-input" type="text" name="icon" value="" placeholder="请输入图标" lay-verify="required" lay-reqText="请输入图标" >
+				</div>			
+				<a href="/static/assets/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" value="" autocomplete="off" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">消息模板</td>
+			<td>
+				<input type="text" name="template_title" value="" readonly autocomplete="off" class="layui-input picker-oa" data-types='template' placeholder="请选择">
+				<input type="hidden" name="template_id" value="0">
+			</td>
+			<td class="layui-td-gray-2">是否列表显示</td>
+			<td>
+				<input type="radio" name="is_list" value="1" title="显示" checked>
+				<input type="radio" name="is_list" value="0" title="不显示">
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">类型名称<font>*</font></td>
+			<td><input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入审批类型名称" lay-reqText="请输入类型名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">关联审批模块<font>*</font></td>
+			<td>
+				<select name="module_id" lay-verify="required" lay-reqText="请选择要关联的审批模块">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('flow_module')" id="vo"}
+						<option value="{$vo.id}" {eq name="$vo.id" value="$detail.module_id"}selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">类型标识<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+				<input type="text" name="name" value="{$detail.name}" lay-verify="required" autocomplete="off" placeholder="请输入类型标识，如：official" lay-reqText="请输入类型标识，只能是小写字母" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：请输入类型标识注意只能是小写字母，唯一）</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">数据表名<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+				<input type="text" name="check_table" value="{$detail.check_table}" lay-verify="required" autocomplete="off" placeholder="请输入关联的数据库表名称，如：official_docs" lay-reqText="请输入关联的数据库表名称" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：输入要关联的数据库表名称，注意不需要表前缀，输错无效）</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">新建审批链接<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+					<input type="text" name="add_url" value="{$detail.add_url}" lay-verify="required" autocomplete="off" placeholder="请输入新建审批链接，如：adm/official/add" lay-reqText="请输入新建审批链接" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：输入新建审批链接，可在【系统管理】的【功能节点】查找，输错无效）</span></td>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">查看审批链接<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+					<input type="text" name="view_url" value="{$detail.view_url}" lay-verify="required" autocomplete="off" placeholder="请输入查看审批链接，如：adm/official/view" lay-reqText="请输入查看审批链接" class="layui-input">
+				</div>
+				<span class="red" style="font-size:12px;">（重要：输入查看审批链接，可在【系统管理】的【功能节点】查找，输错无效）</span></td>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:50%;">
+					<select id="department_ids" name="department_ids" xm-selected="{$detail.department_ids}" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span class="red" style="font-size:12px;">（如果不选，默认是全公司）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">展示图标<font>*</font></td>
+			<td>
+				<div class="layui-input-inline" style="width:50%;">
+					<input class="layui-input" type="text" name="icon" value="{$detail.icon}" placeholder="请输入图标" lay-verify="required" lay-reqText="请输入图标" >
+				</div>			
+				<a href="/static/assets/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" value="{$detail.sort}" autocomplete="off" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">消息模板</td>
+			<td>
+				<input type="text" name="template_title" value="{$detail.template_title|default=''}" readonly autocomplete="off" class="layui-input picker-oa" data-types='template' placeholder="请选择">
+				<input type="hidden" name="template_id" value="{$detail.template_id}">
+			</td>
+			<td class="layui-td-gray-2">是否列表显示</td>
+			<td>
+				<input type="radio" name="is_list" value="1" title="显示" {eq name="$detail.is_list" value="1"}checked{/eq}>
+				<input type="radio" name="is_list" value="0" title="不显示" {eq name="$detail.is_list" value="0"}checked{/eq}>
+			</td>
+		</tr>
+	</table>
+	{/eq}
+	<div class="py-2">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','formSelects','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,formSelects=layui.formSelects;
+		//选择应用部门
+		var selcted = $('#department_ids').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selcted,
+		});		
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);					
+				}
+			}
+			tool.post("/adm/flow/cate_add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

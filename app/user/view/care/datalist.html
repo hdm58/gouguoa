@@ -1,0 +1,132 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:100px">
+			<select name="status">
+				<option value="">关怀状态</option>
+				<option value="1">待执行</option>
+				<option value="2">已执行</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px">
+			<select name="care_cate">
+				<option value="">关怀项目</option>
+				{volist name=":get_base_data('care_cate')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:80px">
+			<input type="text" name="uname" placeholder="关怀员工" class="layui-input picker-admin" value="" readonly>
+			<input type="text" name="uid" value="" style="display:none;">
+		</div>
+		<div class="layui-input-inline" style="width:292px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="关怀日期" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:188px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_care" lay-filter="table_care"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm" lay-event="add" type="button">+ 添加关怀管理</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus;
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		layui.pageTable = table.render({
+			elem: "#table_care"
+			, toolbar: "#toolbarDemo"
+			,url: "/user/care/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'status',title: '状态',width:90, align:'center',templet: function(d){
+					var html='';
+					if(d.status==1){
+						return '<span class="green">『待执行』</span>';
+					}
+					if(d.status==2){
+						return '<span class="red">『已执行』</span>';
+					}
+					else{
+						return '-';
+					}
+				}}
+				,{field:'user_name',title: '员工',width:90, align:'center'}
+				,{field:'cate',title: '关怀项目',width:100, align:'center'}
+				,{field:'care_time',title: '关怀日期',width:90, align:'center'}
+				,{field:'cost',title: '金额(元)',width:90, align:'right'}
+				,{field:'vacation',title: '关怀假日',width:90, align:'center'}
+				,{field:'thing',title: '物品'}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					return html;
+				}}
+			]]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(table_care)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data;
+			if (obj.event === 'add') {
+				tool.side("/user/care/add");
+				return;
+			}
+		});	
+			
+		table.on('tool(table_care)',function (obj) {
+			let data=obj.data
+			if (obj.event === 'view') {
+				tool.side("/user/care/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/user/care/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/user/care/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,88 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">新增销售机会</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">客户名称</td>
+			<td colspan="3">{$customer_name}</td>
+			<td class="layui-td-gray-2">客户联系人<font>*</font></td>
+			<td>
+			  <select name="contact_id" lay-verify="required" lay-reqText="请选择联系人">
+				<option value="">请选择</option>
+				{volist name=":customer_contact($customer_id)" id="v"}
+				<option value="{$v.id}">{$v.name}</option>
+				{/volist}
+			  </select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">机会标题<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" autocomplete="off" lay-verify="required" lay-reqText="请输入机会标题" placeholder="请输入机会标题" class="layui-input"></td>
+			<td class="layui-td-gray">发现时间<font>*</font></td>
+			<td><input type="text" name="discovery_time" readonly lay-verify="required" lay-reqText="请选择发现时间" placeholder="请选择发现时间" class="layui-input tool-time"></td>
+		 </tr>
+		<tr>
+			<td class="layui-td-gray">销售阶段<font>*</font></td>
+			<td>
+				<select name="stage" lay-verify="required" lay-reqText="请选择">
+					<option value="">请选择</option>
+					{volist name=":get_base_type_data('basic_customer',4)" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">预计金额<font>*</font></td>
+			<td><input type="text" name="expected_amount" autocomplete="off" lay-verify="required|number" lay-reqText="请输入预计金额" placeholder="请输入预计金额" class="layui-input"></td>
+			<td class="layui-td-gray-2">预计签单时间<font>*</font></td>
+			<td><input type="text" name="expected_time" readonly lay-verify="required" lay-reqText="请选择预计签单时间" placeholder="请选择预计签单时间" class="layui-input tool-time"></td>
+        </tr>
+	    <tr>
+			<td class="layui-td-gray" style="vertical-align:top">需求描述<font>*</font></td>
+			<td colspan="5"><textarea name="content" placeholder="请输入需求描述" lay-verify="required" lay-reqText="请输入需求描述" class="layui-textarea"></textarea></td>
+		</tr>
+		<tr>        
+			<td class="layui-td-gray">归属人员<font>*</font></td>
+			<td>
+				<input type="text" name="belong_name" readonly placeholder="请选择归属人员" class="layui-input picker-admin">
+				<input type="hidden" name="belong_uid" lay-verify="required" lay-reqText="请选择归属人员">
+			</td>
+			<td class="layui-td-gray">协助人员</td>
+			<td colspan="3">
+				<input type="text" name="assist_names" placeholder="请选择协助人员" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="assist_ids">
+			</td>
+		</tr>
+    </table>
+    <div class="pt-4">
+		<input type="hidden" name="cid" value="{$customer_id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaPicker = layui.oaPicker;		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000,'chanceTable');
+				}
+			}
+			tool.post("/customer/chance/add", data.field, callback);
+			return false;
+		});
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

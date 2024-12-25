@@ -1,16 +1,16 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="body-table">
+<div class="p-page">
 	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 
 <script type="text/html" id="status">
-	<i class="layui-icon {{#  if(d.status == 1){ }}layui-icon-ok{{#  } else { }}layui-icon-close{{#  } }}"></i>
+	<i class="layui-icon {{#  if(d.status == 1){ }}green layui-icon-ok{{#  } else { }}yellow layui-icon-close{{#  } }}"></i>
 </script>
 <script type="text/html" id="toolbarDemo">
 	<div class="layui-btn-container">
-		<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加岗位</button>
+		<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加岗位</button>
 	</div>
 </script>
 <script type="text/html" id="barDemo">
@@ -23,16 +23,14 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	var tableIns = null;
-	function init(layui) {
-		var TAB = parent.layui.tab,
-			layer = layui.layer,
-			rightpage = layui.rightpage,
-			table = layui.table;
-		tableIns= table.render({
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool;
+		layui.pageTable = table.render({
 			elem: '#test',
 			title: '岗位列表',
 			toolbar: '#toolbarDemo',
+			defaultToolbar: false,
 			url: "/user/position/index", //数据接口				
 			page: false, //开启分页
 			cols: [
@@ -68,7 +66,7 @@
 						field: 'right',
 						title: '操作',
 						toolbar: '#barDemo',
-						width: 132,
+						width: 120,
 						align: 'center'
 					}
 				]
@@ -78,7 +76,7 @@
 		//表头工具栏事件
 		table.on('toolbar(test)', function(obj){
 			if (obj.event === 'add') {
-				rightpage.open("/user/position/add",'900px');
+				tool.side("/user/position/add");
 				return;
 			}
 		});
@@ -86,11 +84,11 @@
 		table.on('tool(test)', function (obj) {
 			var data = obj.data;
 			if(obj.event === 'view'){
-				rightpage.open('/user/position/view?id='+data.id);
+				tool.side('/user/position/view?id='+data.id);
 				return;
 			}
 			if(obj.event === 'edit'){
-				rightpage.open('/user/position/add?id='+data.id,'900px');
+				tool.side('/user/position/add?id='+data.id);
 				return;
 			}
 			if (obj.event === 'del') {
@@ -102,24 +100,18 @@
 					icon: 3,
 					title: '提示'
 				}, function (index) {
-					$.ajax({
-						url: "/user/position/delete",
-						data: {
-							id: data.id
-						},
-						success: function (e) {
-							layer.msg(e.msg);
-							if (e.code == 0) {
-								obj.del();
-							}
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
 						}
-					})
+					}
+					tool.delete("/user/position/delete", { id: obj.data.id }, callback);
 					layer.close(index);
 				});
 			}
 		});
 	}
 </script>
-{include file="../../base/view/common/layui" base='base' extend="['rightpage']" callback="init" /}
 {/block}
 <!-- /脚本 -->

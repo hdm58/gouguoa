@@ -1,0 +1,11 @@
+<div class="sub-menu" style="padding:15px 12px; width:160px; height: calc(100% - 14px);">
+	<div class="border" style="width:100%;height:100%; background-color:#fbfbfb;">
+		<ul>
+			<li class="sub-menu-li {eq name='$action' value='inbox'} active{/eq}"><a href="/home/message/inbox"><i class="iconfont icon-yiyichuli"></i><span class="text">收件箱</span><span class="num">({$count.inbox})<span></a></li>
+			<li class="sub-menu-li {eq name='$action' value='star'} active{/eq}"><a href="/home/message/star"><i class="iconfont icon-pingfen"></i><span class="text">星标信息</span><span class="num">({$count.star})<span></a></li>
+			<li class="sub-menu-li {eq name='$action' value='sendbox'} active{/eq}"><a href="/home/message/sendbox"><i class="iconfont icon-tuiguangshezhi"></i><span class="text">发件箱</span><span class="num">({$count.sendbox})<span></a></li>
+			<li class="sub-menu-li {eq name='$action' value='draft'} active{/eq}"><a href="/home/message/draft"><i class="iconfont icon-lunwenguanli"></i><span class="text">草稿箱</span><span class="num">({$count.draft})<span></a></li>
+			<li class="sub-menu-li {eq name='$action' value='rubbish'} active{/eq}"><a href="/home/message/rubbish"><i class="iconfont icon-tiku"></i><span class="text">垃圾箱</span><span class="num">({$count.rubbish})<span></a></li>
+		</ul>
+	</div>
+</div>

@@ -1,0 +1,113 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-3">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm addNew" type="button">+ 添加审批流程</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,defaultToolbar: false
+			,title:'审批流程列表'
+			,url: "/adm/flow/datalist"
+			,page: false //开启分页
+			,limit: 20
+			,cellMinWidth: 80
+			,cols: [[
+					{field:'id',width:80, title: 'ID号', align:'center'}
+					,{field:'title',title: '流程名称',width:150}
+					,{field:'check_type',title: '审批流类型', align:'center',width:110,templet:function(d){
+						var html = '<span class="green">自由审批流</span>';
+						if(d.check_type==2){
+							html = '<span class="blue">固定审批流</span>';
+						}
+						if(d.check_type==3){
+							html = '<span class="yellow">可回退审批流</span>';
+						}
+						if(d.check_type==4){
+							html = '<span class="red">条件审批流</span>';
+						}
+						return html;
+					}}
+					,{field:'cate',title: '关联审批类型',width:110, align:'center'}
+					,{field:'module',title: '关联审批模块',width:110, align:'center'}
+					,{field:'departments',title: '应用部门',minWidth:160}
+					,{field:'copy_unames',title: '默认抄送人',minWidth:160}
+					,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+						var html1='<span class="green">正常</span>';
+						var html2='<span class="yellow">禁用</span>';
+						if(d.status==1){
+							return html1;
+						}
+						else{
+							return html2;
+						}
+					}}
+					,{width:90,title: '操作', align:'center',templet: function(d){
+						var html='';
+						var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
+						var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+						var btn2='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+						if(d.status==1){
+							html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
+						}
+						return html;
+					}}
+				]]
+			});
+			
+			table.on('tool(test)',function (obj) {
+				if(obj.event === 'edit'){		
+					tool.side('/adm/flow/add?id='+obj.data.id);
+				}
+				if(obj.event === 'disable'){
+					layer.confirm('确定要禁用该流程吗?', {icon: 3, title:'提示'}, function(index){
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+						tool.post("/adm/flow/check", { id: obj.data.id,status: 0 }, callback);
+						layer.close(index);						
+					});
+				}
+				if(obj.event === 'open'){
+					layer.confirm('确定要启用该流程吗?', {icon: 3, title:'提示'}, function(index){
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+						tool.post("/adm/flow/check", { id: obj.data.id,status: 1 }, callback);
+						layer.close(index);	
+					});
+				}
+			});
+			
+			$('body').on('click','.addNew',function(){
+				tool.side("/adm/flow/add");
+				return false;
+			});
+		}
+	</script>
+{/block}
+<!-- /脚本 -->

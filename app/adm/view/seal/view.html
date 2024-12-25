@@ -1,0 +1,75 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">添加用章审批</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">审批主题</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray">印章类型</td>
+			<td>{$detail.seal_cate}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">盖章次数</td>
+			<td>{$detail.num}</td>
+			<td class="layui-td-gray">用印部门</td>
+			<td>{$detail.use_dname|default='-'}</td>
+			<td class="layui-td-gray-2">预期用印日期</td>
+			<td>{$detail.use_time|date='Y-m-d'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">印章是否外借</td>
+			<td>
+				{eq name="$detail.is_borrow" value="0"}否{/eq}
+				{eq name="$detail.is_borrow" value="1"}是{/eq}
+			</td>
+			<td class="layui-td-gray-2">印章借用日期</td>
+			<td>{$detail.start_time|default='-'}</td>
+			<td class="layui-td-gray">结束借用日期</td>
+			<td>{$detail.end_time|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">盖章内容</td>
+			<td colspan="5">{:nl2br($detail.content)}</td>
+		</tr>
+		{eq name="detail.check_status" value="2"}
+		<tr>
+			<td class="layui-td-gray">用章状态</td>
+			<td colspan="5"><span class="check-status-color-{$detail.status}">『{$detail.status_str}』</span></td>
+		</tr>
+		{/eq}		
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">相关附件</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="fileItem{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck;	
+		oaCheck.init({
+			check_name:'seal'
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

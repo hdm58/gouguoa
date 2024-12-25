@@ -1,0 +1,16 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card panel-num">
+			<table>
+				<tr>
+				{volist name="$total" id="vo"}
+				  <td>
+					<div class="num-title">{$vo.name}</div>
+					<div class="blue">{$vo.num}</div>
+				  </td>
+				{/volist}
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>

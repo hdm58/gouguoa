@@ -1,0 +1,25 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-title">公告列表</div>
+			<div style="padding: 12px;">
+				<table id="Note" lay-filter="Note" class="layui-hide" style="margin-top:0"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//公告
+function layoutNote(table){
+	table.render({
+		elem: '#Note'
+		, url: "/home/api/get_note_list" //数据接口
+		, page: false //开启分页
+		, cols: [[ //表头
+			{ field: 'cate_title', title: '公告分类', align: 'center','width': 90},
+			{ field: 'title', title: '公告标题',templet: '<div><a data-href="/oa/note/view/id/{{d.id}}.html" class="side-a">{{d.title}}</a></div>'},
+			{ field: 'create_time', title: '发布时间', align: 'center','width': 150}
+		]]
+	});
+}
+</script>

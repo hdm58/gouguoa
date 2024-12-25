@@ -1,0 +1,127 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">系统配置</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">左侧菜单模式</td>
+			<td>
+				{empty name="$config.menu_mode"}
+					<input type="radio" name="menu_mode" value="classical" title="经典模式" checked>
+					<input type="radio" name="menu_mode" value="expand" title="展开模式" >
+				{else/}
+					<input type="radio" name="menu_mode" value="classical" title="经典模式" {eq name="$config.menu_mode" value="classical"}checked{/eq}>
+					<input type="radio" name="menu_mode" value="expand" title="展开模式" {eq name="$config.menu_mode" value="expand"}checked{/eq}>
+				{/empty}				
+			</td>
+			<td class="layui-td-gray-2">上传附件限制(MB)<font>*</font></td>
+			<td>
+				<input type="text" lay-verify="required|number" name="upload_max_filesize" autocomplete="off" placeholder="请输入上传附件限制" lay-reqText="请输入上传附件限制" class="layui-input" value="{$config.upload_max_filesize|default='50'}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">开启新消息声音提醒</td>
+			<td>
+				{empty name="$config.msg_sound"}
+					<input type="radio" name="msg_sound" value="1" title="开启" checked>
+					<input type="radio" name="msg_sound" value="2" title="不开启">
+				{else/}
+					<input type="radio" name="msg_sound" value="1" title="开启" {eq name="$config.msg_sound" value="1"}checked{/eq}>
+					<input type="radio" name="msg_sound" value="2" title="不开启" {eq name="$config.msg_sound" value="2"}checked{/eq}>
+				{/empty}				
+			</td>
+			<td class="layui-td-gray-3">开启系统页面水印</td>
+			<td>
+				{empty name="$config.watermark"}
+					<input type="radio" name="watermark" value="1" title="开启" checked>
+					<input type="radio" name="watermark" value="2" title="不开启">
+				{else/}
+					<input type="radio" name="watermark" value="1" title="开启" {eq name="$config.watermark" value="1"}checked{/eq}>
+					<input type="radio" name="watermark" value="2" title="不开启" {eq name="$config.watermark" value="2"}checked{/eq}>
+				{/empty}				
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">隐藏工作台二维码<font>*</font></td>
+			<td colspan="3">
+				{empty name="$config.qrcode"}
+					<input type="radio" name="qrcode" value="1" title="隐藏">
+					<input type="radio" name="qrcode" value="2" title="不隐藏" checked>
+				{else/}
+					<input type="radio" name="qrcode" value="1" title="隐藏" {eq name="$config.qrcode" value="1"}checked{/eq}>
+					<input type="radio" name="qrcode" value="2" title="不隐藏" {eq name="$config.qrcode" value="2"}checked{/eq}>
+				{/empty}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">代码版本号<font>*</font></td>
+			<td>
+				<input type="text" lay-verify="required" name="version" autocomplete="off" placeholder="请输入版本号" lay-reqText="请输入版本号" class="layui-input" value="{$config.version|default='1.0.0'}">
+			</td>
+			<td class="layui-td-gray">版权信息</td>
+			<td>
+				<input type="text" name="copyright" autocomplete="off" placeholder="请输入版权信息" lay-reqText="请输入版权信息" readonly class="layui-input" value="{$config.copyright|default='勾股OA'}">
+			</td>
+		</tr>
+	</table>
+
+	<div class="pt-3">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, upload = layui.upload;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					setTimeout(function(){
+						parent.parent.location.reload();
+					},1000)
+				}
+			}
+			tool.post("/home/conf/edit", data.field, callback);
+			return false;
+		});
+
+		//logo上传
+		var uploadInst = upload.render({
+			elem: '#uploadBtn',
+			url: "/api/index/upload",
+			done: function (res) {
+				layer.msg(res.msg);
+				if (res.code == 0) {
+					//上传成功
+					$('#logo input').attr('value', res.data.filepath);
+					$('#logo img').attr('src', res.data.filepath);
+				}
+			}
+		});
+		
+		var uploadInst2 = upload.render({
+			elem: '#uploadBtn2',
+			url: "/api/index/upload",
+			done: function (res) {
+				layer.msg(res.msg);
+				if (res.code == 0) {
+					//上传成功
+					$('#smalllogo input').attr('value', res.data.filepath);
+					$('#smalllogo img').attr('src', res.data.filepath);
+				}
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

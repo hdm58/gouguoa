@@ -1,0 +1,121 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="style"}
+<style>
+	.layui-unselect dl {
+		max-height: 188px;
+	}
+</style>
+{/block}
+{block name="body"}
+<div class="p-page">
+	<div class="gg-form-bar border-t border-x">
+		<form id="taskForm" class="layui-form" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:100px;">
+				<select name="status" lay-filter="status">
+					<option value="">任务状态</option>
+					{volist name=":get_task_status()" id="vo"}
+					{gt name="$key" value="0"}
+					<option value="{$key}">{$vo}</option>
+					{/gt}
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:100px;">
+				<select name="priority" lay-filter="priority">
+					<option value="">优先级</option>
+					{volist name=":get_priority()" id="vo"}
+					{gt name="$key" value="0"}
+					<option value="{$key}">{$vo}</option>
+					{/gt}
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:100px;">
+				<select name="work_id" lay-filter="cate">
+					<option value="">工作类型</option>
+					{volist name=":get_base_data('WorkCate')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:240px;">
+				<input type="text" name="project_name" placeholder="所属项目" readonly class="layui-input picker-oa" data-types="project" autocomplete="off" />
+				<input name="project_id" style="display: none;" value="" />
+			</div>
+			<div class="layui-input-inline" style="width:160px;">
+				<input type="text" name="director" placeholder="任务负责人，可多选" readonly class="layui-input picker-admin" data-type="2" autocomplete="off" />
+				<input name="director_uid" style="display: none;" value="" />
+			</div>
+			<div class="layui-input-inline" style="width:240px;">
+				<input type="text" name="keywords" placeholder="关键字，任务主题/描述内容" class="layui-input" autocomplete="off" />
+			</div>
+			<div class="layui-input-inline" style="width:150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+			</div>
+		</form>
+	</div>
+	<table class="layui-hide" id="task" lay-filter="task"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm" lay-event="add">+ 新建任务</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	function gouguInit() {
+		var table = layui.tablePlus, form = layui.form, tool = layui.tool;
+
+		layui.taskTable = table.render({
+			elem: '#task',
+			title: '任务列表',
+			toolbar: '#toolbarDemo',
+			is_excel:true,
+			cellMinWidth: 80,
+			url: "/project/task/datalist", //数据接口
+			height: 'full-110',
+			cols: [[
+				{field: 'id', title: '任务编号', width: 80, align: 'center', fixed: 'left', templet: function (d) {
+					return 'T' + d.id;
+				}}
+				,{ field: 'status', title: '任务状态', align: 'center', width: 90, templet: function (d) {
+						var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+						return html;
+						}
+					}
+				, { field: 'cate_name', title: '工作类型', width: 90, align: 'center'}
+				,{field:'title',title: '任务主题', minWidth: 300,templet:function(d){
+					var html = '<span class="layui-badge layui-bg-'+d.priority+'">'+d.priority_name+'</span> <a data-href="/project/task/view/id/'+d.id+'.html" class="side-a">'+d.title+'</a>';
+					return html;
+				}}
+				,{field:'director_name',title: '负责人', align:'center',width: 80}
+				,{field:'assist_admin_names',title: '协作人',width: 160}
+				,{field:'plan_hours',title: '预估工时', align:'center',width: 80}				
+				,{field:'end_time',title: '预计结束日期', width: 150,templet:function(d){
+					var html = d.end_time;	
+					if(d.delay>0){
+						html+= '<span class="red ml-1" style="font-size:12px;">逾期'+d.delay+'天</span>';	
+					}			
+					return html;
+				}}
+			]]
+		});
+		
+		//触发事件
+		table.on('toolbar(task)', function(obj){
+			if(obj.event === 'add'){
+				tool.side('/project/task/add');
+				return;
+			}
+		});
+	}		
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,75 +1,32 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
 <style>
-.check-items{overflow-x: auto; padding: 10px 0;}
-.flow-flex-row {box-direction: row;
-	box-orient: horizontal;
-    -webkit-box-orient: horizontal;
-    -ms-flex-direction: row;
-    flex-direction: row;
-}
-.flow-flexbox { width: 100%;text-align: left;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    display: -webkit-flex;
-    box-align: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-}
-
-.check-item{width: auto; -ms-flex-negative: 0; flex-shrink: 0;}
-.check-item i{font-size:20px; margin-right:3px; color:#4285f4;}
-.check-item span{color:#999;margin:0 3px;}
-.layui-icon[data-ok]{color:#34a853}
-.layui-icon[data-no]{color:#FF5722;}
-.check-item-status{color:#999; font-size:12px; margin-left:3px;}
-
-.flow-tips{padding:6px 10px;}
-.flow-tips li{padding:5px 0;}
-.flow-tips li i{color:#4285f4;}
-.flow-tips li span{color:#999; font-size:12px; margin-left:4px;}
-
-.flow-record{padding:10px 10px 0;}
-.flow-record .layui-icon {font-size:20px;}
-.flow-record .layui-timeline-item{padding-bottom:10px;}
-.layui-timeline-content ul{font-size:12px;}
-.check-status{color:#999; margin-left:5px;}
-.check-remark{padding:6px; margin-top:6px; margin-bottom:10px; border-radius:4px; background-color:#f5f5f5;}
-
-.layui-table-min{margin-bottom:6px;}
 .layui-table-min th{font-size:13px; text-align:center; background-color:#f8f8f8;}
 .layui-table-min td{font-size:13px; padding:6px;text-align:center;}
 </style>
 {/block}
 <!-- 主体 -->
 {block name="body"}
-<div class="page-content">
-	<h3 class="h3-title">发票信息</h3>
-	<table class="layui-table">
+<div class="layui-form p-page">
+	<h3 class="pb-3">发票信息</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">发票金额</td>
-			<td>
-				{$detail.amount}
-			</td>
+			<td class="layui-td-gray">发票金额(元)</td>
+			<td class="blue">{$detail.amount}</td>
 			<td class="layui-td-gray">发票类型</td>
 			<td>
 			{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-			{eq name="$detail.invoice_type" value="2"}增值税普通发票{/eq}
+			{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
+			{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
 			</td>
 			<td class="layui-td-gray">发票主体</td>
-			<td>
-				{volist name=":finance_invoice_subject()" id="vo"}
-				{eq name="$vo.id" value="$detail.invoice_subject"}{$vo.title}{/eq}
-				{/volist}
-			</td>
+			<td>{$detail.subject}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">抬头类型</td>
 			<td>
-				{eq name="$detail.type" value="1"}企业{/eq}
-				{eq name="$detail.type" value="2"}个人{/eq}
+				{eq name="$detail.types" value="1"}企业{/eq}
+				{eq name="$detail.types" value="2"}个人{/eq}
 			</td>
 			<td class="layui-td-gray">发票抬头</td>
 			<td>{$detail.invoice_title}</td>
@@ -77,7 +34,7 @@
 			<td>{$detail.invoice_phone}</td>
 		</tr>
 		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
-			<td class="layui-td-gray2">纳税人识别号</td>
+			<td class="layui-td-gray-2">纳税人识别号</td>
 			<td>{$detail.invoice_tax}</td>
 			<td class="layui-td-gray">开户行</td>
 			<td>{$detail.invoice_bank}</td>
@@ -85,7 +42,7 @@
 			<td>{$detail.invoice_account}</td>
 		</tr>
 		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
-			<td class="layui-td-gray2">银行营业网点</td>
+			<td class="layui-td-gray-2">银行营业网点</td>
 			<td>{$detail.invoice_banking}</td>
 			<td class="layui-td-gray">地址</td>
 			<td colspan="3">{$detail.invoice_address}</td>
@@ -96,71 +53,74 @@
 			<td colspan="5">{$detail.remark}</td>
 		</tr>
 		{/notempty}
+		{notempty name="$detail.file_ids"}
 		<tr>
-			<td class="layui-td-gray">发票状态</td>
-			<td colspan="5">
-				{if condition="($detail.check_status == 0)"}
-					<span style="color:#009688">待审</span>
-				{elseif condition="($detail.check_status == 1)"}
-					<span style="color:#009688">审核中</span>
-				{elseif condition="($detail.check_status == 2)"}
-					<span style="color:#1E9FFF">审核通过,待开具</span>
-				{elseif condition="($detail.check_status == 3)"}
-					<span style="color:#FF5722">审核不通过  【原因：{$detail.check_remark}】</span>
-				{elseif condition="($detail.check_status == 4)"}
-					<span style="color:#FF5722">撤销  【原因：{$detail.check_remark}】</span>
-				{elseif condition="($detail.check_status == 5)"}
-					<span style="color:#1E9FFF">已开具</span>
-				{elseif condition="($detail.check_status == 10)"}
-					<span style="color:#FF5722">已作废</span>
-				{/if}
-				<span id="showRecord" class="layui-btn layui-btn-xs layui-btn-radius layui-btn-normal" style="margin-left:10px;">查看审批记录</span>
+			<td class="layui-td-gray">关联附件</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
 			</td>
 		</tr>
+		{/notempty}
 		{if condition="$detail.open_admin_id > 0"}
 		<tr>
-			<td class="layui-td-gray2">开票人</td>
-			<td>{$detail.open_admin}</td>
-			<td class="layui-td-gray2">开票时间</td>
-			<td>{$detail.open_time}</td>
-			<td class="layui-td-gray2">发票号码</td>
+			<td class="layui-td-gray">发票号码</td>
 			<td>{$detail.code}</td>
+			<td class="layui-td-gray">开票人</td>
+			<td>{$detail.open_admin_name}</td>
+			<td class="layui-td-gray">开票时间</td>
+			<td>{$detail.open_time}</td>
 		</tr>
 		{/if}
+		{notempty name="$detail.other_file_ids"}
+		<tr>
+			<td class="layui-td-gray">发票附件</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.other_file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
 	</table>
 	
-	<h3 class="h3-title2">到账信息</h3>
+	<h3 class="py-3">回款信息</h3>
 	<form class="layui-form">
-		<table class="layui-table">
+		<table class="layui-table layui-table-form">
 			<tr>
-				<td class="layui-td-gray">到账状态</td>
+				<td class="layui-td-gray">回款状态</td>
 				<td>
-					{if condition="($detail.is_cash == 0)"}
-						<span style="color:#FF5722">未到账</span>
-					{elseif condition="($detail.is_cash == 1)"}
-						<span style="color:#1E9FFF">部分到账</span>
-					{elseif condition="($detail.is_cash == 2)"}
-						<span style="color:#009688">全部到账</span>
+					{if condition="($detail.enter_status == 0)"}
+						<span class="red">未回款</span>
+					{elseif condition="($detail.enter_status == 1)"}
+						<span class="blue">部分回款</span>
+					{elseif condition="($detail.enter_status == 2)"}
+						<span  class="green">全部回款</span>
 					{/if}
 				</td>
-				<td class="layui-td-gray2">未到账金额(元)</td>
+				<td class="layui-td-gray-2">未回款金额(元)</td>
 				<td style="color:#FF5722">{$detail.not_income}</td>
-				<td class="layui-td-gray2">已到账金额(元)</td>
+				<td class="layui-td-gray-2">已回款金额(元)</td>
 				<td style="color:#1E9FFF">{$detail.enter_amount}</td>
 			</tr>
 			<tr>
-				<td class="layui-td-gray">到账记录</td>
+				<td class="layui-td-gray">回款记录</td>
 				<td colspan="5">
-					<table id="interfix" class="layui-table layui-table-min">
+					<table id="interfix" class="layui-table layui-table-min" style="margin:0">
 						<tr>
-							<th style="width:200px;">到账日期</th>
+							<th style="width:200px;">回款日期</th>
 							<th style="width:200px;">到帐金额(元)</th>
 							<th>备注</th>
 							<th style="width:100px;">操作</th>
 						</tr>
 						{empty name="$detail.income"}
 						<tr class="none_interfix">
-							<td colspan="4" style="text-align: center;">暂无到账记录</td>
+							<td colspan="4" style="text-align: center;">暂无回款记录</td>
 						</tr>
 						{else/}
 						{volist name="$detail.income" id="vo"}
@@ -173,27 +133,27 @@
 						{/volist}
 						{/empty}
 					</table>
-					{if condition="($detail.is_cash lt 2)"}
-					<div><button class="layui-btn layui-btn-sm layui-btn-normal" type="button" id="addInterfix">+ 添加到账记录</button></div>
+					{if condition="($detail.enter_status lt 2)"}
+					<div class="pt-3"><button class="layui-btn layui-btn-sm" type="button" id="addInterfix">+ 添加回款记录</button></div>
 					{/if}
 				</td>
 			</tr>
 		</table>
-		<div class="layui-form-item" style="padding-top:10px; text-align:center">
-			<input name="inid" id="inid" type="hidden" value="{$id}">
+		<div class="pt-3">
+			<input name="invoice_id" id="invoice_id" type="hidden" value="{$id}">
 			<input name="enter_type" id="enter_type" type="hidden" value="1">
-			{if condition="($detail.is_cash lt 2)"}
-			<button class="layui-btn" lay-submit="" lay-filter="webform">保存到账记录</button>
+			{if condition="($detail.enter_status lt 2)"}
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">保存回款记录</button>
 			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 			{/if}
-			{if condition="($detail.is_cash eq 0)"}
-			<span class="layui-btn layui-btn-danger" lay-event="all">全部到账</span>
+			{if condition="($detail.enter_status eq 0)"}
+			<span class="layui-btn layui-btn-danger" lay-event="all">全部回款</span>
 			{/if}
-			{if condition="($detail.is_cash eq 1)"}
-			<span class="layui-btn layui-btn-danger" lay-event="all">剩余部分全部到账</span>
+			{if condition="($detail.enter_status eq 1)"}
+			<span class="layui-btn layui-btn-danger" lay-event="all">剩余部分全部回款</span>
 			{/if}
-			{if condition="($detail.is_cash gt 0)"}
-			<span class="layui-btn layui-btn-warm" lay-event="refue">全部反到账</span>
+			{if condition="($detail.enter_status gt 0)"}
+			<span class="layui-btn layui-btn-warm" lay-event="refue">全部反回款</span>
 			{/if}
 		</div>
 	</form>
@@ -205,205 +165,44 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-function init(layui) {	
-	var form = layui.form
-		,layer = layui.layer
-		,laydate = layui.laydate
-		,dropdown = layui.dropdown
-		,table = layui.table;
-	
-//获取审核信息
-	$.ajax({
-		url: "/api/index/get_flow_nodes",
-		type:'post',
-		data:{id:$('[name="id"]').val(),type:3},
-		success: function (e) {
-			if (e.code == 0) {	
-				console.log(e);
-				let flowHtml='',list = e.data,record_list='';
-				for(var f=0;f<list.length;f++){
-					//审批流程
-					let checkUser = '',
-					iconRight ='<span class="layui-icon layui-icon-right"></span>',
-					iconStatus ='<i class="layui-icon layui-icon-time"></i>',
-					strStatus ='<div class="check-item-status">待审核</div>';
-					if(f == list.length-1){
-						iconRight ='';
-					}
-					if(list[f].flow_type == 1 || list[f].flow_type == 2){
-						checkUser=list[f].flow_type == 1?'部门负责人':'上级部门负责人';
-						if(list[f].check_list.length>0){
-							if(list[f].check_list[0].status == 1){
-								iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
-								strStatus ='<div class="check-item-status">通过</div>';
-							}
-							else if(list[f].check_list[0].status == 2){
-								iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
-								strStatus ='<div class="check-item-status">拒绝</div>';
-							}
-						}
-					}
-					else if(list[f].flow_type == 0 ){
-						checkUser=list[f].user_id_info[0].name;
-						if(list[f].check_list.length>0){
-							iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
-							strStatus ='<div class="check-item-status">拒绝</div>';
-							for(var m=0;m<list[f].check_list.length;m++){
-								if(list[f].check_list[m].status == 1){
-									iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
-									strStatus ='<div class="check-item-status">通过</div>';
-								}
-							}
-						}
-					}
-					else if(list[f].flow_type == 3 ){
-						checkUser='多人或签';
-						if(list[f].user_id_info.length>0){
-							iconStatus ='<i class="layui-icon layui-icon-time"></i>';
-							strStatus ='<div class="check-item-status">待审核</div>';
-							for(var m=0;m<list[f].user_id_info.length;m++){
-								if(list[f].user_id_info[m].status == 1){
-									iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
-									strStatus ='<div class="check-item-status">通过</div>';
-									break;
-								}
-								if(list[f].user_id_info[m].status == 2){
-									iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
-									strStatus ='<div class="check-item-status">拒绝</div>';
-								}
-							}
-						}
-					}
-					else if(list[f].flow_type == 4){
-						checkUser='多人会签';
-						if(list[f].user_id_info.length>0){
-							iconStatus ='<i class="layui-icon layui-icon-ok-circle" data-ok=""></i>';
-							strStatus ='<div class="check-item-status">通过</div>';
-							for(var m=0;m<list[f].user_id_info.length;m++){
-								if(list[f].user_id_info[m].status == 2){
-									iconStatus ='<i class="layui-icon layui-icon-close" data-no=""></i>';
-									strStatus ='<div class="check-item-status">拒绝</div>';
-									break;
-								}
-								if(list[f].user_id_info[m].status == 0){
-									iconStatus ='<i class="layui-icon layui-icon-time"></i>';
-									strStatus ='<div class="check-item-status">待审核</div>';
-								}
-							}
-						}
-					}
-					flowHtml+= '<div class="flow-flexbox check-item flow-flex-row" id="flow'+f+'">'+iconStatus+'\
-						<div class="check-item-name">'+checkUser+'</div>'+strStatus+iconRight+'\
-					</div>';
-					
-					
-					//审批历史数据						
-					var sign_type = '',user_check_list='';
-					if(list[f].check_list.length>0){
-						if(list[f].flow_type==3){
-							sign_type= ' <span class="layui-badge layui-bg-blue">或签</span>'
-						}
-						if(list[f].flow_type==4){
-							sign_type= ' <span class="layui-badge layui-bg-blue">会签</span>'
-						}
-						for(var b=0;b<list[f].check_list.length;b++){
-							var status_str = '通过了此申请';
-							if(list[f].check_list[b].status == 2){
-								status_str = '拒绝了此申请';
-							}
-							user_check_list+= '<li style="padding:3px 0"><img src="'+list[f].check_list[b].thumb+'" style="width:22px; height:22px; border-radius:50%; margin-right:8px;" />'+list[f].check_list[b].name+'<span class="check-status">'+list[f].check_list[b].check_time_str+status_str+'</span><div class="check-remark">'+list[f].check_list[b].content+'</div></li>';
-						}
-					
-						record_list+='<li class="layui-timeline-item">\
-									<i class="layui-icon layui-timeline-axis">&#x1005;</i>\
-									<div class="layui-timeline-content">\
-									  <p class="layui-timeline-title">第'+(f+1)+'级'+sign_type+'</p>\
-									  <ul>'+user_check_list+'</ul>\
-									</div>\
-								</li>';							
-					}
-				}
-				
-				$('#flowList').append(flowHtml);
-				if(record_list == ''){
-					record_list='<div style="text-align:center; color:#999; padding:10px 10px 20px;">无审批记录</div>';
-				}
-				dropdown.render({
-					elem: '#showRecord'
-					,trigger: 'click'
-					,content: ['<div class="flow-record">'
-					  ,'<ul>'+record_list+'</ul>'
-					,'</div>'].join('')
-				});
-				
-				for(var f=0;f<list.length;f++){
-					if(list[f].flow_type == 3 || list[f].flow_type == 4){
-						var user_list= '';
-						for(var a=0;a<list[f].user_id_info.length;a++){
-							if(list[f].user_id_info[a].status==0){
-								user_list+='<li><i class="layui-icon layui-icon-time"></i> '+list[f].user_id_info[a].name+'<span>待审核此申请</span></li>';
-							}
-							else if(list[f].user_id_info[a].status==1){
-								user_list+='<li><i class="layui-icon layui-icon-ok-circle" data-ok=""></i><span>'+list[f].user_id_info[a].check_time+'</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+list[f].user_id_info[a].name+'<span>已通过此申请</span></li>';
-							}else if(list[f].user_id_info[a].status==2){
-								user_list+='<li><i class="layui-icon layui-icon-close" data-no=""></i><span>'+list[f].user_id_info[a].check_time+'</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+list[f].user_id_info[a].name+'<span>已拒绝此申请</span></li>';
-							}										
-						}
-						dropdown.render({
-							elem: '#flow'+f
-							,trigger: 'hover'
-							,content: ['<div class="flow-tips">'
-							  ,'<ul>'+user_list+'</ul>'
-							,'</div>'].join('')
-						});
-					}
-				}					
-			}
-		}
-	})	 
-
-	
+const moduleInit = ['tool'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,laydate = layui.laydate;
 	//添加表格行
 	$('#addInterfix').on('click',function(){
 		var html = '';
 		html += '<tr class="more_interfix">';
-		html += '<td><input type="text" class="layui-input enter-time" name="enter_time[]" readonly lay-verify="required" lay-reqText="请选择到账日期">';
-		html += '<td><input type="text" class="layui-input" name="amount[]" lay-verify="required|number" lay-reqText="请输入到账金额,数字"></td>';
+		html += '<td><input type="text" class="layui-input tool-time" name="enter_time[]" readonly lay-verify="required" lay-reqText="请选择回款日期">';
+		html += '<td><input type="text" class="layui-input" name="amount[]" lay-verify="required|number" lay-reqText="请输入回款金额,数字"></td>';
 		html += '<td><input type="text" class="layui-input" name="remarks[]"></td>';
 		html += '<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>';
 		html += '</tr>';
 		$("#interfix").find('.none_interfix').remove();
 		$("#interfix").append(html);
 		form.render();
-		lay('.enter-time').each(function () {
-			laydate.render({
-				elem: this,
-				trigger: 'click',
-				showBottom:false
-			});
-		});
 	});
 	//删除表格
 	$('#interfix').on('click', '[lay-event="del"]', function() {
 		$(this).parents(".more_interfix").remove();
 		if($("#interfix").find('.more_interfix').length<1){
-			$("#interfix").append('<tr class="none_interfix"><td colspan="4" style="text-align: center;">暂无到账记录</td></tr>');				
+			$("#interfix").append('<tr class="none_interfix"><td colspan="4" style="text-align: center;">暂无回款记录</td></tr>');				
 		}
 	});
 
-	//删除到账记录
+	//删除回款记录
 	$('#interfix').on('click', '[lay-event="remove"]', function() {
 		var that=$(this);
 		var id=that.data('id');
-		var inid=that.data('inid');
-		layer.confirm('确定要删除该到账记录?', {icon: 3, title:'提示'}, function(index){
+		var invoice_id=that.data('inid');
+		layer.confirm('确定要删除该回款记录?', {icon: 3, title:'提示'}, function(index){
 			$.ajax({
-				url: "/finance/income/delete",
-				data:{id:id,inid:inid},
+				url: "/finance/income/del",
+				type:'post',
+				data:{id:id,invoice_id:invoice_id},
 				success:function(res){
 					layer.msg(res.msg);
 					if(res.code==0){
-						parent.tableIns.reload();
+						parent.layui.pageTable.reload();
 						window.setTimeout(function(){
 							location.reload();
 						},1200)	
@@ -416,8 +215,8 @@ function init(layui) {
 	//监听提交
 	form.on('submit(webform)', function(data){
 		console.log(data.field);
-		if($("#interfix").find('.enter-time').length<1){
-			layer.msg('请添加到账记录');
+		if($("#interfix").find('.tool-time').length<1){
+			layer.msg('请添加回款记录');
 			return false;
 		}
 		$.ajax({
@@ -427,7 +226,7 @@ function init(layui) {
 			success:function(res){
 				layer.msg(res.msg);
 				if(res.code==0){
-					parent.tableIns.reload();
+					parent.layui.pageTable.reload();
 					window.setTimeout(function(){
 						location.reload();
 					},1200)	
@@ -437,16 +236,17 @@ function init(layui) {
 		return false;
 	});
 	
-	$('.page-content').on('click', '[lay-event="refue"]', function () {
-		var inid=$('#inid').val();
-		layer.confirm('确定要全部反到账?', {icon: 3, title:'提示'}, function(index){
+	$('.layui-form').on('click', '[lay-event="refue"]', function () {
+		var invoice_id=$('#invoice_id').val();
+		layer.confirm('确定要全部反回款?', {icon: 3, title:'提示'}, function(index){
 			$.ajax({
 				url: "/finance/income/add",
-				data:{inid:inid,enter_type:3},
+				type:'post',
+				data:{invoice_id:invoice_id,enter_type:3},
 				success:function(res){
 					layer.msg(res.msg);
 					if(res.code==0){
-						parent.tableIns.reload();
+						parent.layui.pageTable.reload();
 						window.setTimeout(function(){
 							location.reload();
 						},1200)	
@@ -456,10 +256,10 @@ function init(layui) {
 		})
 		return false;
 	})
-	$('.page-content').on('click', '[lay-event="all"]', function () {
-		var inid=$('#inid').val();
-		layer.confirm('确定已经全部到账?', {icon: 3, title:'提示'}, function(idx){
-			layer.prompt({title: '选择到账日期', formType: 3,value :'',success: function(layero, index){
+	$('.layui-form').on('click', '[lay-event="all"]', function () {
+		var invoice_id=$('#invoice_id').val();
+		layer.confirm('确定已经全部回款?', {icon: 3, title:'提示'}, function(idx){
+			layer.prompt({title: '选择回款日期', formType: 3,value :'',success: function(layero, index){
 				$('.layui-layer-input').attr('readonly',true);
 				lay('.layui-layer-input').each(function () {
 					laydate.render({
@@ -472,16 +272,17 @@ function init(layui) {
 			}
 		}, function(enter_time, index){
 				if(enter_time ==''){
-					layer.msg('选择到账日期');
+					layer.msg('选择回款日期');
 					return false;
 				}
 				$.ajax({
 					url: "/finance/income/add",
-				data:{inid:inid,enter_type:2,enter_time:enter_time},
+					type:'post',
+					data:{invoice_id:invoice_id,enter_type:2,enter_time:enter_time},
 					success:function(res){
 						layer.msg(res.msg);
 						if(res.code==0){
-							parent.tableIns.reload();
+							parent.layui.pageTable.reload();
 							window.setTimeout(function(){
 								location.reload();
 							},1200)	
@@ -494,6 +295,5 @@ function init(layui) {
 	})
 }
 </script>
-{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

@@ -1,0 +1,141 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">编辑产品</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">产品名称<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" value="{$detail.title}" autocomplete="off" placeholder="请输入产品名称" lay-verify="required" lay-reqText="请输入产品名称" class="layui-input"></td>
+			<td class="layui-td-gray">产品分类<font>*</font></td>
+			<td>
+				 <select name="cate_id" lay-verify="required" lay-reqText="请选择分类">
+					<option value="">请选择分类</option>
+					{volist name=":set_recursion(get_base_data('ProductCate'))" id="v"}
+					<option value="{$v.id}" {eq name="$v.id" value="$detail.cate_id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				 </select>
+			</td>
+			<td class="layui-td-gray" rowspan="4">缩略图</td>
+			<td rowspan="4" style="width: 150px; vertical-align:top:">
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="test1">缩略图(尺寸：240x136)</button>
+					<div class="layui-upload-list" id="demo1" style="width: 120px; height:66px; overflow: hidden;">
+						<img src="{:get_file($detail.thumb)}" style="max-width: 100%; height:66px;" />
+						<input type="hidden" name="thumb" value="{$detail.thumb}">
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">产品编码<font>*</font></td>
+			<td><input type="text" name="code" value="{$detail.code}" readonly class="layui-input" lay-verify="required"></td>
+			<td class="layui-td-gray">产品单位<font>*</font></td>
+			<td><input type="text" name="unit" autocomplete="off" value="{$detail.unit}" class="layui-input" lay-verify="required" lay-reqText="请输入产品单位"></td>
+			<td class="layui-td-gray">产品规格</td>
+			<td><input type="text" name="specs" autocomplete="off" value="{$detail.specs}" placeholder="请输入产品规格" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">销售价(元)<font>*</font></td>
+			<td><input type="text" name="sale_price" value="{$detail.sale_price}" autocomplete="off" placeholder="请输入产品销售价" lay-verify="required|number" lay-reqText="请输入产品销售价" class="layui-input"></td>
+			<td class="layui-td-gray">成本价(元)</td>
+			<td><input type="text" name="base_price" value="{$detail.base_price}" lay-verify="number" autocomplete="off" placeholder="请输入产品成本价" class="layui-input"></td>
+			<td class="layui-td-gray">采购价(元)</td>
+			<td><input type="text" name="purchase_price" value="{$detail.purchase_price}" lay-verify="number" autocomplete="off" placeholder="请输入产品采购价" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">是否实物<font>*</font></td>
+			<td colspan="7">
+				<input type="radio" name="is_object" value="1" title="是" {eq name="$detail.is_object" value="1"} checked {/eq}>
+				<input type="radio" name="is_object" value="2" title="否" {eq name="$detail.is_object" value="2"} checked {/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">产品附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="7" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr> 
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">产品描述<font>*</font></td>
+			<td colspan="7">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-1">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','tinymce','uploadPlus'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,upload = layui.upload,uploadPlus = layui.uploadPlus;
+	
+    //封面上传
+    var uploadInst = upload.render({
+		elem: '#test1'
+		, url: "/api/index/upload"
+		, done: function (res) {
+			layer.msg(res.msg);
+			if (res.code == 0) {
+				//上传成功
+				$('#demo1 input').attr('value', res.data.id);
+				$('#demo1 img').attr('src', res.data.filepath);
+			}
+		}
+    });
+	
+    //编辑器初始化
+	var editor = layui.tinymce;
+	var edit = editor.render({
+		selector: "#container",
+		images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+		height: 500
+	});	
+	
+	//附件上传
+	var attachment = new uploadPlus({
+		"target":'uploadBtn',
+		"targetBox":'uploadBox'
+	});
+	
+	//监听提交
+	form.on('submit(webform)', function(data){
+		data.field.content = tinyMCE.editors['container'].getContent();
+		if (data.field.content == '') {
+			layer.msg('请先完善产品的描述内容');
+			return false;
+		}
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);				
+			}
+		}
+		tool.post("/contract/product/add", data.field, callback);
+		return false;
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,19 +1,22 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="body-table">
-	<form class="layui-form layui-form-bar">
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x">
 		<div class="layui-input-inline">
-			<input type="text" name="keywords" placeholder="职业名称/备注" class="layui-input" autocomplete="off"/>
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off"/>
 		</div>
-		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
 	</form>
 	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
-	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加离职档案记录</button> <span style="font-size:12px; margin-left:20px; color:#FF5722">删除离职档案即可恢复在职状态</span>
+	<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加离职档案记录</button> <span style="font-size:12px; margin-left:20px; color:#FF5722">删除离职档案即可恢复在职状态，已交接的资料无法恢复</span>
   </div>
 </script>
 {/block}
@@ -22,35 +25,50 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	var tableIns = null;
-	function init(layui) {
-		var table = layui.table
-			,rightpage = layui.rightpage
-			, form = layui.form;
-
-		tableIns = table.render({
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form;
+		layui.pageTable = table.render({
 			elem: '#test'
 			, toolbar: '#toolbarDemo'
+			,defaultToolbar: false
 			, url: "/user/personal/leave"
 			, page: true //开启分页
 			, limit: 20
 			, cols: [[
 				{ field: 'id', width: 80, title: '序号', align: 'center' }
-				, { field: 'name', width: 110, title: '离职员工姓名', align: 'center','style':'color:#FF5722'}
-				, { field: 'department', width: 120, title: '所在部门', align: 'center'}
+				, { field: 'name', width: 110, title: '离职员工', align: 'center','style':'color:#FF5722'}
 				, { field: 'position', width: 100, title: '职位', align: 'center'}
+				, { field: 'department', width: 120, title: '所在部门', align: 'center'}
 				, { field: 'lead_admin', width: 90, title: '部门负责人', align: 'center'}
-				, { field: 'connect_names', width: 180, title: '交接人', align: 'center'}
 				, { field: 'quit_time', width: 100,title: '离职日期', align: 'center'}
+				, { field: 'connect_status', width: 100,title: '资料交接状态', align: 'center',
+					templet: function (d) {
+						if(d.connect_time==0){
+							return '<span class="green">未交接</span>';
+						}
+						else{
+							return '<span class="red">已交接</span>';
+						}
+					}
+				}
+				, { field: 'connect_name', width: 90, title: '资料接受人', align: 'center'}
+				, { field: 'connect_time_str', width: 90, title: '交接日期', align: 'center'}
+				, { field: 'connect_names', width: 180, title: '参与交接人'}
 				, { field: 'remark', title: '离职原因'}
 				, {
-					width: 100, title: '操作',fixed:'right', align: 'center'
+					width: 150, title: '操作',fixed:'right', align: 'center'
 					, templet: function (d) {
-						var html='<div class="layui-btn-group">';
-							html+='<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
-							html+='<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button>';
-						html+='</div>';
-						return html;
+						let btn1='<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
+						let	btn2='<button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="set">资料交接</button>';
+						let	btn3='<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button>';
+						
+						if(d.connect_time==0){
+							return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+						}
+						else{
+							return '<div class="layui-btn-group">'+btn3+'</div>';
+						}
 					}
 				}
 			]]
@@ -60,22 +78,30 @@
 		table.on('tool(test)', function(obj){
 			var data = obj.data;
 			if(obj.event === 'edit'){
-				rightpage.open('/user/personal/leave_add?id='+data.id,"900px");
+				tool.side('/user/personal/leave_add?id='+data.id);
 				return;
 			}
-			if (obj.event === 'del') {
-				layer.confirm('确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
-					$.ajax({
-						url: "/user/personal/leave_delete",
-						type: 'post',
-						data: { id: obj.data.id },
-						success: function (res) {
-							layer.msg(res.msg);
-							if (res.code == 0) {
-								obj.del();
-							}
+			if (obj.event === 'set') {
+				layer.confirm('确定要把【'+data.name+'】相关的项目、合同、客户等资料交接给【'+data.connect_name+'】吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
 						}
-					})
+					}
+					tool.delete("/user/personal/leave_check", { id: data.id }, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'del') {
+				layer.confirm('删除该离职档案【'+data.name+'】即可恢复在职状态，已交接的资料无法恢复，确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/user/personal/leave_delete", { id: data.id }, callback);
 					layer.close(index);
 				});
 			}
@@ -86,23 +112,17 @@
 			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
 			var data = checkStatus.data; 
 			if (obj.event === 'add') {
-				rightpage.open("/user/personal/leave_add","900px");
+				tool.side("/user/personal/leave_add");
 				return;
 			}
 		});
 
 		//监听搜索提交
 		form.on('submit(webform)', function(data){
-			if(data.field.keywords) {
-			  tableIns.reload({where:{keywords:data.field.keywords},page:{curr:1}});			  
-			}
-			else{
-				location.reload();
-			}
+			layui.pageTable.reload({where:data.field,page:{curr:1}});			  
 			return false;
 		});
 	}
 </script>
-{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
 {/block}
 <!-- /脚本 -->

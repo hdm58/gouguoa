@@ -1,0 +1,50 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">资产维修记录</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">资产名称</td>
+			<td colspan="5">{$detail.property}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">维修日期</td>
+			<td>{$detail.repair_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray">维修费用</td>
+			<td>{$detail.cost}</td>
+			<td class="layui-td-gray">跟进人</td>
+			<td>{$detail.director_name}</td>
+		</tr>
+		{notempty name="$detail.fileArray"}
+		<tr>
+			<td class="layui-td-gray">相关附件</div></td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">					
+					{volist name="$detail.fileArray" id="vo"}
+					<div class="layui-col-md4" id="fileItem{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}					
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">维修原因</td>
+			<td colspan="5">{$detail.content|default=''}</td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool;
+	
+}
+</script>
+{/block}
+<!-- /脚本 -->

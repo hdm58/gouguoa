@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="renderer" content="webkit"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 {block name="meta"}
 	<link rel="mobile-prefetch" href=""/>
 {/block}
@@ -16,13 +16,11 @@
 	<meta name="description" content="{:get_system_config('web','desc')}"/>
 {/block}
 {block name="css"}
-	<link rel="stylesheet" href="{__LAYUI__}/css/layui.css?v={:get_system_config('web','version')}" media="all">
-	<link rel="stylesheet" href="{__CSS__}/common.css?v={:get_system_config('web','version')}" media="all">
+	<link rel="stylesheet" href="{__GOUGU__}/gougu/css/gougu.css?v={:get_system_config('system','version')}" media="all">
 {/block}
 {block name="style"}{/block}
-<script src="{__STATIC__}/jquery.min.js"></script>
 <script>
-	const login_user={$login_user};
+	const login_admin={$login_admin.id};
 </script>
 {block name="js"}{/block}
 </head>
@@ -38,9 +36,22 @@
 	<!-- 脚本 -->
 	{block name="script"}{/block}
 	<!-- /脚本 -->
+	<script src="{__GOUGU__}/layui/layui.js"></script>
+	<script src="{__GOUGU__}/gougu/gouguInit.js?v={:get_system_config('system','version')}"></script>
 	
-	<!-- 统计代码 -->
-	{block name="code"}{/block}
-	<!-- /统计代码 -->
+	<!-- 版权标识 -->
+	<!-- 
+	+------------------------------------------------------------------------------------------
+	勾股OA系统开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
+	+------------------------------------------------------------------------------------------
+	如需去除版权标识使用的，请微信(hdm588)联系作者去除，开源不易，请多支持！
+	+------------------------------------------------------------------------------------------
+	勾股工作室 <hdm58@qq.com>
+	+------------------------------------------------------------------------------------------
+	-->
+	{block name="copyright"}
+		<div class="copyright">Copyright © 2022-2024 勾股OA - {:CMS_VERSION}  ，Powered by GouguOPEN<a href="https://www.gougucms.com" target="_blank">官网</a><a href="https://blog.gougucms.com" target="_blank">社区</a><a href="https://blog.gougucms.com/home/book/detail/bid/3/id/7.html" target="_blank">文档</a></div></div>
+	{/block}
+	<!-- /版权标识 -->
 </body>
 </html>

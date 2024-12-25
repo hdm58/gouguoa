@@ -1,17 +1,25 @@
 <?php
 /**
- * @copyright Copyright (c) 2021 勾股工作室
- * @license https://opensource.org/licenses/GPL-2.0
- * @link https://www.gougucms.com
- */
++-----------------------------------------------------------------------------------------------
+* GouGuOPEN [ 左手研发，右手开源，未来可期！]
++-----------------------------------------------------------------------------------------------
+* @Copyright (c) 2021~2024 http://www.gouguoa.com All rights reserved.
++-----------------------------------------------------------------------------------------------
+* @Licensed 勾股OA，开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
++-----------------------------------------------------------------------------------------------
+* @Author 勾股工作室 <hdm58@qq.com>
++-----------------------------------------------------------------------------------------------
+*/
+
 // 应用公共文件,内置主要的数据处理方法
 use think\facade\Config;
 use think\facade\Request;
 use think\facade\Cache;
 use think\facade\Db;
 
+/***************************************************系统相关*****************************************************/
 //设置缓存
-function set_cache($key, $value, $date = 86400)
+function set_cache($key='', $value='', $date = 86400)
 {
     Cache::set($key, $value, $date);
 }
@@ -28,15 +36,21 @@ function clear_cache($key)
     Cache::clear($key);
 }
 
+//读取文件配置
+function get_config($key)
+{
+    return Config::get($key);
+}
+
 //读取系统配置
-function get_system_config($name, $key = '')
+function get_system_config($name='', $key = '')
 {
     $config = [];
     if (get_cache('system_config' . $name)) {
         $config = get_cache('system_config' . $name);
     } else {
         $conf = Db::name('config')->where('name', $name)->find();
-        if ($conf['content']) {
+        if (isset($conf['content'])) {
             $config = unserialize($conf['content']);
         }
         set_cache('system_config' . $name, $config);
@@ -44,20 +58,31 @@ function get_system_config($name, $key = '')
     if ($key == '') {
         return $config;
     } else {
-        if ($config[$key]) {
+        if (isset($config[$key])) {
             return $config[$key];
         }
+		else{
+			return '';
+		}
     }
 }
 
-
-//读取文件配置
-function get_config($key)
+//设置系统配置
+function set_system_config($name='', $key='', $value='')
 {
-    return Config::get($key);
+    $config = [];
+	$conf = Db::name('config')->where('name', $name)->find();
+	if ($conf['content']) {
+		$config = unserialize($conf['content']);
+	}
+	$config[$key] = $value;
+	set_cache('system_config' . $name, $config);
+	$content = serialize($config);
+	Db::name('config')->where('name', $name)->update(['content'=>$content]);
 }
 
-//判断cms是否完成安装
+
+//判断系统是否已安装
 function is_installed()
 {
     static $isInstalled;
@@ -67,88 +92,74 @@ function is_installed()
     return $isInstalled;
 }
 
-
-//获取服务器信息
-function get_system_info($key)
+//判断系统是否存在模板
+function isTemplate($url='')
 {
-    $system = [
-        'os' => PHP_OS,
-        'php' => PHP_VERSION,
-        'upload_max_filesize' => get_cfg_var("upload_max_filesize") ? get_cfg_var("upload_max_filesize") : "不允许上传附件",
-        'max_execution_time' => get_cfg_var("max_execution_time") . "秒 ",
-    ];
-    if (empty($key)) {
-        return $system;
-    } else {
-        return $system[$key];
+    static $isTemplate;
+    if (empty($isTemplate)) {
+        $isTemplate = file_exists(CMS_ROOT . 'app/'.$url);
     }
+    return $isTemplate;
 }
 
-//获取url参数
+//判断模块是否禁用
+function isModule($name)
+{
+	$map = [];
+	$map[] = ['name', '=', $name];
+	$map[] = ['status', '=', 1];
+    $count = Db::name('AdminModule')->where($map)->count();
+    return $count;
+}
+
+//获取某模块的某数据配置
+function valueAuth($name,$conf)
+{
+	$map = [];
+	$map[] = ['name', '=', $name];
+    $val = Db::name('DataAuth')->where($map)->value($conf);
+    return $val;
+}
+
+//是否是某模块的数据权限,>1即有权限,$uid,要鉴别的用户，$name模块名称，$conf权限类型(字段),
+function isAuth($uid,$name,$conf)
+{
+	if($uid == 1){
+		return 1;
+	}
+	$map = [];
+	$map[] = ['name', '=', $name];
+	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',$conf)")];
+    $count = Db::name('DataAuth')->where($map)->count();
+    return $count;
+}
+
+//判断是否是部门负责人,
+function isLeader($uid = 0,$did='')
+{
+	if($uid == 1){
+		return 1;
+	}
+	$map = [];
+	$map[] = ['status','=',1];
+	if(!empty($did)){
+		$map[] = ['id','in',$did];
+	}
+	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',leader_ids)")];
+	$count = Db::name('Department')->where($map)->count();
+	return $count;
+}
+
+//获取url参数,$key为空时返回所有参数数组
 function get_params($key = "")
 {
     return Request::instance()->param($key);
 }
 
-//生成一个不会重复的字符串
-function make_token()
-{
-    $str = md5(uniqid(md5(microtime(true)), true));
-    $str = sha1($str); //加密
-    return $str;
-}
-
-//随机字符串，默认长度10
-function set_salt($num = 10)
-{
-    $str = 'qwertyuiopasdfghjklzxcvbnm1234567890';
-    $salt = substr(str_shuffle($str), 10, $num);
-    return $salt;
-}
-//密码加密
-function set_password($pwd, $salt)
-{
-    return md5(md5($pwd . $salt) . $salt);
-}
-
-//获取指定管理员的信息
-function get_admin($id)
-{
-    $admin = Db::name('Admin')
-	->alias('a')
-	->field('a.*,d.title as department,p.title as position')
-	->leftJoin ('Department d ','d.id= a.did')
-	->leftJoin ('Position p ','p.id= a.position_id')
-	->where(['a.id' => $id])
-	->cache(true,60)
-	->find();
-    $admin['last_login_time'] = empty($admin['last_login_time']) ? '-' : date('Y-m-d H:i', $admin['last_login_time']);
-    return $admin;
-}
-
-//获取当前登录用户的信息
-function get_login_admin($key = '')
-{
-    $session_admin = get_config('app.session_admin');
-    if (\think\facade\Session::has($session_admin)) {
-        $gougu_admin = \think\facade\Session::get($session_admin);
-        $admin = get_admin($gougu_admin['id']);
-        if (!empty($key)) {
-            if (isset($admin[$key])) {
-                return $admin[$key];
-            } else {
-                return '';
-            }
-        } else {
-            return $admin;
-        }
-    } else {
-        return '';
-    }
-}
-
 /**
- * 节点权限判断
+ * 菜单节点权限判断
+ * @rule String
+ * @uid Int
  * @return bool
  */
 function check_auth($rule, $uid)
@@ -161,207 +172,120 @@ function check_auth($rule, $uid)
     }
 }
 
-//读取部门列表
-function get_department()
+/**
+ * 返回json数据，用于接口
+ * @param    integer    $code
+ * @param    string     $msg
+ * @param    array      $data
+ * @param    string     $url
+ * @param    integer    $httpCode
+ * @param    array      $header
+ * @param    array      $options
+ * @return   json
+ */
+function to_assign($code = 0, $msg = "操作成功", $data = [], $action = '', $url = '', $httpCode = 200, $header = [], $options = [])
 {
-    $department = Db::name('Department')->where(['status' => 1])->select()->toArray();
-    return $department;
-}
-
-//获取某部门的子部门id.$is_self时候包含自己
-function get_department_son($did = 0, $is_self = 1)
-{
-    $department = get_department();
-    $department_list = get_data_node($department, $did);
-    $department_array = array_column($department_list, 'id');
-    if ($is_self == 1) {
-        //包括自己在内
-        $department_array[] = $did;
+    $res = ['code' => $code];
+    $res['msg'] = $msg;
+    $res['action'] = $action;
+    $res['url'] = $url;
+    if (is_object($data)) {
+        $data = $data->toArray();
     }
-    return $department_array;
+    $res['data'] = $data;
+    $response = \think\Response::create($res, "json", $httpCode, $header, $options);
+    throw new \think\exception\HttpResponseException($response);
 }
 
-//读取员工所在部门的负责人
-function get_department_leader($uid=0,$pid=0)
+/**
+ * 适配layui table数据列表的返回数据方法，用于接口
+ * @param    integer    $code
+ * @param    string     $msg
+ * @param    array      $data
+ * @param    integer    $httpCode
+ * @param    array      $header
+ * @param    array      $options
+ * @return   json
+ */
+function table_assign($code = 0, $msg = '请求成功', $data = [],$totalRow = [], $httpCode = 200, $header = [], $options = [])
 {
-	$did = get_admin($uid)['did'];
-	if($pid==0){
-		$leader = Db::name('Department')->where(['id' => $did])->value('leader_id');
-	}
-	else{
-		$pdid = Db::name('Department')->where(['id' => $did])->value('pid');
-		if($pdid == 0){
-			$leader = 0;
+    $res['code'] = $code;
+    $res['msg'] = $msg;
+    $res['totalRow'] = $totalRow;
+    if (is_object($data)) {
+        $data = $data->toArray();
+    }
+    if (!empty($data['total'])) {
+        $res['count'] = $data['total'];
+    } else {
+        $res['count'] = 0;
+    }
+    $res['data'] = $data['data'];
+    $response = \think\Response::create($res, "json", $httpCode, $header, $options);
+    throw new \think\exception\HttpResponseException($response);
+}
+
+//写入操作日主
+function add_log($type, $param_id = 0, $param = [] ,$subject='')
+{
+	try {
+		// 可能会抛出异常的代码
+		$title = '操作';
+		$session_admin = get_config('app.session_admin');
+		$uid = \think\facade\Session::get($session_admin);
+		$type_action = get_config('log.type_action');
+		if($type_action[$type]){
+			$title = $type_action[$type];
+		}
+		$data = [
+			'uid' => $uid,
+			'type' => $type,
+			'action' => $title,
+			'param_id' => $param_id,
+			'param' => json_encode($param),
+			'module' => strtolower(app('http')->getName()),
+			'controller' => strtolower(app('request')->controller()),
+			'function' => strtolower(app('request')->action()),
+			'ip' => app('request')->ip(),
+			'create_time' => time(),
+			'subject' => 'OA系统'
+		];
+		if($subject!=''){
+			$data['subject'] =$subject;
 		}
 		else{
-			$leader = Db::name('Department')->where(['id' => $pdid])->value('leader_id');
-		}		
-	}    
-    return $leader;
+			$rule = $data['module'] . '/' . $data['controller'] . '/' . $data['function'];
+			$rule_menu = Db::name('AdminRule')->where(array('src' => $rule))->find();
+			if($rule_menu){
+				$data['subject'] = $rule_menu['name'];
+			}
+		}
+		Db::name('AdminLog')->strict(false)->field(true)->insert($data);
+	} catch (\Exception $e) {
+	// 处理异常，记录日志或者其他逻辑
+	// 但不要抛出异常，以免中断主程序流程
+	}
 }
 
-//读取职位
-function get_position()
-{
-    $position = Db::name('Position')->where(['status' => 1])->select()->toArray();
-    return $position;
+//消息链接信息转换
+function get_message_link($template_id,$action_id){
+	$content='';
+	$template = Db::name('Template')->where('id',$template_id)->find();
+	$link = $template['msg_link'];
+	if(!empty($link)){
+		$content = str_replace('{action_id}', $action_id, $link);
+	}
+	return '<a class="side-a" data-href="'.$content.'">查看详情</a>';
 }
 
-//根据流程模块读取某部门某模块的审核流程
-function get_flows($type=1,$department=0)
-{
-	$map1 = [];
-	$map2 = [];
-	$map1[] = ['status', '=', 1];
-	$map1[] = ['flow_cate', '=', $type];
-	$map1[] = ['department_ids', '=', ''];
-
-	$map2[] = ['status', '=', 1];
-	$map2[] = ['flow_cate', '=', $type];
-	$map2[] = ['', 'exp', Db::raw("FIND_IN_SET('{$department}',department_ids)")];
-
-    $list = Db::name('Flow')
-		->field('id,name,check_type')
-		->whereOr([$map1,$map2])
-		->order('id desc')->select()->toArray();
-    return $list;
-}
-
-//根据流程所属模块读取某部门某模块的审核流程
-function get_type_flows($module=6,$department=0)
-{
-	$map1 = [];
-	$map2 = [];
-	$map1[] = ['status', '=', 1];
-	$map1[] = ['type', '=', $module];
-	$map1[] = ['department_ids', '=', ''];
-
-	$map2[] = ['status', '=', 1];
-	$map2[] = ['type', '=', $module];
-	$map2[] = ['', 'exp', Db::raw("FIND_IN_SET('{$department}',department_ids)")];
-
-    $list = Db::name('Flow')
-		->field('id,name,check_type')
-		->whereOr([$map1,$map2])
-		->order('id desc')->select()->toArray();
-    return $list;
-}
-
-/**
- * 根据附件表的id返回url地址
- * @param  [type] $id [description]
- */
-function get_file($id)
-{
-    if ($id) {
-        $geturl = Db::name("file")->where(['id' => $id])->find();
-        if ($geturl['status'] == 1) {
-            //审核通过
-            //获取签名的URL
-            $url = $geturl['filepath'];
-            return $url;
-        } elseif ($geturl['status'] == 0) {
-            //待审核
-            return '/static/home/images/none_pic.jpg';
-        } else {
-            //不通过
-            return '/static/home/images/none_pic.jpg';
-        }
-    }
-    return false;
-}
-
-/**
- * 员工操作日志
- * @param string $type 操作类型 login add edit view delete
- * @param int    $param_id 操作类型
- * @param array  $param 提交的参数
- */
-function add_log($type, $param_id = '', $param = [])
-{
-	$action = '未知操作';
-	$type_action = get_config('log.type_action');
-	if($type_action[$type]){
-		$action = $type_action[$type];
+function get_message_mobile($template_id,$action_id){
+	$content='';
+	$template = Db::name('Template')->where('id',$template_id)->find();
+	$link = $template['msg_link'];
+	if(!empty($link)){
+		$content = str_replace('{action_id}', $action_id, $link);
 	}
-    if ($type == 'login') {
-        $login_admin = Db::name('Admin')->where(array('id' => $param_id))->find();
-    } else {
-        $session_admin = get_config('app.session_admin');
-        $login_admin = \think\facade\Session::get($session_admin);
-    }
-    $data = [];
-    $data['uid'] = $login_admin['id'];
-    $data['name'] = $login_admin['name'];
-    $data['type'] = $type;
-    $data['action'] = $action;
-    $data['param_id'] = $param_id;
-    $data['param'] = json_encode($param);
-    $data['module'] = strtolower(app('http')->getName());
-    $data['controller'] = strtolower(app('request')->controller());
-    $data['function'] = strtolower(app('request')->action());
-    $parameter = $data['module'] . '/' . $data['controller'] . '/' . $data['function'];
-    $rule_menu = Db::name('AdminRule')->where(array('src' => $parameter))->find();
-	if($rule_menu){
-		$data['title'] = $rule_menu['title'];
-		$data['subject'] = $rule_menu['name'];
-	}
-	else{
-		$data['title'] = '';
-		$data['subject'] ='系统';
-	}
-    $content = $login_admin['name'] . '在' . date('Y-m-d H:i:s') . $data['action'] . '了' . $data['subject'];
-    $data['content'] = $content;
-    $data['ip'] = app('request')->ip();
-    $data['create_time'] = time();
-    Db::name('AdminLog')->strict(false)->field(true)->insert($data);
-}
-
-/**
- * 发送站内信
- * @param  $user_id 接收人user_id
- * @param  $data 操作内容
- * @param  $sysMessage 1为系统消息
- * @param  $template 消息模板
- * @return
- */
-function sendMessage($user_id, $template, $data=[])
-{
-    $content = get_config('message.template')[$template]['template'];
-	foreach ($data as $key => $val) {
-		$content = str_replace('{' . $key . '}', $val, $content);
-	}
-	if(isSet($data['from_uid'])){
-		$content = str_replace('{from_user}', get_admin($data['from_uid'])['name'], $content);
-	}
-	$content = str_replace('{date}', date('Y-m-d'), $content);
-		
-    if (!$user_id) return false;
-    if (!$content) return false;
-    if (!is_array($user_id)) {
-        $users[] = $user_id;
-    } else {
-        $users = $user_id;
-    }
-    $users = array_unique(array_filter($users));
-	//组合要发的消息
-	$send_data = [];
-	foreach ($users as $key => $value) {
-		$send_data[] = array(
-			'to_uid' => $value,//接收人
-			'action_id' => $data['action_id'],
-			'title' => $data['title'],
-			'content' => $content,
-			'template' => $template,
-			'module_name' => strtolower(app('http')->getName()),
-			'controller_name' => strtolower(app('request')->controller()),
-			'action_name' => strtolower(app('request')->action()),
-			'send_time' => time(),
-			'create_time' => time()
-		);
-	}
-	$res = Db::name('Message')->strict(false)->field(true)->insertAll($send_data);
-    return $res;
+	return '<a class="side-a" href="'.$content.'">查看详情</a>';
 }
 
 /**
@@ -424,6 +348,666 @@ function send_email($to, $subject = '', $content = '')
         return false;
     }
 }
+
+/***************************************************员工相关*****************************************************/
+//获取指定用户的信息
+function get_admin($uid)
+{
+    $admin = Db::name('Admin')
+    ->alias('a')
+    ->field('a.*,d.title as department,p.title as position')
+    ->leftJoin ('Department d ','d.id= a.did')
+    ->leftJoin ('Position p ','p.id= a.position_id')
+    ->where(['a.id' => $uid])
+    ->find();
+    return $admin;
+}
+
+//获取指定部门所有的员工信息(包含主部门、次要部门，如果son=1，则包含当前子部门)
+function get_department_employee($did=0,$son=0)
+{
+	$admin_array = [];
+	$department_array = [];
+	$department_array[] = $did;
+	if($son==1){
+		$department_array = get_department_son($did);
+		$admin_array = Db::name('DepartmentAdmin')->whereIn('department_id',$department_array)->column('admin_id');
+	}
+	else{
+		$admin_array = Db::name('DepartmentAdmin')->where('department_id',$did)->column('admin_id');
+	}
+	
+	$map1=[
+		['id','in',$admin_array],
+	];
+	$map2=[
+		['did','in',$department_array],
+	];
+	$where=[['id','>',1],['status','=',1]];
+	$whereOr =[$map1,$map2];
+	$admin = Db::name('Admin')
+		->where(function ($query) use($whereOr) {
+			if (!empty($whereOr)){
+				$query->whereOr($whereOr);
+			}
+		})
+		->where($where)->select()->toArray();
+    return $admin;
+}
+
+/***************************************************部门相关*****************************************************/
+//读取部门列表
+function get_department()
+{
+    $department = Db::name('Department')->order('sort desc,id asc')->where(['status' => 1])->select()->toArray();
+    return $department;
+}
+
+//读取部门名称
+function get_department_name($dids)
+{
+	$departments = Db::name('Department')->where([['id','in',$dids],['status','=',1]])->column('title');
+	if(!empty($departments)){
+		return implode(',',$departments);
+	}else{
+		return '';
+	}
+}
+
+//获取某部门的子部门id，$is_self是否包含自己
+//输出部门数组，如:['1,2,3']
+function get_department_son($did = 0, $is_self = 1)
+{
+    $department = get_department();
+    $department_list = get_data_node($department, $did);
+    $department_array = array_column($department_list, 'id');
+    if ($is_self == 1) {
+        //包括自己部门在内
+        $department_array[] = $did;
+    }
+    return $department_array;
+}
+
+//读取某员工所在主部门的负责人（pid=1，上一级部门负责人）
+//输出负责人数组，如:1,2,3
+function get_department_leader($uid=0,$pid=0)
+{
+	$did = get_admin($uid)['did'];
+	if($pid==1){
+		$did = Db::name('Department')->where('id',$did)->value('pid');
+	}
+	$leader_ids = Db::name('Department')->where('id',$did)->value('leader_ids');
+    return $leader_ids;
+}
+
+//获取某员工所在部门的顶级部门（如果默认顶级部门当做是分公司的，即是获取某员工所属分公司）
+function get_department_top($did=0,$uid=0)
+{
+	if($uid>0){
+		$did = get_admin($uid)['did'];
+	}
+	$top_id = $did;
+	if($did>0){
+		$pid = Db::name('Department')->where('id',$did)->value('pid');
+		if($pid>0){
+			$top_id = get_department_top($pid,0);
+		}
+	}
+    return $top_id;
+}
+
+
+//获取某负责人所负责的部门的数据集(ids)
+function get_leader_departments($uid = 0)
+{
+	$dids = Db::name('Admin')->where('id',$uid)->value('son_dids');
+	if(empty($dids)){
+		return [];
+	}
+	else{
+		return explode(',',$dids);
+	}
+}
+
+//获取某员工所能看的部门数据(dids)
+function get_role_departments($uid = 0)
+{
+	$dids = Db::name('Admin')->where('id',$uid)->value('auth_dids');
+	if(empty($dids)){
+		return [];
+	}
+	else{
+		return explode(',',$dids);
+	}
+}
+
+/***************************************************审批相关*****************************************************/
+
+//获取全部审批状态
+function get_check_status()
+{
+	$check_status_array = ['待提交审批','审批中','审批通过','审批不通过','已撤回'];
+	return $check_status_array;
+}
+
+//根据审批状态读取审批状态名称
+function check_status_name($check_status=0)
+{
+	$check_status_array = get_check_status();
+	return $check_status_array[$check_status];
+}
+
+//根据流程类型读取某部门某模块的审核流程
+function get_cate_department_flows($cate=1,$department=0)
+{
+	$map1 = [];
+	$map2 = [];
+	$map1[] = ['status', '=', 1];
+	$map1[] = ['flow_cate', '=', $cate];
+	$map1[] = ['department_ids', '=', ''];
+
+	$map2[] = ['status', '=', 1];
+	$map2[] = ['flow_cate', '=', $cate];
+	$map2[] = ['', 'exp', Db::raw("FIND_IN_SET('{$department}',department_ids)")];
+
+    $list = Db::name('Flow')->field('id,name,check_type')->whereOr([$map1,$map2])->order('id desc')->select()->toArray();
+    return $list;
+}
+
+//根据流程所属模块读取某部门某模块的审核流程
+function get_type_department_flows($type=6,$department=0)
+{
+	$map1 = [];
+	$map2 = [];
+	$map1[] = ['status', '=', 1];
+	$map1[] = ['type', '=', $type];
+	$map1[] = ['department_ids', '=', ''];
+
+	$map2[] = ['status', '=', 1];
+	$map2[] = ['type', '=', $type];
+	$map2[] = ['', 'exp', Db::raw("FIND_IN_SET('{$department}',department_ids)")];
+
+    $list = Db::name('Flow')->field('id,name,check_type')->whereOr([$map1,$map2])->order('id desc')->select()->toArray();
+    return $list;
+}
+
+/**
+ * 初始化审批流程数据
+ * @param  $flow_id 审批流程id
+ * @param  $check_admin_ids 传入当前审批人ids，用于设置当前审批步骤的审批人
+ * @param  $uid 传入当前登录用户id，用于查找其所在部门的负责人或者上一部门负责人
+ * @return
+ */
+function set_flow($flow_id,$check_admin_ids,$uid)
+{
+    $flow_detail = Db::name('Flow')->where('id',$flow_id)->find();
+    $check_type = $flow_detail['check_type'];
+    $flow = unserialize($flow_detail['flow_list']);
+    if ($check_type == 1) {
+        if($flow[0]['flow_type'] == 1){
+            //部门负责人
+            $leader = get_department_leader($uid);
+            if($leader == 0){
+                return to_assign(1,'审批流程设置有问题：当前部门负责人还未设置，请联系HR或者管理员');
+            }
+            else{
+                $check_admin_ids = $leader;
+            }                        
+        }
+        else if($flow[0]['flow_type'] == 2){
+            //上级部门负责人
+            $leader = get_department_leader($uid,1);
+            if($leader == 0){
+                return to_assign(1,'审批流程设置有问题：上级部门负责人还未设置，请联系HR或者管理员');
+            }
+            else{
+                $check_admin_ids = $leader;
+            }
+        }
+        else{
+            $check_admin_ids = $flow[0]['flow_uids'];
+        }
+    }
+    else if ($check_type == 3) {
+        $check_admin_ids = $flow[0]['flow_uids'];
+    }
+    $flow_data = array(
+        'check_type' => $check_type,
+        'flow' => $flow,
+        'check_admin_ids' => $check_admin_ids
+    );
+    return $flow_data;
+}
+
+/**
+ * 获取审批流程数据
+ * @param  $uid 当前登录用户
+ * @param  $flows 当前步骤内容
+ * @return
+ */
+function get_flow($uid,$flows)
+{
+    $check_user = '';
+    $check_user_ids = [];
+    if($flows['flow_type']==1){
+        $check_user = '部门负责人-';                
+        $check_user_ids[]=get_department_leader($uid);
+    }
+    else if($flows['flow_type']==2){
+        $check_user = '上级部门负责人-';
+        $check_user_ids[]=get_department_leader($uid,1);
+    }
+    else{
+        $check_user_ids = explode(',',$flows['flow_uids']);        
+    }
+    $check_user_array = Db::name('Admin')->where('id','in',$check_user_ids)->column('name');
+    $res = array(
+        'check_user' => $check_user.implode(',',$check_user_array),
+        'check_user_ids' => $check_user_ids
+    );
+    return $res;
+}
+
+/**
+ * 获取审批记录数据
+ * @param  $check_table 关联内容表
+ * @param  $action_id 关联内容记录id
+ * @return
+ */
+function get_check_record($check_table,$action_id)
+{
+	$check_record = Db::name('FlowRecord')
+					->field('f.*,a.name')
+					->alias('f')->join('Admin a', 'a.id = f.check_uid', 'left')
+					->where([['f.check_table','=',$check_table],['f.action_id','=',$action_id],['f.delete_time','=',0]])
+					->select()->toArray();				
+	foreach ($check_record as $kk => &$vv) {		
+		$vv['check_time_str'] = date('Y-m-d H:i', $vv['check_time']);
+		$vv['status_str'] = '提交申请';
+		if($vv['check_status'] == 1){
+			$vv['status_str'] = '审核通过';
+		}
+		else if($vv['check_status'] == 2){
+			$vv['status_str'] = '审核拒绝';
+		}
+		if($vv['check_status'] == 3){
+			$vv['status_str'] = '撤销申请';
+		}
+		if($vv['check_status'] == 4){
+			$vv['status_str'] = '反确认';
+		}
+	}
+	return $check_record;
+}
+
+/***************************************************常规数据获取*****************************************************/
+//读取基础数据
+function get_base_data($table)
+{
+    $data = Db::name($table)->where(['status' => 1])->select()->toArray();
+    return $data;
+}
+
+//读取模块基础数据
+function get_base_type_data($table,$type)
+{
+    $data = Db::name($table)->where(['status' => 1,'types' => $type])->select()->toArray();
+    return $data;
+}
+
+//读取所属地区
+function get_region_name($id){
+    $region = Db::name('city')->where(['id'=>$id])->find();
+	if(empty($region)){
+		return '';
+	}
+	else{
+		return $region['name'];
+	}
+}
+
+//读取分类子分类ids,返回id数组
+function get_cate_son($table='',$id=0,$is_self = 1)
+{
+    $cate = Db::name($table)->order('id desc')->select()->toArray();
+    $cate_list = get_data_node($cate, $id);
+    $ids_array = array_column($cate_list, 'id');
+    if ($is_self == 1) {
+        //包括自己在内
+        $ids_array[] = $id;
+    }
+    return $ids_array;
+}
+
+/**
+ * 根据附件表的id返回url地址
+ * @param  [type] $id [description]
+ */
+function get_file($id)
+{
+    if ($id) {
+        $geturl = Db::name("file")->where(['id' => $id])->find();
+        if ($geturl['status'] == 1) {
+            //审核通过
+            //获取签名的URL
+            $url = $geturl['filepath'];
+            return $url;
+        } elseif ($geturl['status'] == 0) {
+            //待审核
+            return '/static/home/images/none_pic.jpg';
+        } else {
+            //不通过
+            return '/static/home/images/none_pic.jpg';
+        }
+    }
+    return false;
+}
+
+/***************************************************工具函数相关*****************************************************/
+
+//生成一个不会重复的字符串
+function make_token()
+{
+    $str = md5(uniqid(md5(microtime(true)), true));
+    $str = sha1($str); //加密
+    return $str;
+}
+
+//随机字符串，默认长度10
+function set_salt($num = 10)
+{
+    $str = 'qwertyuiopasdfghjklzxcvbnm1234567890';
+    $salt = substr(str_shuffle($str), 10, $num);
+    return $salt;
+}
+//密码加密
+function set_password($pwd, $salt)
+{
+    return md5(md5($pwd . $salt) . $salt);
+}
+
+/**
+ * 生成时间编号
+ * $prefix前缀
+ */
+function get_codeno($prefix=1){
+    $no = $prefix . date('YmdHis') . rand(1,9);
+    return $no;
+}
+
+/**
+ * 去除空格
+ * @param string $str 字符串
+ * @return string     字符串
+ */
+function trim_space($str=''){
+	$str = mb_ereg_replace('^(　| )+', '', $str);
+	$str = mb_ereg_replace('(　| )+$', '', $str);
+	return mb_ereg_replace('　　', "\n　　", $str);
+}
+
+/**
+ * 隐藏电话号码中间4位和邮箱
+ */
+function hidetel($phone)
+{
+	//隐藏邮箱
+	if (strpos($phone, '@')) {
+		$email_array = explode("@", $phone);
+		$prevfix = (strlen($email_array[0]) < 4) ? "" : substr($phone, 0, 3); //邮箱前缀
+		$count = 0;
+		$str = preg_replace('/([\d\w+_-]{0,100})@/', '***@', $phone, -1, $count);
+		$rs = $prevfix . $str;
+		return $rs;
+	} else {
+		//隐藏联系方式中间4位
+		$Istelephone = preg_match('/(0[0-9]{2,3}[\-]?[2-9][0-9]{6,7}[\-]?[0-9]?)/i', $phone); //固定电话
+		if ($Istelephone) {
+			return preg_replace('/(0[0-9]{2,3}[\-]?[2-9])[0-9]{3,4}([0-9]{3}[\-]?[0-9]?)/i', '$1****$2', $phone);
+		} else {
+			return preg_replace('/(1[0-9]{1}[0-9])[0-9]{4}([0-9]{4})/i', '$1****$2', $phone);
+		}
+	}
+}
+
+/**
+ * 间隔时间段格式化
+ * @param int $time 时间戳
+ * @param string $format 格式 【d：显示到天 i显示到分钟 s显示到秒】
+ * @return string
+ */
+function time_trans($time, $format = 'd')
+{
+	$now = time();
+	if (!is_numeric($time)) {
+		$time = strtotime($time);
+	}
+	$diff = $now - $time;
+	if ($diff < 60) {
+		return '1分钟前';
+	} else if ($diff < 3600) {
+		return floor($diff / 60) . '分钟前';
+	} else if ($diff < 86400) {
+		return floor($diff / 3600) . '小时前';
+	}
+	$yes_start_time = strtotime(date('Y-m-d 00:00:00', strtotime('-1 days'))); //昨天开始时间
+	$yes_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-1 days'))); //昨天结束时间
+	$two_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-2 days'))); //2天前结束时间
+	$three_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-3 days'))); //3天前结束时间
+	$four_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-4 days'))); //4天前结束时间
+	$five_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-5 days'))); //5天前结束时间
+	$six_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-6 days'))); //6天前结束时间
+	$seven_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-7 days'))); //7天前结束时间
+
+	if ($time > $yes_start_time && $time < $yes_end_time) {
+		return '昨天';
+	}
+
+	if ($time > $yes_start_time && $time < $two_end_time) {
+		return '1天前';
+	}
+
+	if ($time > $yes_start_time && $time < $three_end_time) {
+		return '2天前';
+	}
+
+	if ($time > $yes_start_time && $time < $four_end_time) {
+		return '3天前';
+	}
+
+	if ($time > $yes_start_time && $time < $five_end_time) {
+		return '4天前';
+	}
+
+	if ($time > $yes_start_time && $time < $six_end_time) {
+		return '5天前';
+	}
+
+	if ($time > $yes_start_time && $time < $seven_end_time) {
+		return '6天前';
+	}
+
+	switch ($format) {
+		case 'd':
+			$show_time = date('Y-m-d', $time);
+			break;
+		case 'i':
+			$show_time = date('Y-m-d H:i', $time);
+			break;
+		case 's':
+			$show_time = date('Y-m-d H:i:s', $time);
+			break;
+	}
+	return $show_time;
+}
+
+/**
+ * 时间戳格式化
+ * @param int    $time
+ * @param string $format 默认'Y-m-d H:i:s'
+ * @return string 完整的时间显示
+ */
+function to_date($time = NULL, $format = 'Y-m-d H:i:s')
+{
+	if(empty($time)){
+		return '';
+	}
+	else{
+		if (is_numeric($time)) {
+		return date($format, intval($time));
+		}
+		else{
+			return $time;
+		}
+	}
+}
+
+/**
+ * 计算按相差天数
+ */
+function count_days($a=0, $b = 0)
+{
+	if ($b == 0) {
+		$b = date("Y-m-d");
+	}
+	$date_1 = $a;
+	$date_2 = $b;
+	$d1 = strtotime($date_1);
+	$d2 = strtotime($date_2);
+	$days = round(($d2 - $d1) / 3600 / 24);
+	if ($days > 0) {
+		return $days;
+	} else {
+		return 0;
+	}
+}
+
+/**
+ * @Method: 文件大小格式化
+ * @param[type] $file_size [文件大小]
+ */
+function to_size($file_size){
+	$file_size = $file_size-1;
+	if ($file_size >= 1099511627776){
+		$show_filesize = number_format(($file_size / 1099511627776),2) . " TB";
+	}
+	elseif ($file_size >= 1073741824) {
+		$show_filesize = number_format(($file_size / 1073741824),2) . " GB";
+	}
+	elseif ($file_size >= 1048576) {
+		$show_filesize = number_format(($file_size / 1048576),2) . " MB";
+	}
+	elseif ($file_size >= 1024) {
+		$show_filesize = number_format(($file_size / 1024),2) . " KB";
+	}
+	elseif ($file_size > 0) {
+		$show_filesize = $file_size . " b";
+	}
+	elseif ($file_size == 0 || $file_size == -1) {
+		$show_filesize = "0 b";
+	}
+	return $show_filesize;
+}
+
+//格式化附件展示
+function file_card($file,$view=''){
+	if(empty($file['file_id'])){
+		$file['file_id'] = $file['id'];
+	}
+	$image=['jpg','jpeg','png','gif'];
+	$office=['doc','docx','xls','xlsx','ppt','pptx'];
+	$type_icon = 'icon-xiangmuguanli';
+	$type = 0;//0下载+重命名+删除，1下载+查看+重命名+删除，2下载+查看+编辑+重命名+删除
+	$ext = 'zip';
+	$view_btn = '<a class="blue" href="'.$file['filepath'].'" download="'.$file['name'].'" target="_blank" title="下载"><i class="iconfont icon-xiazai"></i></a>';
+	
+	if($file['fileext'] == 'pdf'){
+		$type_icon = 'icon-kejian';
+		$ext = 'pdf';
+		$type = 1;
+	}
+	if(in_array($file['fileext'], $image)){
+		$type_icon = 'icon-sucaiguanli';
+		$ext = 'image';
+		$type = 1;
+	}
+	if(in_array($file['fileext'], $office)){
+		$type_icon = 'icon-shenbao';
+		$ext = 'office';
+		$type = 2;
+	}	
+	
+	if(empty($view)){
+		$view_btn = '<span class="file-ctrl blue" data-ctrl="edit" data-type="'.$type.'" data-fileid="'.$file['file_id'].'" data-ext="'.$ext.'" data-filename="'.$file['name'].'" data-href="'.$file['filepath'].'" data-id="'.$file['id'].'" data-uid="'.$file['admin_id'].'" title="附件操作"><i class="iconfont icon-gengduo1"></i></span><span class="name-edit green" style="display:none;" data-id="'.$file['id'].'" data-fileid="'.$file['file_id'].'" id="fileEdit'.$file['file_id'].'" data-name="'.$file['name'].'" data-fileext="'.$file['fileext'].'" title="重命名"></span><span class="file-delete red" style="display:none;" data-uid="'.$file['admin_id'].'" data-id="'.$file['id'].'" data-fileid="'.$file['file_id'].'" id="fileDel'.$file['file_id'].'" title="删除"></span>';
+	}
+	else{
+		$view_btn = '<span class="file-ctrl blue" data-ctrl="view" data-type="'.$type.'" data-fileid="'.$file['file_id'].'" data-ext="'.$ext.'" data-filename="'.$file['name'].'" data-href="'.$file['filepath'].'" title="附件操作"><i class="iconfont icon-gengduo1"></i></span>';
+	}
+	
+	$file_del='';
+	if(!empty($file['delete_time'])){
+		$file_del = 'file-hasdelete';
+	}
+	$item = '<div class="file-card '.$file_del.'" id="fileItem'.$file['file_id'].'">
+		<i class="file-icon iconfont '.$type_icon.'"></i>
+		<div class="file-info">
+			<div class="file-title" title="'.$file['name'].'">'.$file['name'].'</div>
+			<div class="file-ops">'.to_size($file['filesize']).'，'.date('Y-m-d H:i',$file['create_time']).'</div>
+		</div>
+		<div class="file-tool">'.$view_btn.'</div>
+	</div>';
+	return $item;
+}
+
+//格式化附件展示
+function file_item($file,$view=''){
+	$image=['jpg','jpeg','png','gif'];
+    $fileshow='<div class="mbui-file-icon"><i class="iconfont icon-weizhigeshi"></i></div>';
+	if($file['fileext'] == 'pdf'){
+
+	}
+	if(in_array($file['fileext'], $image)){
+		$fileshow='<div class="mbui-file-icon file-img"><img src="'.$file['filepath'].'" alt="'.$file['name'].'"></div>';
+	}
+	$file_del='';
+	if(empty($view)){
+		$file_del = '<div class="mbui-file-del"><i class="iconfont icon-cuowukongxin"></i></div>';
+	}
+	$filesize = to_size($file['filesize']);
+	$filedate = date('Y-m-d H:i',$file['create_time']);
+	$item = '<li data-id="'.$file['id'].'">
+							<div class="mbui-file-div">
+								'.$fileshow.'
+								<div class="mbui-file-info">
+									<div class="mbui-file-name line-limit-1">'.$file['name'].'</div>
+									<div class="mbui-file-size">'.$filesize.'，'.$filedate.'</div>
+								</div>
+								'.$file_del.'
+							</div>
+						</li>';
+	return $item;
+}
+
+/**
+ * fullcalendar日历控件方法1
+ */
+function parseDateTime($string, $timeZone=null) {
+  $date = new DateTime(
+	$string,
+	$timeZone ? $timeZone : new DateTimeZone('UTC')
+  );
+  if ($timeZone) {
+	$date->setTimezone($timeZone);
+  }
+  return $date;
+}
+
+/**
+ * fullcalendar日历控件方法2
+ */
+function stripTime($datetime) {
+  return new DateTime($datetime->format('Y-m-d'));
+}
 /**
  * 截取文章摘要
  *  @return bool
@@ -446,17 +1030,110 @@ function get_desc_content($content, $count)
 }
 
 /**
- * PHP去除空格
- * @param string $str 字符串
- * @return string     字符串
+ * 二维数组排序
+ * @param $array 要进行排序的select结果集
+ * @param $field  排序的字段
+ * @param $order 排序方式1降序2升序
  */
-function trim_space($str=''){
-	$str = mb_ereg_replace('^(　| )+', '', $str);
-	$str = mb_ereg_replace('(　| )+$', '', $str);
-	return mb_ereg_replace('　　', "\n　　", $str);
+function sort_array($array = [], $field='', $order = 1)
+{
+    $count = count($select);
+    if ($order == 1) {
+        for ($i = 0; $i < $count; $i++) {
+            $k = $i;
+            for ($j = $i; $j < $count; $j++) {
+                if ($select[$k][$field] < $select[$j][$field]) {
+                    $k = $j;
+                }
+            }
+            $temp = $select[$i];
+            $select[$i] = $select[$k];
+            $select[$k] = $temp;
+        }
+        return $select;
+    } else {
+        for ($i = 0; $i < $count; $i++) {
+            $k = $i;
+            for ($j = $i; $j < $count; $j++) {
+                if ($select[$k][$field] > $select[$j][$field]) {
+                    $k = $j;
+                }
+            }
+            $temp = $select[$i];
+            $select[$i] = $select[$k];
+            $select[$k] = $temp;
+        }
+        return $select;
+    }
 }
+
+//查找数组索引,支持一维数组，二维数组查找
+function array_search_plus($array, $searchFor) {
+    foreach($array as $key => $value) {
+		if(is_array($value)){
+			foreach($value as $key1 => $value1) {
+				if($value1 == $searchFor) {
+					return array("index" => $key, "key" => $key1);
+				}
+			}
+		}
+		else{
+			if($value == $searchFor) {
+				return $key;
+			}
+		}
+    } 
+    return false;
+}
+
+//根据数据库查询出来二维数组获取某个字段拼接字符串
+function split_array_field($array = [], $field = '',$separator=',')
+{
+	$str='';
+    if (is_array($array)) {
+		if($field){
+			$ary = array();
+			foreach ($array as $value) {
+				$ary[] = $value[$field];
+			}
+		}
+		else{
+			$ary = $array;
+		}
+        $str = implode($separator, $ary);
+    }
+	return $str;
+}
+
+//数组转换字符串
+function array_to_string($array=[],$separator=',')
+{
+    if (!is_array($array)) {
+        $data_arr[] = $array;
+    } else {
+        $data_arr = $array;
+    }
+    $data_arr = array_filter($data_arr); //数组去空
+    $data_arr = array_unique($data_arr); //数组去重
+    $data_arr = array_merge($data_arr);
+    $string = $data_arr ? ',' . implode($separator, $data_arr) . ',' : '';
+    return $string ?: '';
+}
+
+//字符串转换数组
+function string_to_array($string='',$separator=',')
+{
+    if (is_array($string)) {
+        $data_arr = array_unique(array_filter($string));
+    } else {
+        $data_arr = $string ? array_unique(array_filter(explode($separator, $string))) : [];
+    }
+    $data_arr = $data_arr ? array_merge($data_arr) : [];
+    return $data_arr ?: [];
+}
+
 /**
- * PHP格式化字节大小
+ * 格式化字节大小
  * @param number $size      字节数
  * @param string $delimiter 数字和单位分隔符
  * @return string            格式化后的带单位的大小
@@ -476,7 +1153,7 @@ function format_bytes($size, $delimiter = '')
  * @param $length 截取长度
  * @return
  */
-function msubstr($str, $start = 0, $length, $charset = "utf-8", $suffix = true)
+function msubstr($str='', $start = 0, $length=1, $charset = "utf-8", $suffix = true)
 {
     if (function_exists("mb_substr")) {
         $slice = mb_substr($str, $start, $length, $charset);
@@ -497,6 +1174,7 @@ function msubstr($str, $start = 0, $length, $charset = "utf-8", $suffix = true)
     return $suffix ? $slice . '...' : $slice;
 }
 
+//计算字符串长度
 function utf8_strlen($string = null)
 {
     preg_match_all("/./us", $string, $match);
@@ -504,17 +1182,38 @@ function utf8_strlen($string = null)
 }
 
 /**
- * PHP截取文字长度
+ * 截取文字长度
  * @return string
  */
 function sub_str($str,$len=20){
     $strlen=strlen($str)/3;#在编码utf8下计算字符串的长度，并把它交给变量$strlen
-    #echo $strlen;#输出字符串长度
     if($strlen<$len){
         return $str;
     }else{
         return mb_substr($str,0,$len,"utf-8")."...";
     }
+}
+
+/*
+* 下划线转驼峰
+* 思路:
+* step1.原字符串转小写,原字符串中的分隔符用空格替换,在字符串开头加上分隔符
+* step2.将字符串中每个单词的首字母转换为大写,再去空格,去字符串首部附加的分隔符.
+*/
+function camelize($uncamelized_words,$separator='_')
+{
+	$uncamelized_words = $separator. str_replace($separator, " ", strtolower($uncamelized_words));
+	return ltrim(str_replace(" ", "", ucwords($uncamelized_words)), $separator );
+}
+
+/**
+* 驼峰命名转下划线命名
+* 思路:
+* 小写和大写紧挨一起的地方,加上分隔符,然后全部转小写
+*/
+function uncamelize($camelCaps,$separator='_')
+{
+	return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $separator . "$2", $camelCaps));
 }
 
 /**
@@ -566,7 +1265,11 @@ function create_tree_list($pid, $arr, $group, &$tree = [])
             $child = create_tree_list($vo['id'], $arr, $group);
             if ($child) {
                 $vo['children'] = $child;
+                $vo['len'] = count($child);
             }
+			else{
+				$vo['len'] = 0;
+			}
             $tree[] = $vo;
         }
     }
@@ -585,6 +1288,7 @@ function set_recursion($result, $pid = 0, $level=-1)
         if ($v['pid'] == $pid) {
             if ($pid != 0) {
                 $v['title'] = $space[$level] . $v['title'];
+                $v['level'] = $level+1;
             }
             /*将该类别的数据放入list中*/
             $list[] = $v;
@@ -596,31 +1300,31 @@ function set_recursion($result, $pid = 0, $level=-1)
 
 
 //递归返回树形菜单数据
-function get_tree($data, $pId ,$open=0,$deep=0)
-{
-	$tree = [];		
-	foreach($data as $k => $v)
-	{
-		$v['checkArr']=array('type'=>0, 'isChecked'=>0);	
-		$v['spread']=true;	
-		$v['parentId']=$v['pid'];	
-		if($deep>=$open){
-			$v['spread']=false;	
-		}			
-		$v['name']=$v['title'];	
-		if($v['pid'] == $pId){ 
-		//父亲找到儿子
-		$deep++;
-		$v['children'] = get_tree($data, $v['id'],$open,$deep);
-		$tree[] = $v;
-		//unset($data[$k]);
-	   }
+function get_tree($data, $pid = 0, $level = 1, $open = 1, $first = 0) {
+    $tree = array();
+    foreach ($data as $item) {
+		$item['checkArr']=array('type'=>0, 'isChecked'=>0);
+		$item['spread']=false;
+		if($level<=$open){
+			$item['spread']=true;
+		}
+		$item['level']=$level;
+        if ($item['pid'] == $pid) {
+            $children = get_tree($data, $item['id'],$level+1,$open);
+            if ($children) {
+                $item['children'] = $children;
+            }
+            $tree[] = $item;
+        }
+    }
+	if($first==1&&!empty($tree)){
+		$tree[0]['spread']=true;
 	}
-	return array_values($tree);
+    return $tree;
 }
 
 //递归返回树形菜单数据
-function get_select_tree($data, $pId ,$deep=0, $selected=[])
+function get_select_tree($data, $pid ,$deep=0, $selected=[])
 {
 	$tree = [];		
 	foreach($data as $k => $v)
@@ -632,7 +1336,7 @@ function get_select_tree($data, $pId ,$deep=0, $selected=[])
 		if(in_array($v['id'],$selected)){
 			$vv['selected'] = 'selected';
 		}
-		if($v['pid'] == $pId){ 
+		if($v['pid'] == $pid){ 
 		//父亲找到儿子
 		$deep++;
 		$vv['children'] = get_select_tree($data, $v['id'],$deep,$selected);
@@ -659,6 +1363,19 @@ function get_data_node($data=[],$pid=0){
 		}   	
 	}
 	return array_values($dep);
+}
+
+
+function generateTree($flatArray, $parentId = 0) {
+  $tree = [];
+  foreach ($flatArray as $item) {
+    if ($item['pid'] === $parentId) {
+      $node = $item;
+	  $node['children'] = generateTree($flatArray, $item['id']);
+      $tree[] = $node;
+    }
+  }
+  return $tree;
 }
 
 //访问按小时归档统计
@@ -691,88 +1408,74 @@ function date_document($arrData)
     return $documents;
 }
 
-
-/**
- * 返回json数据，用于接口
- * @param    integer    $code
- * @param    string     $msg
- * @param    array      $data
- * @param    string     $url
- * @param    integer    $httpCode
- * @param    array      $header
- * @param    array      $options
- * @return   json
- */
-function to_assign($code = 0, $msg = "操作成功", $data = [], $url = '', $httpCode = 200, $header = [], $options = [])
-{
-    $res = ['code' => $code];
-    $res['msg'] = $msg;
-    $res['url'] = $url;
-    if (is_object($data)) {
-        $data = $data->toArray();
-    }
-    $res['data'] = $data;
-    $response = \think\Response::create($res, "json", $httpCode, $header, $options);
-    throw new \think\exception\HttpResponseException($response);
-}
-
-/**
- * 适配layui table数据列表的返回数据方法，用于接口
- * @param    integer    $code
- * @param    string     $msg
- * @param    array      $data
- * @param    integer    $httpCode
- * @param    array      $header
- * @param    array      $options
- * @return   json
- */
-function table_assign($code = 0, $msg = '请求成功', $data = [], $httpCode = 200, $header = [], $options = [])
-{
-    $res['code'] = $code;
-    $res['msg'] = $msg;
-    if (is_object($data)) {
-        $data = $data->toArray();
-    }
-    if (!empty($data['total'])) {
-        $res['count'] = $data['total'];
-    } else {
-        $res['count'] = 0;
-    }
-    $res['data'] = $data['data'];
-    $response = \think\Response::create($res, "json", $httpCode, $header, $options);
-    throw new \think\exception\HttpResponseException($response);
-}
-
 /**
  * 人民币转大写
  * @param
  */
-function cny($ns)
-{
-    static $cnums = array("零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"),
-    $cnyunits = array("圆", "角", "分"),
-    $grees = array("拾", "佰", "仟", "万", "拾", "佰", "仟", "亿");
-    list($ns1, $ns2) = explode(".", $ns, 2);
-    $ns2 = array_filter(array($ns2[1], $ns2[0]));
-    $ret = array_merge($ns2, array(implode("", _cny_map_unit(str_split($ns1), $grees)), ""));
-    $ret = implode("", array_reverse(_cny_map_unit($ret, $cnyunits)));
-    return str_replace(array_keys($cnums), $cnums, $ret);
-}
+function cny($amount){
+	$capitalNumbers = [
+        '零',
+        '壹',
+        '贰',
+        '叁',
+        '肆',
+        '伍',
+        '陆',
+        '柒',
+        '捌',
+        '玖',
+    ];
 
-function _cny_map_unit($list, $units)
-{
-    $ul = count($units);
-    $xs = array();
-    foreach (array_reverse($list) as $x) {
-        $l = count($xs);
-        if ($x != "0" || !($l % 4)) {
-            $n = ($x == '0' ? '' : $x) . ($units[($l - 1) % $ul]);
-        } else {
-            $n = is_numeric($xs[0][0]) ? $x : '';
-        }
-        array_unshift($xs, $n);
+    $integerUnits = ['', '拾', '佰', '仟',];
+    $placeUnits = ['', '万', '亿', '兆',];
+    $decimalUnits = ['角', '分', '厘', '毫',];
+    $result = [];
+    $arr = explode('.', (string)$amount);
+    $integer = trim($arr[0] ?? '', '-');
+    $decimal = $arr[1] ?? '';
+    if (!((int)$decimal)) {
+        $decimal = '';
     }
-    return $xs;
+    // 转换整数部分,从个位开始
+    $integerNumbers = $integer ? array_reverse(str_split($integer)) : [];
+    $last = null;
+    foreach (array_chunk($integerNumbers, 4) as $chunkKey => $chunk) {
+        if (!((int)implode('', $chunk))) {
+            // 全是 0 则直接跳过
+            continue;
+        }
+        array_unshift($result, $placeUnits[$chunkKey]);
+        foreach ($chunk as $key => $number) {
+            // 去除重复 零，以及第一位的 零，类似：1002、110
+            if (!$number && (!$last || $key === 0)) {
+                $last = $number;
+                continue;
+            }
+            $last = $number;
+            // 类似 1022，中间的 0 是不需要 佰 的
+            if ($number) {
+                array_unshift($result, $integerUnits[$key]);
+            }
+            array_unshift($result, $capitalNumbers[$number]);
+        }
+    }
+    if (!$result) {
+        $result[] = $capitalNumbers[0];
+    }
+    $result[] = '圆';
+    if (!$decimal) {
+        $result[] = '整';
+    }
+    // 转换小数位
+    $decimalNumbers = $decimal ? str_split($decimal) : [];
+    foreach ($decimalNumbers as $key => $number) {
+        $result[] = $capitalNumbers[$number];
+        $result[] = $decimalUnits[$key];
+    }
+    if (strpos((string)$amount, '-') === 0) {
+        array_unshift($result, '负');
+    }
+    return implode('', $result);
 }
 
 
@@ -785,541 +1488,16 @@ function format_money($money)
 {
     $data = '0元';
     if (($money / 10000) > 1) {
-        $data = is_int($money / 10000) ? ($money / 10000) . '万' : rand(($money / 10000), 2) . '万';
+        $data = is_int($money / 10000) ? ($money / 10000) . '万' : round(($money / 10000), 2) . '万';
     } elseif (($money / 1000) > 1) {
-        $data = is_int($money / 1000) ? ($money / 1000) . '千' : rand(($money / 1000), 2) . '千';
+        $data = is_int($money / 1000) ? ($money / 1000) . '千' : round(($money / 1000), 2) . '千';
     } else {
         $data = $money . '元';
     }
     return $data;
 }
 
-/**
- * 数组转换字符串（以逗号隔开）
- * @param
- * @return
- */
-function arrayToString($array)
-{
-    if (!is_array($array)) {
-        $data_arr[] = $array;
-    } else {
-        $data_arr = $array;
-    }
-    $data_arr = array_filter($data_arr); //数组去空
-    $data_arr = array_unique($data_arr); //数组去重
-    $data_arr = array_merge($data_arr);
-    $string = $data_arr ? ',' . implode(',', $data_arr) . ',' : '';
-    return $string ?: '';
-}
-
-/**
- * 字符串转换数组（以逗号隔开）
- * @param
- * @return
- */
-function stringToArray($string)
-{
-    if (is_array($string)) {
-        $data_arr = array_unique(array_filter($string));
-    } else {
-        $data_arr = $string ? array_unique(array_filter(explode(',', $string))) : [];
-    }
-    $data_arr = $data_arr ? array_merge($data_arr) : [];
-    return $data_arr ?: [];
-}
-
-/**
- * 二维数组排序(选择)
- * @param $select 要进行排序的select结果集
- * @param $field  排序的字段
- * @param $order 排序方式1降序2升序
- */
-function sort_select($select = array(), $field, $order = 1)
-{
-    $count = count($select);
-    if ($order == 1) {
-        for ($i = 0; $i < $count; $i++) {
-            $k = $i;
-            for ($j = $i; $j < $count; $j++) {
-                if ($select[$k][$field] < $select[$j][$field]) {
-                    $k = $j;
-                }
-            }
-            $temp = $select[$i];
-            $select[$i] = $select[$k];
-            $select[$k] = $temp;
-        }
-        return $select;
-    } else {
-        for ($i = 0; $i < $count; $i++) {
-            $k = $i;
-            for ($j = $i; $j < $count; $j++) {
-                if ($select[$k][$field] > $select[$j][$field]) {
-                    $k = $j;
-                }
-            }
-            $temp = $select[$i];
-            $select[$i] = $select[$k];
-            $select[$k] = $temp;
-        }
-        return $select;
-    }
-}
-
-/**
- * fullcalendar日历控件方法1
- */
-function parseDateTime($string, $timeZone=null) {
-  $date = new DateTime(
-    $string,
-    $timeZone ? $timeZone : new DateTimeZone('UTC')
-  );
-  if ($timeZone) {
-    $date->setTimezone($timeZone);
-  }
-  return $date;
-}
-
-/**
- * fullcalendar日历控件方法2
- */
-function stripTime($datetime) {
-  return new DateTime($datetime->format('Y-m-d'));
-}
-
-/**
- * 根据时间戳获取星期几
- * @param $time 要转换的时间戳
- */
-function getTimeWeek($time, $i = 0)
-{
-    $weekarray = array("日", "一", "二", "三", "四", "五", "六");
-    $oneD = 24 * 60 * 60;
-    return "星期" . $weekarray[date("w", $time + $oneD * $i)];
-}
-/**
- * 时间戳格式化
- * @param int    $time
- * @param string $format 默认'Y-m-d H:i'，x代表毫秒
- * @return string 完整的时间显示
- */
-function time_format($time = NULL, $format = 'Y-m-d H:i:s')
-{
-    $usec = $time = $time === null ? '' : $time;
-    if (strpos($time, '.')!==false) {
-        list($usec, $sec) = explode(".", $time);
-    } else {
-        $sec = 0;
-    }
-    return $time != '' ? str_replace('x', $sec, date($format, intval($usec))) : '';
-}
-
-/**
- * 将秒数转换为时间 (年、天、小时、分、秒）
- * @param
- */
-function getTimeBySec($time)
-{
-    if (is_numeric($time)) {
-        $value = array(
-            "years" => 0, "days" => 0, "hours" => 0,
-            "minutes" => 0, "seconds" => 0,
-        );
-        if ($time >= 31556926) {
-            $value["years"] = floor($time / 31556926);
-            $time = ($time % 31556926);
-            $t .= $value["years"] . "年";
-        }
-        if ($time >= 86400) {
-            $value["days"] = floor($time / 86400);
-            $time = ($time % 86400);
-            $t .= $value["days"] . "天";
-        }
-        if ($time >= 3600) {
-            $value["hours"] = floor($time / 3600);
-            $time = ($time % 3600);
-            $t .= $value["hours"] . "小时";
-        }
-        if ($time >= 60) {
-            $value["minutes"] = floor($time / 60);
-            $time = ($time % 60);
-            $t .= $value["minutes"] . "分钟";
-        }
-        if ($time < 60) {
-            $value["seconds"] = floor($time);
-            $t .= $value["seconds"] . "秒";
-        }
-        return $t;
-    } else {
-        return (bool)FALSE;
-    }
-}
-
-/*
- *根据年月计算有几天
- */
-function getmonthByYM($param)
-{
-    $month = $param['month'] ? $param['month'] : date('m', time());
-    $year = $param['year'] ? $param['year'] : date('Y', time());
-    if (in_array($month, array('1', '3', '5', '7', '8', '01', '03', '05', '07', '08', '10', '12'))) {
-        $days = '31';
-    } elseif ($month == 2) {
-        if ($year % 400 == 0 || ($year % 4 == 0 && $year % 100 !== 0)) {
-            //判断是否是闰年  
-            $days = '29';
-        } else {
-            $days = '28';
-        }
-    } else {
-        $days = '30';
-    }
-    return $days;
-}
-
-/**
- * 根据时间戳计算当月天数
- * @param
- */
-function getmonthdays($time)
-{
-    $month = date('m', $time);
-    $year = date('Y', $time);
-    if (in_array($month, array('1', '3', '5', '7', '8', '01', '03', '05', '07', '08', '10', '12'))) {
-        $days = '31';
-    } elseif ($month == 2) {
-        if ($year % 400 == 0 || ($year % 4 == 0 && $year % 100 !== 0)) {
-            //判断是否是闰年  
-            $days = '29';
-        } else {
-            $days = '28';
-        }
-    } else {
-        $days = '30';
-    }
-    return $days;
-}
-
-/**
- * 生成从开始时间到结束时间的日期数组
- * @param type，默认时间戳格式
- * @param type = 1 时，date格式
- * @param type = 2 时，获取每日开始、结束时间
- */
-function dateList($start, $end, $type = 0)
-{
-    if (!is_numeric($start) || !is_numeric($end) || ($end <= $start)) return '';
-    $i = 0;
-    //从开始日期到结束日期的每日时间戳数组
-    $d = array();
-    if ($type == 1) {
-        while ($start <= $end) {
-            $d[$i] = date('Y-m-d', $start);
-            $start = $start + 86400;
-            $i++;
-        }
-    } else {
-        while ($start <= $end) {
-            $d[$i] = $start;
-            $start = $start + 86400;
-            $i++;
-        }
-    }
-    if ($type == 2) {
-        $list = array();
-        foreach ($d as $k => $v) {
-            $list[$k] = getDateRange($v);
-        }
-        return $list;
-    } else {
-        return $d;
-    }
-}
-
-/**
- * 获取指定日期开始时间与结束时间
- */
-function getDateRange($timestamp)
-{
-    $ret = array();
-    $ret['sdate'] = strtotime(date('Y-m-d', $timestamp));
-    $ret['edate'] = strtotime(date('Y-m-d', $timestamp)) + 86400;
-    return $ret;
-}
-
-/**
- * 生成从开始月份到结束月份的月份数组
- * @param int $start 开始时间戳
- * @param int $end 结束时间戳
- */
-function monthList($start, $end)
-{
-    if (!is_numeric($start) || !is_numeric($end) || ($end <= $start)) return '';
-    $start = date('Y-m', $start);
-    $end = date('Y-m', $end);
-    //转为时间戳
-    $start = strtotime($start . '-01');
-    $end = strtotime($end . '-01');
-    $i = 0;
-    $d = array();
-    while ($start <= $end) {
-        //这里累加每个月的的总秒数 计算公式：上一月1号的时间戳秒数减去当前月的时间戳秒数
-        $d[$i] = $start;
-        $start += strtotime('+1 month', $start) - $start;
-        $i++;
-    }
-    return $d;
-}
-
-/**
- * 等于（时间段）数据处理
- *
- * @param $type
- * @return array
- * @since 2021-06-11
- * @author fanqi
- */
-function advancedDate($type)
-{
-    // 本年度
-    if ($type == 'year') {
-        $arrTime = DataTime::year();
-        $start_time = date('Y-m-d 00:00:00', $arrTime[0]);
-        $end_time = date('Y-m-d 23:59:59', $arrTime[1]);
-    }
-
-    // 上一年度
-    if ($type == 'lastYear') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-1 year'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 year'));
-    }
-
-    // 下一年度
-    if ($type == 'nextYear') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 year'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+1 year'));
-    }
-
-    // 上半年
-    if ($type == 'firstHalfYear') {
-        $start_time = date('Y-01-01 00:00:00');
-        $end_time = date('Y-06-30 23:59:59');
-    }
-
-    // 下半年
-    if ($type == 'nextHalfYear') {
-        $start_time = date('Y-07-01 00:00:00');
-        $end_time = date('Y-12-31 23:59:59');
-    }
-
-    // 本季度
-    if ($type == 'quarter') {
-        $season = ceil((date('n')) / 3);
-        $start_time = date('Y-m-d H:i:s', mktime(0, 0, 0, $season * 3 - 3 + 1, 1, date('Y')));
-        $end_time = date('Y-m-d H:i:s', mktime(23, 59, 59, $season * 3, date('t', mktime(0, 0, 0, $season * 3, 1, date("Y"))), date('Y')));
-    }
-
-    // 上一季度
-    if ($type == 'lastQuarter') {
-        $season = ceil((date('n')) / 3) - 1;
-        $start_time = date('Y-m-d H:i:s', mktime(0, 0, 0, $season * 3 - 3 + 1, 1, date('Y')));
-        $end_time = date('Y-m-d H:i:s', mktime(23, 59, 59, $season * 3, date('t', mktime(0, 0, 0, $season * 3, 1, date("Y"))), date('Y')));
-    }
-
-    // 下一季度
-    if ($type == 'nextQuarter') {
-        $season = ceil((date('n')) / 3);
-        $start_time = date('Y-m-d H:i:s', mktime(0, 0, 0, $season * 3 + 1, 1, date('Y')));
-        $end_time = date('Y-m-d H:i:s', mktime(23, 59, 59, $season * 3 + 3, date('t', mktime(0, 0, 0, $season * 3, 1, date("Y"))), date('Y')));
-    }
-
-    // 本月
-    if ($type == 'month') {
-        $start_time = date('Y-m-01 00:00:00');
-        $end_time = date('Y-m-31 23:59:59');
-    }
-
-    // 上月
-    if ($type == 'lastMonth') {
-        $start_time = date('Y-m-01 00:00:00', strtotime(date('Y-m-d') . '-1 month'));
-        $end_time = date('Y-m-31 23:59:59', strtotime(date('Y-m-d') . '-1 month'));
-    }
-
-    // 下月
-    if ($type == 'nextMonth') {
-        $start_time = date('Y-m-01 00:00:00', strtotime(date('Y-m-d') . '+1 month'));
-        $end_time = date('Y-m-31 23:59:59', strtotime(date('Y-m-d') . '+1 month'));
-    }
-
-    // 本周
-    if ($type == 'week') {
-        $start_time = date('Y-m-d 00:00:00', mktime(0, 0, 0, date('m'), date('d') - date('w') + 1, date('Y')));
-        $end_time = date('Y-m-d 23:59:59', mktime(23, 59, 59, date('m'), date('d') - date('w') + 7, date('Y')));
-    }
-
-    // 上周
-    if ($type == 'lastWeek') {
-        $date = date("Y-m-d");
-        $w = date("w", strtotime($date));
-        $d = $w ? $w - 1 : 6;
-        $start = date("Y-m-d", strtotime($date . " - " . $d . " days"));
-        $start_time = date('Y-m-d', strtotime($start . " - 7 days"));
-        $end_time = date('Y-m-d', strtotime($start . " - 1 days"));
-    }
-
-    // 下周
-    if ($type == 'nextWeek') {
-        $date = date("Y-m-d");
-        $w = date("w", strtotime($date));
-        $d = $w ? $w - 1 : 6;
-        $start = date("Y-m-d", strtotime($date . " - " . $d . " days"));
-        $start_time = date('Y-m-d', strtotime($start . " + 7 days"));
-        $end_time = date('Y-m-d', strtotime($start . " + 13 days"));
-    }
-
-    // 今天
-    if ($type == 'today') {
-        $start_time = date('Y-m-d 00:00:00');
-        $end_time = date('Y-m-d 23:59:59');
-    }
-
-    // 昨天
-    if ($type == 'yesterday') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 day'));
-    }
-
-    // 明天
-    if ($type == 'tomorrow') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+1 day'));
-    }
-
-    // 过去3天
-    if ($type == 'previous3day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-3 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 day'));
-    }
-
-    // 过去5天
-    if ($type == 'previous5day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-5 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 day'));
-    }
-
-    // 过去7天
-    if ($type == 'previous7day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-7 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 day'));
-    }
-    // 过去10天
-    if ($type == 'previous10day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-10 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 day'));
-    }
-    // 过去30天
-    if ($type == 'previous30day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '-30 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '-1 day'));
-    }
-    // 未来3天
-    if ($type == 'future3day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+3 day'));
-    }
-    // 未来5天
-    if ($type == 'future5day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+5 day'));
-    }
-    // 未来7天
-    if ($type == 'future7day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+7 day'));
-    }
-    // 未来10天
-    if ($type == 'future10day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+10 day'));
-    }
-    // 未来30天
-    if ($type == 'future30day') {
-        $start_time = date('Y-m-d 00:00:00', strtotime(date('Y-m-d') . '+1 day'));
-        $end_time = date('Y-m-d 23:59:59', strtotime(date('Y-m-d') . '+30 day'));
-    }
-    return [$start_time,$end_time];
-}
-
-/**
- * 间隔时间段格式化
- * @param int $time 时间戳
- * @param string $format 格式 【d：显示到天 i显示到分钟 s显示到秒】
- * @return string
- */
-function time_trans($time, $format = 'd')
-{
-    $now = time();
-    $diff = $now - $time;
-    if ($diff < 60) {
-        return '1分钟前';
-    } else if ($diff < 3600) {
-        return floor($diff / 60) . '分钟前';
-    } else if ($diff < 86400) {
-        return floor($diff / 3600) . '小时前';
-    }
-    $yes_start_time = strtotime(date('Y-m-d 00:00:00', strtotime('-1 days'))); //昨天开始时间
-    $yes_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-1 days'))); //昨天结束时间
-    $two_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-2 days'))); //2天前结束时间
-    $three_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-3 days'))); //3天前结束时间
-    $four_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-4 days'))); //4天前结束时间
-    $five_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-5 days'))); //5天前结束时间
-    $six_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-6 days'))); //6天前结束时间
-    $seven_end_time = strtotime(date('Y-m-d 23:59:59', strtotime('-7 days'))); //7天前结束时间
-
-    if ($time > $yes_start_time && $time < $yes_end_time) {
-        return '昨天';
-    }
-
-    if ($time > $yes_start_time && $time < $two_end_time) {
-        return '1天前';
-    }
-
-    if ($time > $yes_start_time && $time < $three_end_time) {
-        return '2天前';
-    }
-
-    if ($time > $yes_start_time && $time < $four_end_time) {
-        return '3天前';
-    }
-
-    if ($time > $yes_start_time && $time < $five_end_time) {
-        return '4天前';
-    }
-
-    if ($time > $yes_start_time && $time < $six_end_time) {
-        return '5天前';
-    }
-
-    if ($time > $yes_start_time && $time < $seven_end_time) {
-        return '6天前';
-    }
-
-    switch ($format) {
-        case 'd':
-            $show_time = date('Y-m-d', $time);
-            break;
-        case 'i':
-            $show_time = date('Y-m-d H:i', $time);
-            break;
-        case 's':
-            $show_time = date('Y-m-d H:i:s', $time);
-            break;
-    }
-    return $show_time;
-}
-
-
+/***************************************************校验相关*****************************************************/
 /**
  * 判断是否是手机浏览器
  *  @return bool
@@ -1334,9 +1512,36 @@ function is_mobile()
         return true;
     } elseif (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/(blackberry|configuration\/cldc|hp |hp-|htc |htc_|htc-|iemobile|kindle|midp|mmp|motorola|mobile|nokia|opera mini|opera |Googlebot-Mobile|YahooSeeker\/M1A1-R2D2|android|iphone|ipod|mobi|palm|palmos|pocket|portalmmm|ppc;|smartphone|sonyericsson|sqh|spv|symbian|treo|up.browser|up.link|vodafone|windows ce|xda |xda_)/i', $_SERVER['HTTP_USER_AGENT'])) {
         return true;
-    } else {
-        return false;
-    }
+    }elseif (strpos($_SERVER['HTTP_USER_AGENT'] , 'wxwork') !== false ) {
+		return true;
+	}else {
+		return false;
+	}
+}
+
+/**
+ * 判断是否是微信浏览器
+ *  @return bool
+ */
+function is_wechat(){
+	if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * 判断是否是企业微信浏览器
+ *  @return bool
+ */
+function is_wxwork()
+{ 
+	if (strpos($_SERVER['HTTP_USER_AGENT'] , 'wxwork') !== false ) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /**
@@ -1358,10 +1563,11 @@ function is_email($user_email)
     }
 }
 
+
 /**
  * 获取客户浏览器类型
  */
-function getBrowser()
+function get_browser_name()
 {
     $Browser = $_SERVER['HTTP_USER_AGENT'];
     if (preg_match('/MSIE/i', $Browser)) {
@@ -1383,7 +1589,7 @@ function getBrowser()
 /**
  * 获取客户端系统
  */
-function getOS()
+function get_os_name()
 {
     $agent = $_SERVER['HTTP_USER_AGENT'];
     if (preg_match('/win/i', $agent)) {
@@ -1411,124 +1617,6 @@ function getOS()
 }
 
 /**
- * 根据IP获取地址
- */
-function getAddress($ip)
-{
-    $res = file_get_contents("http://ip.360.cn/IPQuery/ipquery?ip=" . $ip);
-    $res = json_decode($res, 1);
-    if ($res && $res['errno'] == 0) {
-        return explode("\t", $res['data'])[0];
-    } else {
-        return '';
-    }
-}
-
-/**
- * 下载服务器文件
- *
- * @param string $file 文件路径
- * @param string $name 下载名称
- * @param boolean $del 下载后删除
- * @return void
- */
-function download($file, $name = '', $del = false)
-{
-    if (!file_exists($file)) {
-        return resultArray([
-            'error' => '文件不存在',
-        ]);
-    }
-    // 仅允许下载 public 目录下文件
-    $res = strpos(realpath($file), realpath('./public'));
-    if ($res !== 0) {
-        return resultArray([
-            'error' => '文件路径错误',
-        ]);
-    }
-
-    $fp = fopen($file, 'r');
-    $size = filesize($file);
-
-    //下载文件需要的头
-    header("Content-type: application/octet-stream");
-    header("Accept-Ranges: bytes");
-    header('ResponseType: blob');
-    header("Accept-Length: $size");
-    $file_name = $name != '' ? $name : pathinfo($file, PATHINFO_BASENAME);
-    // urlencode 处理中文乱码
-    header("Content-Disposition:attachment; filename=" . urlencode($file_name));
-
-    // 导出数据时  csv office Excel 需要添加bom头
-    if (pathinfo($file, PATHINFO_EXTENSION) == 'csv') {
-        echo "\xEF\xBB\xBF";    // UTF-8 BOM
-    }
-
-    $fileCount = 0;
-    $fileUnit = 1024;
-    while (!feof($fp) && $size - $fileCount > 0) {
-        $fileContent = fread($fp, $fileUnit);
-        echo $fileContent;
-        $fileCount += $fileUnit;
-    }
-    fclose($fp);
-
-    // 删除
-    if ($del) @unlink($file);
-    die();
-}
-
-/**
- * 导出数据为excel表格
- * @param $data    一个二维数组,结构如同从数据库查出来的数组
- * @param $title   excel的第一行标题,一个数组,如果为空则没有标题
- * @param $filename 下载的文件名
- * @param exportexcel($arr,array('id','账户','密码','昵称'),'文件名!');
- */
-function exportexcel($data = array(), $title = array(), $filename = 'report')
-{
-    header("Content-type:application/octet-stream");
-    header("Accept-Ranges:bytes");
-    header("Content-type:application/vnd.ms-excel");
-    header("Content-Disposition:attachment;filename=" . $filename . ".xls");
-    header("Pragma: no-cache");
-    header("Expires: 0");
-    //导出xls 开始
-    if (!empty($title)) {
-        foreach ($title as $k => $v) {
-            $title[$k] = iconv("UTF-8", "GB2312", $v);
-        }
-        $title = implode("\t", $title);
-        echo "$title\n";
-    }
-    if (!empty($data)) {
-        foreach ($data as $key => $val) {
-            foreach ($val as $ck => $cv) {
-                $data[$key][$ck] = iconv("UTF-8", "GB2312", $cv);
-            }
-            $data[$key] = implode("\t", $data[$key]);
-        }
-        echo implode("\n", $data);
-    }
-}
-
-
-//根据数据库查询出来数组获取某个字段拼接字符串
-function getFieldArray($array = array(), $field = '')
-{
-    if (is_array($array) && $field) {
-        $ary = array();
-        foreach ($array as $value) {
-            $ary[] = $value[$field];
-        }
-        $str = implode(',', $ary);
-        return $str;
-    } else {
-        return false;
-    }
-}
-
-/**
  * curl 模拟GET请求
  * @author lee
  ***/
@@ -1541,9 +1629,13 @@ function curl_get($url)
     //设置获取的信息以文件流的形式返回，而不是直接输出。
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE); // https请求 不验证证书
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); // https请求 不验证hosts 
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE); // https请求 不验证hosts
+	curl_setopt($ch, CURLINFO_HEADER_OUT, TRUE);//添加这个获取请求头信息
     //执行命令
     $output = curl_exec($ch);
+	$meta = curl_getinfo($ch,CURLINFO_HEADER_OUT);
+	$accept = substr($meta,0,strpos($meta, 'Accept:'));
+	$host = substr($accept,strpos($accept, 'Host:')+5);
     curl_close($ch); //释放curl句柄
     return $output;
 }
@@ -1555,10 +1647,11 @@ function curl_get($url)
  */
 function curl_post($url = '', $post = array())
 {
+	//$post['host'] = $_SERVER['HTTP_HOST'];
     $curl = curl_init(); // 启动一个CURL会话
     curl_setopt($curl, CURLOPT_URL, $url); // 要访问的地址
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0); // 对认证证书来源的检查
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 1); // 从证书中检查SSL加密算法是否存在
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0); // 从证书中检查SSL加密算法是否存在
     curl_setopt($curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); // 模拟用户使用的浏览器
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1); // 使用自动跳转
     curl_setopt($curl, CURLOPT_AUTOREFERER, 1); // 自动设置Referer

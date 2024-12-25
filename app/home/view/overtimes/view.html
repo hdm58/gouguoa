@@ -1,0 +1,54 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">加班详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">开始时间</td>
+			<td>
+				{$detail.start_date} {$detail.start_span_name}
+			</td>
+			<td class="layui-td-gray">结束时间</td>
+			<td>
+				{$detail.end_date} {$detail.end_span_name}
+			</td>
+			<td class="layui-td-gray">加班天数</td>
+			<td id="days">共{$detail.duration|default=0}天</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">加班事由</td>
+			<td colspan="5">{$detail.reason|default=''}</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray"><div class="layui-input-inline">附件</div></td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}" class="pt-3"></div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaCheck'];
+
+	function gouguInit() {
+		var tool = layui.tool,oaCheck = layui.oaCheck;
+		//审批相关
+        oaCheck.init({
+            check_name:'overtimes',
+        });
+	}
+</script>
+{/block}
+<!-- /脚本 -->

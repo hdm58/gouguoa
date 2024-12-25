@@ -1,0 +1,214 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tab-5 .search-item{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">全部</li>
+				<li>我申请的</li>
+				<li>待我审批</li>
+				<li>我已审批</li>
+				<li>抄送我的</li>
+				<li>已打款</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择时间区间" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline search-item" style="width:120px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				{volist name=":get_check_status()" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline search-item" style="width:120px;">
+			<select name="pay_status">
+				<option value="">打款状态</option>
+				<option value="0">未打款</option>
+				<option value="1">已打款</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0"/>
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_expense" lay-filter="table_expense"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/finance/expense/add">+ 添加报销申请</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
+		
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		layui.pageTable = table.render({
+			elem: "#table_expense"
+			,toolbar: "#toolbarDemo"
+			,title: '报销列表'
+			,url: "/finance/expense/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-152'
+			,cols: [[
+				{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'cost',
+						title: '报销总金额(元)',
+						align: 'right',
+						width: 110,
+					},{
+						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
+							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+							return html;
+						}
+					},
+					{
+						field: 'admin_name',
+						title: '报销员工',
+						align: 'center',
+						width: 90
+					},{
+						field: 'department',
+						title: '报销部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'code',
+						title: '报销凭证编号',
+						width: 150,
+					},{
+						field: 'expense_time',
+						title: '原始单据日期',
+						align: 'center',
+						width: 110
+					},{
+						field: 'income_month',
+						title: '入账月份',
+						align: 'center',
+						width: 80
+					},{
+						field: 'create_time',
+						title: '录入时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'check_user',
+						title: '当前审核人'
+					},{
+						field: 'pay_status',
+						title: '打款状态',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='';
+							if(d.check_status==2){
+								html = '<span class="red">『未打款』</span>';
+								if(d.pay_status==1){
+									html = '<span class="green">『已打款』</span>';
+								}
+							}
+							else{
+								html='-';
+							}
+							return html;
+						}
+					},{
+						field: 'pay_name',
+						title: '打款人',
+						align: 'center',
+						width: 80
+					},{
+						field: 'pay_time',
+						title: '打款时间',
+						align: 'center',
+						width: 150
+					}, {
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 130,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+							html+=btn1;
+							if((d.check_status==0 || d.check_status==4) && d.admin_id==login_admin){
+								html+=btn2+btn3;
+							}
+							html+='</div>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+			
+		table.on('tool(table_expense)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/finance/expense/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/finance/expense/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/finance/expense/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

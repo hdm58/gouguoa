@@ -1,0 +1,173 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+  <style>
+	.tree-left{width:220px; float:left; height:100%; overflow: scroll; border:1px solid #eeeeee; background-color:#fff; padding:12px 12px 12px 5px;}
+	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
+  </style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page" style="height:calc(100% - 36px); box-sizing: border-box;">
+	<div class="tree-left">
+		<h3>产品分类</h3>
+		<div id="cate"></div>
+	</div>
+	<div class="body-table" style="margin-left:248px; overflow:hidden;">
+		<form class="layui-form gg-form-bar border-x border-t">
+			<div class="layui-input-inline" style="width:100px;">
+				<select name="status">
+					<option value="">选择状态</option>
+					<option value="1">正常</option>
+					<option value="0">禁用</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:300px;">
+				<input type="text" name="keywords" placeholder="关键字，产品名称/产品编码" class="layui-input" autocomplete="off" />
+			</div>
+			<div class="layui-input-inline" style="width:150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+			</div>
+		</form>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm addNew" type="button">+ 添加产品</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool,tree = layui.tree,form = layui.form;
+		$.ajax({
+			url: "/contract/api/get_productcate_tree",
+			type:'get',
+			success:function(res){					
+				//仅节点左侧图标控制收缩
+				tree.render({
+					elem: '#cate',
+					data: res.trees,
+					onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
+					click: function(obj){
+						//layer.msg(JSON.stringify(obj.data));
+						layui.pageTable.reload({
+						   where: {cate_id: obj.data.id},
+						   page:{curr:1}
+						});
+						$('[name="keywords"]').val('');
+						$('[name="status"]').val('');
+						form.render();
+					}
+				});	
+			}
+		})
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,title:'产品列表'
+			,url: "/contract/product/datalist"
+			,is_excel: true
+			,cellMinWidth: 60
+			,height: 'full-112'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'code',width:150, title: '产品编码', align:'center'}
+				,{field:'cate',width:150, title: '产品分类', align:'center'}
+				,{field:'title',title: '产品名称',minWidth:240}
+				,{field:'sale_price',width:100, title: '销售价(元)', align:'center','style':'color:#16b777'}
+				,{field:'purchase_price',width:100, title: '采购价(元)', align:'center','style':'color:#1e9fff'}
+				,{field:'base_price',width:100, title: '成本价(元)', align:'center','style':'color:#a233c6'}
+				,{field:'unit',width:60, title: '单位', align:'center'}
+				,{field:'specs',width:60, title: '规格', align:'center'}
+				,{field:'status', title: '状态',width:60,align:'center',templet: function(d){
+					var html1='<span class="green">正常</span>';
+					var html2='<span class="yellow">禁用</span>';
+					if(d.status==1){
+						return html1;
+					}
+					else{
+						return html2;
+					}
+				}}
+				,{width:150,fixed:'right', title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
+					var btn1='<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="disable">禁用</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					if(d.status==1){
+						html = '<div class="layui-btn-group">'+btn+btn1+btn3+'</div>';
+					}
+					else{
+						html = '<div class="layui-btn-group">'+btn+btn2+btn3+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+		
+		table.on('tool(test)',function (obj) {
+			if(obj.event === 'edit'){					
+				tool.side("/contract/product/add?id="+obj.data.id);
+			}
+			if(obj.event === 'view'){					
+				tool.side("/contract/product/view?id="+obj.data.id);
+			}
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该产品吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/contract/product/set", { id: obj.data.id,status: 0,title: obj.data.title}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该产品吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/contract/product/set", { id: obj.data.id,status: 1,title: obj.data.title}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'del'){
+				layer.confirm('确定要删除该产品吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/contract/product/set", { id: obj.data.id,status: 1,title: obj.data.title}, callback);
+					layer.close(index);
+				});
+			}
+		});
+		
+		$('body').on('click','.addNew',function(){
+			tool.side("/contract/product/add");	
+		});
+		
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			layui.pageTable.reload({where:data.field,page:{curr:1}});
+			return false;
+		});
+	}
+	</script>
+{/block}
+<!-- /脚本 -->

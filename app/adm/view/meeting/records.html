@@ -1,0 +1,127 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<style>
+.layui-table-tool-temp{padding-right:0}
+</style>
+<div class="p-3">
+	<form class="layui-form gg-form-bar border-x border-t" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="会议日期" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:110px;">
+			<input type="text" name="anchor"  placeholder="主持人" class="layui-input picker-admin" readonly />
+			<input type="text" name="anchor_id" value="" style="display:none" />	
+		</div>
+		<div class="layui-input-inline" style="width:220px;">
+			<input type="text" name="keywords" placeholder="会议主题" class="layui-input"/>
+		</div>	
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form> 
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+    <span class="layui-btn layui-btn-sm tool-add" data-href="/adm/meeting/records_add">+ 会议纪要</span>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','laydatePlus','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form, laydatePlus = layui.laydatePlus;	
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '会议纪要列表',
+			toolbar: '#toolbarDemo',
+			defaultToolbar: false,
+			page: true, //开启分页
+			limit: 20,
+			url: "/adm/meeting/records", //数据接口		
+			cols: [
+				[
+					{type:'checkbox',fixed:'left'},
+					{
+						field: 'id',
+						title: '序号',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'meeting_date',
+						title: '会议日期',
+						align: 'center',
+						width: 100
+					},{
+						field: 'title',
+						title: '会议主题',
+						minWidth:240
+					},{
+						field: 'did_name',
+						title: '主办部门',
+						align: 'center',
+						width: 90
+					},{
+						field: 'anchor',
+						title: '主持人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'recorder_name',
+						title: '记录人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'right',
+						title: '操作',
+						width: 124,
+						align: 'center',
+						templet: function(d){
+							var btn='<div class="layui-btn-group"><span class="layui-btn layui-btn-xs layui-bg-blue" lay-event="view">查看</span><span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span><span class="layui-btn layui-btn-xs layui-bg-red" lay-event="del">删除</span></div>';
+							return btn;
+						}
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/meeting/records_view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/adm/meeting/records_add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定删除该会议纪要吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/meeting/records_del", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

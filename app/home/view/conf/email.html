@@ -1,69 +1,55 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">邮箱配置</h3>
-	<table class="layui-table">
+<form class="layui-form p-4">
+	<h3 class="pb-3">邮箱配置</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray2">SMTP地址<font>*</font>
-			</td>
+			<td class="layui-td-gray-2">SMTP地址<font>*</font></td>
 			<td>
 				<input type="hidden" name="id" value="{$id}">
-				<input type="text" name="smtp" lay-verify="required" autocomplete="off" placeholder="请输入SMTP服务器地址" lay-reqText="请输入SMTP服务器地址" class="layui-input" {notempty name="$config.smtp"} value="{$config.smtp}" {/notempty} style="width:240px;display: inline-block;">
-				<span style="color:#999; font-size:12px;">如：QQ邮箱的SMTP服务器地址是smtp.qq.com，163邮箱的SMTP服务器地址是smtp.163.com</span>
+				<input type="text" name="smtp" lay-verify="required" autocomplete="off" placeholder="请输入SMTP服务器地址" lay-reqText="请输入SMTP服务器地址" class="layui-input" value="{$config.smtp|default=''}" style="width:240px;display: inline-block;">
+				<span style="color:#999; font-size:12px; margin-left:5px">如：QQ邮箱的SMTP服务器地址是smtp.qq.com，163邮箱的SMTP服务器地址是smtp.163.com</span>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">协议端口号<font>*</font>
-			</td>
+			<td class="layui-td-gray-2">协议端口号<font>*</font></td>
 			<td>
-				<input type="text" name="smtp_port" lay-verify="required" autocomplete="off" placeholder="请输入端口" lay-reqText="请输入端口" class="layui-input" {notempty name="$config.smtp_port"} value="{$config.smtp_port}" {/notempty} style="width:240px;display: inline-block;">
-					<span style="color:#999; font-size:12px;">如：QQ邮箱的ssl协议方式端口号是465/587，163邮箱的ssl协议方式端口号是465/994</span>
+				<input type="text" name="smtp_port" lay-verify="required" autocomplete="off" placeholder="请输入端口" lay-reqText="请输入端口" class="layui-input" value="{$config.smtp_port|default=''}"  style="width:240px;display: inline-block;"><span style="color:#999; font-size:12px; margin-left:5px">如：QQ邮箱的ssl协议方式端口号是465/587，163邮箱的ssl协议方式端口号是465/994</span>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">邮箱账户<font>*</font>
-			</td>
-			<td>
-				<input type="text" name="smtp_user" autocomplete="off" lay-verify="required" placeholder="请输入邮箱用户名" lay-reqText="请输入邮箱用户名" class="layui-input" {notempty name="$config.smtp_user"} value="{$config.smtp_user}" {/notempty} style="width:240px;display: inline-block;">
-					<span style="color:#999; font-size:12px;">如：gougucms@qq.com</span>
+			<td class="layui-td-gray">邮箱账户<font>*</font></td>
+			<td><input type="text" name="smtp_user" autocomplete="off" lay-verify="required" placeholder="请输入邮箱用户名" lay-reqText="请输入邮箱用户名" class="layui-input" value="{$config.smtp_user|default=''}"style="width:240px;display: inline-block;"><span style="color:#999; font-size:12px; margin-left:5px">如：gougucms@qq.com</span>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">邮箱密码<font>*</font>
-			</td>
-			<td>
-				<input type="password" name="smtp_pwd" lay-verify="required" autocomplete="off" placeholder="请输入邮箱密码"
-					class="layui-input" {notempty name="$config.smtp_pwd"} value="{$config.smtp_pwd}" {/notempty} style="width:240px;display: inline-block;">
-					<span style="color:#999; font-size:12px;">
-					不一定是登录密码，如QQ邮箱的是第三方授权登录码，要自己去开启，在邮箱的设置->账户->POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务</span>
+			<td class="layui-td-gray">邮箱密码<font>*</font></td>
+			<td><input type="password" name="smtp_pwd" lay-verify="required" autocomplete="off" placeholder="请输入邮箱密码" class="layui-input" value="{$config.smtp_pwd|default=''}" style="width:240px;display: inline-block;"><span style="color:#999; font-size:12px; margin-left:5px">不一定是登录密码，如QQ邮箱的是第三方授权登录码，要自己去开启，在邮箱的设置->账户->POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务</span>
 			</td>
 		</tr>
 
 		<tr>
-			<td class="layui-td-gray2">发送人<font>*</font>
-			</td>
+			<td class="layui-td-gray">发送人<font>*</font></td>
 			<td>
-				<input type="text" name="from" autocomplete="off" lay-verify="required" placeholder="请输入要显示的发送者" lay-reqText="请输入要显示的发送者"
-					class="layui-input" {notempty name="$config.from"} value="{$config.from}" {/notempty} style="width:240px; display: inline-block;">
-				<span style="color:#999; font-size:12px;">用于展示给发送方，如：勾股CMS系统管理员</span>
+				<input type="text" name="from" autocomplete="off" lay-verify="required" placeholder="请输入要显示的发送者" lay-reqText="请输入要显示的发送者" class="layui-input" value="{$config.from|default=''}" style="width:240px; display: inline-block;">
+				<span style="color:#999; font-size:12px; margin-left:5px">用于展示给发送方，如：勾股CMS系统管理员</span>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">显示的邮箱<font>*</font>
-			</td>
+			<td class="layui-td-gray">显示的邮箱<font>*</font></td>
 			<td>
-				<input type="text" name="email" lay-verify="required" autocomplete="off" placeholder="请输入要显示的发送者邮箱" lay-reqText="请输入要显示的发送者邮箱"
-					class="layui-input" {notempty name="$config.email"} value="{$config.email}" {/notempty} style="width:240px;display: inline-block;">
-				<span style="color:#999;font-size:12px;">可以不同于上面的账户，用于展示给发送方的邮箱，如：admin@gougucms.com</span>
+				<input type="text" name="email" lay-verify="required" autocomplete="off" placeholder="请输入要显示的发送者邮箱" lay-reqText="请输入要显示的发送者邮箱" class="layui-input" value="{$config.email|default=''}" style="width:240px;display: inline-block;">
+				<span style="color:#999; font-size:12px; margin-left:5px">可以不同于上面的账户，用于展示给发送方的邮箱，如：admin@gougucms.com</span>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">邮件模板</td>
-			<td><textarea name="template" placeholder="" class="layui-textarea" id="container" style="border:0;padding:0">{notempty name="$config.template"}{$config.template}{/notempty}</textarea></td>
+			<td class="layui-td-gray">邮件模板</td>
+			<td><textarea name="template" placeholder="" class="layui-textarea" id="container">{$config.template|default=''}</textarea>
+			</td>
 		</tr>
 	</table>
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button lay-event="email" class="layui-btn">发送测试</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -75,29 +61,28 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var form = layui.form
-			, layer = layui.layer;
+	const moduleInit = ['tool', 'tinymce'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, tinymce = layui.tinymce;
 
+		var edit = tinymce.render({
+			selector: "#container",
+			height: 320
+		});
 		//监听提交
 		form.on('submit(webform)', function (data) {
-			$.ajax({
-				url: "/home/conf/edit",
-				type: 'post',
-				data: data.field,
-				success: function (e) {
-					layer.msg(e.msg);
-					if (e.code == 0) {
-						setTimeout(function(){
-							parent.layui.rightpage.close();
-						},1000);
-					}
+			data.field.template = tinyMCE.editors['container'].getContent();
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
 				}
-			})
+			}
+			tool.post("/home/conf/edit", data.field, callback);
 			return false;
 		});
 
-		$('.body-content').on('click', '[lay-event="email"]', function () {
+		$('body').on('click', '[lay-event="email"]', function () {
 			layer.prompt({
 				formType: 0,
 				value: '',
@@ -110,7 +95,7 @@
 					return false;
 				}
 				$.ajax({
-					url: "/home/api/email_test",
+					url: "/api/index/email_test",
 					data: { email: value },
 					type: "post",
 					beforeSend: function () {
@@ -127,15 +112,7 @@
 			});
 			return false;
 		})
-		//监听返回
-		$('.body-content').on('click', '[lay-event="back"]', function () {
-			history.back(-1);
-			return false;
-		});
 	}
-
 </script>
-{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
-{include file="../../base/view/common/ueditor" id="container" name="content" width="100%" height="100%" toolbar="[]" /}
 {/block}
 <!-- /脚本 -->

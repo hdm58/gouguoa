@@ -1,0 +1,107 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="p-page layui-form">
+	<h3 class="pb-3">新增跟进记录</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">客户名称</td>
+			<td colspan="5">{$customer_name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">联 系 人<font>*</font></td>
+			<td>
+			  <select name="contact_id" lay-verify="required" lay-reqText="请选择联系人">
+				<option value="">请选择</option>
+				{volist name=":customer_contact($customer_id)" id="v"}
+				<option value="{$v.id}">{$v.name}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray">跟进方式<font>*</font></td>
+			<td>
+			  <select name="types" lay-verify="required" lay-reqText="请选择跟进方式">
+				<option value="">请选择</option>
+				{volist name=":get_base_type_data('basic_customer',3)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray">跟进时间<font>*</font></td>
+			<td><input type="text" name="follow_time" readonly lay-verify="required" lay-reqText="请选择跟进时间" placeholder="请选择跟进时间" class="layui-input tool-time" data-type="datetime"  data-format="yyyy-MM-dd HH:mm"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">沟通内容<font>*</font></td>
+			<td colspan="5"><textarea name="content" placeholder="请输入沟通内容" lay-verify="required" lay-reqText="请输入沟通内容" class="layui-textarea"></textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">当前阶段<font>*</font></td>
+			<td>
+			  <select name="stage" lay-verify="required" lay-reqText="请选择">
+				<option value="">请选择</option>
+				{volist name=":get_base_type_data('basic_customer',4)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray">销售机会</td>
+			<td>
+			  <select name="grade_id">
+				<option value="">请选择</option>
+				{volist name=":customer_chance($customer_id)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray-2">下次沟通时间<font>*</font></td>
+			<td><input type="text" name="next_time" readonly lay-verify="required" lay-reqText="请选择下次沟通时间" placeholder="请选择下次沟通时间" class="layui-input tool-time" data-type="datetime"  data-format="yyyy-MM-dd HH:mm"></td>
+		</tr>
+        <tr>
+            <td class="layui-td-gray">
+				<div>相关附件</div>
+				<div><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn">附件上传</button></div>
+            </td>
+            <td colspan="5" style="line-height:inherit">
+                <div class="layui-row" id="uploadBox">
+                    <input type="hidden" data-type="file" name="file_ids" value="">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="pt-4">
+		<input type="hidden" name="cid" value="{$customer_id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus=layui.uploadPlus;
+		var attachment = new uploadPlus({
+			"title":'上传文件',
+			"target":'uploadBtn',
+			"targetBox":'uploadBox'
+		});
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000,'traceTable');
+				}
+			}
+			tool.post("/customer/trace/add", data.field, callback);
+			return false;
+		});
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

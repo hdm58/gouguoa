@@ -1,0 +1,552 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-tab-title .layui-this{background-color:#fff;}
+.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0;}
+.layui-card-tips {color: #969696;}
+.layui-card-value {padding: 4px 0 16px;font-size: 18px;color: #1E9FFF;}
+.layui-tab-title .layui-this:after{z-index:1}
+
+.check-items{overflow-x: auto; padding: 2px 0;}
+
+.check-item strong{margin-right:3px; font-size:20px;}
+.check-item strong.blue,.check-item strong.green{display:none;}
+.check-item.blue strong.black,.check-item.green strong.black{display:none;}
+.check-item.blue strong.blue{display:block;}
+.check-item.green strong.green{display:block;}
+
+.flow-flex-row {box-direction: row;
+	box-orient: horizontal;
+    -webkit-box-orient: horizontal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+}
+.flow-flexbox { width: 100%;text-align: left;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    display: -webkit-flex;
+    box-align: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+	flex-wrap: wrap;
+}
+.check-item{width: auto; -ms-flex-negative: 0; flex-shrink: 0; padding:4px 0;}
+.check-item i{font-size:20px; margin-right:3px;}
+.check-item span{color:#999;margin:0 1px;}
+.layui-icon[data-ok]{color:#34a853}
+.layui-icon[data-no]{color:#FF5722;}
+.layui-icon[data-on]{color:#4285f4;}
+.check-item-status{color:#969696; font-size:12px; margin-left:3px;}
+.check-item:last-child .layui-icon-right{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h2 class="pb-3">
+		<span class="font20">{$detail.name}</span> 
+		{gt name="$role" value="0"}
+			{eq name="$detail.status" value="4"}
+			<span class="layui-btn layui-btn-xs" data-event="open">开启</span>
+			{else/}
+			<span class="layui-btn layui-btn-danger layui-btn-xs" data-event="close">关闭</span>
+			{/eq}
+		{/gt}
+	</h2>
+	<div>
+		<span class="layui-badge layui-bg-gray">#T{$detail.id}</span>
+		<span class="mx-2">{$detail.admin_name}</span>
+		<span class="gray">创建于{$detail.create_time}<span>{gt name="$detail.update_time" value="0"}，最近更新于 {$detail.update_time}{/gt}</span></span>
+	</div>
+	<div class="body-table layui-tab layui-tab-brief" lay-filter="project" id="projectTab">
+		<ul class="layui-tab-title border-t border-x bg-white" style="border-bottom:0;">
+			<li class="layui-this" data-load="true">项目概览</li>
+			<li data-load="">项目任务</li>
+			<li data-load="">工作记录</li>
+			<li data-load="">项目文档</li>
+			<li data-load="">项目人员</li>
+			<li data-load="">项目动态</li>
+			<li data-load="">项目评论</li>
+		</ul>
+		<div class="layui-tab-content" style="padding:0">
+			<div class="layui-tab-item layui-show">
+				{include file="/index/view_overview" /}
+			</div>
+			
+			<div class="layui-tab-item">
+				{include file="/index/view_task" /}				
+			</div>
+			
+			<div class="layui-tab-item">
+				{include file="/index/view_schedule" /}				
+			</div>
+			
+			<div class="layui-tab-item">
+				{include file="/index/view_document" /}				
+			</div>
+			
+			<div class="layui-tab-item">
+				{include file="/index/view_user" /}		
+			</div>
+			
+			<div class="layui-tab-item">
+				{include file="/index/view_log" /}
+			</div>
+			
+			<div class="layui-tab-item">
+				{include file="/index/view_comment" /}
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__GOUGU__}/third_party/echart/echarts.min.js"></script>
+<script>
+	const project_id = '{$detail.id}';
+	const project_start_time = "{$detail.start_time|date='Y-m-d'}";
+	var chartProgress = document.getElementById('progress');
+	var progressChart = echarts.init(chartProgress);
+	var optionA;
+	optionA = {
+		backgroundColor: "#ffffff",
+		title: {
+			text: '67.45%',//主标题文本
+			subtext: '任务完成率',//副标题文本
+			x: 'center',
+			y: '39%',
+			textStyle: {
+				fontWeight: 'normal',
+				fontSize: 18,
+				color: '#FF974C',
+				align: 'center'
+			},
+			subtextStyle: {
+				fontSize: 12,
+				color: '#6c7a89',
+			}
+		},
+		tooltip: {
+			trigger: "item",
+			formatter: '{b}：<br/><strong>{c}</strong>',
+			show: true,
+		},
+		series: [
+			{
+				type: 'pie',
+				radius: ['60%', '80%'],
+				center: ['50%', '50%'],
+				avoidLabelOverlap: false,
+				label: {
+					show: false
+				},
+				data: [
+					{ value: 1048, name: '待处理' },
+					{ value: 735, name: '已完成' }
+				]
+			}
+		]
+	};
+
+	var chartDelay = document.getElementById('delay');
+	var delayChart = echarts.init(chartDelay);
+	var optionB;
+	optionB = {
+		backgroundColor: "#ffffff",
+		title: {
+			text: '40.25%',//主标题文本
+			subtext: '任务延迟率',//副标题文本
+			x: 'center',
+			y: '39%',
+			textStyle: {
+				fontWeight: 'normal',
+				fontSize: 18,
+				color: '#FF974C',
+				align: 'center',
+				marginLeft: '-10px'
+			},
+			subtextStyle: {
+				fontSize: 12,
+				color: '#6c7a89',
+			}
+		},
+		tooltip: {
+			trigger: "item",
+			formatter: '{b}：<br/><strong>{c}</strong>',
+			show: true,
+		},
+		series: [
+			{
+				type: 'pie',
+				radius: ['60%', '80%'],
+				center: ['50%', '50%'],
+				avoidLabelOverlap: false,
+				label: {
+					show: false
+				},
+				data: [{
+					value: 1048,
+					name: '延迟',
+					itemStyle: {
+						color: "#ED6666",
+					}
+				},
+				{
+					value: 735,
+					name: '未延迟',
+					itemStyle: {
+						color: "#91CC75",
+					}
+				}
+				]
+			}
+		]
+	};
+
+
+	var chartCross = document.getElementById('cross');
+	var crossChart = echarts.init(chartCross);
+	var optionD;
+	optionD = {
+		backgroundColor: "#ffffff",
+		color: ['#8C92A4', '#2C7EF8'],
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'cross',
+				label: {
+					backgroundColor: '#6a7985'
+				}
+			}
+		},
+		legend: {
+			data: ['任务计划剩余', '任务实际剩余']
+		},
+		grid: {
+			top: 36,
+			left: 8,
+			right: 36,
+			bottom: 0,
+			containLabel: true
+		},
+		xAxis: [
+			{
+				type: 'category',
+				boundaryGap: false,
+				splitLine: {
+					show: true,
+					lineStyle: {
+						type: 'dashed'
+					}
+				}
+			}
+		],
+		yAxis: [{
+			axisLine: {
+				show: true
+			},
+			boundaryGap: false,
+			splitLine: {
+				show: true,
+				lineStyle: {
+					type: 'dashed'
+				}
+			},
+			type: 'value'
+		}
+		]
+	};
+
+
+	var chartPlan = document.getElementById('plan');
+	var planChart = echarts.init(chartPlan);
+	var optionE;
+
+	optionE = {
+		backgroundColor: "#ffffff",
+		title: {
+			top: 0,
+			left: 0,
+			text: ''
+		},
+		tooltip: {
+			padding: 6,
+			formatter: function (obj) {
+				var value = obj.value;
+				var tips = '<div style="font-size: 12px;">' + value[0] + '<br>';
+				tips += '共 ' + value[1] + ' 个工作任务';
+				tips += '</div>';
+				return tips;
+			}
+		},
+		visualMap: {
+			min: 0,
+			max: 10,
+			show: false,
+			inRange: {
+				color: ['#fafafa', '#20BF3F']
+			}
+		},
+		calendar: {
+			top: 24,
+			left: 36,
+			right: 4,
+			cellSize: ['auto', 16],
+			range: ['2022-03-01', '2022-08-01'],
+			splitLine: {
+				lineStyle: {
+					color: '#333',
+					type: 'dashed',
+				}
+			},
+			itemStyle: {
+				borderWidth: 0.5
+			},
+			yearLabel: { show: false },
+			monthLabel: {
+				nameMap: 'cn',
+				fontSize: 12
+			},
+			dayLabel: {
+				show: true,
+				formatter: '{start}  1st',
+				fontWeight: 'lighter',
+				nameMap: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+				fontSize: 12
+			}
+		},
+		series: {
+			type: 'heatmap',
+			coordinateSystem: 'calendar',
+			data: []
+		}
+	};
+
+
+	var chartWork = document.getElementById('work');
+	var workChart = echarts.init(chartWork);
+	var optionF;
+
+	optionF = {
+		backgroundColor: "#ffffff",
+		title: {
+			top: 0,
+			left: 0,
+			text: ''
+		},
+		tooltip: {
+			padding: 6,
+			formatter: function (obj) {
+				var value = obj.value;
+				var tips = '<div style="font-size: 12px;">' + value[0] + '<br>';
+				tips += '共 ' + value[1] + ' 个工时';
+				tips += '</div>';
+				return tips;
+			}
+		},
+		visualMap: {
+			min: 0,
+			max: 10,
+			show: false,
+			inRange: {
+				color: ['#fafafa', '#359AEF']
+			}
+		},
+		calendar: {
+			top: 24,
+			left: 36,
+			right: 4,
+			cellSize: ['auto', 16],
+			range: ['2022-03-01', '2022-08-01'],
+			splitLine: {
+				lineStyle: {
+					color: '#333',
+					type: 'dashed',
+				}
+			},
+			itemStyle: {
+				borderWidth: 0.5
+			},
+			yearLabel: { show: false },
+			monthLabel: {
+				nameMap: 'cn',
+				fontSize: 12
+			},
+			dayLabel: {
+				show: true,
+				formatter: '{start}  1st',
+				fontWeight: 'lighter',
+				nameMap: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+				fontSize: 12
+			}
+		},
+		series: {
+			type: 'heatmap',
+			coordinateSystem: 'calendar',
+			data: []
+		}
+	};
+
+
+	function getCalendarData(arr) {
+		var rangeArray = [];
+		for (var property in arr) {
+			rangeArray.push(property);
+		}
+		var rangeArray = [rangeArray[0], rangeArray[rangeArray.length - 1]];
+		var start = +echarts.number.parseDate(rangeArray[0]);
+		var end = +echarts.number.parseDate(rangeArray[1]);
+		if (start + 7776000000 > end) {
+			end = start + 8640000000;
+			rangeArray[1] = echarts.format.formatTime('yyyy-MM-dd', end);
+		}
+		var dayTime = 3600 * 24 * 1000;
+		var data = [];
+		for (var time = start; time < end; time += dayTime) {
+			var this_date = echarts.format.formatTime('yyyy-MM-dd', time);
+			if (arr[this_date]) {
+				data.push([this_date, arr[this_date]]);
+			} else {
+				data.push([this_date, 0]);
+			}
+		}
+		var res = { 'range': rangeArray, 'data': data };
+		return res;
+	}
+
+	//燃尽图统计
+	function cross_count(arr, arr2) {
+		var planArray = [], doArray = [];
+		var today = new Date();
+		var todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+		for (var a in arr) {
+			planArray.push(a);
+		}
+		var rangeArray = [planArray[0], planArray[planArray.length - 1]];
+		if (arr2 instanceof Array == false) {
+			for (var b in arr2) {
+				doArray.push(b);
+			}
+			if ((+echarts.number.parseDate(doArray[doArray.length - 1])) < (+echarts.number.parseDate(todayStr))) {
+				doArray.push(todayStr);
+			}
+			if ((+echarts.number.parseDate(planArray[planArray.length - 1])) < (+echarts.number.parseDate(doArray[doArray.length - 1]))) {
+				rangeArray[1] = doArray[doArray.length - 1];
+			}
+		}
+		var start = +echarts.number.parseDate(rangeArray[0]);
+		var end = +echarts.number.parseDate(rangeArray[1]);
+		var todayInt = +echarts.number.parseDate(todayStr);
+		var dayTime = 3600 * 24 * 1000;
+		var xArray = [], yArray = [], yArray2 = [], done = 0, doneArray = [];
+		for (var time = start; time <= end; time += dayTime) {
+			var this_date = echarts.format.formatTime('yyyy-MM-dd', time);
+			xArray.push(this_date);
+			var plan = cross_recursion(time, end, arr);
+			yArray.push(plan);
+
+			if (arr2[this_date]) {
+				done += arr2[this_date];
+			}
+			if (time <= todayInt) {
+				doneArray.push(done);
+			}
+		}
+		for (var i = 0; i < doneArray.length; i++) {
+			yArray2.push(yArray[0] - doneArray[i]);
+		}
+		var start_time = +echarts.number.parseDate(project_start_time), tem_x_array = [], tem_y_array = [];
+		if (start_time < start) {
+			for (var tem_time = start_time; tem_time < start; tem_time += dayTime) {
+				var this_date = echarts.format.formatTime('yyyy-MM-dd', tem_time);
+				tem_x_array.push(this_date);
+				tem_y_array.push(yArray[0]);
+			}
+			xArray = tem_x_array.concat(xArray);
+			yArray = tem_y_array.concat(yArray);
+			yArray2 = tem_y_array.concat(yArray2);
+		}
+		return { 'x': xArray, 'y': yArray, 'y2': yArray2 };
+	}
+
+	function cross_recursion(start, end, arr) {
+		var count = 0;
+		var dayTime = 3600 * 24 * 1000;
+		for (var time = start; time <= end; time += dayTime) {
+			var this_date = echarts.format.formatTime('yyyy-MM-dd', time);
+			if (arr[this_date]) {
+				count += arr[this_date];
+			}
+		}
+		return count;
+	}
+	
+	//
+	const moduleInit = ['tool','oaPicker','uploadPlus','tablePlus','oaComment','oaSchedule','oaEdit'];
+
+	function gouguInit() {
+		var tool = layui.tool,element = layui.element,comment = layui.oaComment;
+		
+		comment.init({
+			"box":'commentBox',//容器id
+			"input": 'commentInput',
+			"topic_id":project_id,
+			"module": 'project',
+		});
+		
+		$('body').on('click','[data-event="close"]',function(){
+			tool.ask('确定要关闭该项目？',function(){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						parent.layui.pageTable.reload();
+						setTimeout(function(){
+							location.reload();
+						},2000)
+					}
+				}
+				tool.post("/project/api/close", { 'id': project_id}, callback);
+			})
+		})
+		$('body').on('click','[data-event="open"]',function(){
+			tool.ask('确定要开启该项目？',function(){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						parent.layui.pageTable.reload();
+						setTimeout(function(){
+							location.reload();
+						},2000)
+					}
+				}
+				tool.post("/project/api/open", { 'id': project_id}, callback);
+			})
+		})
+		
+		overview();		
+		element.on('tab(project)', function(data){
+			let index = data.index;
+			if(index == 1){
+				project_task();	
+			}
+			else if(index == 2){
+				project_schedule();	
+			}
+			else if(index == 3){
+				project_document();	
+			}
+			else if(index == 4){
+				project_user();	
+			}
+			else if(index == 5){
+				project_log();	
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

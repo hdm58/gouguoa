@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" width="100%" height="100%" viewBox="0 0 1400 800">
+
+  <rect x="1300" y="400" rx="40" ry="40" width="300" height="300" stroke="rgb(129, 201, 149)" fill="rgb(129, 201, 149)">
+    <animateTransform attributeType="XML" attributeName="transform" begin="0s" dur="35s" type="rotate" from="0 1450 550" to="360 1450 550" repeatCount="indefinite"/>
+  </rect>
+
+  <path d="M 100 350 A 150 150 0 1 1 400 350 Q400 370 380 370 L 250 370 L 120 370 Q100 370 100 350" stroke="rgb(253, 214, 99)" fill="rgb(253, 214, 99)">
+    <animateMotion path="M 800 -200 L 800 -300 L 800 -200" dur="20s" begin="0s" repeatCount="indefinite"/>
+    <animateTransform attributeType="XML" attributeName="transform" begin="0s" dur="30s" type="rotate" values="0 210 530 ; -30 210 530 ; 0 210 530" keyTimes="0 ; 0.5 ; 1" repeatCount="indefinite"/>
+  </path>
+
+  <circle cx="200" cy="150" r="30" stroke="#FBBC05" fill="#FBBC05">
+    <animateMotion path="M 0 0 L 40 20 Z" dur="5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- 三角形 -->
+  <path d="M 165 580 L 270 580 Q275 578 270 570 L 223 483 Q220 480 217 483 L 165 570 Q160 578 165 580" stroke="rgb(238, 103, 92)" fill="rgb(238, 103, 92)">
+    <animateTransform attributeType="XML" attributeName="transform" begin="0s" dur="35s" type="rotate" from="0 210 530" to="360 210 530" repeatCount="indefinite"/>
+  </path>
+
+  <rect x="400" y="600" rx="40" ry="40" width="100" height="100" stroke="rgb(85, 179, 5)" fill="rgb(85, 179, 5)">
+    <animateTransform attributeType="XML" attributeName="transform" begin="0s" dur="35s" type="rotate" from="-320 500 600" to="320 500 600" repeatCount="indefinite"/>
+  </rect>
+  
+  
+  <path d="M135.461,9.654 L192.193,221.380 C195.055,232.063 189.027,237.482 178.708,233.504 L10.722,168.736 C0.402,164.758 -2.323,154.585 4.624,145.980 L117.721,5.897 C124.668,-2.708 132.598,-1.029 135.461,9.654 Z" stroke="rgb(24, 106, 242)" fill="rgb(24, 106, 242)">
+    <animateTransform attributeType="XML" attributeName="transform" begin="0s" dur="35s" type="rotate" from="-180 300 200" to="360 300 200" repeatCount="indefinite"/>
+  </path>
+</svg>

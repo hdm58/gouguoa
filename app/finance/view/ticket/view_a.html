@@ -1,0 +1,98 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	<h3 class="pb-3">无发票付款详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">预付款金额(元)</td>
+			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray">付款方</td>
+			<td>{$detail.subject}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">收款方(供应商)</td>
+			<td colspan="3">{$detail.supplier_name}</td>
+		</tr>
+		{if condition="$detail.purchase_id > 0"}
+		<tr>
+		<td class="layui-td-gray">关联采购合同</td>
+			<td colspan="3">{$detail.purchase_name|default=''}</td>
+		</tr>
+		{/if}
+		{if condition="$detail.project_id > 0"}
+		<tr>
+		<td class="layui-td-gray">关联的项目</td>
+			<td colspan="3">{$detail.project_name|default=''}</td>
+		</tr>
+		{/if}
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">关联附件</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const ticket_id = {$detail.id};
+const moduleInit = ['tool','oaCheck','uploadPlus'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
+	oaCheck.init({
+		check_name:'ticket'
+	});
+	//相关附件上传
+	var attachment = new uploadPlus({
+		"attachment":{
+			uidDelete:true,
+			ajaxSave:function(val){
+				$.ajax({
+					url: "/finance/api/upload_ticket",
+					type:'post',
+					data:{
+						id:ticket_id,
+						other_file_ids:val
+					},
+					success: function (e) {
+						location.reload();
+					}
+				})
+			},
+			ajaxDelete:function(val){
+				$.ajax({
+					url: "/finance/api/upload_ticket",
+					type:'post',
+					data:{
+						id:ticket_id,
+						other_file_ids:val
+					},
+					success: function (e) {
+						location.reload();
+					}
+				})
+			}
+		}
+	})
+}
+</script>
+{/block}
+<!-- /脚本 -->

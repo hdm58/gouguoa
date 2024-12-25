@@ -1,0 +1,81 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">新增文档</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">文档标题<font>*</font></td>
+			<td><input type="text" name="name" value="{$detail.name}" lay-verify="required" lay-reqText="请输入文档标题" autocomplete="off" placeholder="请输入文档标题" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">关联附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr> 
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">文档内容<font>*</font></td>
+			<td><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content}</textarea></td>
+		</tr>
+    </table>
+    <div class="pt-3">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<input type="hidden" name="disk_id" value="{$detail.disk_id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','uploadPlus','tinymce'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,uploadPlus = layui.uploadPlus;	
+    //编辑器初始化
+	var editor = layui.tinymce;
+	var edit = editor.render({
+		selector: "#container",
+		menubar:false,
+		images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+		height: 555
+	});
+
+	//相关附件上传
+	var attachment = new uploadPlus();
+
+    //监听提交
+    form.on('submit(webform)', function (data) {
+		data.field.content = tinyMCE.editors['container'].getContent();
+		if (data.field.content == '') {
+			layer.msg('请先完善文档的内容');
+			return false;
+		}	
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);
+			}
+		}
+		tool.post("/disk/index/add_article", data.field, callback);
+		return false;
+    });
+}
+</script>
+{/block}
+<!-- /脚本 -->

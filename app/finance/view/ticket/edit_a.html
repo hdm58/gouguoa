@@ -1,0 +1,110 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">编辑无发票付款申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-3">预付款金额(元)<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入预付款金额" lay-reqText="请输入预付款金额" value="{$detail.amount}"></td>
+			<td class="layui-td-gray">付款方<font>*</font></td>
+			<td>
+				<select name="invoice_subject" lay-verify="required" lay-reqText="请选择付款方">
+					<option value="">请选择付款方</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$vo.id" value="$detail.invoice_subject"}selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">收款方(供应商)<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="supplier_name" class="layui-input picker-oa" data-types="supplier" value="{$detail.supplier_name|default=''}" placeholder="请选择" readonly lay-verify="required" lay-reqText="请完善收款方(供应商)">
+				<input type="hidden" name="supplier_id" value="{$detail.supplier_id}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联采购合同</td>
+			<td colspan="3">
+				<input type="text" class="layui-input picker-oa" data-types="purchase" name="purchase_name" placeholder="请选择需要关联的合同" readonly value="{$detail.purchase_name|default=''}">		
+				<input type="hidden" class="layui-input" name="purchase_id" value="{$detail.purchase_id}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="3">
+				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="{$detail.project_name|default=''}">		
+				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
+		</tr>
+	</table>	
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaPicker = layui.oaPicker,oaCheck = layui.oaCheck,uploadPlus = layui.uploadPlus;		
+		//相关附件上传
+		var attachment = new uploadPlus();
+		
+		//审批相关
+		oaCheck.init({
+			check_name:'ticketa',
+			check_btn:0
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'ticketa';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			tool.post("/finance/ticket/add_a", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

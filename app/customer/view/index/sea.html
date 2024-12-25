@@ -1,0 +1,238 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+  <style>	
+	.gougu-upload-files{background-color: #ffffff; border:1px solid #e4e7ed;color: #c0c4cc;cursor: not-allowed; padding:0 12px; width:180px; box-sizing: border-box; display: inline-block; font-size: inherit; height: 38px; line-height: 35px; margin-right:8px; border-radius:2px;}
+	.gougu-upload-tips{color:#969696}
+	.layui-form-item{margin-bottom:8px;}
+	.layui-input-block{min-height:24px;}
+  </style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-x border-t" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="source_id">
+				<option value="">渠道来源</option>
+				{volist name=":get_base_data('customer_source')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="industry_id">
+				<option value="">所属行业</option>
+				{volist name=":get_base_data('Industry')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="grade_id">
+				<option value="">客户等级</option>
+				{volist name=":get_base_data('customer_grade')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:172px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="最近跟进日期" readonly name="follow_time" id="follow_time">
+		</div>
+		<div class="layui-input-inline" style="width:240px;">
+			<input type="text" name="keywords" placeholder="输入关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-group">
+   <button class="layui-btn layui-btn-sm" title="添加公海客户" lay-event="add">+ 添加公海客户</button>
+   <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="import"><i class="layui-icon">&#xe66f;</i>批量导入</button>
+</div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','oaPicker','uploadPlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form, oaPicker = layui.oaPicker,uploadPlus=layui.uploadPlus,laydatePlus=layui.laydatePlus;
+		var follow_time = new laydatePlus({'target':'follow_time'});
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '公海客户列表',
+			defaultToolbar: false,
+			toolbar: '#toolbarDemo',
+			url: "/customer/index/sea", //数据接口
+			cellMinWidth: 80,
+			page: true, //开启分页
+			limit: 20,
+			height: 'full-112',
+			cols: [
+				[ //表头
+					{
+						field: 'id',title: '编号',align: 'center',width: 80
+					},{
+						field: 'name',
+						title: '客户名称',
+						minWidth:240,
+						templet: '<div><a data-href="/customer/customer/view/id/{{d.id}}.html" class="side-a">{{d.name}}</a></div>'
+					},{
+						field: 'contact_name',
+						title: '联系人',
+						align: 'center',
+						width: 80
+					},{
+						field: 'contact_mobile',
+						title: '手机号码',
+						align: 'center',
+						width: 100
+					},{
+						field: 'contact_email',
+						title: '电子邮箱',
+						width: 200
+					},{
+						field: 'grade',
+						title: '客户等级',
+						align: 'center',
+						width: 100
+					},{
+						field: 'source',
+						title: '来源渠道',
+						align: 'center',
+						width: 100
+					},{
+						field: 'industry',
+						title: '所属行业',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '创建时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'update_time',
+						title: '最后编辑时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 190,
+						align: 'center',
+						templet: function (d) {
+							var html = '<div class="layui-btn-group">';
+							var btn='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn0='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="distribute">分配</span>';
+							var btn1='<span class="layui-btn layui-btn-xs" lay-event="get">领取</span>';
+							var btn2='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">转入废弃池</span>';
+							return html+btn+btn0+btn1+btn2+'</div>';
+						}						
+					}
+				]
+			]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			if (obj.event === 'add') {
+				tool.side("/customer/customer/add?sea=1");
+				return;
+			}
+			if (obj.event === 'import') {
+				let importUpload = new uploadPlus({
+					"title":'批量导入公海客户',
+					"use":'import',
+					"url":'/api/import/import_customer',
+					"import":{
+						"template":'/static/home/file/勾股OA客户导入模板.xlsx',
+						"tips":'如果导入失败，请根据提示注意检查表格数据，客户来源、所属行业、需要是系统中存在的数据，如果不存在的话可能会导入失败。'
+					},
+					callback:function(res){
+						layui.pageTable.reload();
+					}
+				});	
+				return;				
+			}
+		});
+		
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if(obj.event === 'view'){
+				tool.side('/customer/customer/view?id='+data.id);
+			}
+			if(obj.event === 'edit'){
+				tool.side('/customer/customer/add?sea=1&id='+data.id);
+			}
+			if (obj.event === 'distribute') {
+				oaPicker.employeeInit({
+					callback:function(selected){
+						//这里是选择后的回调方法，可以根据具体需求自定义写哦
+						let select_id=[],select_name=[],select_did=[];
+						for(var a=0; a<selected.length;a++){
+							select_id.push(selected[a].id);
+							select_name.push(selected[a].name);
+							select_did.push(selected[a].did);
+						}
+						layer.confirm('确定要把该客户分配给'+select_name.join(',')+'?', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							let callback1 = function (e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									layui.pageTable.reload();
+								}
+							}
+							tool.post("/customer/api/distribute", {id: data.id,uid:select_id.join(','),did:select_did.join(',')}, callback1);
+							layer.close(index);
+						});
+					}
+				});
+			}
+			if (obj.event === 'get') {
+				layer.confirm('确定要领取该客户?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/customer/index/to_get", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要把客户转入废弃池吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/customer/index/to_trash", {id: data.id,type:1}, callback);
+					layer.close(index);
+				});
+			}
+			return;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

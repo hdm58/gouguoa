@@ -1,0 +1,110 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page" style="height:100%; box-sizing: border-box;">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="输入关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="roomTable" lay-filter="roomTable"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" data-href="/adm/meeting/room_add">+ 会议室</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool,form = layui.form,laydatePlus = layui.laydatePlus;	
+		var diff_time = new laydatePlus({'target':'diff_time'});		
+		
+		layui.pageTable = table.render({
+			elem: '#roomTable'
+			,toolbar: '#toolbarDemo'
+			,title:'会议室列表'
+			,url: "/adm/meeting/room"
+			,is_excel: true
+			,page: true
+			,cellMinWidth: 60
+			,cols: [[
+					{field:'id',width:80, title: 'ID号', align:'center'}
+					,{field:'title',title: '会议室名称',width:150}
+					,{field:'num',title: '可容纳人数',width:100, align:'center'}
+					,{field:'keep_name',title: '管理员',width:80, align:'center'}
+					,{field:'address',title: '会议室地址',width:300, align:'center'}
+					,{field:'device',title: '会议室设备',minWidth:240,}
+					,{field:'status', title: '状态',width:60,align:'center',templet: function(d){
+						var html1='<span class="green">正常</span>';
+						var html2='<span class="yellow">禁用</span>';
+						if(d.status==1){
+							return html1;
+						}
+						else{
+							return html2;
+						}
+					}}
+					,{width:124,title: '操作', align:'center',templet: function(d){
+						var html='';
+						var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</a>';
+						var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+						var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+						var btn3='<a class="layui-btn layui-btn-xs layui-bg-purple" lay-event="open">启用</a>';
+						if(d.status==1){
+							html = '<div class="layui-btn-group">'+btn+btn1+btn2+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn+btn1+btn3+'</div>';
+						}
+						return html;
+					}}
+				]]
+		});
+		
+		table.on('tool(roomTable)',function (obj) {
+			var that = this;
+			if(obj.event === 'edit'){					
+				tool.side("/adm/meeting/room_add?id="+obj.data.id);
+			}
+			if(obj.event === 'view'){					
+				tool.side("/adm/meeting/room_view?id="+obj.data.id);
+			}
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该会议室吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/meeting/room_check", { id: obj.data.id,status: 0,title: obj.data.title}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该会议室吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/meeting/room_check", { id: obj.data.id,status: 1,title: obj.data.title}, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+	</script>
+{/block}
+<!-- /脚本 -->

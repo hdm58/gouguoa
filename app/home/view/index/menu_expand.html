@@ -1,0 +1,70 @@
+<div class="layui-side layui-side-expand layui-side-{$admin.theme}">
+	<div class="layui-logo" gg-event="closeAllTabs">
+		<img src="{$web.logo|default=''}" onerror="javascript:this.src='{__IMG__}/syslogo.png';this.onerror=null;" style="height: 38px;" class="syslogo">
+		<img src="{$web.small_logo|default=''}" onerror="javascript:this.src='{__IMG__}/syslogo_small.png';this.onerror=null;" style="height: 38px;" class="logo">
+	</div>
+	<ul id="menuList">
+		<li class="layui-nav-item menu-li">
+			<a href="javascript:;" class="side-menu-item layui-this" data-href="/home/index/main.html" data-id="0" style="padding-top:0; padding-bottom:0;"><i class="iconfont icon-xueshuguanli"></i> 工 作 台</a>
+		</li>
+		{foreach name="menu" item="a"}
+			{empty name="$a.list"}
+			<li class="menu-li">
+				<a href="javascript:;" lay-tips="{$a.title}" lay-direction="2" data-id="{$a.id}" data-title="{$a.title}" data-href="/{$a.src}"><i class="iconfont {$a.icon}"></i> <cite>{$a.title}</cite></a>
+			</li>
+			{else/}
+			<li class="layui-nav-item menu-li">
+				<a href="javascript:">
+					<i class="iconfont {$a.icon}"></i> <cite>{$a.title}</cite>
+				</a>
+				<dl class="gg-second-menu">
+					<dt><strong>{$a.title}</strong></dt>
+					{foreach name="$a.list" item="b"}
+						{empty name="$b.list"}
+							<dd><a href="javascript:;" class="side-menu-item" data-id="{$b.id}" data-title="{$b.title}" data-href="/{$b.src}">{$b.title}</a></dd>
+						{else/}
+							<dd>
+								<dl class="gg-three-menu">
+									<dt><strong>{$b.title}</strong><i class="layui-icon layui-icon-up"></i><i class="layui-icon layui-icon-down"></i></dt>
+									{foreach name="$b.list" id="c"}
+										<dd><a href="javascript:;" class="side-menu-item" data-id="{$c.id}" data-title="{$c.title}" data-href="/{$c.src}">{$c.title}</a></dd>
+									{/foreach}
+								</dl>
+							</dd>
+						{/empty}	
+					{/foreach}
+				</dl>
+			</li>
+			{/empty}						
+		{/foreach}
+	</ul>
+</div>
+<script>
+function menuInit() {
+    let $menuListNode = $('#menuList'); // 侧边菜单节点
+	let $AppBodyNode    = $('#GouguAppBody');// 主体页面节点	
+		
+    //主菜单
+    $menuListNode.on('click', '.menu-li',  function () {
+        if (!$(this).children('a').hasClass('layui-this')) {
+            $(this).siblings().find('a').removeClass('layui-this');
+            $(this).children('a').addClass('layui-this');
+            // 子菜单
+            $(this).siblings().find('.gg-second-menu').removeClass('current');
+            if ($(this).children('.gg-second-menu').length) {
+                let subNode = $(this).children('.gg-second-menu').find('a');
+                $(this).children('.gg-second-menu').addClass('current');
+				subNode.eq(0).children('i').length ? subNode.eq(1).click() : subNode.eq(0).click();
+                $AppBodyNode.addClass('sub-menu');
+            } else {
+                $AppBodyNode.removeClass('sub-menu');
+            }
+        }
+    });
+
+    //子菜单
+    $menuListNode.on('click', '.gg-three-menu dt', function () {
+		$(this).parent().toggleClass('show-up');
+    });
+}
+</script>

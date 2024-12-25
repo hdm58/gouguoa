@@ -1,0 +1,168 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" id="barsearchform">
+		<div class="layui-input-inline" style="width:100px;">
+			<input type="text" class="layui-input picker-admin" placeholder="选择报销人员" readonly name="uname" value="">
+			<input type="hidden" name="uid" value="0">
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择入账月份区间" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="pay_status">
+				<option value="">打款状态</option>
+				<option value="0">未打款</option>
+				<option value="1">已打款</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-container">
+    <h3 class="h3-title" style="height:32px;">报销记录</h3>
+</div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = {$authExpense};
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,table = layui.tablePlus,tool=layui.tool, laydatePlus = layui.laydatePlus;
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '报销记录列表',
+			toolbar: '#toolbarDemo',
+			url: "/finance/expense/record", //数据接口	
+			cellMinWidth: 80,			
+			page: true, //开启分页
+			limit: 20,
+			height: 'full-112',
+			totalRow: true,
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80,
+						totalRowText: '<div style="text-align:right">合计</div>'
+					}, {
+						field: 'cost',
+						title: '报销总金额(元)',
+						align: 'right',
+						width: 120,
+						totalRow: function (d) {return d.TOTAL_ROW.cost}
+					},{
+						field: 'pay_status',
+						title: '打款状态',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='<span class="red">『未打款』</span>';
+							if(d.pay_status==1){
+								html='<span class="yellow">『已打款』</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'admin_name',
+						title: '报销人员',
+						align: 'center',
+						width: 90
+					},{
+						field: 'department',
+						title: '报销部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'code',
+						title: '报销凭证编号',
+						minWidth: 130,
+					},{
+						field: 'expense_time',
+						title: '原始单据日期',
+						align: 'center',
+						width: 110
+					},{
+						field: 'income_month',
+						title: '入账月份',
+						align: 'center',
+						width: 80
+					},{
+						field: 'create_time',
+						title: '录入时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'pay_name',
+						title: '打款人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'pay_time',
+						title: '打款确认时间',
+						align: 'center',
+						width: 150
+					}, {
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 136,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为已打款</span>';
+							html+=btn1;
+							if(d.pay_status==0 && auth==1){
+								html+=btn2;
+							}
+							html+='</div>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/finance/expense/view?id="+data.id);
+				return;
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定标记为已打款？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/finance/api/topay", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,83 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">编辑车辆维修记录</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">车辆名称</td>
+			<td>{$detail.car}</td>
+			<td class="layui-td-gray">维修地点<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="address" autocomplete="off" value="{$detail.address}" lay-verify="required" lay-reqText="请完善维修地点" placeholder="请完善维修地点" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">维修日期</td>
+			<td><input type="text" name="repair_time" readonly value="{$detail.repair_time|date='Y-m-d'}" autocomplete="off" readonly placeholder="请选择维修日期" class="layui-input tool-time" data-max="0"></td>
+			<td class="layui-td-gray">维修费用<font>*</font></td>
+			<td><input type="text" name="amount" value="{$detail.amount}" autocomplete="off" placeholder="请输入维修费用" lay-verify="required|number" lay-reqText="请输入维修费用" class="layui-input"></td>
+			<td class="layui-td-gray">经手人</td>
+			<td>
+				<input type="text" name="handled_name" value="{$detail.handled_name}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择经手人" class="layui-input picker-admin">
+				<input type="hidden" name="handled" value="{$detail.handled}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">相关附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.fileArray"}
+					{volist name="$detail.fileArray" id="vo"}
+					<div class="layui-col-md4" id="fileItem{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr> 
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">维修原因</td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入维修原因" class="layui-textarea">{$detail.content|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-2">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','uploadPlus','oaPicker'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,uploadPlus = layui.uploadPlus;
+	//相关附件上传
+	var attachment = new uploadPlus();
+	
+	//监听提交
+	form.on('submit(webform)', function(data){
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000,'repairTable');				
+			}
+		}
+		tool.post("/adm/car/repair_add", data.field, callback);
+		return false;
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,110 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<table class="layui-hide" id="task" lay-filter="task"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-sm" lay-event="add">+ 新增定时任务</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#task',
+			title: '定时任务列表',
+			toolbar: '#toolbarDemo',
+			defaultToolbar: false,
+			url: "/home/task/index",
+			cellMinWidth: 80,
+			page: false, //开启分页				
+			limit: 20,
+			cols: [
+				[{
+					field: 'id',
+					width: 80,
+					title: 'ID编号',
+					align: 'center'
+				}, {
+					field: 'types',
+					width: 90,
+					title: '类型',
+					align: 'center',
+					templet: function (d) {
+						var html = '<span class="green">自定义任务</span>';
+						if(d.types==1){
+							html = '<span class="red">系统任务</span>';
+						}
+						else if(d.types==2){
+							html = '<span class="blue">普通任务</span>';
+						}
+						return html;
+					}
+				},  {
+					field: 'title',
+					width: 200,
+					title: '任务名称'
+				}, {
+					field: 'link',
+					width: 300,
+					title: '任务链接'
+				},{
+					field: 'desc',
+					title: '任务描述'
+				},{
+					width: 100,
+					title: '操作',
+					align: 'center',
+					templet: function (d) {
+						var html = '<div class="layui-btn-group"><button class="layui-btn layui-btn-xs" lay-event="add">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>';
+						return html;
+					}
+				}]
+			]
+		});
+
+		//表头工具栏事件
+		table.on('toolbar(task)', function (obj) {
+			if (obj.event === 'add') {
+				tool.side("/home/task/add");
+				return;
+			}
+		});
+
+		//监听行工具事件
+		table.on('tool(task)', function (obj) {
+			var data = obj.data;
+			if (obj.event === 'add') {
+				tool.side('/home/task/add?id=' + data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+							layer.close(index);
+						}
+					}
+					tool.delete("/home/task/delete", { id: obj.data.id }, callback);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

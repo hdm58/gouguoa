@@ -1,0 +1,37 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-header"><h3>员工动态</h3><a data-title="员工动态" data-href="/home/index/log_list" class="pull-right tab-a">更多</a></div>
+			<div class="layui-card-body">
+				<ul class="layui-timeline" id="logs"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//动态
+function layoutAction() {
+	$.ajax({
+		url: "/home/index/log_list",
+		type: 'get',
+		data: {
+			page: 1,
+			limit: 20
+		},
+		success: function (e) {
+			if (e.code == 0) {
+				var html = '';
+				$.each(e.data, function (key, value) {
+					html += '<li class="layui-timeline-item">\
+									<i class="layui-icon layui-timeline-axis"></i>\
+									<div class="layui-timeline-content layui-text">\
+									  <div class="layui-timeline-title"><span title="'+ value.id + '">' + value.times + '</span>，' + value.content + '</div>\
+									</div>\
+								  </li>';
+				});
+				$('#logs').html(html);
+			}
+		}
+	})
+}
+</script>

@@ -1,0 +1,82 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">模块配置及数据权限配置</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td colspan="8" class="red" style="line-height:1.8">
+				<p><strong>合同模块使用说明：</strong></p>
+				<p>{$detail.desc}</p>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">权限名称</td>
+			<td>
+				<input type="hidden" name="id" value="{$detail.id}" />
+				{$detail.title}
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td>{$detail.name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">客户管理员</td>
+			<td>
+				<input type="text" name="conf_1_str" value="{$detail.conf_1_str|default=''}" readonly placeholder="请选择权限人员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="conf_1" value="{$detail.conf_1}">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_1</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">每天可获取公客数</td>
+			<td><input name="conf_2" value="{$detail.conf_2}" lay-verify="required|number" lay-reqText="请输入每天获取最大公客数" placeholder="输入每天每人可获取最大公客数" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_2</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">说明</td>
+			<td colspan="3" class="red">如：10，当日超过该数量，该员工就不能在抢客宝里面抢客或者从公海里领取客户，等到第二天自动恢复。</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">员工客户数量限制</td>
+			<td><input name="conf_3" value="{$detail.conf_3}" lay-verify="required|number" lay-reqText="请输入员工客户数量限制" placeholder="请输入员工客户数量限制" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_3</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">说明</td>
+			<td colspan="3" class="red">如：100，超过该数量，该员工就不能录入或者不能从公海领取客户，必须把自已的客户移到公海里，不超过该数量才能新增。</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if(e.code==0){
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/home/dataauth/edit", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

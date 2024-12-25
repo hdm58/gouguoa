@@ -1,0 +1,143 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">续签员工合同</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">合同类别</td>
+			<td>{$detail.cate_str}</td>
+			<td class="layui-td-gray">合同类型</td>
+			<td>续签合同</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">续签协议</td>
+			<td colspan="3">{$detail.title}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.user_name|default=''}</td>
+			<td class="layui-td-gray">签约主体公司</td>
+			<td>{$detail.enterprise|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">合同名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请完善合同名称" lay-reqText="请完善合同名称" class="layui-input" value="">
+			</td>
+			<td class="layui-td-gray">合同编码<font>*</font></td>
+			<td>
+				<input type="text" name="code" lay-verify="required" autocomplete="off" placeholder="请完善合同编码" lay-reqText="请完善合同编码" class="layui-input" value="">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">签订日期<font>*</font></td>
+			<td>
+				<input type="text" name="sign_time" readonly lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择签约日期" class="layui-input tool-time" value="">
+			</td>
+			<td class="layui-td-gray">合同属性<font>*</font></td>
+			<td>
+				<select name="properties" lay-verify="required" lay-reqText="请选择合同属性">
+					<option value="">请选择</option>
+					{volist name="$properties" id="vo"}
+					{gt name="$key" value="0"}
+					<option value="{$key}">{$vo}</option>
+					{/gt}
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		</tr>
+		<tr>			
+			<td class="layui-td-gray-2">合同生效时间<font>*</font></td>
+			<td>
+				<input type="text" name="start_time" readonly lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择生效时间" class="layui-input tool-time" value="">
+			</td>
+			<td class="layui-td-gray-2">合同失效时间<font>*</font></td>
+			<td>
+				<input type="text" name="end_time" readonly lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择失效时间" class="layui-input tool-time" value="">
+			</td>
+		</tr>
+		{eq name="$detail.cate" value="1"}
+		<tr>
+			<td class="layui-td-gray-2">员工试用月数<font>*</font></td>
+			<td>
+				<input type="text" name="trial_months" lay-verify="required|number" autocomplete="off" placeholder="请选择" lay-reqText="请完善试用月数，仅为数字" class="layui-input" value="">
+			</td>
+			<td class="layui-td-gray-2">试用结束时间<font>*</font></td>
+			<td>
+				<input type="text" name="trial_end_time" readonly lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择试用结束时间" class="layui-input tool-time" value="">
+			</td>
+		</tr>
+		<tr>	
+			<td class="layui-td-gray-2">试用工资(元)<font>*</font></td>
+			<td>
+				<input type="text" name="trial_salary" lay-verify="required|number" autocomplete="off" placeholder="请选择" lay-reqText="请完善试用工资，仅为数字" class="layui-input" value="">
+			</td>
+			<td class="layui-td-gray-2">转正工资(元)<font>*</font></td>
+			<td>
+				<input type="text" name="worker_salary" lay-verify="required|number" autocomplete="off" placeholder="请选择" lay-reqText="请完善转正工资，仅为数字" class="layui-input" value="">
+			</td>
+		</tr>
+		{/eq}
+		{in name="$detail.cate" value="2,3"}
+		<tr>	
+			<td class="layui-td-gray-2">工资费用(元)<font>*</font></td>
+			<td>
+				<input type="text" name="worker_salary" lay-verify="required|number" autocomplete="off" placeholder="请选择" lay-reqText="请完善转正工资，仅为数字" class="layui-input" value="">
+			</td>
+		</tr>
+		{/in}
+		<tr>
+			<td class="layui-td-gray">备注说明</td>
+			<td colspan="3">
+				<textarea name="remark" placeholder="请输入备注说明，可空" class="layui-textarea"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray"><strong>相关附件</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="upload" id="uploadBtn">+ 上传附件</button></td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="0"/>
+		<input type="hidden" name="renewal_pid" value="{$detail.id}"/>
+		<input type="hidden" name="cate" value="{$detail.cate}"/>
+		<input type="hidden" name="types" value="2">
+		<input type="hidden" name="uid" value="{$detail.uid|default=0}">
+		<input type="hidden" name="enterprise_id" value="{$detail.enterprise_id|default=0}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','uploadPlus'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,uploadPlus=layui.uploadPlus;
+		//相关附件上传
+		var attachment = new uploadPlus();
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/user/laborcontract/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

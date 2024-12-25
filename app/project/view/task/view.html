@@ -1,0 +1,265 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-tab-title .layui-this{background-color:#fff;}
+.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+.layui-card-tips {color: #969696;}
+.layui-card-value {padding: 4px 0 16px;font-size: 18px;color: #1E9FFF;}
+
+.content-content{line-height:1.6;}
+.content-content p{margin-bottom:6px;}
+.content-content img{max-width:100%; padding:8px; box-sizing: border-box;}
+
+.log-item i{font-weight:800; color:#323232}
+.log-content strong{margin:0 4px; color:#323232}
+.layui-unselect dl {max-height:188px;}
+.layui-table td.table-content img{max-width:100%; height:auto;}
+</style>
+{/block}
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">任务详情</h3>
+	<table class="layui-table layui-table-form" id="task">
+		<tr>
+			<td class="layui-td-gray">任务主题</td>
+			<td colspan="3" class="click-edit" data-types="text" data-field="title">{$detail.title|default=''}</td>
+			<td class="layui-td-gray">工作类型</td>
+			<td class="click-edit" data-types="picker" data-field="work_id" data-type="1" data-picker="workcate">{$detail.cate_name|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">负责人员</td>
+			<td class="click-edit" data-types="adminpicker" data-field="director_uid" data-type="1" data-ids="{$detail.director_uid}" data-names="{$detail.director_name|default=''}">{$detail.director_name|default=''}</td>
+			<td class="layui-td-gray">协作人</td>
+			<td colspan="3" class="click-edit" data-types="adminpicker" data-field="assist_admin_ids" data-type="2" data-ids="{$detail.assist_admin_ids}" data-names="{$detail.assist_admin_names|default=''}">{$detail.assist_admin_names|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">优先级</td>
+			<td class="click-edit" data-types="dropdown" data-field="priority" data-array="priority" data-text="{$detail.priority}">{$detail.priority_name}</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="3" class="click-edit" data-types="picker" data-field="project_id" data-type="1" data-picker="project">{$detail.project_name|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">完成进度</td>
+			<td class="click-edit" data-types="num" data-field="done_ratio" data-text="{$detail.done_ratio}" data-min="0" data-max="100">{$detail.done_ratio|default='0'}%</td>
+			<td class="layui-td-gray">估计结束日期</td>
+			<td class="click-edit" data-types="oadate" data-field="end_time">{$detail.end_time|date='Y-m-d'}</span>{gt name="$detail.delay" value="0"}<span class="red">『逾期 {$detail.delay}天』</span>{/gt}</td>
+			<td class="layui-td-gray-3">估计工作量(工时)</td>
+			<td class="click-edit" data-types="num" data-field="plan_hours">{$detail.plan_hours|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">任务状态</td>
+			<td class="click-edit" data-types="dropdown" data-field="status" data-array="status" data-text="{$detail.status}">{$detail.status_name}</td>
+			<td class="layui-td-gray-2">实际完成日期</td>
+			<td>{eq name="$detail.over_time" value="0"}-{else/}{$detail.over_time|date='Y-m-d'}{/eq}</td>
+			<td class="layui-td-gray">实际工时</td>
+			<td>{eq name="$detail.work_hours" value="0"}-{else/}{$detail.work_hours}{/eq}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">相关附件 <button type="button" class="layui-btn layui-btn-xs" id="uploadBtn">附件上传</button></td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$file_array"}
+					{volist name="$file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6" class="click-edit" data-types="editor" data-field="content" data-target="content" style="background-color:#FAFAFA;"><strong>任务描述</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6" id="content" class="table-content">{$detail.content|raw}</td>
+		</tr>
+	</table>
+	
+
+	<div class="layui-tab layui-tab-card" style="margin:0;" lay-filter="docDemoTabBrief">
+		<ul class="layui-tab-title">
+			<li class="layui-this">工作记录({$detail.comments})</li>
+			<li>员工评论({$detail.comments})</li>
+			<li>操作日志({$detail.logs})</li>
+		</ul>
+		<div class="layui-tab-content py-1 px-3" style="background-color:#fff;">
+			<div class="layui-tab-item layui-show py-2">
+				<table class="layui-hide" id="table_work" lay-filter="table_work"></table>
+			</div>
+			<div class="layui-tab-item comment-list">
+				<div class="comment-input my-2">
+					<input type="text" id="commentInput" readonly placeholder="发表一下你的看法" class="layui-input" value="">
+				</div>
+				<div id="commentBox"></div>
+			</div>
+			<div class="layui-tab-item logs-list">
+				<div id="logList" class="log-timeline p-3"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div>
+  	<div class="layui-input-inline" style="margin-right:12px;"><strong>工作日志</strong></div><div class="layui-input-inline"><button class="layui-btn layui-btn-xs" type="button" lay-event="add">+ 添加工作日志</button></div>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const admin_id = '{$detail.admin_id}';
+	const detail_id = '{$detail.id}';
+	const status_array = {:json_encode(get_task_status(1),JSON_UNESCAPED_UNICODE)};
+	const priority_array = {:json_encode(get_priority(1),JSON_UNESCAPED_UNICODE)};
+	const moduleInit = ['tool','oaPicker','oaEdit','oaSchedule','oaComment','uploadPlus'];
+	function gouguInit() {
+		const oaEdit = layui.oaEdit,work = layui.oaSchedule,comment = layui.oaComment, uploadPlus = layui.uploadPlus, tool = layui.tool, table = layui.table;
+		
+		oaEdit.log('logList','Task',detail_id);
+		
+		comment.init({
+			"box":'commentBox',//容器id
+			"input": 'commentInput',
+			"topic_id":detail_id,
+			"module": 'task',
+		});
+	
+		let edit_callback = function(e){
+			layer.msg(e.msg);
+			if(e.code==0){
+				setTimeout(function(){
+					location.reload();
+				},1000)
+			}			
+		}
+		//附件上传
+		var attachment = new uploadPlus({
+			"target":'uploadBtn',
+			"targetBox":'uploadBox',
+			"attachment":{
+				"type":1,//0ajax多文件模式，1ajax单文件单记录模式
+				"uidDelete":true,//是否开启只有上传人自己才能删除自己的附件
+				"ajaxSave":function(res){
+					tool.post('/project/api/add_file',{'topic_id':detail_id,'file_id':res.data.id,'file_name': res.data.name, 'module': 'task'},edit_callback);
+				},
+				"ajaxDelete":function(file_id){
+					tool.delete('/project/api/delete_file', {id: file_id}, edit_callback);	
+				}
+			}
+		});
+	
+		//快捷编辑
+		oaEdit.init({
+			box:'task',
+			id:detail_id,
+			url: "/project/task/add",
+			dropdown:{
+				status:status_array,
+				priority:priority_array
+			}
+		});
+		
+		//工作记录相关
+		layui.scheduleTable = table.render({
+			elem: "#table_work"
+			, toolbar: "#toolbarDemo"
+			,url: "/oa/api/get_schedule"
+			,page: true
+			,limit: 20
+			,where:{task_id:detail_id}
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '工作内容',minWidth:240}
+				,{field: 'name', title: '所属人员', align:'center',width:80}
+				,{field: 'start_time', title: '工作时间范围', align:'center',width:260,templet:function(d){
+					var html=d.start_time+' 至 '+d.end_time;
+					return html;
+				}}
+				,{field: 'labor_type_string', title: '工作类型', align:'center',width:80}
+				,{field: 'labor_time', title: '工时', align:'center',width:80}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					if(d.admin_id !== login_admin){
+						return btn1;
+					}
+					else{
+						var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+						var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+						return html;
+					}
+				}}
+			]]
+		});
+		
+		table.on('toolbar(table_work)',function (obj) {
+			if (obj.event === 'add') {
+				work.add(detail_id,{'id':0});
+			}
+		});	 
+		table.on('tool(table_work)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				work.view(data);
+				return;
+			}
+			if (obj.event === 'edit') {
+				work.add(data.task_id,data);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/project/task/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+		
+		//工作记录相关
+		$('.add-schedule').on('click', function () {
+			work.add(detail_id,{'id':0});	
+		})
+		
+		//任务日志
+		comment.log(detail_id,'task');
+
+		//评论
+		comment.load(detail_id,'task');
+		$('#commentInput').on('click', function () {
+			comment.textarea(0,detail_id,'task','',0,0,'');
+		})
+		//回复
+		$('#comment_task_' + detail_id).on('click', '[data-event="replay"]', function () {
+			let pid = $(this).data('id');
+			let to_uid = $(this).data('uid');
+			let to_unames = $(this).data('unames');
+			comment.textarea(0,detail_id,'task','',pid,to_uid,to_unames);
+		})
+		//编辑
+		$('#comment_task_' + detail_id).on('click', '[data-event="edit"]', function () {
+			let id = $(this).data('id');
+			let content = $('#comment_' + id).data('content');
+			comment.textarea(id, detail_id, 'task', content,0,0,'');
+		})
+
+		//删除
+		$('#comment_task_' + detail_id).on('click', '[data-event="del"]', function () {
+			let id = $(this).data('id');
+			comment.del(id, detail_id, 'task');
+		})
+	}
+</script>
+{/block}

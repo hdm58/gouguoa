@@ -1,0 +1,112 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">消息详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">消息主题</td>
+			<td colspan="3">{$detail.title|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">收件人</td>
+			<td>
+				{eq name="$detail.types" value="1"}
+				<span class="layui-color-1">『同事』</span>{$detail.unames|default=''}
+				{/eq}
+				{eq name="$detail.types" value="2"}
+				<span class="layui-color-2">『部门』</span>{$detail.dnames|default=''}
+				{/eq}
+				{eq name="$detail.types" value="3"}
+				<span class="layui-color-3">『岗位』</span>{$detail.pnames|default=''}
+				{/eq}
+			</td>
+			{eq name="$detail.send_time" value="0"}
+			<td class="layui-td-gray">发送状态</td>
+			<td class="red">草稿，未发送</td>
+			{else/}
+			<td class="layui-td-gray">发送时间</td>
+			<td>{$detail.send_time|date='Y-m-d H:i:s'}</td>
+			{/eq}
+		</tr>
+		{notempty name="$detail.copy_names"}
+		<tr>
+			<td class="layui-td-gray">抄送人</td>
+			<td colspan="3">{$detail.copy_names|default=''}</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">消息内容</td>
+			<td colspan="3">{$detail.content|default=''}{gt name="$detail.template" value="0"}{:get_message_link($detail.template,$detail.action_id)}{/gt}
+				{if condition="($detail.msg_id > 0)"}		
+				<table class="layui-table" style="margin-top:10px">
+				<tr>
+					<td class="layui-td-gray-2">引用消息内容</td>
+					<td>{$detail.from_content}{gt name="$detail.from_template" value="0"}{:get_message_link($detail.from_template,$detail.from_action_id)}{/gt}</td>
+				</tr>
+				{notempty name="$detail.from_file_array"}
+				<tr>
+					<td class="layui-td-gray" style="vertical-align:top">引用消息附件</td>
+					<td style="line-height:inherit">
+						<div class="layui-row">
+							{volist name="$detail.from_file_array" id="vo"}
+							<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+							{/volist}
+						</div>
+					</td>
+				</tr>
+				{/notempty}
+				</table>
+				{/if}
+			</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">消息附件</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.read_user_names"}
+		<tr>
+			<td class="layui-td-gray">已读回执</td>
+			<td colspan="3">{$detail.read_user_names}</td>
+		</tr>
+		{/notempty}
+	</table>
+	{eq name="$detail.send_time" value="0"}
+	<div class="pt-4">
+		<input type="hidden" value="{$detail.id}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即发送</button>
+	</div>
+	{/eq}
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool,form = layui.form;
+		//监听发送
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/home/message/send_message", data.field, callback);
+			return false;
+		});
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

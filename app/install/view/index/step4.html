@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>勾股OA安装</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="{__GOUGU__}/layui/css/layui.css" media="all">
+	<style>
+		body {
+			width: 100%;
+			height: 100%;
+			background: url("{__IMG__}/bg.jpg");
+			background-size: cover;
+			background: url("{__IMG__}/bg_pattern.png"), #7b4397;
+			background: url("{__IMG__}/bg_pattern.png"), -webkit-linear-gradient(to left, #34a853, #4285f4);
+			background: url("{__IMG__}/bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
+		}
+		.layui-form-item{margin-bottom:10px;}
+		h3{padding-bottom:10px; font-weight:600;}
+	</style>
+</head>
+
+<body>
+	<div style="width:200px;margin: 20px auto;"><img src="{__IMG__}/syslogo.png" alt="勾股OA安装" width="300"></div>
+	<div style="width:888px;margin:0 auto 30px;">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header layui-bg-red" style="border-radius:6px 6px 0 0;position:relative;">
+				<div class="layui-logo" style="color: #fff; width:100px;">安装引导</div>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">v{:CMS_VERSION}</li>
+				</ul>
+			</div>
+			<div style="padding:15px 20px; background-color:#fff;line-height: 27px; border-radius:0 0 6px 6px">
+				<div style="padding: 20px 0; text-align: center;" id="complete">
+					<h1>恭喜，已安装完成!</h1><br><br>
+					<div style="color:red; font-size:16px;">你已经安装好勾股OA系统！如需重新安装，请删除“config/install.lock”文件</div>
+					<br>
+					<div style="color:red; font-size:16px;">注意：如果出现页面无法访问，请注意把ThinkPHP的伪静态配置好。<a href="https://blog.gougucms.com/home/book/detail/bid/2/id/6.html" target="_blank" class="layui-btn layui-btn-xs layui-bg-blue">更多问题</a></div>
+					<br><br><br>
+					<a href="/" target="_blank" class="layui-btn layui-bg-green">开始体验</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="{__GOUGU__}/layui/layui.js" charset="utf-8"></script>
+	<script>
+		var url = "{$domain|default='http://www.gougucms.com'}";
+		layui.use(['element', 'jquery', 'layer', 'form'], function () {
+			var $ = layui.jquery;
+			$.ajax({  
+				url:url+"/index.php?s=home/get_module/install_ajax",
+				dataType:'jsonp',  
+				data:{'name':'勾股OA'},  
+				jsonp:'callback',  
+				success:function(result) {  
+					console.log(result);
+				},  
+				timeout:3000  
+			});
+		});
+	</script>
+</body>
+</html>

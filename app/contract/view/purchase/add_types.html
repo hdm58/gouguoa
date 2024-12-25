@@ -1,0 +1,31 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">新增合同</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">选择合同性质</td>
+			<td>
+				<div class="layui-btn-group">
+				  <a href="/contract/purchase/add?types=1" class="layui-btn">普通采购</a>
+				  <a href="/contract/purchase/add?types=2" class="layui-btn">物品采购</a>
+				  <a href="/contract/purchase/add?types=3" class="layui-btn">服务采购</a>
+				</div>
+			</td>
+		</tr>
+    </table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		
+	}
+</script>
+{/block}
+<!-- /脚本 -->

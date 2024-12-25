@@ -1,41 +1,53 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="body-table">
-	<table cellspacing="0" cellpadding="0" border="0" class="layui-table">
-		<tr style="background-color: #f5f5f5; text-align: center;">
+<div class="p-page">
+	<div class="gg-form-bar border-t border-x">
+		<h3 class="pb-3">数据还原</h3>
+	</div>
+	<table cellspacing="0" cellpadding="0" border="0" class="layui-table layui-table-form">
+		<tr style="background-color:#FAFAFA">
 			<th style=" text-align: center; font-weight: 800;"><span>文件名称</span></th>
-			<th style=" text-align: center; font-weight: 800;"><span>分卷</span></th>
-			<th style=" text-align: center; font-weight: 800;"><span>文件大小</span></th>
 			<th style=" text-align: center; font-weight: 800;"><span>文件格式</span></th>
 			<th style=" text-align: center; font-weight: 800;"><span>分隔符</span></th>
+			<th style=" text-align: center; font-weight: 800;"><span>文件总大小</span></th>
+			<th style=" text-align: center; font-weight: 800;"><span>分卷总数</span></th>
 			<th style=" text-align: center; font-weight: 800; width:222px"><span>操作</span></th>
-		</tr>			
+		</tr>
 		{empty name="list"}
 		<tr>
-			<td colspan="6" align="center">暂无备份数据</td>
+			<td colspan="6" align="center" style="padding:20px 0; color:#999">暂无备份数据</td>
 		</tr>
 		{/empty}
-			{volist name="list" id="vo" key="k"}
-			<tr style="background-color: #fafafa;">
-				<td colspan="6"><strong>备份时间：{$vo.time}</strong></td>
-			</tr>
-			{volist name="vo.data" id="voo"}
-			<tr>
-				<td>
-					{:date("Ymd",$voo.time)}{$voo.compress}{:date("His",$voo.time)}{$voo.compress}{$voo.part}.sql
-				</td>				
-				<td align="center"><span>{$voo.part}</span></td>
-				<td align="center"><span>{:format_bytes($voo.size)}</span></td>
-				<td align="center"><span>.sql</span></td>
-				<td align="center"><span>{$voo.compress}</span></td>
-				<td align="center" data-id='{$voo.time}'>
+		{volist name="list" id="vo" key="k"}
+		<tr style="background-color: #fafafa;">
+			<td><strong>备份时间：{$vo.time}</strong>{if $vo.timespan == $lock_time}<span style="color:red; margin-left:20px;">该备份不是完整备份，请删除重新备份</span>{/if}</td>
+			<td align="center"><span>.sql</span></td>
+			<td align="center"><span>{$vo.data.compress}</span></td>
+			<td align="center"><span>{:format_bytes($vo.data.size)}</span></td>
+			<td align="center"><span>{$vo.data.part}</span></td>
+			<td align="center">
+				<div class="layui-btn-group" data-time='{$vo.timespan}'>
+					{if $vo.timespan == $lock_time}
+					<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="reset">清除不完整的备份</a>
+					{else/}
 					<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="import">数据还原</a>
-					<a class="layui-btn layui-btn-xs" href='/database/downfile?name={:date("Ymd",$voo.time)}{$voo.compress}{:date("His",$voo.time)}{$voo.compress}{$voo.part}.sql'>备份下载</a><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">备份删除</a>
-				</td>
-			</tr>
-			{/volist}
-			{/volist}
+					<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除备份</a>
+					{/if}
+				</div>
+			</td>
+		</tr>
+		{for start="0" end="$vo.data.part" step="1"}
+		<tr>
+			<td colspan="5">
+				{:date("Ymd",$vo.timespan)}{$vo.data.compress}{:date("His",$vo.timespan)}{$vo.data.compress}{$i+1}.sql
+			</td>
+			<td align="center">
+				<a class="layui-btn layui-btn-xs" href='/home/database/downfile?time={$vo.data.time}&part={$i+1}'>下载备份(分卷{$i+1})</a>
+			</td>
+		</tr>
+		{/for}
+		{/volist}
 	</table>
 </div>
 
@@ -45,47 +57,96 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var table = layui.table,
-			form = layui.form;
-		//监听行工具事件
-		$('[lay-event="import"]').on('click',function(){
-			var id=$(this).parent().data('id');
-			layer.confirm('确认要还原该备份吗?', {
-					icon: 3,
-					title: '提示'
-				}, function (index) {
+	function gouguInit() {
+		function importData(data) {
+			if (data.code == 0) {
+				console.log(data.msg);
+				layer.closeAll();
+				layer.msg(data.msg, { time: 200000 });
+				if ($.isPlainObject(data.data)) {
 					$.ajax({
-						url: "/home/database/import?id="+id,
+						url: "/home/database/import",
+						type: 'get',
+						data: { "part": data.data.part, "start": data.data.start, time: data.data.time },
 						success: function (res) {
-							layer.msg(res.msg);
+							importData(res);
 						}
 					})
-					layer.close(index);
-				});
+				} else {
+					layer.msg(data.msg);
+					window.onbeforeunload = function () { return null; }
+				}
+			} else {
+				layer.msg(data.msg);
+			}
+		}
+		//监听行工具事件
+		$('[lay-event="import"]').on('click', function () {
+			var time = $(this).parent().data('time');
+			layer.confirm('确认要还原该备份吗?', {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				layer.msg("数据还原中...", { time: 200000 });
+				$.ajax({
+					url: "/home/database/import?time=" + time,
+					type: 'post',
+					success: function (res) {
+						importData(res);
+					}
+				})
+				window.onbeforeunload = function () { return "正在还原数据库，请不要关闭！" }
+				layer.close(index);
+			});
+			return false;
 		})
 
-		$('[lay-event="del"]').on('click',function(){
-			var id=$(this).parent().data('id');
+		$('[lay-event="del"]').on('click', function () {
+			var time = $(this).parent().data('time');
 			layer.confirm('确认要删除该备份吗?', {
-					icon: 3,
-					title: '提示'
-				}, function (index) {
-					$.ajax({
-						url: "/home/database/del",
-						data: {'id':id},
-						success: function (res) {
-							layer.msg(res.msg);
-							if (res.code == 0) {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				$.ajax({
+					url: "/home/database/del",
+					data: { 'time': time },
+					success: function (res) {
+						layer.msg(res.msg);
+						if (res.code == 0) {
+							setTimeout(function () {
 								location.reload();
-							}
+							}, 2000)
 						}
-					})
-					layer.close(index);
-				});
+					}
+				})
+				layer.close(index);
+			});
+			return false;
+		})
+
+		$('[lay-event="reset"]').on('click', function () {
+			var time = $(this).parent().data('time');
+			layer.confirm('确认要清除该备份吗?', {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				$.ajax({
+					url: "/home/database/del",
+					data: { 'time': time, 'lock': 1 },
+					success: function (res) {
+						layer.msg(res.msg);
+						if (res.code == 0) {
+							setTimeout(function () {
+								location.reload();
+							}, 2000)
+						}
+					}
+				})
+				layer.close(index);
+			});
+			return false;
 		})
 	}
 </script>
-{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

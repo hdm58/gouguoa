@@ -1,0 +1,97 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div id="chartYear" style="width: 100%;height:240px;"></div>
+		</div>
+	</div>
+</div>
+<script>
+var myChart;
+function layoutChartYear() {
+    myChart = echarts.init(document.getElementById('chartYear'));
+	$.ajax({
+		url: "/home/api/get_view_data",
+		type: 'get',
+		data: {},
+		success: function (e) {
+			if (e.code == 0) {			
+				let data= e.data.data_three;
+				let archiveCalendar = {};
+				data.forEach(item => {
+					// 将时间戳转换为日期对象
+					const timestamp = parseInt(item.create_time, 10);
+					const date = new Date(timestamp * 1000); // 转换为 JavaScript Date 对象
+					const dateString = date.toISOString().substring(0, 10); // 获取 YYYY-MM-DD 格式的日期
+
+					if (archiveCalendar[dateString]) {
+						archiveCalendar[dateString] += 1; // 如果日期已经存在，则增加计数
+					} else {
+						archiveCalendar[dateString] = 1; // 否则，初始化计数为1
+					}
+				});
+				let option = {
+					title: {
+						top: '12px',
+						text: '近一年员工活跃度',
+						left: '8px',
+						textStyle: {
+							fontSize: '18',
+							color: '#333',
+						}
+					},
+					tooltip: {
+						padding: 6,
+						formatter: function (obj) {
+							var value = obj.value;
+							return '<div style="font-size: 12px;">' + value[0] + '员工活跃度：' + value[1] + '</div>';
+						}
+					},
+					visualMap: {
+						min: 0,
+						max: 300,
+						show: false,
+						inRange: {
+							color: ['#fafafa', '#1AAD19']
+						}
+					},
+					calendar: {
+						top: 75,
+						left: 52,
+						right: 20,
+						range: getRange(),
+						cellSize: ['auto', 21],
+						splitLine: {
+							lineStyle: {
+								color: '#aaa',
+								type: 'dashed'
+							}
+						},
+						itemStyle: {
+							borderWidth: 0.5
+						},
+						yearLabel: { show: false },
+						monthLabel: {
+							nameMap: 'cn',
+							fontSize: 12
+						},
+						dayLabel: {
+							show: true,
+							formatter: '{start}  1st',
+							fontWeight: 'lighter',
+							nameMap: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+							fontSize: 12
+						}
+					},
+					series: [{
+						type: 'heatmap',
+						coordinateSystem: 'calendar',
+						calendarIndex: 0,
+						data: getDay(archiveCalendar)
+					}]
+				};
+				myChart.setOption(option);
+			}
+		}
+	})
+}
+</script>

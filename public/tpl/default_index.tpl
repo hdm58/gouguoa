@@ -5,6 +5,38 @@ class Index{$suffix}
 {
     public function index()
     {
-        return '<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} a{color:#2E5CD5;cursor: pointer;text-decoration: none} a:hover{text-decoration:underline; } body{ background: #fff; font-family: "Century Gothic","Microsoft yahei"; color: #333;font-size:18px;} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.6em; font-size: 42px }</style><div style="padding: 24px 48px;"> <h1>:)</h1><p> ThinkPHP V5<br/><span style="font-size:30px">十年磨一剑 - 为API开发设计的高性能框架</span></p><span style="font-size:22px;">[ V5.0 版本由 <a href="http://www.qiniu.com" target="qiniu">七牛云</a> 独家赞助发布 ]</span></div><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script><script type="text/javascript" src="http://ad.topthink.com/Public/static/client.js"></script><thinkad id="ad_bd568ce7058a1091"></thinkad>';
+        return '<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="renderer" content="webkit" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<title>系统提示</title>	
+	<style type="text/css">
+		html,body {width: 100%;height: 100%;background: #f7f7f7;margin: 0;padding: 0;border: 0;}
+		div,p {margin: 0;padding: 0;border: 0;}
+		.container {width: 100%;height: 100%;position: fixed;top: 0;left: 0;z-index: 999;overflow: hidden;}
+		.info {width: 480px;height: 360px;position: absolute;top: 50%;left: 50%;margin-top: -200px;margin-left: -240px;text-align:center;}
+		.info-status{width: 500px; display:none;justify-content: space-between;align-items: center;flex-wrap: nowrap;}
+		.info-status div{width:120px; height:180px; line-height:180px; font-size:160px; font-weight:200; color:#F35F37}
+		.info-status div.face{font-size:60px; border:9px solid #F35F37; width:120px; height:120px; line-height:118px; background-color:#fff; border-radius:50%;}
+		.info-tips{font-size:20px;color:#F35F37; padding-top:32px; font-weight:600;}
+		.footer {position: absolute;font-size: 12px;bottom: 28px;text-align: center;width: 100%;color: #969696;}
+		.info-status.code-500{display: -webkit-flex;display: flex;flex-direction: row;}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="info">
+			<div class="info-status code-500" title="出错啦"><div>5</div><div class="face">😔</div><div class="face">😔</div></div>
+			<div class="info-tips">哎呀！出错啦，请开启debug模式调试，<a href="https://blog.gougucms.com/home/book/detail/bid/3/id/77.html" target="_blank">开启debug</a></div>
+		</div>
+		<div class="footer">
+			Copyright © 2022-2024 勾股OA ，Powered by GouguOPEN
+		</div>
+	</div>
+</body>
+</html>';
     }
 }

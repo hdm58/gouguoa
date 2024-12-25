@@ -1,0 +1,154 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:128px">
+			<select name="check_status">
+				<option value="">选择用章状态</option>
+				{volist name="status" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:128px">
+			<select name="seal_cate_id">
+				<option value="">选择印章类型</option>
+				{volist name=":get_base_data('seal_cate')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_seal" lay-filter="table_seal"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div>
+  	<h3>用章记录</h3>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_seal"
+			, toolbar: "#toolbarDemo"
+			,url: "/adm/seal/record"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 60
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'check_status',title: '用章状态',width:90, align:'center',templet: function(d){
+					let status_str = '未使用';
+					if(d.status == 1){
+						status_str = '已使用';
+						if(d.is_borrow==1){
+							status_str = '已外借';
+						}
+					}
+					if(d.status == 2){
+						status_str = '已归还';
+					}
+					return html = '<span class="check-status-color-'+d.status+'">『'+status_str+'』</span>';
+				}}
+				,{field:'title',title: '用章申请主题',minWidth:240}
+				,{field:'seal_cate',title: '用章类型',width:100, align:'center'}
+				,{field:'is_borrow',title: '是否外借',width:80, align:'center',templet: function(d){
+					if(d.is_borrow==1){
+						return '<div class="red">是</div>';
+					}
+					else{
+						return '<div class="green">否</div>';
+					}
+				}}
+				,{field:'is_borrow',title: '用印部门',width:100, align:'center'}
+				,{field:'num',title: '盖章次数',width:80, align:'center'}
+				,{field:'admin_name',title: '申请人',width:90, align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:168,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="use">使用登记</a>';
+					var btn3='<a class="layui-btn layui-btn-xs" lay-event="use">出借登记</a>';
+					var btn4='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="back">归还登记</a>';
+					
+					if(d.status == 0){
+						if(d.is_borrow==1){
+							html = '<div class="layui-btn-group">'+btn1+btn3+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn1+btn2+'</div>';
+						}
+					}
+					
+					if(d.status == 1){
+						if(d.is_borrow==1){
+							html = '<div class="layui-btn-group">'+btn1+btn4+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn1+'</div>';
+						}
+					}
+					if(d.status == 2){
+							html = '<div class="layui-btn-group">'+btn1+'</div>';
+					}					
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_seal)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/seal/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'use') {
+				layer.confirm('确定要修改用章状态吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/api/set_seal_status", { id: obj.data.id,status: 1 }, callback);
+					layer.close(index);	
+				});
+				return;
+			}
+			if (obj.event === 'back') {
+				layer.confirm('确定要修改用章状态吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/api/set_seal_status", { id: obj.data.id,status: 2 }, callback);
+					layer.close(index);	
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

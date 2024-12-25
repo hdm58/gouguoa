@@ -1,0 +1,88 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style type="text/css">
+	.layui-card-body .layui-timeline-title {
+		padding-bottom: 0;
+		font-size: 14px;
+	}
+
+	.layui-card-body .layui-timeline-item {
+		padding-bottom: 5px;
+		color:#323232;
+	}
+
+	.layui-timeline-title span {
+		color: #999
+	}
+
+	.panel-more {
+		width: 100%;
+		height: 48px;
+		line-height: 48px;
+		text-align: center;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+	}
+
+	.panel-more a {
+		color: #0088FF
+	}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="layui-card">
+		<div class="layui-card-header"><h3>员工动态</h3></div>
+		<div class="layui-card-body">
+			<ul class="layui-timeline" id="logs"></ul>
+			<div class="panel-more"><a href="javascript:;">查看更多员工动态</a></div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var page=1,limit=20;
+	function getLogs() {
+		$.ajax({
+			url: "/home/index/log_list",
+			type: 'post',
+			data: {
+				page:page,
+				limit: limit
+			},
+			success: function(e) {
+				if (e.code == 0) {
+					var html = '';
+					if(e.data.length>0){
+						page++;
+						$.each(e.data, function(key, value) {
+							html += '<li class="layui-timeline-item">\
+										<i class="layui-icon layui-timeline-axis"></i>\
+										<div class="layui-timeline-content layui-text">\
+										  <div class="layui-timeline-title"><span title="'+value.id+'">'+value.times+'</span>，'+value.content+'</div>\
+										</div>\
+									  </li>';
+						});
+						$('#logs').append(html);
+					}else{
+						$('.panel-more').remove();
+					}
+				}
+			}
+		})
+	}
+	function gouguInit() {
+		getLogs();
+		$('.panel-more').on('click',function(){
+			getLogs();
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

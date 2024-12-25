@@ -7,7 +7,7 @@
 	<meta name="renderer" content="webkit">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="{__LAYUI__}/css/layui.css" media="all">
+	<link rel="stylesheet" href="{__GOUGU__}/layui/css/layui.css" media="all">
 	<style>
 		body {
 			width: 100%;
@@ -16,16 +16,13 @@
 			background-size: cover;
 			background: url("{__IMG__}/bg_pattern.png"), #7b4397;
 			background: url("{__IMG__}/bg_pattern.png"), -webkit-linear-gradient(to left, #34a853, #4285f4);
-			/* Chrome 10-25, Safari 5.1-6 */
 			background: url("{__IMG__}/bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
-			/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 		}
 	</style>
 </head>
 
 <body>
-	<div style="width:200px;margin: 20px auto;"><img src="{__IMG__}/login_logo.png" alt="勾股OA安装"
-			width="200"></div>
+	<div style="width:200px;margin: 20px auto;"><img src="{__IMG__}/syslogo.png" alt="勾股OA安装" width="300"></div>
 	<div style="width:888px;margin:0 auto 30px;">
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header layui-bg-red" style="border-radius:6px 6px 0 0;position:relative;">
@@ -63,13 +60,13 @@
 						</tr>
 						<tr>
 							<td>php版本</td>
-							<td>≥ 7.0</td>
+							<td>≥ 8.0</td>
 							<td>
 								<?php echo PHP_VERSION ?>
 							</td>
 							<?php $php_version=explode('.', PHP_VERSION); ?>
-							<td class="<?php if(($php_version['0']>=7))echo 'yes'; ?>">
-								<?php if (($php_version['0']>=7)): ?>
+							<td class="<?php if(($php_version['0']>=8))echo 'yes'; ?>">
+								<?php if (($php_version['0']>=8)): ?>
 								<i class="layui-icon layui-icon-ok"></i>
 								<?php else: ?>
 								<i class="layui-icon layui-icon-close"></i>
@@ -193,7 +190,7 @@
 		</div>
 	</div>
 
-	<script src="{__LAYUI__}/layui.js" charset="utf-8"></script>
+	<script src="{__GOUGU__}/layui/layui.js" charset="utf-8"></script>
 	<script>
 		layui.use(['jquery', 'layer'], function () {
 			var $ = layui.jquery,

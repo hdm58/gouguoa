@@ -1,21 +1,22 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">功能菜单/节点</h3>
+<form class="layui-form p-4">
+	<h3 class="pb-3">功能菜单/节点</h3>
 	{if condition="$id eq 0"}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray2">父级菜单/节点<font>*</font></td>
+			<td class="layui-td-gray-2">父级菜单/节点<font>*</font>
+			</td>
 			<td>
-				<select name="pid" lay-verify="required" lay-reqText="请选择父级菜单/节点">
-					<option value="0">作为顶级菜单/节点</option>
+				<select name="pid" lay-verify="required" lay-filter="pid" lay-reqText="请选择父级菜单/节点">
+					<option value="0" title="0">作为顶级菜单/节点</option>
 					{volist name=":set_recursion(admin_rule())" id="v"}
-					<option value="{$v.id}" {eq name="pid" value="$v.id" }selected="" {/eq}>{$v.title} </option>
+					<option value="{$v.id}" title="{$v.level|default='1'}" {eq name="pid" value="$v.id" }selected="" {/eq}>{$v.title} ({$v.level|default='1'}级)</option>
 					{/volist}
 				</select>
 			</td>
-			<td class="layui-td-gray2">所属功能模块<font>*</font></td>
+			<td class="layui-td-gray-2">所属功能模块<font>*</font></td>
 			<td>
 				<select name="module" lay-verify="required" lay-reqText="请选择所属功能模块">
 					<option value="">请选择</option>
@@ -26,51 +27,69 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">菜单/节点名称<font>*</font></td>
-			<td>
-				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入菜单/节点名称" lay-reqText="请输入菜单/节点名称" class="layui-input">
+			<td class="layui-td-gray">菜单/节点名称<font>*</font>
 			</td>
-			<td class="layui-td-gray2">菜单/节点URL</td>
 			<td>
-				<input type="text" name="src" placeholder="请输入菜单/节点URL，可空" autocomplete="off" class="layui-input">
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入菜单/节点名称"
+					lay-reqText="请输入菜单/节点名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray">操作日志名称<font>*</font>
+			</td>
+			<td>
+				<input type="text" name="name" lay-verify="required" placeholder="请输入操作日志名称" lay-reqText="请输入操作日志名称"
+					autocomplete="off" class="layui-input">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">操作日志名称<font>*</font></td>
+			<td class="layui-td-gray">菜单/节点URL</td>
 			<td>
-				<input type="text" name="name" lay-verify="required" placeholder="请输入操作日志名称" lay-reqText="请输入操作日志名称" autocomplete="off" class="layui-input">
+				<input type="text" name="src" placeholder="请输入菜单/节点URL，可空" autocomplete="off" class="layui-input">
 			</td>
-			<td class="layui-td-gray2">是否是左侧菜单<font>*</font></td>
+			<td class="layui-td-gray">菜单排序</td>
+			<td>
+				<input type="text" name="sort" value="0" placeholder="请输入数字，越小越靠前" autocomplete="off"
+					class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">左侧菜单显示<font>*</font></td>
 			<td>
 				<input type="radio" name="menu" value="1" title="是">
 				<input type="radio" name="menu" value="2" title="不是">
 			</td>
+			<td class="layui-td-gray">菜单图标</td>
+			<td colspan="3">
+				<input type="text" name="icon" style="width:150px; display:inline" placeholder="请输入图标，可空"
+					autocomplete="off" class="layui-input">
+				如：icon-jichupeizhi<a href="{__GOUGU__}/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">排序</td>
-			<td>
-				<input type="text" name="sort" value="0" placeholder="请输入数字，越小越靠前" autocomplete="off" class="layui-input">
-			</td>
-			<td class="layui-td-gray3">图标</td>
-			<td>
-				<input type="text" name="icon" style="width:150px; display:inline" placeholder="请输入图标，可空" autocomplete="off" class="layui-input">	
-				如：icon-jichuguanli<a href="{__LAYUI__}/font/extend/demo_index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			<td colspan="4" class="red" style="line-height:1.8">
+				<strong>注意：</strong>
+				<p><strong>1、作为菜单显示类型时最多展示三级菜单，所以父级菜单/节点选项最大只能选择到2级，非菜单显示类型无限制；一级菜单需要填写菜单图标。</strong></p>
+				<p><strong>2、节点URL的具体规则：“模块/控制器/方法”，模块只能是小写字母，控制器只能是小写字母，方法可以是小写字母，中间可以有"_"，示例如下：</strong></p>
+				<p class="green">『正确』user/rewardscate/datalist</p>
+				<p class="green">『正确』user/rewardscate/data_list</p>
+				<p class="red">『错误』user_a/rewardscate/datalist</p>
+				<p class="red">『错误』user/rewards_cate/datalist</p>
 			</td>
 		</tr>
 	</table>
 	{else/}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray2">父级菜单/节点<font>*</font></td>
+			<td class="layui-td-gray-2">父级菜单/节点<font>*</font>
+			</td>
 			<td>
-				<select name="pid" lay-verify="required" lay-reqText="请选择父级菜单/节点">
-					<option value="0">作为顶级节点</option>
+				<select name="pid" lay-verify="required"  lay-filter="pid" lay-reqText="请选择父级菜单/节点">
+					<option value="0" title="0">作为顶级节点</option>
 					{volist name=":set_recursion(admin_rule())" id="v"}
-					<option value="{$v.id}" {eq name="$detail.pid" value="$v.id" }selected="" {/eq}>{$v.title} </option>
+					<option value="{$v.id}" title="{$v.level|default='1'}" {eq name="$detail.pid" value="$v.id" }selected="" {/eq}>{$v.title}  ({$v.level|default='1'}级)</option>
 					{/volist}
 				</select>
 			</td>
-			<td class="layui-td-gray2">所属功能模块<font>*</font></td>
+			<td class="layui-td-gray-2">所属功能模块<font>*</font></td>
 			<td>
 				<select name="module" lay-verify="required" lay-reqText="请选择所属功能模块">
 					<option value="">请选择</option>
@@ -81,40 +100,57 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">菜单/节点名称<font>*</font></td>
-			<td>
-				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入菜单/节点名称" lay-reqText="请输入菜单/节点名称" class="layui-input">
+			<td class="layui-td-gray">菜单/节点名称<font>*</font>
 			</td>
-			<td class="layui-td-gray2">菜单/节点URL</td>
 			<td>
-				<input type="text" name="src" value="{$detail.src}" placeholder="请输入菜单/节点URL，可空" autocomplete="off" class="layui-input">
+				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off"
+					placeholder="请输入菜单/节点名称" lay-reqText="请输入菜单/节点名称" class="layui-input">
 			</td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray2">操作日志名称<font>*</font></td>
-			<td>
-				<input type="text" name="name" value="{$detail.name}" lay-verify="required" placeholder="请输入操作日志名称" lay-reqText="请输入操作日志名称" autocomplete="off" class="layui-input">
+			<td class="layui-td-gray">操作日志名称<font>*</font>
 			</td>
-			<td class="layui-td-gray2">是否左侧菜单<font>*</font></td>
 			<td>
-				<input type="radio" name="menu" value="1" title="是" {eq name="$detail.menu" value="1"} checked{/eq}>
-				<input type="radio" name="menu" value="2" title="不是" {eq name="$detail.menu" value="2"} checked{/eq}>
+				<input type="text" name="name" value="{$detail.name}" lay-verify="required" placeholder="请输入操作日志名称"
+					lay-reqText="请输入操作日志名称" autocomplete="off" class="layui-input">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">排序</td>
+			<td class="layui-td-gray">菜单/节点URL</td>
 			<td>
-				<input type="text" name="sort" value="{$detail.sort}" placeholder="请输入数字，越小越靠前" autocomplete="off" class="layui-input">
+				<input type="text" name="src" value="{$detail.src}" placeholder="请输入菜单/节点URL，可空" autocomplete="off"
+					class="layui-input">
 			</td>
-			<td class="layui-td-gray2">图标</td>
+			<td class="layui-td-gray">菜单排序</td>
 			<td>
-				<input style="width:150px; display:inline" type="text" name="icon" value="{$detail.icon}" placeholder="请输入图标，可空" autocomplete="off" class="layui-input">			
-				如：icon-jichuguanli<a href="{__LAYUI__}/font/extend/demo_index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+				<input type="text" name="sort" value="{$detail.sort}" placeholder="请输入数字，越小越靠前" autocomplete="off"
+					class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">左侧菜单显示<font>*</font></td>
+			<td>
+				<input type="radio" name="menu" value="1" title="是" {eq name="$detail.menu" value="1" } checked{/eq}>
+				<input type="radio" name="menu" value="2" title="不是" {eq name="$detail.menu" value="2" } checked{/eq}>
+			</td>
+			<td class="layui-td-gray">菜单图标</td>
+			<td colspan="3">
+				<input style="width:150px; display:inline" type="text" name="icon" value="{$detail.icon}" placeholder="请输入图标，可空" autocomplete="off" class="layui-input">
+				<strong class="iconfont {$detail.icon}"></strong><a href="{__GOUGU__}/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" class="red" style="line-height:1.8">
+				<strong>注意：</strong>
+				<p><strong>1、作为菜单显示类型时最多展示三级菜单，所以父级菜单/节点选项最大只能选择到2级，非菜单显示类型无限制；一级菜单需要填写菜单图标。</strong></p>
+				<p><strong>2、节点URL的具体格式及规则：“模块/控制器/方法”，模块只能是小写字母，控制器只能是小写字母，方法可以是小写字母，中间可以有"_"，示例如下：</strong></p>
+				<p class="green">『正确』user/rewardscate/datalist</p>
+				<p class="green">『正确』user/rewardscate/data_list</p>
+				<p class="red">『错误』user_a/rewardscate/datalist</p>
+				<p class="red">『错误』user/rewards_cate/datalist</p>
 			</td>
 		</tr>
 	</table>
 	{/if}
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -126,34 +162,43 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var form = layui.form,
-			layer = layui.layer;
-
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,level=0;
+		level = $('[name="pid"]').find('[selected=""]').attr('title');
+		if(level === undefined){
+			level=0;
+		}
+		console.log(level);
 		//监听提交
 		form.on('submit(webform)', function (data) {
-			if(data.field.src!='' && data.field.module!=''){
-				if(data.field.src.indexOf(data.field.module.toLowerCase()+'/')!=0){
-					layer.msg('输入的菜单/节点URL与所属功能模块不匹配');
-					return false;
+			form.on('select(pid)', function(data){
+				level = data.elem[data.elem.selectedIndex].title;
+			})
+			if (!data.field.menu || data.field.menu == '') {
+				layer.msg('请选择是否在左侧菜单显示');
+				return false;
+			}
+			if (data.field.pid==0 && data.field.menu == 1 && data.field.icon == '') {
+				layer.msg('请完善菜单图标');
+				return false;
+			}
+			if (data.field.menu == 1 && level > 2) {
+				layer.msg('左侧显示菜单最多只能添加三级');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					setTimeout(function(){
+						parent.parent.location.reload();
+					},1000);									
 				}
 			}
-			$.ajax({
-				url: "/home/rule/add",
-				type: 'post',
-				data: data.field,
-				success: function (e) {
-					layer.msg(e.msg);
-					if (e.code == 0) {
-						//parent.rightpage.close();
-						parent.location.reload();
-					}
-				}
-			})
+			tool.post("/home/rule/add", data.field, callback);
 			return false;
 		});
 	}
 </script>
-{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

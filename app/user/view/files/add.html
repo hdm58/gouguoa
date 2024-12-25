@@ -1,0 +1,530 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tr-none td{padding:20px 0; color:#999;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">编辑员工档案</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td colspan="8"><strong>基本信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.name}</td>
+			<td class="layui-td-gray-2">员工性别</td>
+			<td>
+				{eq name="$detail.sex" value="1"}男{/eq}
+				{eq name="$detail.sex" value="2"}女{/eq}
+			</td>
+			<td rowspan="7" class="layui-td-gray-2">头像</td>
+			<td rowspan="7" valign="top" style="width: 180px;">
+				<div class="layui-upload" style="width: 180px;">
+					<div class="layui-upload-list" id="uploadThumb" style="width: 100%; height:180px; overflow: hidden;">
+						<img src="{$detail.thumb}" height="180" style="max-width: 100%;" />
+						<input type="hidden" name="thumb" value="{$detail.thumb}">
+					</div>
+					<button type="button" class="layui-btn layui-btn-normal" style="width: 100%;" id="uploadImg">更换头像</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">出生日期</td>
+			<td><input type="text" name="birthday" value="{$detail.birthday}" readonly autocomplete="off" placeholder="请选择" class="layui-input tool-time"></td>
+			<td class="layui-td-gray">身份证号码</td>
+			<td><input type="text" name="idcard" value="{$detail.idcard}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">政治面貌</td>
+			<td>
+				<select name="political">
+					<option value="0" {eq name="$detail.political" value="0"} selected{/eq}>无</option>
+					<option value="1" {eq name="$detail.political" value="1"} selected{/eq}>中共党员</option>
+					<option value="2" {eq name="$detail.political" value="2"} selected{/eq}>团员</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">婚姻状况</td>
+			<td>
+				<input type="radio" name="marital_status" value="1" title="未婚" {eq name="$detail.marital_status" value="1"} checked{/eq}>
+				<input type="radio" name="marital_status" value="2" title="已婚" {eq name="$detail.marital_status" value="2"} checked{/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">民族</td>
+			<td><input type="text" name="nation" value="{$detail.nation}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">籍贯</td>
+			<td><input type="text" name="native_place" value="{$detail.native_place}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">户口性质</td>
+			<td>
+				<input type="radio" name="resident_type" value="1" title="农村户口" {eq name="$detail.resident_type" value="1"} checked{/eq}>
+				<input type="radio" name="resident_type" value="2" title="城镇户口" {eq name="$detail.resident_type" value="2"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray">户口所在地</td>
+			<td><input type="text" name="resident_place" value="{$detail.resident_place}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">毕业院校</td>
+			<td><input type="text" name="graduate_school" value="{$detail.graduate_school}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">毕业日期</td>
+			<td><input type="text" name="graduate_day" value="{$detail.graduate_day}" readonly autocomplete="off" placeholder="请选择" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">最高学位</td>
+			<td><input type="text" name="education" value="{$detail.education}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">专业</td>
+			<td><input type="text" name="speciality" value="{$detail.speciality}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">家庭住址</td>
+			<td><input type="text" name="home_address" value="{$detail.home_address}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">手机号码</td>
+			<td>{$detail.mobile}</td>
+			<td class="layui-td-gray">电子邮箱</td>
+			<td>{$detail.email}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">现住地址</td>
+			<td><input type="text" name="current_address" value="{$detail.current_address}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">紧急联系人</td>
+			<td><input type="text" name="contact" value="{$detail.contact}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">紧急联系电话</td>
+			<td><input type="text" name="contact_mobile" value="{$detail.contact_mobile}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+
+		<tr>
+			<td class="layui-td-gray">员工简介</td>
+			<td colspan="7">
+				<textarea name="desc" placeholder="请输入员工简介" class="layui-textarea">{$detail.desc|default=''}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>入职信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所在部门</td>
+			<td>{$detail.department}</td>
+			<td class="layui-td-gray">上级主管</td>
+			<td>{$detail.pname|default='无'}</td>
+			<td class="layui-td-gray">岗位</td>
+			<td>{$detail.position}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">入职日期</td>
+			<td>{$detail.entry_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray">职务</td>
+			<td>
+				<select name="position_name" lay-verify="required" lay-reqText="请选择职务">
+					<option value="0">请选择</option>
+					{volist name=":get_base_type_data('basic_user',1)" id="v"}
+					<option value="{$v.id}" {eq name="$detail.position_name" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">职级</td>
+			<td>
+				<select name="position_rank" lay-verify="required" lay-reqText="请选择职级">
+					<option value="0">请选择</option>
+					{volist name=":get_base_type_data('basic_user',2)" id="v"}
+					<option value="{$v.id}" {eq name="$detail.position_rank" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工类型</td>
+			<td>
+				{eq name="$detail.type" value="3"}实习{/eq}
+				{eq name="$detail.type" value="2"}试用{/eq}
+				{eq name="$detail.type" value="1"}正式{/eq}
+			</td>
+			<td class="layui-td-gray">工资卡开户行</td>
+			<td><input type="text" name="bank_info" value="{$detail.bank_info}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">工资卡帐号</td>
+			<td><input type="text" name="bank_account" value="{$detail.bank_account}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">公积金号</td>
+			<td><input type="text" name="provident_account" value="{$detail.provident_account}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">社保卡号</td>
+			<td><input type="text" name="social_account" value="{$detail.social_account}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">参加工作时间</td>
+			<td><input type="text" name="work_date" value="{$detail.work_date}" readonly autocomplete="off" placeholder="请输入" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>教育经历</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="edu">+ 教育经历</button></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="edu_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="150">开始时间</th>
+						<th width="150">结束时间</th>
+						<th width="200">就读院校</th>
+						<th width="150">学习专业</th>
+						<th width="100">所获学历</th>
+						<th>备注说明</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$edu"}
+					<tr class="tr-none">
+						<td colspan="7">暂无数据</td>
+					</tr>
+					{else/}
+					{volist name="$edu" id="v"}
+						<tr class="edu_interfix">
+							<td><input type="text" name="edu_start_time[]" value="{$v.start_time}" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善开始时间"></td>
+							<td><input type="text" name="edu_end_time[]" value="{$v.end_time}" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善结束时间"></td>
+							<td><input type="text" name="edu_title[]" value="{$v.title}" class="layui-input" lay-verify="required" lay-reqText="请完善就读院校"></td>
+							<td><input type="text" name="edu_speciality[]" value="{$v.speciality}" class="layui-input" lay-verify="required" lay-reqText="请完善学习专业"></td>
+							<td><input type="text" name="edu_education[]" value="{$v.education}" class="layui-input" lay-verify="required" lay-reqText="请完善所获学历"></td>
+							<td><input type="text" name="edu_remark[]" class="layui-input" value="{$v.remark}"></td>
+							<td><input type="hidden" name="edu_id[]" class="layui-input" value="{$v.id}"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="{$v.id}" data-type="edu" lay-event="del">删除</a></td>
+						</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>工作经历</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="work">+ 工作经历</button></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="work_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="150">开始时间</th>
+						<th width="150">结束时间</th>
+						<th width="200">公司名称</th>
+						<th width="100">职位</th>
+						<th>备注说明</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$work"}
+					<tr class="tr-none">
+						<td colspan="6">暂无数据</td>
+					</tr>
+					{else/}
+					{volist name="$work" id="v"}
+						<tr class="work_interfix">
+							<td><input type="text" name="work_start_time[]" value="{$v.start_time}" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善开始时间"></td>
+							<td><input type="text" name="work_end_time[]" value="{$v.end_time}" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善结束时间"></td>
+							<td><input type="text" name="work_title[]" value="{$v.title}" class="layui-input" lay-verify="required" lay-reqText="请完善公司名称"></td>
+							<td><input type="text" name="work_position[]" value="{$v.position}" class="layui-input" lay-verify="required" lay-reqText="请完善职位"></td>
+							<td><input type="text" name="work_remark[]" class="layui-input" value="{$v.remark}"></td>
+							<td><input type="hidden" name="work_id[]" class="layui-input" value="{$v.id}"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="{$v.id}" data-type="work" lay-event="del">删除</a></td>
+						</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>相关证书</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="certificate">+ 相关证书</button></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="certificate_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="150">证书名称</th>
+						<th width="150">获得时间</th>
+						<th width="200">颁发机构</th>
+						<th>备注说明</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$certificate"}
+					<tr class="tr-none">
+						<td colspan="5">暂无数据</td>
+					</tr>
+					{else/}
+					{volist name="$certificate" id="v"}
+						<tr class="certificate_interfix">
+							<td><input type="text" name="certificate_title[]" value="{$v.title}" class="layui-input" lay-verify="required" lay-reqText="请完善证书名称"></td>
+							<td><input type="text" name="certificate_start_time[]" value="{$v.start_time}" class="layui-input tool-time" lay-verify="required" lay-reqText="请完善获得时间"></td>
+							<td><input type="text" name="certificate_authority[]" value="{$v.authority}" class="layui-input" lay-verify="required" lay-reqText="请完善颁发机构"></td>
+							<td><input type="text" name="certificate_remark[]" class="layui-input" value="{$v.remark}"></td>
+							<td><input type="hidden" name="certificate_id[]" class="layui-input" value="{$v.id}"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="{$v.id}" data-type="certificate" lay-event="del">删除</a></td>
+						</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>计算机技能</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="skills">+ 计算机技能</button></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="skills_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="200">技能名称</th>
+						<th width="150">熟悉程度</th>
+						<th>备注说明</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$skills"}
+					<tr class="tr-none">
+						<td colspan="4">暂无数据</td>
+					</tr>
+					{else/}
+					{volist name="$skills" id="v"}
+						<tr class="skills_interfix">
+							<td><input type="text" name="skills_title[]" value="{$v.title}" class="layui-input" lay-verify="required" lay-reqText="请完善技能名称"></td>
+							<td>
+								<select name="skills_know[]" lay-verify="required" lay-reqText="请选择熟悉程度">
+									<option value="">请选择</option>
+									<option value="1" {eq name="$v.know" value="1"} selected{/eq}>熟练</option>
+									<option value="2" {eq name="$v.know" value="2"} selected{/eq}>良好</option>
+									<option value="3" {eq name="$v.know" value="3"} selected{/eq}>一般</option>
+									<option value="4" {eq name="$v.know" value="4"} selected{/eq}>较差</option>
+								</select>
+							</td>
+							<td><input type="text" name="skills_remark[]" class="layui-input" value="{$v.remark}"></td>
+							<td><input type="hidden" name="skills_id[]" class="layui-input" value="{$v.id}"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="{$v.id}" data-type="skills" lay-event="del">删除</a></td>
+						</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>语言能力</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="language">+ 语言能力</button></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="language_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="200">语言名称</th>
+						<th width="150">熟悉程度</th>
+						<th>备注说明</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$language"}
+					<tr class="tr-none">
+						<td colspan="4">暂无数据</td>
+					</tr>
+					{else/}
+					{volist name="$language" id="v"}
+						<tr class="language_interfix">
+							<td><input type="text" name="language_title[]" value="{$v.title}" class="layui-input" lay-verify="required" lay-reqText="请完善技能名称"></td>
+							<td>
+								<select name="language_know[]" lay-verify="required" lay-reqText="请选择熟悉程度">
+									<option value="">请选择</option>
+									<option value="1" {eq name="$v.know" value="1"} selected{/eq}>熟练</option>
+									<option value="2" {eq name="$v.know" value="2"} selected{/eq}>良好</option>
+									<option value="3" {eq name="$v.know" value="3"} selected{/eq}>一般</option>
+									<option value="4" {eq name="$v.know" value="4"} selected{/eq}>较差</option>
+								</select>
+							</td>
+							<td><input type="text" name="language_remark[]" class="layui-input" value="{$v.remark}"></td>
+							<td><input type="hidden" name="language_id[]" class="layui-input" value="{$v.id}"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="{$v.id}" data-type="language" lay-event="del">删除</a></td>
+						</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>档案相关附件</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="upload" id="uploadBtn">+ 上传附件</button></td>
+		</tr>
+		<tr>
+			<td colspan="8" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	<div class="pt-4">
+		<input type="hidden" value="{$detail.id}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+
+<div style="display:none;">
+	<table>
+	<tbody id="edu_html">
+	<tr class="edu_interfix">
+		<td><input type="text" name="edu_start_time[]" value="" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善开始时间"></td>
+		<td><input type="text" name="edu_end_time[]" value="" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善结束时间"></td>
+		<td><input type="text" name="edu_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善就读院校"></td>
+		<td><input type="text" name="edu_speciality[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善学习专业"></td>
+		<td><input type="text" name="edu_education[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善所获学历"></td>
+		<td><input type="text" name="edu_remark[]" class="layui-input" value=""></td>
+		<td><input type="hidden" name="edu_id[]" class="layui-input" value="0"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" data-type="edu" lay-event="del">删除</a></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+
+<div style="display:none;">
+	<table>
+	<tbody id="work_html">
+	<tr class="work_interfix">
+		<td><input type="text" name="work_start_time[]" value="" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善开始时间"></td>
+		<td><input type="text" name="work_end_time[]" value="" class="layui-input tool-time" readonly lay-verify="required" lay-reqText="请完善结束时间"></td>
+		<td><input type="text" name="work_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善公司名称"></td>
+		<td><input type="text" name="work_position[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善职位"></td>
+		<td><input type="text" name="work_remark[]" class="layui-input" value=""></td>
+		<td><input type="hidden" name="work_id[]" class="layui-input" value="0"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" data-type="work" lay-event="del">删除</a></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+
+<div style="display:none;">
+	<table>
+	<tbody id="certificate_html">
+	<tr class="certificate_interfix">
+		<td><input type="text" name="certificate_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善证书名称"></td>
+		<td><input type="text" name="certificate_start_time[]" value="" class="layui-input tool-time" lay-verify="required" lay-reqText="请完善获得时间"></td>
+		<td><input type="text" name="certificate_authority[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善颁发机构"></td>
+		<td><input type="text" name="certificate_remark[]" class="layui-input" value=""></td>
+		<td><input type="hidden" name="certificate_id[]" class="layui-input" value="0"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" data-type="certificate" lay-event="del">删除</a></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+
+<div style="display:none;">
+	<table>
+	<tbody id="skills_html">
+	<tr class="skills_interfix">
+		<td><input type="text" name="skills_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善技能名称"></td>
+		<td>
+			<select name="skills_know[]" lay-verify="required" lay-reqText="请选择熟悉程度">
+				<option value="">请选择</option>
+				<option value="1">熟练</option>
+				<option value="2">良好</option>
+				<option value="3">一般</option>
+				<option value="4">较差</option>
+			</select>
+		</td>
+		<td><input type="text" name="skills_remark[]" class="layui-input" value=""></td>
+		<td><input type="hidden" name="skills_id[]" class="layui-input" value="0"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" data-type="skills" lay-event="del">删除</a></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+
+<div style="display:none;">
+	<table>
+	<tbody id="language_html">
+	<tr class="language_interfix">
+		<td><input type="text" name="language_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善语言名称"></td>
+		<td>
+			<select name="language_know[]" lay-verify="required" lay-reqText="请选择熟悉程度">
+				<option value="">请选择</option>
+				<option value="1">熟练</option>
+				<option value="2">良好</option>
+				<option value="3">一般</option>
+				<option value="4">较差</option>
+			</select>
+		</td>
+		<td><input type="text" name="language_remark[]" class="layui-input" value=""></td>
+		<td><input type="hidden" name="language_id[]" class="layui-input" value="0"><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" data-type="language" lay-event="del">删除</a></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus=layui.uploadPlus;
+		
+		//头像上传
+		var photoUpload = new uploadPlus({
+			'use':'single',
+			'target':'uploadImg',
+			'callback':function(res){
+				layer.msg(res.msg);
+				if (res.code == 0) {
+					//上传成功
+					$('#uploadThumb input').attr('value', res.data.filepath);
+					$('#uploadThumb img').attr('src', res.data.filepath);
+				}
+			}
+		});
+		
+		//相关附件上传
+		var attachment = new uploadPlus();
+		
+		//添加表格
+		$('.add-tr').on('click',function(){
+			let type = $(this).data('type');
+			let html = $('#'+type+'_html').html();
+			let timestamp = Date.now();
+			let $html = $(html);
+			let elem = $html.find('.diff_time').addClass('time_'+timestamp);
+			$('#'+type+'_table').append($html).find('.tr-none').remove();
+			form.render();
+		});
+
+		$('body').on('click', '[lay-event="del"]', function() {
+			var that=$(this);
+			let type = $(this).data('type');
+			var _id = that.data('id');
+			if(_id>0){
+				layer.confirm('确定删除该数据？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/user/api/del_profiles",
+						type:'post',
+						data: {id: _id},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								that.parents("."+type+"_interfix").remove();
+								if($('#'+type+'_table').find('tr').length<2){
+									$('#'+type+'_table').append('<tr class="tr-none"><td colspan="7">暂无数据</td></tr>');
+									return false;
+								}
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			else{
+				that.parents("."+type+"_interfix").remove();
+				if($('#'+type+'_table').find('tr').length<2){
+					$('#'+type+'_table').append('<tr class="tr-none"><td colspan="7">暂无数据</td></tr>');
+					return false;
+				}
+			}
+		});
+
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/user/files/add", data.field, callback);
+			return false;
+		});
+	}
+
+</script>
+{/block}
+<!-- /脚本 -->

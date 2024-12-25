@@ -1,0 +1,102 @@
+<div class="p-3">
+	<button class="layui-btn layui-btn-sm add-contact">+ 新增联系人</button>
+</div>
+<div>
+	<table class="layui-hide" id="contact" lay-filter="contact"></table>
+</div>
+<script>
+function contact(){
+	if($('#customerTab').find('li').eq(2).data('load') =='true'){
+		return false;
+	}
+	$('#customerTab').find('li').eq(2).data('load','true');
+	let tool = layui.tool, table = layui.table;
+	//项目任务
+	layui.contactTable = table.render({
+		elem: '#contact',
+		title: '联系人列表',
+		cellMinWidth:80,
+		url: "/customer/api/get_contact",
+		where:{'cid':customer_id},
+		page: true, //开启分页
+		limit: 20,
+		cols: [[
+			{field:'id',width:80, title: 'ID号', align:'center'}
+			,{field:'name',width:100,title: '联系人姓名', align:'center'}
+			,{field:'status', title: '性别',width:80,align:'center',templet: function(d){
+				var html='未知';
+				var html1='<span class="green">男</span>';
+				var html2='<span class="blue">女</span>';
+				if(d.sex==1){
+					return html1;
+				}
+				if(d.sex==2){
+					return html2;
+				}
+				else{
+					return html;
+				}
+			}}
+			,{field:'mobile',width:100,title: '手机号码', align:'center'}
+			,{field:'email',title: '电子邮箱'}
+			,{field:'wechat',width:100,title: '微信号码', align:'center'}
+			,{field:'qq',width:100,title: 'QQ号码', align:'center'}
+			,{field:'position',width:120,title: '担任职位', align:'center'}
+			,{field:'is_default',width:90,title: '首要联系人', align:'center',templet: function(d){
+				if(d.is_default==1){
+					return '<span class="green layui-icon layui-icon-success"></span>';
+				}
+				else{
+					return '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="set" title="设为首要联系人">设置</a>';
+				}				
+			}}
+			,{fixed:'right',width:120,title: '操作', align:'center',templet: function(d){
+				var html = '<div class="layui-btn-group">';
+				var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+				var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</a>';
+				var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+				return html+btn+btn1+btn2+'</div>';			
+			}}
+		]]
+	});
+	$('body').on('click','.add-contact',function(){
+		tool.side('/customer/contact/add?cid='+customer_id);
+	});
+	
+	table.on('tool(contact)', function(obj){
+		var data = obj.data; //获得当前行数据
+		var layEvent = obj.event;		 
+		if(layEvent === 'edit'){ //编辑
+			tool.side('/customer/contact/add/id/'+data.id);
+		}
+		if(layEvent === 'view'){ //编辑
+			tool.side('/customer/contact/view/id/'+data.id);
+		}
+		if(layEvent === 'set'){ //查看
+			layer.confirm('确定要设置该联系人为首要联系人吗?', {icon: 3, title:'提示'}, function(index){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layui.contactTable.reload();
+					}
+				}
+				tool.delete("/customer/api/set_contact",{"id":data.id},callback);
+				layer.close(index);
+			});
+		}
+		if(layEvent === 'del'){ //删除
+			layer.confirm('确定要删除该联系人吗?', {icon: 3, title:'提示'}, function(index){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layui.contactTable.reload();
+					}
+				}
+				tool.delete("/customer/contact/del",{"id":data.id},callback);
+				layer.close(index);
+			});
+		}
+		return false;
+	})
+}
+</script>

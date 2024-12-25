@@ -1,22 +1,16 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="body-table">
-	<form class="layui-form layui-form-bar">
-		<div class="layui-input-inline" style="width:300px;">
-			<input type="text" name="keywords" placeholder="名称/备注" class="layui-input" autocomplete="off" />
-		</div>
-		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
-	</form>
-	<table class="layui-hide" id="test" lay-filter="test"></table>
+<div class="p-page">
+	<table class="layui-hide" id="role" lay-filter="role"></table>
 </div>
 
 <script type="text/html" id="status">
-  <i class="layui-icon {{#  if(d.status == 1){ }}layui-icon-ok{{#  } else { }}layui-icon-close{{#  } }}"></i>
+  <i class="layui-icon {{#  if(d.status == 1){ }}green layui-icon-ok{{#  } else { }}red layui-icon-close{{#  } }}"></i>
 </script>
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
-    <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加权限组</button>
+    <button class="layui-btn layui-btn-sm" lay-event="add">+ 添加权限组</button>
   </div>
 </script>
 {/block}
@@ -25,17 +19,15 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	var tableIns = null;
-	function init(layui) {
-		var table = layui.table,
-			rightpage = layui.rightpage,
-			form = layui.form;
-
-		tableIns = table.render({
-			elem: '#test',
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#role',
 			toolbar: '#toolbarDemo',
+			defaultToolbar: false,
 			url: "/home/role/index", //数据接口
-			page: true, //开启分页
+			page: false, //开启分页
 			limit: 20,
 			cols: [[ //表头
 				{ field: 'id', title: 'ID号', align: 'center', width: 80 }
@@ -43,7 +35,7 @@
 				, { field: 'desc', title: '备注' }
 				, { field: 'status', title: '状态', toolbar: '#status', align: 'center', width: 80 }
 				, {	width: 100,title: '操作',align: 'center',templet: function (d) {
-						var html = '<div class="layui-btn-group"><button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>';
+						var html = '<div class="layui-btn-group"><button class="layui-btn  layui-btn-normal layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>';
 						return html;
 					}
 				}
@@ -51,47 +43,35 @@
 		});
 		
 		//表头工具栏事件
-		table.on('toolbar(test)', function(obj){
+		table.on('toolbar(role)', function(obj){
 			if (obj.event === 'add') {
-				rightpage.open("/home/role/add");
+				tool.side("/home/role/add");
 				return;
 			}
 		});
 		//监听行工具事件
-		table.on('tool(test)', function (obj) {
+		table.on('tool(role)', function (obj) {
 			var data = obj.data;
 			if (obj.event === 'edit') {
-				rightpage.open('/home/role/add?id='+obj.data.id);
+				tool.side('/home/role/add?id='+obj.data.id);
 				return;
 			}
 			if (obj.event === 'del') {
-				layer.confirm('确定要删除该权限角色吗？', { icon: 3, title: '提示' }, function (index) {
-					$.ajax({
-						url: "/home/role/delete",
-						data: { id: data.id },
-						success: function (e) {
-							layer.msg(e.msg);
-							if (e.code == 0) {
-								obj.del();
-							}
+				layer.confirm('确定要删除该权限组吗？', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layer.msg(res.msg);
+							obj.del();
 						}
-					})
+					}
+					tool.delete("/home/role/delete", { id: obj.data.id }, callback);
 					layer.close(index);
 				});
 			}
 		});
-
-		//监听搜索提交
-		form.on('submit(webform)', function (data) {
-			tableIns.reload({
-				where: { keywords: data.field.keywords },
-				page: { curr: 1 }
-			});
-			return false;
-		});
 	}
 
 </script>
-{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
 {/block}
 <!-- /脚本 -->

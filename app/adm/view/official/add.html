@@ -1,0 +1,129 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">添加公文</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">公文名称<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" autocomplete="off" placeholder="请输入公文名称" lay-verify="required" lay-reqText="请输入公文名称" class="layui-input"></td>
+			<td class="layui-td-gray">公文文号<font>*</font></td>
+			<td><input type="text" name="code" autocomplete="off" placeholder="请输入公文文号" lay-verify="required" lay-reqText="请输入公文文号" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">拟稿人<font>*</font></td>
+			<td>
+				<input type="text" name="draft_name" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择拟稿人" class="layui-input picker-admin">
+				<input type="hidden" name="draft_uid" value=''>
+			</td>
+			<td class="layui-td-gray">拟稿部门<font>*</font></td>
+			<td>
+				<input type="text" name="draft_dame" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择拟稿部门" class="layui-input picker-oa" data-types="department">
+				<input type="hidden" name="did" value=''>
+			</td>
+			<td class="layui-td-gray">拟稿日期<font>*</font></td>
+			<td><input type="text" name="draft_time" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择拟稿日期" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">主送人员<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="send_names" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择主送人员" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="send_uids" value=''>
+			</td>
+			<td class="layui-td-gray">抄送人员</td>
+			<td>
+				<input type="text" name="copy_names" value='' readonly placeholder="请选择" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="copy_uids" value=''>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">共享可查阅人</td>
+			<td>
+				<input type="text" name="share_names" value='' readonly placeholder="请选择" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="share_uids" value=''>
+			</td>
+			<td class="layui-td-gray">密级程度<font>*</font></td>
+			<td>
+				<input type="radio" name="secrets" value="1" title="公开">
+				<input type="radio" name="secrets" value="2" title="秘密">
+				<input type="radio" name="secrets" value="3" title="机密">
+			</td>
+			<td class="layui-td-gray">紧急程度<font>*</font></td>
+			<td>
+				<input type="radio" name="urgency" value="1" title="普通">
+				<input type="radio" name="urgency" value="2" title="紧急">
+				<input type="radio" name="urgency" value="3" title="加急">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">相关附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">公文内容<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0"></textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-1">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','uploadPlus','oaPicker','tinymce'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus= layui.uploadPlus,tinymce= layui.tinymce;	
+		//编辑器初始化
+		var editor = layui.tinymce;
+		var edit = editor.render({
+			selector: "#container",
+			images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+			height: 500
+		});
+
+		//相关附件上传
+		var attachment = new uploadPlus();
+		//监听提交
+		form.on('submit(webform)', function(data){
+			data.field.content = tinyMCE.editors['container'].getContent();
+			if (data.field.content == '') {
+				layer.msg('请先完善公文内容');
+				return false;
+			}
+			if (!data.field.secrets || data.field.secrets == '') {
+				layer.msg('请选择密级程度');
+				return false;
+			}
+			if (!data.field.urgency || data.field.urgency == '') {
+				layer.msg('请选择紧急程度');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);				
+				}
+			}
+			tool.post("/adm/official/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

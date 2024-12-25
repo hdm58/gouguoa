@@ -1,0 +1,109 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">关怀信息</h3>
+	<table class="layui-table layui-table-form">
+		{eq name="$id" value="0"}
+		<tr>
+			<td class="layui-td-gray">员工姓名<font>*</font></td>
+			<td>
+				<input type="text" name="uname" lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择员工姓名" class="layui-input picker-admin" readonly value="">
+				<input type="hidden" name="uid" value="0">
+			</td>
+			<td class="layui-td-gray">关怀项目<font>*</font></td>
+			<td>
+				<select name="care_cate" lay-verify="required" lay-reqText="请选择关怀项目">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('care_cate')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">当前状态</td>
+			<td>
+				<input type="radio" name="status" lay-filter="checktype" value="1" title="待执行" checked>
+				<input type="radio" name="status" lay-filter="checktype" value="2" title="已执行" >
+			</td>
+		</tr>
+		{else/}
+			<tr>
+			<td class="layui-td-gray">员工姓名<font>*</font></td>
+			<td>
+				<input type="text" name="uname" lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择员工姓名" class="layui-input picker-admin" readonly value="{$detail.user_name|default=''}">
+				<input type="hidden" name="uid" value="{$detail.uid|default=0}">
+			</td>
+				<td class="layui-td-gray">关怀项目<font>*</font></td>
+				<td>
+					<select name="care_cate" lay-verify="required" lay-reqText="请选择关怀项目">
+						<option value="">请选择</option>
+						{volist name=":get_base_data('care_cate')" id="vo"}
+						<option value="{$vo.id}" {eq name="$vo.id" value="$detail.care_cate"} selected{/eq}>{$vo.title}</option>
+						{/volist}
+					</select>
+				</td>
+				<td class="layui-td-gray">当前状态</td>
+				<td>
+					<input type="radio" name="status" value="1" title="待执行" {eq name="$detail.status" value="1"} checked{/eq}>
+					<input type="radio" name="status" value="2" title="已执行" {eq name="$detail.status" value="2"} checked{/eq}>
+				</td>
+			</tr>
+		{/eq}
+		<tr>
+			<td class="layui-td-gray-2">关怀金额(元)<font>*</font></td>
+			<td>
+				<input type="text" name="cost" lay-verify="required|number" autocomplete="off" placeholder="请选择" lay-reqText="请完善金额，仅为数字" class="layui-input" value="{$detail.cost|default=''}">
+			</td>
+			<td class="layui-td-gray">关怀日期<font>*</font></td>
+			<td>
+				<input type="text" name="care_time" readonly lay-verify="required" autocomplete="off" placeholder="请选择" lay-reqText="请选择关怀日期" class="layui-input tool-time" value="{$detail.care_time|default=''}">
+			</td>
+			<td class="layui-td-gray">关怀假日</td>
+			<td>
+				<input type="text" name="vacation" lay-verify="number" autocomplete="off" placeholder="" lay-reqText="请完善关怀假日，仅为数字" class="layui-input" value="{$detail.vacation|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关怀物品</td>
+			<td colspan="5">
+				<input type="text" name="thing" autocomplete="off" placeholder="请输入关怀物品，可空" class="layui-input" value="{$detail.thing|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关怀描述</td>
+			<td colspan="5">
+				<textarea name="remark" placeholder="请输入关怀描述，可空" class="layui-textarea">{$detail.remark|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/user/care/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

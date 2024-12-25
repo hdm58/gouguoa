@@ -1,0 +1,48 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">销售机会</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">客户名称</td>
+			<td colspan="3">{$detail.customer}</td>
+			<td class="layui-td-gray-2">客户联系人</td>
+			<td>{$detail.contact}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">机会标题</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray">发现时间</td>
+			<td>{$detail.discovery_time|date="Y-m-d"}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">销售阶段</td>
+			<td>{$detail.stage_name}</td>
+			<td class="layui-td-gray">预计金额</td>
+			<td>{$detail.expected_amount}</td>
+			<td class="layui-td-gray-2">预计签单时间</td>
+			<td>{$detail.expected_time|date="Y-m-d"}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">需求描述</td>
+			<td colspan="5">{$detail.content}</td>
+		</tr>
+		<tr>        
+			<td class="layui-td-gray">归属人员</td>
+			<td>{$detail.belong_name}</td>
+			<td class="layui-td-gray">协助人员</td>
+			<td colspan="3">{$detail.assist_names}</td>
+		</tr>
+    </table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,109 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="车辆名称/车牌号码" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_car" lay-filter="table_car"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/adm/car/add">+ 添加车辆</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_car"
+			, toolbar: "#toolbarDemo"
+			,url: "/adm/car/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 60
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '车辆名称',width:120}
+				,{field:'name',title: '车牌号码',width:100, align:'center'}
+				,{field:'buy_time',title: '购买日期',width:100, align:'center'}
+				,{field:'price',title: '购买价格',width:100, align:'center'}
+				,{field:'color',title: '车身颜色',width:80, align:'center'}
+				,{field:'seats',title: '座位数',width:60, align:'center'}
+				,{field:'driver_name',title: '驾驶员',width:80, align:'center'}
+				,{field:'oil',title: '油耗',width:60, align:'center'}
+				,{field:'mileage',title: '开始里程数',width:100, align:'center'}
+				,{field:'mileage_now',title: '当前里程数',width:100, align:'center'}
+				,{field:'insure_time',title: '保险到期日期',width:110, align:'center'}
+				,{field:'insure_time_note',title: '保险到期提醒',width:110, align:'center',templet: function(d){
+					var html = '<span class="red">还剩 '+d.insure_time_note+' 天</div>';
+					if(d.insure_time_note==0){
+						html = '<span class="red">已到期</div>';
+					}
+					return html;
+				}}
+				,{field:'review_time',title: '车审到期日期',width:110, align:'center'}
+				,{field:'review_time_note',title: '车审到期提醒',width:110, align:'center',templet: function(d){
+					var html = '<span class="red">还剩 '+d.review_time_note+' 天</div>';
+					if(d.review_time_note==0){
+						html = '<span class="red">已到期</div>';
+					}
+					return html;
+				}}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_car)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/car/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/adm/car/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/car/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

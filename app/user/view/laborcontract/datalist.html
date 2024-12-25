@@ -1,0 +1,192 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:100px">
+			<select name="status">
+				<option value="">合同状态</option>
+				{volist name="$status" id="vo"}
+				{gt name="$key" value="0"}
+				<option value="{$key}">{$vo}</option>
+				{/gt}
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px">
+			<select name="cate">
+				<option value="">合同类别</option>
+				{volist name="$cate" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px">
+			<select name="types">
+				<option value="">合同类型</option>
+				{volist name="$types" id="vo"}
+				{gt name="$key" value="0"}
+				<option value="{$key}">{$vo}</option>
+				{/gt}
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px">
+			<select name="properties">
+				<option value="">合同属性</option>
+				{volist name="$properties" id="vo"}
+				{gt name="$key" value="0"}
+				<option value="{$key}">{$vo}</option>
+				{/gt}
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:80px">
+			<input type="text" name="uname" placeholder="签订员工" class="layui-input picker-admin" value="" readonly>
+			<input type="text" name="uid" value="" style="display:none;">
+		</div>
+		<div class="layui-input-inline" style="width:292px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="签订日期" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_laborcontract" lay-filter="table_laborcontract"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-sm" lay-event="add">
+		<span>+ 添加合同</span>
+		<i class="layui-icon layui-icon-down layui-font-12"></i>
+	</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const contract_cate = {:json_encode($cate,JSON_UNESCAPED_UNICODE)};
+	const moduleInit = ['tool','oaPicker','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus,dropdown = layui.dropdown;		
+		
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		layui.pageTable = table.render({
+			elem: "#table_laborcontract"
+			, toolbar: "#toolbarDemo"
+			,url: "/user/laborcontract/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'status',title: '合同状态',width:90, align:'center',templet: function(d){
+					if(d.status==1){
+						return '<span class="green">『'+d.status_str+'』</span>';
+					}
+					else if(d.status==2){
+						return '<span class="yellow">『'+d.status_str+'』</span>';
+					}
+					else if(d.status==3){
+						return '<span class="red">『'+d.status_str+'』</span>';
+					}
+					else{
+						return '-';
+					}
+				}}
+				,{field:'user_name',title: '员工',width:90, align:'center'}
+				,{field:'title',title: '合同名称',minWidth:240}
+				,{field:'cate_str',title: '合同类型',width:90, align:'center'}
+				,{field:'types_str',title: '合同属性',width:90, align:'center'}
+				,{field:'enterprise',title: '签约主体公司',width:200}
+				,{field:'sign_time',title: '签订日期',width:90, align:'center'}
+				,{field:'diff_time',title: '合同有效期间',width:180, align:'center'}
+				,{field:'renewal',title: '续签状态',width:80, align:'center',templet: function(d){
+					if(d.renewal>0){
+						return '<span class="red">已续签</span>';
+					}
+					else{
+						return '<span class="green">未续签</span>';
+					}
+				}}
+				,{field:'change',title: '变更状态',width:80, align:'center',templet: function(d){
+					if(d.change>0){
+						return '<span class="red">已变更</span>';
+					}
+					else{
+						return '<span class="green">未变更</span>';
+					}
+				}}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					return html;
+				}}
+			]]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(table_laborcontract)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data;
+			var that = this;
+			if (obj.event === 'add'){
+				  dropdown.render({
+					elem: that,
+					show: true, // 外部事件触发即显示
+					data: contract_cate,
+					click: function(obj){
+						tool.side("/user/laborcontract/add?cate_id="+obj.id);
+					}
+				  });
+				return;
+			}
+		});	
+			
+		table.on('tool(table_laborcontract)',function (obj) {
+			let data=obj.data
+			if (obj.event === 'view') {
+				tool.side("/user/laborcontract/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				if(data.renewal>0 || data.change>0){
+					layer.msg('已续签或者已变更的合同不支持编辑，如需[编辑]请先删除续签或者变更的合同');
+					return false;
+				}
+				tool.side("/user/laborcontract/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				if(data.renewal>0 || data.change>0){
+					layer.msg('已续签或者已变更的合同不支持删除，如需[删除]请先删除续签或者变更的合同');
+					return false;
+				}
+				layer.confirm('确定要删除该员工合同吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/user/laborcontract/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+			}
+		});
+		
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,108 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">修改个人信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">用户名</td>
+			<td>{$admin.username}</td>
+			<td class="layui-td-gray">姓名</td>
+			<td>{$admin.name}</td>
+			<td class="layui-td-gray" rowspan="4">头像</td>
+			<td rowspan="4">
+				<div class="layui-upload">
+					<button type="button" class="layui-btn layui-btn-normal" id="test1">上传头像</button>
+					<div class="layui-upload-list" id="demo1">
+						<img src="{$admin.thumb}" width="100" />
+						<input type="hidden" name="thumb" value="{$admin.thumb}">
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">手机号码</td>
+			<td>{$admin.mobile}</td>
+			<td class="layui-td-gray">性别</td>
+			<td>
+				<input type="radio" name="sex" value="1" title="男" {eq name="$admin.sex" value="1"} checked{/eq}>
+				<input type="radio" name="sex" value="2" title="女" {eq name="$admin.sex" value="2"} checked{/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所在部门</td>
+			<td>{$admin.department}</td>
+			<td class="layui-td-gray">岗位职称</td>
+			<td>{$admin.position}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工类型</td>
+			<td>
+				{eq name="$admin.type" value="3"}<span style="color:#5FB878">实 习 生</span>{/eq}
+				{eq name="$admin.type" value="2"}<span style="color:#01AAED">试用员工</span>{/eq}
+				{eq name="$admin.type" value="1"}<span style="color:#393D49">正式员工</span>{/eq}
+			</td>
+			<td class="layui-td-gray">入职日期</td>
+			<td>
+				{$admin.entry_time | date='Y-m-d'}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">个人简介</td>
+			<td colspan="5">
+				<textarea name="desc" placeholder="请输入个人简介" class="layui-textarea">{$admin.desc|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,upload = layui.upload;
+		//头像上传
+		var uploadInst = upload.render({
+			elem: '#test1',
+			url: "/api/index/upload",
+			done: function (res) {
+				layer.msg(res.msg);
+				if (res.code == 0) {
+					//上传成功
+					$('#demo1 input').attr('value', res.data.filepath);
+					$('#demo1 img').attr('src', res.data.filepath);
+				}
+			}
+		});
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			$.ajax({
+				url: "/home/index/edit_personal",
+				type: 'post',
+				data: data.field,
+				success: function (e) {
+					if (e.code == 0) {
+						layer.confirm('保存成功,关闭本页面吗?', { icon: 3, title: '提示' }, function (index) {
+							parent.layui.tool.tabClose();
+							layer.close(index);
+						});
+					} else {
+						layer.msg(e.msg);
+					}
+				}
+			})
+			return false;
+		});
+	}
+
+</script>
+{/block}
+<!-- /脚本 -->

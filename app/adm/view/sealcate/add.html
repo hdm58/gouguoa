@@ -1,0 +1,72 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-1">印章管理</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">印章名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入印章名称" lay-reqText="请输入印章名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray">保管人<font>*</font></td>
+			<td>
+				<input type="text" name="keep_name" placeholder="请选择" value="" readonly lay-verify="required" lay-reqText="请选择保管人" class="layui-input picker-admin">
+				<input type="hidden" name="keep_uid">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">用途简述</td>
+			<td colspan="3"><textarea name="remark" placeholder="请输入用途简述，可空" class="layui-textarea"></textarea></td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">印章名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入印章名称" lay-reqText="请输入印章名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray">保管人<font>*</font></td>
+			<td>
+				<input type="text" name="keep_name" placeholder="请选择" value="{$detail.keep_name}" autocomplete="off" class="layui-input picker-admin">
+				<input type="hidden" name="keep_uid" value="{$detail.keep_uid}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">用途简述</td>
+			<td colspan="3"><textarea name="remark" placeholder="请输入用途简述，可空" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
+		</tr>
+	</table>
+	{/eq}
+	<div class="py-3">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;		  
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);					
+				}
+			}
+			tool.post("/adm/sealcate/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,4 @@
+[submodule "app/qiye"]
+	url  = https://gitee.com/gougufree/qiye
+	path = app/qiye
+

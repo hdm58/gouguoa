@@ -1,0 +1,108 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.comment-input .comment-image{width:40px; height:40px; border-radius:50%}
+.comment-item .comment-avatar{width:50px; float:left}
+.comment-item .comment-image{width:36px; height:36px; border-radius:50%}
+.comment-item .comment-body{margin-left:50px;}
+.comment-item .comment-content blockquote{border-left:3px solid #f1f1f1; padding:4px 8px;}
+.comment-item .comment-actions a{color:#8c95a8; cursor:pointer; font-size:12px;}
+.comment-item .comment-actions a:hover{color:#3582fb;}
+.comment-meta span{font-size:12px;}
+</style>
+{/block}
+{block name="body"}
+<div class="p-4">
+	<h3 class="pb-1">汇报详情</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">汇报人</td>
+			<td>{$detail.person_name}</td>
+			<td class="layui-td-gray">汇报类型</td>
+			<td>
+				{eq name="$detail.types" value="1"}<span class="green">『日报』</span>{/eq}
+				{eq name="$detail.types" value="2"}<span class="blue">『周报』</span>{/eq}
+				{eq name="$detail.types" value="3"}<span class="yellow">『月报』</span>{/eq}			
+			</td>
+			<td class="layui-td-gray">汇报时间</td>
+			<td>
+				{eq name="$detail.send_time" value="0"}
+				<span class="red">未汇报</span>
+				{else/}
+				{$detail.send_time}
+				{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">汇报周期</td>
+			<td>{$detail.range_date}</td>
+			<td class="layui-td-gray">接收人</td>
+			<td colspan="3">{$detail.users}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">工作内容</td>
+			<td colspan="5">
+				{:nl2br($detail.works)}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">工作计划</td>
+			<td colspan="5">
+				{:nl2br($detail.plans)}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">其他事项</td>
+			<td colspan="5">
+				{:nl2br($detail.remark)}
+			</td>
+		</tr>
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.read_users"}
+		<tr>
+			<td class="layui-td-gray">已读回执</td>
+			<td colspan="5" class="yellow">{$detail.read_users}</td>
+		</tr>
+		{/notempty}
+	</table>
+	{gt name="$detail.update_time" value="0"}
+	<div style="color:#999; padding:10px 0">该汇报于 {$detail.update_time} 进行过编辑</div>
+	{/gt}
+	<div class="p-3 border bg-white">
+		<h3 class="pb-3">工作点评</h3>
+		<div class="comment-input">
+			<input type="text" id="commentInput" readonly placeholder="发表一下你的看法" class="layui-input" value="">
+		</div>		
+		<div id="commentBox" class="pt-3"></div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const work_id = {$detail.id};
+const moduleInit = ['tool','oaComment'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,comment = layui.oaComment;	
+   comment.init({
+		"box":'commentBox',//容器id
+		"input": 'commentInput',
+		"topic_id":work_id,
+		"module": 'work',
+	});
+
+  }
+</script>
+{/block}

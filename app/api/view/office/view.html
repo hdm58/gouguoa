@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	<link rel="mobile-prefetch" href=""/>
+	<title>文档信息</title>
+	<script type="text/javascript" src="{$office.onlyoffice}/web-apps/apps/api/documents/api.js"></script>
+</head>
+<body style="width:100%;height:100vh; margin:0; padding:0">
+<div id="placeholder"></div>
+<script type="text/javascript">
+const url = "{$url}";
+const word = ['djvu','doc','docm','docx','docxf','dot','dotm','dotx','epub','fb2','fodt','htm','html','mht','mhtml','odt','oform','ott','oxps','pdf','rtf','stw','sxw','txt','wps','wpt','xml','xps'];
+const cell = ['csv','et','ett','fods','ods','ots','sxc','xls','xlsb','xlsm','xlsx','xlt','xltm','xltx','xml'];
+const slide = ['dps','dpt','fodp','odp','otp','pot','potm','potx','pps','ppsm','ppsx','ppt','pptm','pptx','sxi'];
+
+let suffix = url.split('.').pop();
+let documentType = "word";
+if (cell.indexOf(suffix) !== -1) {
+	documentType = "cell";
+}
+if (slide.indexOf(suffix) !== -1) {
+	documentType = "slide";
+}
+new DocsAPI.DocEditor("placeholder", {
+	"type" : "desktop",
+	"documentType" : documentType,//word,cell,side
+	"document" : {
+		"title" : "{$title}",
+		"url" : url,
+		"key" : "{$key}",
+		//"fileType" : "doc",
+		"permissions" : {
+			"chat": true,
+			"comment": true,
+			"copy": true,
+			"deleteCommentAuthorOnly": false,
+			"download": true,
+			"edit": true,
+			"editCommentAuthorOnly": false,
+			"fillForms": true,
+			"modifyContentControl": true,
+			"modifyFilter": true,
+			"print": true,
+			"protect": true,
+			"review": true
+		}		
+	},
+	"editorConfig":{
+		"lang":"zh-CN",
+		"mode" : "{$mode}",//view,edit
+		"forcesave":true,
+		"createUrl" : "",
+		"customization": {
+			"autosave": true,//是否自动保存
+			"comments": false,
+			"help": false
+		},
+		"user" : { 
+			"id" : "{$admin.id}",
+			"name" :"{$admin.name}"
+		},
+		"callbackUrl":"{$callbackUrl}"
+	},
+	"token": "{$token}"
+});
+</script>
+</body>
+</html>

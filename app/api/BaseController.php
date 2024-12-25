@@ -1,38 +1,32 @@
 <?php
 /**
- * @copyright Copyright (c) 2021 勾股工作室
- * @license https://opensource.org/licenses/GPL-2.0
- * @link https://www.gougucms.com
- */
++-----------------------------------------------------------------------------------------------
+* GouGuOPEN [ 左手研发，右手开源，未来可期！]
++-----------------------------------------------------------------------------------------------
+* @Copyright (c) 2021~2024 http://www.gouguoa.com All rights reserved.
++-----------------------------------------------------------------------------------------------
+* @Licensed 勾股OA，开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
++-----------------------------------------------------------------------------------------------
+* @Author 勾股工作室 <hdm58@qq.com>
++-----------------------------------------------------------------------------------------------
+*/
 
 declare (strict_types = 1);
 
 namespace app\api;
 
-use think\App;
 use think\exception\HttpResponseException;
 use think\facade\Request;
 use think\facade\Session;
-use think\Response;
 use think\facade\View;
+use think\facade\Db;
+use think\Response;
 
 /**
  * 控制器基础类
  */
 abstract class BaseController
 {
-    /**
-     * Request实例
-     * @var \think\Request
-     */
-    protected $request;
-
-    /**
-     * 应用实例
-     * @var \think\App
-     */
-    protected $app;
-
     /**
      * 是否批量验证
      * @var bool
@@ -49,22 +43,38 @@ abstract class BaseController
      * 分页数量
      * @var string
      */
-    protected $pageSize = '';
+    protected $pageSize = 20;
 
+    /**
+     * jwt配置
+     * @var string
+     */
+    protected $jwt_conf = [
+        'secrect' => 'gouguoa',
+        'iss' => 'www.gougucms.com', //签发者 可选
+        'aud' => 'gouguoa', //接收该JWT的一方，可选
+        'exptime' => 7200, //过期时间,这里设置2个小时
+    ];
+    protected $module;
+    protected $controller;
+    protected $action;
+    protected $uid;
+    protected $did;
+    protected $pid;
     /**
      * 构造方法
      * @access public
      * @param  App $app 应用对象
      */
-    public function __construct(App $app)
+    public function __construct()
     {
-        $this->app = $app;
-        $this->request = $this->app->request;
         $this->module = strtolower(app('http')->getName());
-        $this->controller = strtolower($this->request->controller());
-        $this->action = strtolower($this->request->action());
+        $this->controller = strtolower(Request::controller());
+        $this->action = strtolower(Request::action());
         $this->uid = 0;
-
+        $this->did = 0;
+		$this->pid = 0;
+        $this->jwt_conf = get_system_config('token');
         // 控制器初始化
         $this->initialize();
     }
@@ -75,7 +85,7 @@ abstract class BaseController
         // 检测权限
         $this->checkLogin();
         //每页显示数据量
-        $this->pageSize = Request::param('page_size', \think\facade\Config::get('app.page_size'));
+        $this->pageSize = Request::param('limit', \think\facade\Config::get('app.page_size'));
     }
 
     /**
@@ -83,13 +93,16 @@ abstract class BaseController
      */
     protected function checkLogin()
     {
-		$session_admin = get_config('app.session_admin');
-		if (!Session::has($session_admin)) {
-			$this->apiError('请先登录');
-		}
+        $session_admin = get_config('app.session_admin');
+        if (!Session::has($session_admin)) {
+            $this->apiError('请先登录');
+        }
 		else{
-			$this->uid = Session::get($session_admin)['id'];
-            View::assign('login_user', $this->uid);
+            $this->uid = Session::get($session_admin);
+			$login_admin = get_admin($this->uid);
+			$this->did = $login_admin['did'];
+			$this->pid = $login_admin['pid'];
+			View::assign('login_admin', $login_admin);
 		}
     }
     /**
@@ -100,9 +113,9 @@ abstract class BaseController
      * @return mixed
      * @throws ReturnException
      */
-    protected function apiSuccess($msg = 'success',$data=[])
+    protected function apiSuccess($msg = 'success', $data = [])
     {
-		return $this->apiReturn($data, 0, $msg);
+        return $this->apiReturn($data, 0, $msg);
     }
 
     /**
@@ -114,7 +127,7 @@ abstract class BaseController
      * @return mixed
      * @throws ReturnException
      */
-    protected function apiError($msg = 'fail',$data=[], $code = 1)
+    protected function apiError($msg = 'fail', $data = [], $code = 1)
     {
         return $this->apiReturn($data, $code, $msg);
     }

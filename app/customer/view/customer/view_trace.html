@@ -1,0 +1,72 @@
+<div class="p-3">
+   <span class="layui-btn layui-btn-sm add-trace">+ 新建跟进记录</span>
+</div>
+<div>
+	<table class="layui-hide" id="trace" lay-filter="trace"></table>
+</div>
+<script>
+function trace(){
+	if($('#customerTab').find('li').eq(0).data('load') =='true'){
+		return false;
+	}
+	$('#customerTab').find('li').eq(0).data('load','true');
+	let tool = layui.tool, table = layui.table;
+	layui.traceTable = table.render({
+		elem: '#trace',
+		title: '跟进记录列表',
+		cellMinWidth:80,
+		url: "/customer/api/get_trace",
+		where:{'cid':customer_id},
+		page: true, //开启分页
+		limit: 20,
+		cols:  [[
+			{field: 'id', title: 'ID号', width: 80, align: 'center'}
+			,{field:'admin_name',title: '跟进人',align:'center',width: 80}
+			,{field:'follow_time',title: '跟进时间',align:'center',width: 130}
+			, { field: 'stage_name', title: '当前阶段', width: 80, align: 'center'}
+			,{field:'type_name',title: '跟进方式',width: 80, align: 'center'}
+			,{field:'chance',title: '销售机会',minWidth:200}
+			,{field:'content',title: '沟通内容'}
+			,{field:'next_time',title: '下次跟进时间', align:'center',width: 130}	
+			,{fixed:'right',width:120,title: '操作', align:'center',templet: function(d){
+					var html = '<div class="layui-btn-group">';
+					var btn0='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					return html+btn0+btn1+btn2+'</div>';
+			}}			
+		]]
+	});
+	
+	$('body').on('click','.add-trace',function(){
+		tool.side('/customer/trace/add?cid='+customer_id);
+	});
+	
+	table.on('tool(trace)', function(obj){
+		var data = obj.data; //获得当前行数据
+		var layEvent = obj.event;		 
+		if(layEvent === 'edit'){ //编辑
+			let url = '/customer/trace/add/id/'+data.id;
+			tool.side(url);
+		}
+		if(layEvent === 'view'){ //查看
+			let url = '/customer/trace/view/id/'+data.id;
+			tool.side(url);
+		}
+		if(layEvent === 'del'){ //删除
+			layer.confirm('确定要删除该跟进记录吗?', {icon: 3, title:'提示'}, function(index){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layui.traceTable.reload();
+					}
+				}
+				tool.delete("/customer/trace/del",{"id":data.id},callback);
+				layer.close(index);
+				
+			});
+		}
+		return false;
+	})
+}
+</script>

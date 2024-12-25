@@ -1,0 +1,319 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tab-1 .search-item{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">正常</li>
+				<li>已作废</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择时间区间" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline search-item">
+			<select name="open_status">
+				<option value="">请选择状态</option>
+				<option value="0">待开具</option>
+				<option value="1">已开具</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0"/>
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-container">
+    <h3 class="h3-title" style="height:32px;">发票列表</h3>
+</div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = {$authInvoice};
+	const moduleInit = ['tool','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
+		
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '开票记录列表',
+			toolbar: '#toolbarDemo',
+			url: "/finance/invoice/record", //数据接口	
+			cellMinWidth: 80,			
+			page: true, //开启分页
+			limit: 20,
+			height: 'full-152',
+			totalRow: true,
+			cols: [[
+				{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					},{
+						field: 'invoice_title',
+						title: '开票抬头',
+						minWidth: 240,	
+						templet:function(d){
+							var html='<span class="layui-badge layui-bg-blue">企业</span> '+d.invoice_title;
+							if(d.types==2){
+								html='<span class="layui-badge layui-bg-green">个人</span> '+d.invoice_title;
+							}
+							return html;
+						},
+						totalRowText: '<div style="text-align:right">合计</div>'
+					}, {
+						field: 'amount',
+						title: '发票金额(元)',
+						align: 'right',
+						width: 120,
+						totalRow: function (d) {return d.TOTAL_ROW.amount}
+					},{
+						field: 'invoice_type',
+						title: '开票类型',
+						align: 'center',
+						width: 120,
+						templet:function(d){
+							var html='-';
+							if(d.invoice_type==1){
+								html='<span class="green">增值税专用发票</span>';
+							}
+							else if(d.invoice_type==2){
+								html='<span class="blue">普通发票</span>';
+							}
+							else if(d.invoice_type==3){
+								html='<span class="red">专业发票</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'open_status',
+						title: '开票状态',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='<span class="red">『未开具』</span>';
+							if(d.open_status==1){
+								html='<span class="green">『已开具』</span>';
+							}
+							else if(d.open_status==2){
+								html='<span class="yellow">『已作废』</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'admin_name',
+						title: '发票申请员工',
+						align: 'center',
+						width: 100
+					},{
+						field: 'department',
+						title: '发票申请部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '申请时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'check_user',
+						title: '当前审核人'
+					},{
+						field: 'open_name',
+						title: '开票人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'open_time',
+						title: '开票日期',
+						align: 'center',
+						width: 100
+					},{
+						field: 'code',
+						title: '发票号码',
+						align: 'center',
+						width: 120
+					}, {
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 170,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为开票</span>';
+							var btn3='<span class="layui-btn layui-btn-xs" lay-event="open">修改开票信息</span>';
+							var btn4='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="tovoid">作废</span>';
+							var btn5='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="novoid">反作废</span>';
+							html+=btn1;
+							if(auth==1){
+								if(d.open_status==0){
+									html+=btn2;
+								}
+								if(d.open_status==1){
+									html+=btn3+btn4;
+								}
+								if(d.open_status==2){
+									html+=btn5;
+								}
+							}
+							html+='</div>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/finance/invoice/view?id="+data.id);
+				return;
+			}
+			if(obj.event === 'open'){
+				layer.open({
+					type: 1
+					,title: '标记为已开票'
+					,area: '368px;'
+					,id: 'LAY_module' //设定一个id，防止重复弹出
+					,btn: ['确定', '取消']
+					,btnAlign: 'c'
+					,content: '<div style="padding-top:15px;">\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">发票号码</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" name="code" autocomplete="off" value="'+data.code+'" placeholder="请输入发票号码" class="layui-input">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">开票日期</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" id="open_time" name="open_time" autocomplete="off" value="'+data.open_time+'" placeholder="请选择实际开票日期" class="layui-input">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">物流单号</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" name="delivery" autocomplete="off" value="'+data.delivery+'" placeholder="请输入物流快递单号" class="layui-input">\
+								  </div>\
+								</div>\
+							  </div>'
+					,success:function(){
+						layui.laydate.render({
+							elem: '#open_time',
+							showBottom:false
+						});
+					}
+					,yes: function(index){
+						let code = $('#LAY_module').find('[name="code"]').val();
+						let open_time = $('#LAY_module').find('[name="open_time"]').val();
+						let delivery = $('#LAY_module').find('[name="delivery"]').val();
+						if(code == ''){
+							layer.msg('请输入发票号码');
+							return false;
+						}
+						if(open_time == ''){
+							layer.msg('请选择开票时间');
+							return false;
+						}
+						$.ajax({
+							url: "/finance/api/open",
+							type: 'post',
+							data: {
+								id: data.id,
+								code: code,
+								open_time: open_time,
+								delivery: delivery
+							},
+							success: function(e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									layer.close(index);
+									layui.pageTable.reload();
+								}
+							}
+						})
+					}
+					,btn2: function(){
+						layer.closeAll();
+					}
+				});			
+			}
+			if (obj.event === 'tovoid') {
+				layer.confirm('确定作废该发票吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/finance/api/tovoid",
+						type:'post',
+						data: {
+							id: data.id
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'novoid') {
+				layer.confirm('确定反作废该发票吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/finance/api/novoid",
+						type:'post',
+						data: {
+							id: data.id
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

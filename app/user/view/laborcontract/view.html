@@ -1,0 +1,150 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">员工合同详细信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">合同类别</td>
+			<td>{$detail.cate_str}</td>
+			<td class="layui-td-gray">合同类型</td>
+			<td>{$detail.types_str}</td>
+		</tr>
+		{gt name="$detail.renewal_pid" value="0"}
+		<tr>
+			<td class="layui-td-gray">续签母协议</td>
+			<td colspan="3"><a class="blue" href="/user/laborcontract/view?id={$detail.renewal_pid}">{$detail.renewal_ptitle}</a></td>
+		</tr>
+		{/gt}
+		{gt name="$detail.change_pid" value="0"}
+		<tr>
+			<td class="layui-td-gray">变更母协议</td>
+			<td colspan="3"><a class="blue" href="/user/laborcontract/view?id={$detail.change_pid}">{$detail.change_ptitle}</a></td>
+		</tr>
+		{/gt}
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.user_name}</td>
+			<td class="layui-td-gray">签约主体公司</td>
+			<td>{$detail.enterprise}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">合同名称</td>
+			<td>{$detail.title}</td>
+			<td class="layui-td-gray">合同编码</td>
+			<td>{$detail.code}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">签订日期</td>
+			<td>{$detail.sign_time}</td>
+			<td class="layui-td-gray">合同属性</td>
+			<td>{$detail.properties_str}</td>
+		</tr>
+		</tr>
+		<tr>			
+			<td class="layui-td-gray-2">合同生效时间</td>
+			<td>{$detail.start_time}</td>
+			<td class="layui-td-gray-2">合同失效时间</td>
+			<td>{$detail.end_time}</td>
+		</tr>
+		{eq name="$detail.cate" value="1"}
+		<tr>
+			<td class="layui-td-gray-2">员工试用月数</td>
+			<td>{$detail.trial_months}</td>
+			<td class="layui-td-gray-2">试用结束时间</td>
+			<td>{$detail.trial_end_time}</td>
+		</tr>
+		<tr>	
+			<td class="layui-td-gray-2">试用工资(元)</td>
+			<td>{$detail.trial_salary}</td>
+			<td class="layui-td-gray-2">转正工资(元)</td>
+			<td>{$detail.worker_salary}</td>
+		</tr>
+		{/eq}
+		{in name="$detail.cate" value="2,3"}
+		<tr>	
+			<td class="layui-td-gray-2">工资费用(元)</td>
+			<td>{$detail.worker_salary}</td>
+		</tr>
+		{/in}
+		<tr>
+			<td class="layui-td-gray">备注说明</td>
+			<td colspan="3">{$detail.remark|default=''}</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray"><strong>相关附件</strong></td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">合同状态</td>
+			{eq name="$detail.status" value="1"}
+			<td colspan="3"><span class="green">正常</span>，<span class="layui-btn layui-bg-red layui-btn-xs set-status" data-status="3">解除合同</span></td>
+			{/eq}
+			{eq name="$detail.status" value="2"}
+			<td colspan="3"><span class="yellow">已到期</span></td>
+			{/eq}
+			{eq name="$detail.status" value="3"}
+			<td colspan="3"><span class="red">已解除</span>，<span class="layui-btn layui-bg-blue layui-btn-xs set-status" data-status="1">恢复合同</span></td>
+			{/eq}
+		</tr>
+		<tr>
+			<td class="layui-td-gray">续签状态</td>
+			{empty name="$renewal"}
+			<td colspan="3"><span class="green">未续签</span>{eq name="$detail.status" value="1"}，<a class="layui-btn layui-btn-xs" href="/user/laborcontract/add_renewal?id={$detail.id}">新增续签合同</a>{/eq}</td>
+			{else/}
+			<td colspan="3"><span class="red">已续签</span>，续签日期：{$renewal.create_time|date="Y-m-d"}。<a class="layui-btn layui-bg-blue layui-btn-xs" href="/user/laborcontract/view?id={$renewal.id}">续签合同详情</a></td>
+			{/empty}
+		</tr>
+		<tr>
+			<td class="layui-td-gray">变更状态</td>
+			{empty name="$change"}
+			<td colspan="3"><span class="green">未变更</span>{eq name="$detail.status" value="1"}，<a class="layui-btn layui-btn-xs" href="/user/laborcontract/add_change?id={$detail.id}">新增变更合同</a>{/eq}</td>
+			{else/}
+			<td colspan="3"><span class="red">已变更</span>，续签日期：{$change.create_time|date="Y-m-d"}。<a class="layui-btn layui-bg-blue layui-btn-xs" href="/user/laborcontract/view?id={$change.id}">变更合同详情</a></td>
+			{/empty}
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const id = {$detail.id};
+	var moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool;
+		$('body').on('click','.set-status',function(){
+			let status = $(this).data('status');
+			let tips='确定要解除该合同吗?';
+			if(status==1){
+				tips='确定要恢复该合同吗?';
+			}
+			layer.confirm(tips, { icon: 3, title: '提示' }, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						if(parent.layui.pageTable){
+							parent.layui.pageTable.reload();
+						}
+						location.reload();
+					}
+				}
+				tool.post("/user/laborcontract/set", {id:id,status:status}, callback);
+				layer.close(index);
+			});
+			
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,109 @@
+<tr>
+	<td class="layui-td-gray" colspan="6" style="text-align:left; color:#666"><strong>服务信息</strong> <span class="layui-btn layui-btn-sm" type="button" id="serviceAdd">+ 添加服务</span></td>
+</tr>
+<tr>
+	<td colspan="6">				
+		<table id="serviceTable" class="layui-table layui-table-min" style="margin:0">
+			<tr>
+				<th width="200">服务名称</th>
+				<th width="200">服务周期</th>
+				<th width="100">服务单价</th>
+				<th width="100">服务次数</th>
+				<th width="100">小计</th>
+				<th>备注信息</th>
+				<th width="60">操作</th>
+			</tr>
+			<tr class="service-tr">
+				{eq name="is_service" value="1"}
+				<td><input type="text" name="service_title[]" value="" class="layui-input service-picker" readonly lay-verify="required" lay-reqText="请完善服务名称"><input type="hidden" name="service_id[]" value="0"></td>
+				{else/}
+				<td><input type="text" name="service_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善服务名称"><input type="hidden" name="service_id[]" value="0"></td>
+				{/eq}
+				<td><input type="text" name="service_date[]" value="" class="layui-input layui-input-readonly tool-time" data-range="到" lay-verify="required" lay-reqText="请选择服务周期" readonly></td>
+				<td><input type="text" name="service_price[]" value="0.00" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入服务单价"></td>
+				<td><input type="text" name="service_num[]" value="1" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入服务次数"></td>
+				<td><input type="text" name="service_subtotal[]" value="0.00" class="layui-input layui-input-readonly" readonly></td>
+				<td><input type="text" name="service_remark[]" value="" class="layui-input"></td>
+				<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+			</tr>
+		</table>
+	</td>
+</tr>
+<script>
+const is_service={$is_service};
+function product_fun(layui){
+	let form = layui.form,oaPicker = layui.oaPicker;
+	
+	//选择物品弹窗        
+	$('body').on('click','.service-picker',function () {
+		let that = $(this),ids = [],titles=[],price=[],map = {},types = 'services',type = 1;
+		let callback = function(data){
+			for ( var i = 0; i <data.length; i++){
+				ids.push(data[i].id);
+				titles.push(data[i].title);
+				price.push(data[i].price);
+			}
+			that.val(titles.join(','));
+			that.next().val(ids.join(','));
+			that.parents('.service-tr').find('input').eq(3).val(price.join(','));
+			that.parents('.service-tr').find('input').eq(5).val(price.join(','));
+			count_cost();
+		}
+		oaPicker.picker(types,type,callback,map);
+	});
+	
+	//添加服务信息表格
+	$('#serviceAdd').on('click',function(){
+		var html = '',service_title=' class="layui-input"';
+		if(is_service==1){
+			service_title=' class="layui-input service-picker" readonly';
+		}
+		html += '<tr class="service-tr">\
+					<td><input type="text" name="service_title[]" value="" '+service_title+' lay-verify="required" lay-reqText="请完善服务名称"><input type="hidden" name="service_id[]" value="0"></td>\
+					<td><input type="text" name="service_date[]" value="" class="layui-input layui-input-readonly tool-time" data-range="到" lay-verify="required" lay-reqText="请选择服务周期" readonly></td>\
+					<td><input type="text" name="service_price[]" value="0.00" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入服务单价"></td>\
+					<td><input type="text" name="service_num[]" value="1" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入服务次数"></td>\
+					<td><input type="text" name="service_subtotal[]" value="0.00" class="layui-input layui-input-readonly" readonly></td>\
+					<td><input type="text" name="service_remark[]" value="" class="layui-input"></td>\
+					<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>\
+				</tr>';
+		$('#serviceTable').append(html).find('.tr-none').remove();
+		form.render();
+	});
+
+	$('#serviceTable').on('click', '[lay-event="del"]', function() {
+		if($('.service-tr').length<2){
+			layer.msg('至少保留一个服务选项');
+			return false;
+		}
+		$(this).parents('.service-tr').remove();
+		count_cost();
+	});	
+	
+	//计算价格
+	$('#serviceTable').on('input', '.input-num', function() {
+		var inputs = $(this).parents('.service-tr').find("input");
+		var service_price = inputs.eq(3).val();
+		var service_num = inputs.eq(4).val();
+		var service_amount = (service_price*service_num).toFixed(2);			  
+		if(isNaN(service_amount)){ 
+			service_amount = 0.00;
+		}
+		inputs.eq(5).val(service_amount);
+		count_cost();
+	});
+	 
+	//计算总价
+	function count_cost(){
+		var service_subtotal = $('#serviceTable').find('[name="service_subtotal[]"]');
+		var total = 0;
+		for (var m = 0; m < service_subtotal.length; m++) {
+			total+=$(service_subtotal[m]).val()*1000;
+		}
+		if(isNaN(total)){ 
+			total = 0;
+		}
+		$('[name="cost"]').val((total/1000).toFixed(2));
+	}
+}
+</script>

@@ -1,5 +1,9 @@
 <?php
-// 这是系统自动生成的event定义文件
 return [
-
+	'listen'    => [
+        //注册监听类
+        'SendMessage' => ['app\listener\SendMessage'],
+    ],
+    //'subscribe' => ['app\subscribe\Message'],
 ];
+

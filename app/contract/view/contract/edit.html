@@ -1,0 +1,227 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">编辑合同</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">合同名称<font>*</font></td>
+			<td colspan="3"><input type="text" name="name" value="{$detail.name}" lay-verify="required" lay-reqText="请输入合同名称" autocomplete="off" placeholder="请输入合同名称" class="layui-input"></td>
+			<td class="layui-td-gray">合同性质</td>
+			<td>{$detail.types_name}</td>
+		</tr>
+        <tr>
+			<td class="layui-td-gray">签约主体<span style="font-size:12px;">(乙方)</span><font>*</font></td>
+			<td colspan="3">
+				<select name="subject_id" lay-verify="required" lay-reqText="请选择签约主体公司">
+					<option value="">请选择签约主体公司</option>
+					{volist name=":get_base_data('Enterprise')" id="v"}
+					<option value="{$v.id}" {eq name="$v.id" value="$detail.subject_id" } selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray-2">合同始止日期<font>*</font></td>
+			<td id="barDate" style="width:320px;">
+				<div class="layui-input-inline" style="width:150px;">
+					<input type="text" class="layui-input" id="start_time" value="{$detail.start_time}" placeholder="选择时间区间" readonly name="start_time" lay-verify="required" lay-reqText="请选择合同开始时间">
+				</div>
+				~
+				<div class="layui-input-inline" style="width:150px;">
+					<input type="text" class="layui-input" id="end_time" value="{$detail.end_time}" placeholder="选择时间区间" readonly name="end_time" lay-verify="required" lay-reqText="请选择合同结束时间">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">客户名称<span style="font-size:12px;">(甲方)</span><font>*</font></td>
+			<td colspan="3">			
+				{eq name="$is_customer" value="1"}
+				<input type="text" name="customer" autocomplete="off" value="{$detail.customer}" readonly lay-verify="required" lay-reqText="请输入客户名称" placeholder="请输入客户名称" class="layui-input customer-picker">				
+				{else/}
+				<input type="text" name="customer" autocomplete="off" value="{$detail.customer}" lay-verify="required" lay-reqText="请输入客户名称" placeholder="请输入客户名称" class="layui-input">				
+				{/eq}
+				<input type="hidden" name="customer_id" value="{$detail.customer_id}">			
+			</td>
+			<td class="layui-td-gray">签约客户代表<font>*</font></td>
+			<td><input type="text" name="contact_name" value="{$detail.contact_name}" autocomplete="off" lay-verify="required" lay-reqText="请输入客户代表姓名" placeholder="请输入客户代表姓名" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">客户联系地址</td>
+			<td colspan="3"><input type="text" name="contact_address" value="{$detail.contact_address}" autocomplete="off" placeholder="请输入客户联系地址" class="layui-input"></td>
+			<td class="layui-td-gray">客户联系电话</td>
+			<td><input type="text" name="contact_mobile" value="{$detail.contact_mobile}" autocomplete="off" placeholder="请输入客户联系电话" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">合同金额<font>*</font></td>
+			<td>
+				{eq name="$detail.types" value="1"}
+				<input type="text" name="cost" value="{$detail.cost}" lay-verify="required|number" lay-reqText="请输入合同金额，数字" placeholder="请输入合同金额，数字" autocomplete="off" class="layui-input">
+				{/eq}
+				{eq name="$detail.types" value="2"}
+				<input type="text" name="cost" value="{$detail.cost}" lay-verify="required|number" lay-reqText="请完善产品信息" placeholder="完善产品信息，合同金额自动计算" readonly class="layui-input layui-input-readonly">
+				{/eq}
+				{eq name="$detail.types" value="3"}
+				<input type="text" name="cost" value="{$detail.cost}" lay-verify="required|number" lay-reqText="请完善服务信息" placeholder="完善服务信息，合同金额自动计算" readonly class="layui-input layui-input-readonly">
+				{/eq}
+			</td>
+			<td class="layui-td-gray">合同类别<font>*</font></td>
+			<td>
+				<select name="cate_id" lay-verify="required" lay-reqText="请选择合同类别">
+					<option value="">请选择合同类别</option>
+					{volist name=":get_base_data('ContractCate');" id="vo"}
+					<option value="{$vo.id}" {eq name="$vo.id" value="$detail.cate_id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">合同编号<font>*</font></td>
+			<td><input type="text" name="code" value="{$detail.code}" autocomplete="off" {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" lay-reqText="请输入合同编号" placeholder="请输入合同编号" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>签订信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">合同签订人<font>*</font></td>
+			<td>
+				 <input type="text" name="sign_name" value="{$detail.sign_name}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择合同签订人" placeholder="请选择合同签订人" class="layui-input picker-diy">
+				 <input type="hidden" name="sign_uid" value="{$detail.sign_uid}">
+			</td>
+			<td class="layui-td-gray-2">合同所属部门<font>*</font></td>
+			<td>
+				<input type="text" name="sign_department" value="{$detail.sign_department}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择合同所属部门"  placeholder="请选择合同所属部门" class="layui-input picker-oa" data-types="department">
+			  	<input type="hidden" name="did" value="{$detail.did}">
+			</td>
+			<td class="layui-td-gray-2">合同签订日期<font>*</font></td>
+			<td><input type="text" name="sign_time" value="{$detail.sign_time}" readonly lay-verify="required" lay-reqText="请选择合同签订日期" placeholder="请选择合同签订日期" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">合同制定人</td>
+			<td>
+				<input type="text" name="prepared_name" value="{$detail.prepared_name}" autocomplete="off" readonly placeholder="请选择合同制定人" class="layui-input picker-admin">
+				<input type="hidden" name="prepared_uid" value="{$detail.prepared_uid}">
+			</td>
+			<td class="layui-td-gray-2">合同保管人</td>
+			<td>
+				<input type="text" name="keeper_name" value="{$detail.keeper_name}" autocomplete="off" readonly placeholder="请选择合同保管人" class="layui-input picker-admin">
+				<input type="hidden" name="keeper_uid" value="{$detail.keeper_uid}">
+			</td>
+			<td class="layui-td-gray">合同共享人员</td>
+			<td colspan="3">
+				<input type="text" name="share_names" value="{$detail.share_names}" autocomplete="off" readonly placeholder="请选择共享人员" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="share_ids" value="{$detail.share_ids}">
+			</td>
+		</tr>
+		{eq name="$detail.types" value="2"}{include file="/contract/edit_product"}{/eq}		
+		{eq name="$detail.types" value="3"}{include file="/contract/edit_service"}{/eq}	
+		<tr>
+			<td colspan="6"><strong>相关附件</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>备注信息</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
+		</tr>
+    </table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<input type="hidden" name="types" value="{$detail.types}">
+		<input type="hidden" name="scene" value="edit">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,laydate = layui.laydate, oaPicker = layui.oaPicker,uploadPlus = layui.uploadPlus;
+		if(typeof product_fun==='function'){
+			product_fun(layui);
+		}
+		if(typeof service_fun==='function'){
+			service_fun(layui);
+		}
+		//日期范围
+		laydate.render({
+			elem: '#barDate',
+			range: ['#start_time', '#end_time']
+		});
+		//附件上传
+		var attachment = new uploadPlus({
+			"target":'uploadBtn',
+			"targetBox":'uploadBox'
+		});
+		//选择员工弹窗        
+		$('body').on('click','.picker-diy',function () {
+			let that = $(this);
+			let ids=that.next().val()+'',names = that.val()+'';
+			oaPicker.employeeInit({
+				ids:ids,
+				names:names,
+				type:1,//1是单选，2是多选
+				callback:function(data){
+					//这里是选择后的回调方法，可以根据具体需求自定义写哦
+					let select_id=[],select_name=[];
+					for(var a=0; a<data.length;a++){
+						select_id.push(data[a].id);
+						select_name.push(data[a].name);
+					}
+					that.val(select_name.join(','));
+					that.next().val(select_id.join(','));
+				}
+			});
+		});
+		
+		//选择客户弹窗        
+		$('body').on('click','.customer-picker',function () {
+			let that = $(this),ids = [],titles=[],contact_name=[],contact_mobile=[],address=[],map = {},types = 'customer',type = 1;
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+					contact_name.push(data[i].contact_name);
+					contact_mobile.push(data[i].contact_mobile);
+					address.push(data[i].address);
+				}
+				that.val(titles.join(','));
+				that.next().val(ids.join(','));
+				$('[name="contact_name"]').val(contact_name.join(','));
+				$('[name="contact_mobile"]').val(contact_mobile.join(','));
+				$('[name="contact_address"]').val(address.join(','));
+			}
+			oaPicker.picker(types,type,callback,map);
+		});
+		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/contract/contract/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

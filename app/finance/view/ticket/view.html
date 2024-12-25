@@ -1,0 +1,130 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	<h3 class="pb-3">发票详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">发票金额(元)</td>
+			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray">发票类型</td>
+			<td>
+				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
+				{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
+				{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发票抬头</td>
+			<td>{$detail.subject}</td>
+			<td class="layui-td-gray-3">开票主体(供应商)</td>
+			<td>{$detail.supplier_name}</td>
+		</tr>
+		{if condition="$detail.purchase_id > 0"}
+		<tr>
+		<td class="layui-td-gray">关联采购合同</td>
+			<td colspan="3">{$detail.purchase_name|default=''}</td>
+		</tr>
+		{/if}
+		{if condition="$detail.project_id > 0"}
+		<tr>
+		<td class="layui-td-gray">关联的项目</td>
+			<td colspan="3">{$detail.project_name|default=''}</td>
+		</tr>
+		{/if}
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">关联附件</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		{if ( $detail.open_status gt 0)}
+		<tr>
+			<td class="layui-td-gray">发票号码</td>
+			<td>{$detail.code}{eq name="$detail.open_status" value="2"}<span class="yellow">『已作废』</span>{/eq}</td>
+			<td class="layui-td-gray">发票日期</td>
+			<td>{$detail.open_time|date='Y-m-d'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">			
+				<div class="layui-input-inline">发票附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="other_file_ids" value="{$detail.other_file_ids}">
+					{notempty name="$detail.other_file_ids"}
+					{volist name="$detail.other_file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		{/if}
+	</table>
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const ticket_id = {$detail.id};
+const moduleInit = ['tool','oaCheck','uploadPlus'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
+	oaCheck.init({
+		check_name:'ticket'
+	});
+	//相关附件上传
+	var attachment = new uploadPlus({
+		"attachment":{
+			uidDelete:true,
+			ajaxSave:function(val){
+				$.ajax({
+					url: "/finance/api/upload_ticket",
+					type:'post',
+					data:{
+						id:ticket_id,
+						other_file_ids:val
+					},
+					success: function (e) {
+						location.reload();
+					}
+				})
+			},
+			ajaxDelete:function(val){
+				$.ajax({
+					url: "/finance/api/upload_ticket",
+					type:'post',
+					data:{
+						id:ticket_id,
+						other_file_ids:val
+					},
+					success: function (e) {
+						location.reload();
+					}
+				})
+			}
+		}
+	})
+}
+</script>
+{/block}
+<!-- /脚本 -->

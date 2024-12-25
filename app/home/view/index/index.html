@@ -1,101 +1,154 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
-<link rel="stylesheet" href="{__LAYUI__}/font/extend/iconfont.css?v={:get_system_config('web','version')}">
-<link rel="stylesheet" href="{__CSS__}/gougucms.css?v={:get_system_config('web','version')}">
+<link rel="stylesheet" href="{__GOUGU__}/gougu/css/layout.css" media="all">
 {/block}
 <!-- 主体 -->
 {block name="body"}
-
 <div class="layui-layout-body">
-	<div class="layui-layout layui-layout-admin">
-		<div class="layui-header">
-			<div class="layui-logo" ittab-home><img src="{__IMG__}/syslogo.png" width="166" alt="{:get_system_config('web','admin_title')}" /></div>
-			<ul class="layui-layout-right">
-				<li class="layui-nav-item" lay-unselect>
-					<a href="javascript:;" ittab-refresh class="refreshThis" id="ittab-refresh" title="刷新当前页">
-						<i class="layui-icon layui-icon-refresh"></i>
-					</a>
-				</li>
-				<li class="layui-nav-item" lay-unselect>
-					<a href="javascript:;" ittab-notice class="noticeThis menu-active" data-src="/message/index/inbox" id="ittab-refresh" data-title="已收消息" title="消息通知">
-						<i class="layui-icon layui-icon-notice"></i>
-					</a>
-					<div id="msgNum" class="msg-num"><a data-title="已收消息" class="menu-active" data-src="/message/index/inbox" title="未读消息">0</a></div>
-				</li>
-				<li class="layui-nav-item" lay-unselect>
-					<a href="javascript:;" ittab-logout title="{:get_login_admin('nickname')}-点击退出登录">
-						<img src="{:get_login_admin('thumb')}" class="layui-nav-img" onerror="javascript:this.src='{__IMG__}/nonepic360x360.jpg';this.onerror=null;">
-					</a>
-				</li>
-			</ul>
-		</div>
+    <div id="GouguApp">
+        <div class="layui-layout gg-layout layout-menu-{$system.menu_mode|default='classical'}">
+            <div class="layui-header">
+                <!-- 头部区域 -->
+                <div class="layui-layout-left">
+                    <span class="gg-head-item">
+                        <a href="javascript:;" gg-event="shrink" title="侧边伸缩"><i class="layui-icon layui-icon-shrink-right"></i></a>
+                    </span>
+                    <span class="gg-head-item gg-head-cache">
+                        <a href="javascript:;" gg-event="cache" data-href="/api/index/cache_clear" title="清空缓存"><i class="layui-icon layui-icon-fonts-clear"></i></a>
+                    </span>
+                    <span class="gg-head-item gg-head-home">
+                        <a href="https://www.gougucms.com/home/pages/detail/s/gouguoa.html" target="_blank" title="前台首页"><i class="layui-icon layui-icon-website"></i></a>
+                    </span>
+					<span class="gg-head-item gg-head-home">
+                        <a class="tab-a" data-href="/crud/crud/index" data-title="简单CRUD" title="简单CRUD"><i class="layui-icon layui-icon-template"></i></a>
+                    </span>
+                </div>
 
-		<div class="layui-side menulist-bg-gray">
-			<div class="menulist">
-				<div class="menulist-top">
-					<a href="/" title="返回首页" style="background-color: #E94335"><i class="layui-icon layui-icon-home"></i></a><a href="javascript:;" title="修改个人信息" style="background-color:#fbbc05" data-title="修改个人信息" data-id="10000" data-src="/api/index/edit_personal" class="menu-active"><i class="layui-icon layui-icon-username"></i></a><a href="javascript:;" title="修改密码" data-id="100001" style="background-color:#4285f4" data-title="修改密码" data-src="/api/index/edit_password" class="menu-active"><i class="layui-icon layui-icon-password"></i></a><a href="javascript:;" ittab-del-cache id="ittab-del-cache" style="margin-top:2px;" title="清空缓存" style="background-color:#12bb37"><i class="layui-icon layui-icon-fonts-clear"></i></a>
-				</div>
-				
-				<ul class="layui-nav layui-nav-tree layui-inline" lay-shrink="all">
-					{foreach name="menu" item="a"}
-						<li class="layui-nav-item">
-							<a href="javascript:;" class="menu-active" data-id="{$a.id}" data-title="{$a.title}" data-src="/{$a.src}"><i class="iconfont {$a.icon}"></i> {$a.title}</a>
-							{notempty name="$a.list"}
-								<dl class="layui-nav-child">
-								{foreach name="$a.list" item="b"}
-									<dd>
-									<a href="javascript:;" class="menu-active menu-b" data-id="{$b.id}" data-title="{$b.title}" data-src="/{$b.src}">{$b.title}</a>
-									{notempty name="$b.list"}
-										<dl class="layui-nav-child">
-										{foreach name="$b.list" item="c"}
-											<dd>
-											<a href="javascript:;" class="menu-active menu-c" data-id="{$c.id}" data-title="{$c.title}" data-src="/{$c.src}">{$c.title}</a>
-											{notempty name="$c.list"}
-												<dl class="layui-nav-child">
-												{foreach name="$c.list" item="d"}
-													<dd><a href="javascript:;" class="menu-active menu-d" data-id="{$d.id}" data-title="{$d.title}" data-src="/{$d.src}">{$d.title}</a></dd>
-												{/foreach}
-												</dl>
-											{/notempty}
-											</dd>
-										{/foreach}
-										</dl>
-									{/notempty}
-									</dd>
-								{/foreach}
-								</dl>
-							{/notempty}
-						</li>			
-					{/foreach}
-				</ul>
-			</div>
-		</div>
+                <div class="layui-layout-right">
+                    <span class="gg-head-item gg-head-refresh">
+                        <a href="javascript:;" class="refreshThis" gg-event="refresh" title="刷新页面">
+                            <i class="layui-icon layui-icon-refresh"></i>
+                        </a>
+                    </span>
+                    <span class="gg-head-item gg-head-screen" title="切换全屏">
+                        <a href="javascript:;" gg-event="screen" data-screen="full">
+                            <i class="fullScreen layui-icon layui-icon-screen-full"></i>
+                        </a>
+                    </span>
+					<span class="gg-head-item gg-head-set">
+                        <a href="javascript:;" id="theme" title="切换主题">
+                            <i class="layui-icon layui-icon-set"></i>
+                        </a>
+                    </span>
+					<span class="gg-head-item gg-head-set">
+                        <a href="/home/login/lock.html" title="锁屏">
+                            <i class="iconfont icon-suozhu" style="font-size:21px; font-weight:800"></i>
+                        </a>
+                    </span>
+                    <span class="gg-head-item gg-head-message">
+                        <a href="javascript:;" data-href="/home/message/inbox" data-id="1000" data-title="消息中心" class="tab-a" title="消息中心">
+                            <i class="layui-icon layui-icon-notice"></i>
+                            <!-- 如果有新消息，则显示 -->
+                            <div class="gg-message-num" id="msgNum" style="display: none;"><span>0</span></div>
+                        </a>
+                    </span>
+                    <span class="gg-head-item gg-head-avatar">
+                        <ul class="layui-nav">
+                            <li class="layui-nav-item">
+                                <a href="javascript:;">
+									<img src="{$login_admin.thumb}" onerror="javascript:this.src='{__IMG__}/nonepic360x360.jpg';this.onerror=null;">
+                                    <cite>{$login_admin.nickname}</cite>
+                                </a>
+                                <dl class="layui-nav-child" style="text-align: center; cursor: pointer;">
+                                    <dd><a data-href="/home/index/edit_personal" data-id="1001" data-title="基本资料" class="tab-a">基本资料</a></dd>
+                                    <dd><a data-href="/home/index/edit_password" data-id="1002" data-title="修改密码" class="tab-a">修改密码</a></dd>
+                                    <hr>
+                                    <dd gg-event="logout"><a>退出</a></dd>
+                                </dl>
+                            </li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
 
-		<div class="layui-body">
-			<div class="layui-tab layui-tab-brief gougu-admin-tab" lay-filter="gougu-admin-tab" lay-unauto="" lay-allowClose="true" style="height: 100%;">
-				<ul class="layui-tab-title">
-					<li class="layui-this ittab-tab-home" lay-id="0">首页</li>
-				</ul>
-				<div class="layui-icon layui-icon-prev" id="left_button" title="向左滚动菜单"></div>
-				<div class="layui-icon layui-icon-next" id="right_button" title="向右滚动菜单"></div>
-				<div class="layui-tab-content" style="height: 100%;">
-					<div class="layui-tab-item layui-show">
-						<iframe id="0" data-frameid="0" name="myiframe" src="/home/index/main" frameborder="0" align="left" width="100%" height="100%" scrolling="yes"></iframe>
-					</div>
-				</div>
+            <!-- 侧边菜单 -->
+			{empty name="$system.menu_mode"}
+				{include file="/index/menu_classical" /}
+			{else/}
+				{if ($system.menu_mode == 'expand') }
+					{include file="/index/menu_expand" /}
+				{else/}
+					{include file="/index/menu_classical" /}
+				{/if}
+			{/empty}
+            <!-- 页面标签 -->
+            <div id="pageTabs" class="page-tabs">
+                <div class="layui-icon gg-tabs-control layui-icon-prev" gg-event="tabRollLeft"></div>
+                <div class="layui-icon gg-tabs-control layui-icon-next" gg-event="tabRollRight"></div>
+                <div class="layui-icon gg-tabs-control layui-icon-down">
+                    <ul class="layui-nav gg-tabs-select">
+                        <li class="layui-nav-item">
+                            <a href="javascript:;"></a>
+                            <dl class="layui-nav-child layui-anim-fadein">
+                                <dd gg-event="closeThisTabs"><a href="javascript:;">关闭当前</a></dd>
+                                <dd gg-event="closeOtherTabs"><a href="javascript:;">关闭其它</a></dd>
+                                <dd gg-event="closeAllTabs"><a href="javascript:;">关闭全部</a></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </div>
+                <div class="layui-tab gg-admin-tab" lay-unauto lay-allowClose="true" lay-filter="gg-admin-tab">
+                    <ul class="layui-tab-title" id="pageTabUl">
+                        <li lay-id="0" lay-attr="view/home/index.html" class="layui-this"><i class="iconfont icon-xueshuguanli"></i></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 主体内容 -->
+            <div class="layui-body" id="GouguAppBody">
+                <div class="gg-tab-page layui-show" id="tabItem0" data-id="0">
+                    <iframe id="0" data-frameid="0" title="勾股OA" name="myiframe" src="{:url('/home/index/main')}" frameborder="0" data-timestamp="0" align="left" width="100%" height="100%" scrolling="yes"></iframe>
+                </div>
+            </div>
+            <!-- 辅助元素，用于移动设备下遮罩 -->
+            <div class="gg-body-shade" gg-event="shade"></div>
+			<!-- 新消息通知 -->
+            <div class="notification" style="display:none;">
+				<audio id="msgSound"><source src="{__STATIC__}/home/file/msg.mp3" type="audio/mpeg"></audio>
 			</div>
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
 <!-- /主体 -->
 {/block}
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	var msgStatus=0,isClose=0,msgNum = 0;
-	function init(layui) {
-		var layer = layui.layer;
-		$("[ittab-logout]").on("click", function () {
+	const msg_sound = {$system.msg_sound|default=1};
+	const watermark = {$system.watermark|default=1};
+	const watermarkTxt = '{$admin.name|default="勾股OA"} {:substr($admin.mobile, -4)}';
+	const moduleInit = ['tool','admin'];
+	function gouguInit() {
+		let admin = layui.admin;
+		let tabs = admin.getCookie('gougutab');
+		if(tabs && tabs!=''){
+			let tab_parse = JSON.parse(tabs);
+			let tab_id = tab_parse.tab_id,tab_array = tab_parse.tab_array;
+			if(tab_array.length>0){
+				for(let a=0; a<tab_array.length;a++){
+					admin.tabTem(tab_array[a].id, tab_array[a].url,tab_array[a].title);
+				}
+				if(tab_id>0){
+					admin.tabChange(tab_id);
+				}
+			}
+		}
+		admin.loading();
+		menuInit();
+		if(watermark==1){
+			createWatermark();
+		}
+		$('#GouguApp').on("click",'[gg-event="logout"]',function () {
 			layer.confirm('确认注销登录吗?', { icon: 7, title: '警告' }, function (index) {
 				//注销
 				$.ajax({
@@ -104,7 +157,7 @@
 						layer.msg(e.msg);
 						if (e.code == 0) {
 							setTimeout(function () {
-								location.href = "/home/login/index"
+								location.href = "{:url('home/login/index')}"
 							}, 1000)
 						}
 					}
@@ -112,57 +165,103 @@
 				layer.close(index);
 			});
 		});
-	};
-	//轮循获取消息
-	var getStatus = setInterval(function () {
-		$.ajax({
-			url: "/home/index/index",
-			type:'post',
-			success:function(e){
-				if(e.code==0 && e.data!=''){
-					if(e.data.msg_num>0){
-						$('#msgNum').show().find('a').html(e.data.msg_num);
-					}
-					else{
-						$('#msgNum').hide().find('a').html(0);
-					}
-					if(isClose==0){
-						var html = '<ul id="messageul" style="line-height:24px;">';						
-						$.each(e.data, function(key, value) {
-							if(key!='msg_num'){
-								html += '<li style="cursor:pointer;">'+value+'</li>';
-							}							
-						});
-						html +='</ul>'; 
-						if(msgStatus==1){
-							$('#msgBox').html(html);
-						}else{
-							layer.open({
-								type: 1
-								,title:'消息提醒'
-								,offset: 'rb'
-								,area:['240px','168px']
-								,content: '<div id="msgBox" style="padding:10px 15px;">'+html+'</div>'
-								,btnAlign: 'c' //按钮居中
-								,shade: 0 //不显示遮罩
-								,success:function(){
-									msgStatus=1;
-								}
-								,cancel:function(){
-									msgStatus=0;
-									isClose=1;
-								}
-							});
+		layui.dropdown.render({
+			elem: '#theme',
+			trigger: 'mousedown',
+			align: 'center',
+			data: [{
+				title: '经典黑',
+				theme: 'black'
+			},{
+				title: '简约白',
+				theme: 'white'
+			},{
+				title: '海军蓝',
+				theme: 'blue'
+			}],
+			click: function(data, othis){
+				$.ajax({
+					url: "/home/index/set_theme",
+					data:{'theme':data.theme},
+					success: function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							setTimeout(function () {
+								parent.location.reload();
+							}, 1000)
 						}
 					}
-				}else{
-					msgStatus=0;
-					layer.closeAll();
-				}
+				})
 			}
-		})
-	}, 10000);
+		});
+		//轮循获取消息
+		let msg_num = 0,msg_bool=false;
+		const msgSound = document.getElementById("msgSound");
+		$(document).ready(function(){
+			$(document).one('click',function(){
+				msg_bool = true;
+				//console.log("页面被点击了");
+			});
+		});
+		
+		$("#GouguAppBody").find('.gg-tab-page.layui-show iframe').on("load", function() {
+			var iframeDocument = $(this).contents();
+			iframeDocument.one('click',function(){
+				msg_bool = true;
+				//console.log("子页面被点击了");
+			});
+		});	
+		
+		var getStatus = setInterval(function () {
+			$.ajax({
+				url: "/api/index/get_msg",
+				type:'post',
+				success:function(e){
+					if(e.code==0 && e.data!==''){
+						if(e.data>0){
+							$('#msgNum').show().find('span').html(e.data);
+							if(e.data!=msg_num && msg_bool == true && msg_sound==1){
+								msgSound.play();
+								msg_num = e.data;
+							}
+						}
+						else{
+							$('#msgNum').hide().find('span').html(0);
+						}
+					}else{
+						layer.closeAll();
+					}
+				}
+			})
+		}, 10000);
+	}
+
+	function createWatermark(){
+		var canvas = document.createElement('canvas');
+		canvas.width = 300;
+		canvas.height = 200;
+		var ctx = canvas.getContext('2d');
+		ctx.font = '14px Arial';
+		ctx.fillStyle = '#dddddd';
+		ctx.textAlign = 'left';
+		ctx.textBaseline = 'top';
+		ctx.rotate(15 * Math.PI / 180);
+		ctx.fillText(watermarkTxt, 20, 50);
+		ctx.fillText(watermarkTxt, 180, 120);
+		var dataURL = canvas.toDataURL('image/png');
+		let node = document.createElement("div");
+		node.style.pointerEvents = "none";
+		node.style.position = "fixed";
+		node.style.width = "100%";
+		node.style.height = "100%";
+		node.style.top = "0";
+		node.style.left = "0";
+		node.style.opacity = "0.36";
+		node.style.zIndex = "998";
+		node.style.background = 'url("' + dataURL + '")  0 0 repeat';
+		// 将创建的元素插入body中，作为body的子元素
+		document.body.appendChild(node);
+	}
 </script>
-{include file="../../base/view/common/layui" base='base' extend="['gougucms']" callback="init" /}
 {/block}
 <!-- /脚本 -->

@@ -1,0 +1,64 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">会议纪要</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">会议时间</td>
+			<td>{$detail.meeting_date|date='Y-m-d H:i:s'}</td>
+			<td class="layui-td-gray">主持人</td>
+			<td>{$detail.anchor_name}</td>
+			<td class="layui-td-gray">记录人</td>
+			<td>{$detail.recorder_name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">会 议 室</td>
+			<td colspan="3">{$detail.room}</td>
+			<td class="layui-td-gray">主办部门</td>
+			<td>{$detail.did_name|default=""}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">参会人员</td>
+			<td colspan="5">{$detail.join_names}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">会议主题</td>
+			<td colspan="5">{$detail.title}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">会议内容</td>
+			<td colspan="5">{$detail.content}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2" style="vertical-align:top;">下一步<br>工作计划</td>
+			<td colspan="5">{$detail.plans}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">参会人员签字</td>
+			<td colspan="5">{$detail.sign_names}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">共享给谁</td>
+			<td colspan="5">{$detail.share_names}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">备注信息</td>
+			<td colspan="5">{$detail.remarks|default=''}</td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;		
+
+}
+</script>
+{/block}
+<!-- /脚本 -->

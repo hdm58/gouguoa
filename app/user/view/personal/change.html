@@ -1,19 +1,22 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="body-table">
-	<form class="layui-form layui-form-bar">
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x">
 		<div class="layui-input-inline">
-			<input type="text" name="keywords" placeholder="职业名称/备注" class="layui-input" autocomplete="off"/>
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off"/>
 		</div>
-		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交搜索</button>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
 	</form>
 	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
-	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add">+ 添加人事调动记录</button>
+	<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加人事调动记录</button>
   </div>
 </script>
 {/block}
@@ -22,30 +25,29 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	var tableIns = null;
-	function init(layui) {
-		var table = layui.table
-			,rightpage = layui.rightpage
-			, form = layui.form;
-
-		tableIns = table.render({
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form;
+		layui.pageTable = table.render({
 			elem: '#test'
 			, toolbar: '#toolbarDemo'
+			,defaultToolbar: false
 			, url: "/user/personal/change"
 			, page: true //开启分页
 			, limit: 20
 			, cols: [[
 				{ field: 'id', width: 80, title: '序号', align: 'center' }
-				, { field: 'name', width: 160, title: '员工姓名', align: 'center'}
-				, { field: 'adepartment', width: 200, title: '调出部门', align: 'center'}
-				, { field: 'bdepartment', width: 200, title: '调入部门',align: 'center'}
-				, { field: 'move_time', title: '调动日期', align: 'center'}
-				, { field: 'admin', title: '调动操作人',width: 160, align: 'center'}
+				, { field: 'name', width: 100, title: '员工姓名', align: 'center'}
+				, { field: 'adepartment', width: 160, title: '调出部门'}
+				, { field: 'bdepartment', width: 160, title: '调入部门'}
+				, { field: 'remark', title: '调动原因'}
+				, { field: 'move_time', title: '调动日期',width: 100, align: 'center'}
+				, { field: 'admin', title: '调动操作人',width: 100, align: 'center'}
 				, {
 					width: 80, title: '操作', align: 'center'
 					, templet: function (d) {
 						var html = '';
-						var delBtn = '<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
+						var delBtn = '<button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</button>';
 						return delBtn;
 					}
 				}
@@ -56,7 +58,7 @@
 		table.on('tool(test)', function(obj){
 			var data = obj.data;
 			if(obj.event === 'edit'){
-				rightpage.open('/user/personal/change_add?id='+data.id,"900px");
+				tool.side('/user/personal/change_add?id='+data.id);
 				return;
 			}
 		});
@@ -64,7 +66,7 @@
 		//表头工具栏事件
 		table.on('toolbar(test)', function(obj){
 			if (obj.event === 'add') {
-				rightpage.open("/user/personal/change_add","900px");
+				tool.side("/user/personal/change_add");
 				return;
 			}
 		});
@@ -72,7 +74,7 @@
 		//监听搜索提交
 		form.on('submit(webform)', function(data){
 			if(data.field.keywords) {
-			  tableIns.reload({where:{keywords:data.field.keywords},page:{curr:1}});			  
+				layui.pageTable.reload({where:{keywords:data.field.keywords},page:{curr:1}});			  
 			}
 			else{
 				location.reload();
@@ -81,6 +83,5 @@
 		});
 	}
 </script>
-{include file="../../base/view/common/layui" base="base" extend="['rightpage']" callback="init" /}
 {/block}
 <!-- /脚本 -->

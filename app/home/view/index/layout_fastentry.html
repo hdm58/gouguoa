@@ -1,0 +1,70 @@
+<div class="layui-card layui-right-bar">
+	<div class="layui-row pt-3 px-3 py-2">
+		<ul class="layui-col-space12">
+			<li class="layui-col-xs3">
+				<a href="javascript:;" data-href="/home/index/contacts_book" data-id="2000" class="tab-a" data-title="通讯录">
+					<i class="iconfont icon-huamingce"></i>
+					<cite>通讯录</cite>
+				</a>
+			</li>
+			<li class="layui-col-xs3">
+				<a href="javascript:;" data-href="/oa/plan/calendar" data-id="100" class="tab-a" data-title="日程安排">
+					<i class="iconfont icon-kaoshijihua"></i>
+					<cite>日程安排</cite>
+				</a>
+			</li>
+			<li class="layui-col-xs3">
+				<a href="javascript:;" class="report-add">
+					<i class="iconfont icon-rizhiguanli"></i>
+					<cite>+工作汇报</cite>
+				</a>
+			</li>
+			<li class="layui-col-xs3">
+				<a href="javascript:;" class="work-add">
+					<i class="iconfont icon-renwujincheng"></i>
+					<cite>+工作记录</cite>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<script>
+function layoutFastentry(tool,work,table){
+	$('.work-add').on('click',function(){
+		work.add(0,{'id':0});
+	})
+	$('.report-add').on('click',function(){
+		var type=[{'id':1,'title':'日报'},{'id':2,'title':'周报'},{'id':3,'title':'月报'}];
+		var tablereport;
+		layer.open({
+			title:'选择汇报类型',
+			type:1,
+			area:['360px','300px'],
+			content:'<div style="width:325px; padding:15px 15px 0"><div id="selectType"></div></div>',
+			success:function(){
+				tablereport=table.render({
+					elem: '#selectType',
+					cols: [[ //标题栏
+						{type:'radio',title: '选择'},
+						{field: 'title', title: '汇报类型'}
+					]],
+					data: type
+				  });			
+			},
+			btn:['确定'],
+			yes: function(idx){
+				var checkStatus = table.checkStatus(tablereport.config.id);
+				var data = checkStatus.data;
+				if(data.length>0){
+					tool.side('/oa/work/add?types='+data[0].id);
+					layer.close(idx);
+				}
+				else{
+					layer.msg('请选择汇报类型');
+					return false;
+				}
+			}
+		})
+	});
+}
+</script>

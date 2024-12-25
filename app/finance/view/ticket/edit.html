@@ -1,0 +1,153 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">编辑开票申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">发票金额<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入发票金额" lay-reqText="请输入发票金额" value="{$detail.amount}"></td>
+			<td class="layui-td-gray">发票号码<font>*</font></td>
+			<td><input type="text" class="layui-input" name="code" lay-verify="required" placeholder="请输入发票号码" lay-reqText="请输入发票号码" value="{$detail.code}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发票类型<font>*</font></td>
+			<td>
+			<select name="invoice_type" lay-verify="required" lay-reqText="请选择发票类型">
+				<option value="">请选择发票类型</option>
+				<option value="1" {eq name="$detail.invoice_type" value="1"}selected{/eq}>增值税专用发票</option>
+				<option value="2" {eq name="$detail.invoice_type" value="2"}selected{/eq}>普通发票</option>
+				<option value="3" {eq name="$detail.invoice_type" value="3"}selected{/eq}>专业发票</option>
+			  </select>
+			</td>
+			<td class="layui-td-gray">发票日期<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" name="open_time" lay-verify="required" readonly placeholder="请选择" lay-reqText="请完善发票日期" value="{$detail.open_time|date='Y-m-d'}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发票抬头<font>*</font></td>
+			<td>
+				<select name="invoice_subject" lay-verify="required" lay-reqText="请选择发票抬头">
+					<option value="">请选择发票抬头</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$vo.id" value="$detail.invoice_subject"}selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray-3">开票主体(供应商)<font>*</font></td>
+			<td>
+				<input type="text" name="supplier_name" class="layui-input picker-oa" data-types="supplier" value="{$detail.supplier_name}" placeholder="请选择" readonly lay-verify="required" lay-reqText="开票主体(供应商)">
+				<input type="hidden" name="supplier_id" value="{$detail.supplier_id}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联采购合同</td>
+			<td colspan="3">
+				<input type="text" class="layui-input picker-oa" data-types="purchase" name="purchase_name" placeholder="请选择" readonly value="{$detail.purchase_name|default=''}">		
+				<input type="hidden" class="layui-input" name="purchase_id" value="{$detail.purchase_id}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="{$detail.project_name|default=''}">		
+				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
+		</tr>
+	</table>	
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaPicker = layui.oaPicker,oaCheck = layui.oaCheck,uploadPlus = layui.uploadPlus;
+		//选择抬头类型
+		form.on('radio(type)', function (data) {
+			if(data.value==2){
+				$('.invoice-qiye').hide();
+			}
+			else{
+				$('.invoice-qiye').show();
+			}
+		});
+		
+		//相关附件上传
+		var attachment = new uploadPlus();
+		
+		//审批相关
+		oaCheck.init({
+			check_name:'ticket',
+			check_btn:0
+		});
+		
+		$('.customer-picker').on('click',function(){
+			let that = $(this),ids = [],titles=[];
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				that.val(titles.join(','));
+				that.next().val(ids.join(','));
+				$('[name="invoice_tax"]').val(tax_num.join(','));
+				$('[name="invoice_bank"]').val(bank.join(','));
+				$('[name="invoice_account"]').val(bank_sn.join(','));
+				$('[name="invoice_phone"]').val(cperson_mobile.join(','));
+				$('[name="invoice_address"]').val(cperson_address.join(','));
+			}
+			oaPicker.picker('customer',1,callback,{});
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'ticket';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			tool.post("/finance/ticket/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

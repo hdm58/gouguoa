@@ -1,0 +1,108 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">企业主体</h3>
+	{if condition="$id eq 0"}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">企业名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" value="" lay-verify="required" lay-reqText="请完善企业名称" placeholder="请完善企业名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray">所在城市<font>*</font></td>
+			<td>
+				<input type="text" name="city" value="" lay-verify="required" lay-reqText="请完善所在城市" placeholder="请完善所在城市" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">详细地址<font>*</font></td>
+			<td>
+				<input type="text" name="address" value="" lay-verify="required" lay-reqText="请完善详细地址" placeholder="请完善详细地址" class="layui-input">
+			</td>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td><input type="text" name="tax_num" value="" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">开户银行</td>
+			<td>
+				<input type="text" name="bank" value="" placeholder="请完善开户银行" class="layui-input">
+			</td>
+			<td class="layui-td-gray">银行帐号</td>
+			<td><input type="text" name="bank_sn" value="" placeholder="请完善银行帐号" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">
+				<textarea name="remark" placeholder="请输入描述" class="layui-textarea" style="height: 120px;"></textarea>
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">企业名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" value="{$detail.title}" lay-verify="required" lay-reqText="请完善企业名称" placeholder="请完善企业名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray">所在城市<font>*</font></td>
+			<td>
+				<input type="text" name="city" value="{$detail.city}" lay-verify="required" lay-reqText="请完善所在城市" placeholder="请完善所在城市" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">详细地址<font>*</font></td>
+			<td>
+				<input type="text" name="address" value="{$detail.address}" lay-verify="required" lay-reqText="请完善详细地址" placeholder="请完善详细地址" class="layui-input">
+			</td>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td><input type="text" name="tax_num" value="{$detail.tax_num}" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
+		</tr>	
+		<tr>
+			<td class="layui-td-gray">开户银行</td>
+			<td>
+				<input type="text" name="bank" value="{$detail.bank}" placeholder="请完善开户银行" class="layui-input">
+			</td>
+			<td class="layui-td-gray">银行帐号</td>
+			<td><input type="text" name="bank_sn" value="{$detail.bank_sn}" placeholder="请完善银行帐号" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">
+				<textarea name="remark" placeholder="请输入描述" class="layui-textarea" style="height: 120px;">{$detail.remark}</textarea>
+			</td>
+		</tr>
+	</table>
+	{/if}
+	<div class="pt-4">
+		<input type="hidden" value="{$id}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交保存</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		//监听发送
+		form.on('submit(webform)', function(data){
+			$.ajax({
+				url: "/home/cate/enterprise_add",
+				type:'post',
+				data:data.field,
+				success:function(e){
+					layer.msg(e.msg);
+					if (e.code == 0) {						
+						tool.sideClose(1000);
+					}
+				}
+			})
+			return false;
+		});
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,103 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="layui-tab layui-tab-brief border" lay-filter="tab" style="background-color:#fff; margin:0; border-bottom:0">
+		<ul class="layui-tab-title">
+			<li><a href="/oa/work/datalist?send=1">发送的汇报</a></li>
+			<li class="layui-this"><a href="/oa/work/datalist?send=2">接受的汇报</a></li>
+		</ul>
+	</div>
+	<form class="layui-form gg-form-bar border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:180px">
+			<input type="text"  name="diff_time" class="layui-input tool-time" data-range="~" placeholder="选择时间区间" readonly>
+		</div>
+		<div class="layui-input-inline" style="width:136px">
+			<select name="types">
+				<option value="">选择类型</option>
+				<option value="1">日报</option>
+				<option value="2">周报</option>
+				<option value="3">月报</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:240px;">
+			<input type="text" name="keywords" placeholder="输入关键字，工作内容" class="layui-input"/>
+		</div>	
+		<div class="layui-input-inline" style="width:150px;">
+			<input type="hidden" name="send" value="2" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>接受的工作汇报</h3>
+</script>
+
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">查看</button></div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	const work_types = [{"id":1,"title":"日报"},{"id":2,"title":"周报"},{"id":3,"title":"月报"}];
+	function gouguInit() {
+		var form = layui.form,dropdown = layui.dropdown,table = layui.tablePlus,tool=layui.tool;
+
+		layui.pageTable = table.render({
+			elem: '#test',
+			toolbar: '#toolbarDemo',
+			title:'工作汇报列表',
+			url: "/oa/work/datalist", //数据接口
+			where:{'send':2},
+			height: 'full-152',
+			cellMinWidth: 80, //全局定义常规单元格的最小宽度
+			cols: [[ //表头
+				{field:'id',title: '序号',width:80,align:'center'},
+				{field: 'types', title: '汇报类型',width:80,align:'center',templet:function(d){
+					var html='';
+					if(d.types==1){
+						html = '<span class="green">『日报』</span>';
+					}
+					else if(d.types==2){
+						html = '<span class="blue">『周报』</span>';
+					}
+					else if(d.types==3){
+						html = '<span class="yellow">『月报』</span>';
+					}
+					return html;
+				}},
+				{field: 'from_name', title: '汇报人', width:100,align:'center'},
+				{field: 'works', title: '工作内容'},
+				{field: 'create_time', title: '汇报周期', align:'center',width:200,templet:function(d){
+						if(d.types==1){
+							return d.start_date;
+						}else{
+							return d.start_date+' 至 '+d.end_date;
+						}
+					}
+				},
+				{field: 'send_time', title: '汇报时间', align:'center',width:160},
+				{field: 'files', title: '附件(个)',align:'center', width:80},
+				{field: 'right', title: '操作',fixed:'right', toolbar: '#barDemo', width:120, align:'center'}
+			]],
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'view'){
+				tool.side('/oa/work/view?id='+data.wid);
+				return;
+			}
+		});
+	}		
+</script>
+{/block}
+<!-- /脚本 -->

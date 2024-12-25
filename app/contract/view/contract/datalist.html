@@ -1,0 +1,251 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">全部</li>
+				<li>待我审批</li>
+				<li>我已审批</li>
+			</ul>
+		</div> 
+	</div> 
+	<form class="layui-form gg-form-bar border-x" id="barsearchform">
+		{gt name="$is_auth" value="0"}
+		<div class="layui-input-inline user-name" style="width:90px;">
+			<input type="text" name="username" placeholder="选择签定人" class="layui-input picker-admin" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{else/}
+		{gt name="$is_leader" value="0"}
+		<div class="layui-input-inline user-name" style="width:90px;">
+			<input type="text" name="username" placeholder="选择签定人" class="layui-input picker-sub" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{/gt}
+		{/gt}
+		<div class="layui-input-inline" style="width:122px;">
+			<select name="types">
+				<option value="">选择合同性质</option>
+				<option value="1">普通合同</option>
+				<option value="2">产品合同</option>
+				<option value="3">服务合同</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:122px;">
+			<select name="cate_id">
+				<option value="">选择合同类别</option>
+				{volist name=":get_base_data('ContractCate');" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:122px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				{volist name=":get_check_status()" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="sign_time" placeholder="选择合同签订日期" readonly name="sign_time">
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="end_time" placeholder="选择合同到期日期" readonly name="end_time">
+		</div>
+		<div class="layui-input-inline" style="width:220px;">
+			<input type="text" name="keywords" placeholder="输入关键字，合同编号/合同名称" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_contract" lay-filter="table_contract"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-sm" lay-event="add">
+		<span>+ 添加合同</span>
+		<i class="layui-icon layui-icon-down layui-font-12"></i>
+	</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const delay_num = {$delay_num|default=30};
+	const contract_types = [{"id":1,"title":"普通合同"},{"id":2,"title":"产品合同"},{"id":3,"title":"服务合同"}];
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
+	function gouguInit() {
+		var table = layui.tablePlus,dropdown = layui.dropdown,element = layui.element, tool = layui.tool,laydatePlus = layui.laydatePlus;
+		
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
+		
+		//日期范围
+		var sign_time = new laydatePlus({'target':'sign_time'});
+		var end_time = new laydatePlus({'target':'end_time'});
+		
+		layui.pageTable = table.render({
+			elem: "#table_contract"
+			,title: "销售合同列表"
+			,toolbar: "#toolbarDemo"
+			,url: "/contract/contract/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-152'
+			,cols: [[ //表头
+				{
+					field: 'id',
+					title: 'ID号',
+					align: 'center',
+					width: 80
+				},{ field: 'check_status', title: '审批状态', align: 'center', width: 110, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.check_status + '">『' + d.status_name + '』</span>';
+					return html;
+					}
+				},{
+					field: 'code',
+					title: '合同编号',
+					align: 'center',
+					width: 150
+				},{
+					field: 'name',
+					title: '合同名称',
+					minWidth:240,
+					templet: '<div><a data-href="/contract/contract/view/id/{{d.id}}.html" class="side-a">{{d.name}}</a></div>'
+				},{
+					field: 'cate_title',
+					title: '合同类别',
+					align: 'center',
+					width: 100
+				},{
+					field: 'types_name',
+					title: '合同性质',
+					align: 'center',
+					width: 80,
+					templet: function (d) {
+						var html = '<span class="layui-color-' + d.types + '">' + d.types_name + '</span>';
+						return html;
+					}
+				},{
+					field: 'interval_time',
+					title: '合同有效时间',
+					align: 'center',
+					width: 248,
+					templet: function (d) {
+						var html = d.interval_time;
+						if (d.delay > 0 && d.delay < delay_num) {
+							html += '<span class="red ml-1" style="font-size:12px;">' + d.delay + '天后到期</span>';
+						}
+						if (d.delay == 0) {
+							html += '<span class="red ml-1" style="font-size:12px;">已过期</span>';
+						}
+						return html;
+					}
+				},{
+					field: 'cost',
+					title: '合同金额(元)',
+					align: 'right',
+					width: 100
+				},{
+					field: 'sign_name',
+					title: '签定人',
+					align: 'center',
+					width: 80
+				},{
+					field: 'keeper_name',
+					title: '保管人',
+					align: 'center',
+					width: 80
+				},{
+					field: 'sign_time',
+					title: '签订日期',
+					align: 'center',
+					width: 100
+				},{
+					field: 'right',
+					fixed:'right',
+					title: '操作',
+					width: 120,
+					align: 'center',
+					ignoreExport:true,
+					templet: function (d) {
+						var html = '<div class="layui-btn-group">';
+						var btn0='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+						var btn1='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+						var btn2='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+						if(d.check_status==0 || d.check_status==4){
+							return html+btn0+btn1+btn2+'</div>';
+						}
+						else{
+							return btn0;
+						}
+					}						
+				}
+			]]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(table_contract)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data;
+			var that = this;
+			if (obj.event === 'add'){
+				  dropdown.render({
+					elem: that,
+					show: true, // 外部事件触发即显示
+					data: contract_types,
+					click: function(obj){
+						tool.side("/contract/contract/add?types="+obj.id);
+					}
+				  });
+				return;
+			}
+		});	
+			
+		table.on('tool(table_contract)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/contract/contract/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/contract/contract/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该合同吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/contract/contract/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,271 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-table-min th{font-size:13px; text-align:center; background-color:#f8f8f8;}
+.layui-table-min td{font-size:13px; padding:6px;text-align:center;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	<h3 class="pb-3">无发票回款信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">预回款金额(元)</td>
+			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray">收款主体</td>
+			<td colspan="3">{$detail.subject}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">付款主体</td>
+			<td>
+				{eq name="$detail.types" value="1"}企业{/eq}
+				{eq name="$detail.types" value="2"}个人{/eq}
+			</td>
+			<td class="layui-td-gray-2">付款方名称</td>
+			<td>{$detail.invoice_title}</td>
+			<td class="layui-td-gray">电话号码</td>
+			<td>{$detail.invoice_phone}</td>
+		</tr>
+		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td>{$detail.invoice_tax}</td>
+			<td class="layui-td-gray">开户行</td>
+			<td>{$detail.invoice_bank}</td>
+			<td class="layui-td-gray">银行账号</td>
+			<td>{$detail.invoice_account}</td>
+		</tr>
+		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
+			<td class="layui-td-gray-2">银行营业网点</td>
+			<td>{$detail.invoice_banking}</td>
+			<td class="layui-td-gray">地址</td>
+			<td colspan="3">{$detail.invoice_address}</td>
+		</tr>
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">关联附件</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	
+	<h3 class="py-3">回款信息</h3>
+	<form class="layui-form">
+		<table class="layui-table layui-table-form">
+			<tr>
+				<td class="layui-td-gray">回款状态</td>
+				<td>
+					{if condition="($detail.enter_status == 0)"}
+						<span class="red">未回款</span>
+					{elseif condition="($detail.enter_status == 1)"}
+						<span class="blue">部分回款</span>
+					{elseif condition="($detail.enter_status == 2)"}
+						<span  class="green">全部回款</span>
+					{/if}
+				</td>
+				<td class="layui-td-gray-2">未回款金额(元)</td>
+				<td style="color:#FF5722">{$detail.not_income}</td>
+				<td class="layui-td-gray-2">已回款金额(元)</td>
+				<td style="color:#1E9FFF">{$detail.enter_amount}</td>
+			</tr>
+			<tr>
+				<td class="layui-td-gray">回款记录</td>
+				<td colspan="5">
+					<table id="interfix" class="layui-table layui-table-min" style="margin:0">
+						<tr>
+							<th style="width:200px;">回款日期</th>
+							<th style="width:200px;">到帐金额(元)</th>
+							<th>备注</th>
+							<th style="width:100px;">操作</th>
+						</tr>
+						{empty name="$detail.income"}
+						<tr class="none_interfix">
+							<td colspan="4" style="text-align: center;">暂无回款记录</td>
+						</tr>
+						{else/}
+						{volist name="$detail.income" id="vo"}
+						<tr class="more_interfix">
+							<td>{$vo.enter_time | date='Y-m-d'}</td>
+							<td>{$vo.amount}</td>
+							<td style="text-align:left;">{$vo.remarks}</td>
+							<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove" data-id="{$vo.id}" data-inid="{$id}">删除</a></td>
+						</tr>
+						{/volist}
+						{/empty}
+					</table>
+					{if condition="($detail.enter_status lt 2)"}
+					<div class="pt-3"><button class="layui-btn layui-btn-sm" type="button" id="addInterfix">+ 添加回款记录</button></div>
+					{/if}
+				</td>
+			</tr>
+		</table>
+		<div class="pt-3">
+			<input name="invoice_id" id="invoice_id" type="hidden" value="{$id}">
+			<input name="enter_type" id="enter_type" type="hidden" value="1">
+			{if condition="($detail.enter_status lt 2)"}
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">保存回款记录</button>
+			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			{/if}
+			{if condition="($detail.enter_status eq 0)"}
+			<span class="layui-btn layui-btn-danger" lay-event="all">全部回款</span>
+			{/if}
+			{if condition="($detail.enter_status eq 1)"}
+			<span class="layui-btn layui-btn-danger" lay-event="all">剩余部分全部回款</span>
+			{/if}
+			{if condition="($detail.enter_status gt 0)"}
+			<span class="layui-btn layui-btn-warm" lay-event="refue">全部反回款</span>
+			{/if}
+		</div>
+	</form>
+	<input type="hidden" name="id" value="{$detail.id}">
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,laydate = layui.laydate;
+	//添加表格行
+	$('#addInterfix').on('click',function(){
+		var html = '';
+		html += '<tr class="more_interfix">';
+		html += '<td><input type="text" class="layui-input tool-time" name="enter_time[]" readonly lay-verify="required" lay-reqText="请选择回款日期">';
+		html += '<td><input type="text" class="layui-input" name="amount[]" lay-verify="required|number" lay-reqText="请输入回款金额,数字"></td>';
+		html += '<td><input type="text" class="layui-input" name="remarks[]"></td>';
+		html += '<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>';
+		html += '</tr>';
+		$("#interfix").find('.none_interfix').remove();
+		$("#interfix").append(html);
+		form.render();
+	});
+	//删除表格
+	$('#interfix').on('click', '[lay-event="del"]', function() {
+		$(this).parents(".more_interfix").remove();
+		if($("#interfix").find('.more_interfix').length<1){
+			$("#interfix").append('<tr class="none_interfix"><td colspan="4" style="text-align: center;">暂无回款记录</td></tr>');				
+		}
+	});
+
+	//删除回款记录
+	$('#interfix').on('click', '[lay-event="remove"]', function() {
+		var that=$(this);
+		var id=that.data('id');
+		var invoice_id=that.data('inid');
+		layer.confirm('确定要删除该回款记录?', {icon: 3, title:'提示'}, function(index){
+			$.ajax({
+				url: "/finance/income/del",
+				type:'post',
+				data:{id:id,invoice_id:invoice_id},
+				success:function(res){
+					layer.msg(res.msg);
+					if(res.code==0){
+						parent.layui.pageTable.reload();
+						window.setTimeout(function(){
+							location.reload();
+						},1200)	
+					}
+				}
+			})
+		})
+	});
+
+	//监听提交
+	form.on('submit(webform)', function(data){
+		console.log(data.field);
+		if($("#interfix").find('.tool-time').length<1){
+			layer.msg('请添加回款记录');
+			return false;
+		}
+		$.ajax({
+			url: "/finance/income/add",
+			type:'post',
+			data:data.field,
+			success:function(res){
+				layer.msg(res.msg);
+				if(res.code==0){
+					parent.layui.pageTable.reload();
+					window.setTimeout(function(){
+						location.reload();
+					},1200)	
+				}
+			}
+		})
+		return false;
+	});
+	
+	$('.layui-form').on('click', '[lay-event="refue"]', function () {
+		var invoice_id=$('#invoice_id').val();
+		layer.confirm('确定要全部反回款?', {icon: 3, title:'提示'}, function(index){
+			$.ajax({
+				url: "/finance/income/add",
+				type:'post',
+				data:{invoice_id:invoice_id,enter_type:3},
+				success:function(res){
+					layer.msg(res.msg);
+					if(res.code==0){
+						parent.layui.pageTable.reload();
+						window.setTimeout(function(){
+							location.reload();
+						},1200)	
+					}
+				}
+			})
+		})
+		return false;
+	})
+	$('.layui-form').on('click', '[lay-event="all"]', function () {
+		var invoice_id=$('#invoice_id').val();
+		layer.confirm('确定已经全部回款?', {icon: 3, title:'提示'}, function(idx){
+			layer.prompt({title: '选择回款日期', formType: 3,value :'',success: function(layero, index){
+				$('.layui-layer-input').attr('readonly',true);
+				lay('.layui-layer-input').each(function () {
+					laydate.render({
+						elem: this,
+						trigger: 'click',
+						showBottom:false
+					});
+				});
+				layer.close(idx);
+			}
+		}, function(enter_time, index){
+				if(enter_time ==''){
+					layer.msg('选择回款日期');
+					return false;
+				}
+				$.ajax({
+					url: "/finance/income/add",
+					type:'post',
+					data:{invoice_id:invoice_id,enter_type:2,enter_time:enter_time},
+					success:function(res){
+						layer.msg(res.msg);
+						if(res.code==0){
+							parent.layui.pageTable.reload();
+							window.setTimeout(function(){
+								location.reload();
+							},1200)	
+						}
+					}
+				})
+			})
+		})
+		return false;
+	})
+}
+</script>
+{/block}
+<!-- /脚本 -->

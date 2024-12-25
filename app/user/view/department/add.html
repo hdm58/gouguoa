@@ -1,16 +1,16 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">部门架构</h3>
+<form class="layui-form p-4">
+	<h3 class="pb-3">部门架构</h3>
 	{eq name="$id" value="0"}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray2">部门名称<font>*</font></td>
+			<td class="layui-td-gray">部门名称<font>*</font></td>
 			<td>
 				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入部门名称" lay-reqText="请输入部门名称" class="layui-input">
 			</td>
-			<td class="layui-td-gray2">上级部门<font>*</font></td>
+			<td class="layui-td-gray">上级部门<font>*</font></td>
 			<td>
 				<select name="pid" lay-verify="required" lay-reqText="请选择上级部门">
 					<option value="0">作为顶级部门</option>
@@ -21,20 +21,24 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">部门联系电话</td>
-			<td colspan="3">
+			<td class="layui-td-gray">排序<font>*</font></td>
+			<td>
+				<input type="text" name="sort" lay-verify="required|number" value="0" autocomplete="off" placeholder="请输入排序" lay-reqText="请输入排序" class="layui-input">
+			</td>
+			<td class="layui-td-gray-2">部门联系电话</td>
+			<td>
 				<input type="text" name="phone" placeholder="请输入部门联系电话，可空" autocomplete="off" class="layui-input">
 			</td>
 		</tr>
 	</table>
 	{else/}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray2">部门名称<font>*</font></td>
+			<td class="layui-td-gray">部门名称<font>*</font></td>
 			<td>
 				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入部门名称" lay-reqText="请输入部门名称" class="layui-input">
 			</td>
-			<td class="layui-td-gray2">上级部门<font>*</font></td>
+			<td class="layui-td-gray">上级部门<font>*</font></td>
 			<td>
 				<select name="pid" lay-verify="required" lay-reqText="请选择上级部门">
 					<option value="0">作为顶级部门</option>
@@ -43,25 +47,24 @@
 					{/volist}
 				</select>
 			</td>
+			<td class="layui-td-gray">排序<font>*</font></td>
+			<td>
+				<input type="text" name="sort" lay-verify="required|number" value="{$detail.sort}" autocomplete="off" placeholder="请输入排序" lay-reqText="请输入排序" class="layui-input">
+			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray2">部门负责人</td>
-			<td>
-				<select name="leader_id">
-					<option value="0">请选择部门负责人</option>
-					{volist name="users" id="v"}
-					<option value="{$v.id}" {eq name="detail.leader_id" value="$v.id"} selected{/eq}>{$v.name}</option>
-					{/volist}
-				</select>
+			<td class="layui-td-gray-2">部门负责人</td>
+			<td colspan="3">
+				<select id="leader_ids" name="leader_ids" xm-selected="{$detail.leader_ids|default=''}" xm-select="select1" xm-select-skin="default"></select>
 			</td>
-			<td class="layui-td-gray2">部门联系电话</td>
+			<td class="layui-td-gray-2">部门联系电话</td>
 			<td>
 				<input type="text" name="phone" value="{$detail.phone}" placeholder="请输入部门联系电话，可空" autocomplete="off" class="layui-input">
 			</td>
 		</tr>
 	</table>
 	{/eq}
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -73,29 +76,30 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var form = layui.form,
-			layer = layui.layer;
-
+	const did = {$id};
+	const moduleInit = ['tool','formSelects'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,formSelects=layui.formSelects;
+		if(did>0){
+			//选择部门人员
+			var selected = $('#leader_ids').attr('xm-selected');
+			formSelects.data('select1', 'server', {
+				url: '/api/index/get_employee_select?did='+did,
+				keyword: selected
+			});
+		}
 		//监听提交
-		form.on('submit(webform)', function(data) {
-			$.ajax({
-				url: "/user/department/add",
-				type: 'post',
-				data: data.field,
-				success: function(e) {
-					layer.msg(e.msg);
-					if (e.code == 0) {
-						setTimeout(function(){
-							parent.location.reload();
-						},1000);
-					}
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);					
 				}
-			})
+			}
+			tool.post("/user/department/add", data.field, callback);
 			return false;
 		});
 	}
 </script>
-{include file="../../base/view/common/layui" base="base" extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

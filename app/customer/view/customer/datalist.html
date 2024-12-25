@@ -1,0 +1,243 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tab-1 .user-name,.tab-2 .user-name{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">全部客户</li>
+				<li>我的客户</li>
+				{gt name="$is_leader" value="0"}
+				<li>下属客户</li>
+				{/gt}
+				<li>共享客户</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:172px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="最近跟进日期" readonly name="follow_time" id="follow_time">
+		</div>
+		<div class="layui-input-inline" style="width:172px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="下次跟进日期" readonly name="next_time" id="next_time">
+		</div>
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="industry_id">
+				<option value="">所属行业</option>
+				{volist name=":get_base_data('Industry')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="grade_id">
+				<option value="">客户等级</option>
+				{volist name=":get_base_data('customer_grade')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="source_id">
+				<option value="">渠道来源</option>
+				{volist name=":get_base_data('customer_source')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="customer_status">
+				<option value="">客户状态</option>
+				{volist name=":get_base_type_data('basic_customer',1)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="intent_status">
+				<option value="">客户意向</option>
+				{volist name=":get_base_type_data('basic_customer',2)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		{gt name="$is_leader" value="0"}
+		<div class="layui-input-inline user-name" style="width:100px;">
+			<input type="text" name="username" placeholder="下属员工" class="layui-input picker-sub" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{/gt}
+		<div class="layui-input-inline" style="width:188px;">
+			<input type="text" name="keywords" placeholder="输入关键字,客户名称" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:148px">
+			<input type="hidden" name="tab" value="0" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_customer" lay-filter="table_customer"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/customer/customer/add">+ 添加客户</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const is_leader = '{$is_leader}';
+	const moduleInit = ['tool','tablePlus','oaPicker','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form, element = layui.element,laydatePlus=layui.laydatePlus;
+		var follow_time = new laydatePlus({'target':'follow_time'});
+		var next_time = new laydatePlus({'target':'next_time'});
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
+		layui.pageTable = table.render({
+			elem: "#table_customer"
+			,title: '公海客户列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/customer/customer/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-152'
+			,cols:[
+				[ //表头
+					{
+						field: 'id',title: 'ID号',align: 'center',width: 80
+					},{
+						field: 'name',
+						title: '客户名称',
+						minWidth:300,
+						templet: function (d) {
+							return '<span class="layui-color-' + d.grade_id + '">『' + d.grade + '』</span>'+d.name
+						}
+					},
+					{
+						field: 'customer_status_name', 
+						title: '客户状态', 
+						align: 'center',
+						width: 100
+					},{
+						field: 'intent_status_name',
+						title: '客户意向',
+						align: 'center',
+						width: 100
+					},{
+						field: 'contact_name',
+						title: '联系人',
+						align: 'center',
+						width: 80
+					},{
+						field: 'contact_mobile',
+						title: '手机号码',
+						align: 'center',
+						width: 100
+					},{
+						field: 'follow_time',
+						title: '最近跟进时间',
+						align: 'center',
+						sort: true,
+						width: 120
+					},{
+						field: 'next_time',
+						title: '下次跟进时间',
+						align: 'center',
+						sort: true,
+						width: 120
+					},{
+						field: 'source',
+						title: '来源渠道',
+						align: 'center',
+						width: 100
+					}, {
+						field: 'industry',
+						title: '客户所属行业',
+						align: 'center',
+						width: 120
+					},{
+						field: 'belong_name',
+						title: '所属员工',
+						align: 'center',
+						width: 80
+					},{
+						field: 'belong_department',
+						title: '所属部门',
+						align: 'center',
+						width: 90
+					},{
+						field: 'create_time',
+						title: '创建时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 142,
+						align: 'center',
+						templet: function (d) {
+							var html = '<div class="layui-btn-group">';
+							var btn0='<span class="layui-btn layui-btn-xs layui-bg-blue" lay-event="view">查看</span>';
+							var btn1='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn2='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove">移入公海</span>';
+							if(d.belong_uid == login_admin && d.is_lock==0){
+								return html+btn0+btn1+btn2+'</div>';
+							}
+							else{
+								return html+btn0+'</div>';
+							}
+						}						
+					}
+				]
+			]
+		});
+			
+		table.on('tool(table_customer)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/customer/customer/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/customer/customer/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'remove') {
+				layer.confirm('确定把该客户移入公海吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/customer/index/to_sea", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,513 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-form-item{margin-bottom:0}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">审批条件	<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加审批层级</span></h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray-2">
+				第1级
+				<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加条件分支</span>
+			</td>
+			<td>
+				条件分支(优先级1)
+				<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加条件组</span>
+				<div>
+					条件组1<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加条件字段</span>
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label" style="width:40px">当</label>
+						  <div class="layui-input-inline" style="width:132px">
+							<select name="columns[]" lay-filter="columns" lay-verify="required" lay-reqText="请选择字段">
+								<option value="">选择条件字段</option>
+								{volist name="$columns" id="vo"}
+								<option value="{$vo.Field}">{$vo.Comment|default=$vo.Field}</option>
+								{/volist}
+							</select>						
+						  </div>
+						  <div class="layui-input-inline" style="width:100px">
+								<select name="flow_cate" lay-filter="flowcate" lay-verify="required" lay-reqText="请选择审批模块">
+									<option value="1">等于</option>
+									<option value="2">小于</option>
+									<option value="3">小于等于</option>
+									<option value="4">大于</option>
+									<option value="5">大于等于</option>
+								</select>
+						  </div>
+						  <label class="layui-form-label" style="width:80px">审批人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="unames[]" value="" autocomplete="off" placeholder="请选择审批人" readonly class="layui-input picker-admin">
+							<input type="hidden" name="uids[]" value="">
+						  </div>
+						</div>
+					</div>
+					且
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label" style="width:40px">当</label>
+						  <div class="layui-input-inline" style="width:132px">
+							<select name="columns[]" lay-filter="columns" lay-verify="required" lay-reqText="请选择字段">
+								<option value="">选择条件字段</option>
+								{volist name="$columns" id="vo"}
+								<option value="{$vo.Field}">{$vo.Comment|default=$vo.Field}</option>
+								{/volist}
+							</select>						
+						  </div>
+						  <div class="layui-input-inline" style="width:100px">
+								<select name="flow_cate" lay-filter="flowcate" lay-verify="required" lay-reqText="请选择审批模块">
+									<option value="1">等于</option>
+									<option value="2">小于</option>
+									<option value="3">小于等于</option>
+									<option value="4">大于</option>
+									<option value="5">大于等于</option>
+								</select>
+						  </div>
+						  <label class="layui-form-label" style="width:80px">审批人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="unames[]" value="" autocomplete="off" placeholder="请选择审批人" readonly class="layui-input picker-admin">
+							<input type="hidden" name="uids[]" value="">
+						  </div>
+						</div>
+					</div>
+				</div>
+				条件分支(优先级2)
+				<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加条件组</span>
+				<div>
+					条件组1<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加条件字段</span>
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label" style="width:40px">当</label>
+						  <div class="layui-input-inline" style="width:132px">
+							<select name="columns[]" lay-filter="columns" lay-verify="required" lay-reqText="请选择字段">
+								<option value="">选择条件字段</option>
+								{volist name="$columns" id="vo"}
+								<option value="{$vo.Field}">{$vo.Comment|default=$vo.Field}</option>
+								{/volist}
+							</select>						
+						  </div>
+						  <div class="layui-input-inline" style="width:100px">
+								<select name="flow_cate" lay-filter="flowcate" lay-verify="required" lay-reqText="请选择审批模块">
+									<option value="1">等于</option>
+									<option value="2">小于</option>
+									<option value="3">小于等于</option>
+									<option value="4">大于</option>
+									<option value="5">大于等于</option>
+								</select>
+						  </div>
+						  <label class="layui-form-label" style="width:80px">审批人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="unames[]" value="" autocomplete="off" placeholder="请选择审批人" readonly class="layui-input picker-admin">
+							<input type="hidden" name="uids[]" value="">
+						  </div>
+						</div>
+					</div>
+					且
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label" style="width:40px">当</label>
+						  <div class="layui-input-inline" style="width:132px">
+							<select name="columns[]" lay-filter="columns" lay-verify="required" lay-reqText="请选择字段">
+								<option value="">选择条件字段</option>
+								{volist name="$columns" id="vo"}
+								<option value="{$vo.Field}">{$vo.Comment|default=$vo.Field}</option>
+								{/volist}
+							</select>						
+						  </div>
+						  <div class="layui-input-inline" style="width:100px">
+								<select name="flow_cate" lay-filter="flowcate" lay-verify="required" lay-reqText="请选择审批模块">
+									<option value="1">等于</option>
+									<option value="2">小于</option>
+									<option value="3">小于等于</option>
+									<option value="4">大于</option>
+									<option value="5">大于等于</option>
+								</select>
+						  </div>
+						  <label class="layui-form-label" style="width:80px">审批人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="unames[]" value="" autocomplete="off" placeholder="请选择审批人" readonly class="layui-input picker-admin">
+							<input type="hidden" name="uids[]" value="">
+						  </div>
+						</div>
+					</div>
+				</div>				
+				默认情况分支(优先级3)
+				<div class="layui-form-item layui-form-pane" style="margin-bottom:0">
+					<div class="layui-input-inline" style="width:160px;">
+						<select name="types[]" lay-filter="flowtype">
+							<option value="1">当前部门负责人</option>
+							<option value="2">上一级部门负责人</option>
+							<option value="3">指定人员(多人或签)</option>
+							<option value="4">指定人员(多人会签)</option>
+						</select>
+					</div>
+					<label class="layui-form-label" style="width:80px">审批人员</label>
+					<div class="layui-input-inline" style="width:360px;">
+						<input type="text" name="unames[]" value="" autocomplete="off" placeholder="请选择审批人" readonly class="layui-input picker-admin">
+						<input type="hidden" name="uids[]" value="">
+					</div>
+					<span class="layui-label-inline">
+						如存在未满足其他分支条件的情况，则进入此分支
+					</span>				
+				</div>
+			</td>	
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				第2级
+				<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加条件分支</span>
+			</td>
+			<td>
+				
+			</td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">流程名称<font>*</font></td>
+			<td>
+				<input type="text" name="title" value="{$detail.title}" autocomplete="off" placeholder="请输入审批流程名称" lay-verify="required" lay-reqText="请输入审批流程名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray">流程标识<font>*</font></td>
+			<td><input type="text" name="name" value="{$detail.name}" autocomplete="off" placeholder="请输入审批流程标识" lay-verify="required" lay-reqText="请输入审批流程标识" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">审批模块<font>*</font></td>
+			<td>
+				<select name="flow_cate" lay-filter="flowcate" lay-verify="required" lay-reqText="请选择审批模块">
+					<option value="">请选择审批模块</option>
+					{volist name=":get_base_data('flow_cate')" id="vo"}
+						<option value="{$vo.id}" {eq name="$vo.id" value="$detail.flow_cate"}selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">审批类型<font>*</font></td>
+			<td>
+				<select name="flow_item" lay-filter="flowitem" lay-verify="required" lay-reqText="请选择审批类型">
+				  <option value="">--请选择--</option>
+				  {volist name="$detail.flow_item_list" id="vo"}
+				  <option value="{$vo.id}" {eq name="$detail.flow_item" value="$vo.id"}selected=""{/eq}>{$vo.title}</option>
+				  {/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:80%;">
+					<select id="department_ids" name="department_ids" xm-selected="{$detail.department_ids}" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span class="red" style="font-size:12px;">（如果不选，默认是全公司）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">流程说明</td>
+			<td colspan="3">
+				<textarea name="remark" placeholder="请输入流程说明" class="layui-textarea">{$detail.remark}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">审批流类型<font>*</font></td>
+			<td colspan="3">
+				<input type="radio" name="check_type" lay-filter="checktype" value="1" title="自由审批流" {eq name="$detail.check_type" value="1"}checked{/eq}>
+				<input type="radio" name="check_type" lay-filter="checktype" value="2" title="固定审批流" {eq name="$detail.check_type" value="2"}checked{/eq}>
+				<input type="radio" name="check_type" lay-filter="checktype" value="3" title="可回退的审批流" {eq name="$detail.check_type" value="3"}checked{/eq}>
+				<input type="radio" name="check_type" lay-filter="checktype" value="4" title="条件审批流" {eq name="$detail.check_type" value="4"}checked{/eq}>
+			</td>
+		</tr>
+		<tr id="flowTr1" {neq name="$detail.check_type" value="1"}style="display:none"{/neq}>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="3">
+				<div style="padding:10px; font-size:12px; background-color:#fffcf0">
+					<p><strong>温馨提示</strong></p>
+					<p>无需配置审批人，审批时，根据实际情况选择审批人即可，自由度最高。</p>
+				</div>
+			</td>
+		</tr>
+		<tr id="flowTr2" {neq name="$detail.check_type" value="2"}style="display:none"{/neq}>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="3">
+				<div id="flowList2">
+					{eq name="$detail.check_type" value="2"}
+					{volist name="detail.flow_list" id="vo"}
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label">第{$key+1}级</label>
+						  <div class="layui-input-inline">
+							<select name="flowType[]" lay-filter="flowtype">
+								<option value="1" {eq name="$vo.flow_type" value="1"}selected=""{/eq}>当前部门负责人</option>
+								<option value="2" {eq name="$vo.flow_type" value="2"}selected=""{/eq}>上一级部门负责人</option>
+								<option value="3" {eq name="$vo.flow_type" value="3"}selected=""{/eq}>指定人员(多人或签)</option>
+								<option value="4" {eq name="$vo.flow_type" value="4"}selected=""{/eq}>指定人员(多人会签)</option>
+							</select>
+						  </div>
+						</div>
+						<div class="layui-inline select-{$vo.flow_type}">
+						  <label class="layui-form-label">指定人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="flowNamesA[]" value="{$vo.flow_unames}" autocomplete="off" readonly class="layui-input picker-more">
+							<input type="hidden" name="flowUidsA[]" value="{$vo.flow_uids}">
+						  </div>
+						</div>
+						{gt name="$key" value="0"}
+						<span class="layui-btn layui-btn-danger layui-btn-sm">删除</span>
+						{/gt}
+					</div>
+					{/volist}
+					{else/}
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label">第1级</label>
+						  <div class="layui-input-inline">
+							<select name="flowType[]" lay-filter="flowtype">
+								<option value="1">当前部门负责人</option>
+								<option value="2">上一级部门负责人</option>
+								<option value="3">指定人员(多人或签)</option>
+								<option value="4">指定人员(多人会签)</option>
+							</select>
+						  </div>
+						</div>
+						<div class="layui-inline select-1">
+						  <label class="layui-form-label">指定人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="flowNamesA[]" value="" autocomplete="off" readonly class="layui-input picker-more">
+							<input type="hidden" name="flowUidsA[]" value="">
+						  </div>
+						</div>
+					</div>
+					{/eq}
+				</div>
+				<span id="addFlow2" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加审批层级</span>
+				<div style="padding:10px; margin-top:10px; font-size:12px; background-color:#fffcf0">
+					<p><strong>温馨提示</strong></p>
+					<p>1、当选择<strong> “当前部门负责人” </strong>审批时。系统仅会通知当前部门的负责人。</p>
+					<p>2、当选择<strong> “上一级部门负责人” </strong>审批时。系统仅会通知当前部门的上一级部门的负责人。</p>
+					<p>3、当选择<strong> “指定人员(多人或签)” </strong>时，表示指定用户中任意一人审批即可，可单选或多选。</p>
+					<p>4、当选择<strong> “指定人员(多人会签)” </strong>时，表示指定人员中所有人都需要审批，可单选或多选。</p>
+					<p>5、如果指定用户没有分配查看审批模块的功能权限，系统会通知其审批，但是他无法查看此审批数据信息。</p>
+				</div>
+			</td>
+		</tr>
+		<tr id="flowTr3" {neq name="$detail.check_type" value="3"}style="display:none"{/neq}>
+			<td class="layui-td-gray">审批流程<font>*</font></td>
+			<td colspan="3">
+				<div id="flowList3">
+					{eq name="$detail.check_type" value="3"}
+					{volist name="detail.flow_list" id="vo"}
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label">第{$key+1}级</label>
+						  <div class="layui-input-inline">
+							<input type="text" name="flowName[]" value="{$vo.flow_name}" autocomplete="off" placeholder="请输入流程名称" class="layui-input">
+						  </div>
+						</div>
+						<div class="layui-inline select-3">
+						  <label class="layui-form-label">指定人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="flowNamesB[]" value="{$vo.flow_unames}" autocomplete="off" readonly class="layui-input picker-one">
+							<input type="hidden" name="flowUidsB[]" value="{$vo.flow_uids}">
+						  </div>
+						</div>
+						{gt name="$key" value="0"}
+						<span class="layui-btn layui-btn-danger layui-btn-sm">删除</span>
+						{/gt}
+					</div>
+					{/volist}
+					{else/}
+					<div class="layui-form-item layui-form-pane">
+						<div class="layui-inline">
+						  <label class="layui-form-label">第1级</label>
+						  <div class="layui-input-inline">
+							<input type="text" name="flowName[]" value="" autocomplete="off" placeholder="请输入流程名称" class="layui-input">
+						  </div>
+						</div>
+						<div class="layui-inline select-3">
+						  <label class="layui-form-label">指定人员</label>
+						  <div class="layui-input-inline" style="width:360px;">
+							<input type="text" name="flowNamesB[]" value="" autocomplete="off" readonly class="layui-input picker-one">
+							<input type="hidden" name="flowUidsB[]" value="">
+						  </div>
+						</div>
+					</div>
+					{/eq}
+				</div>
+				<span id="addFlow3" class="layui-btn layui-btn-xs layui-btn-normal">+ 添加审批层级</span>
+				<div style="padding:10px; margin-top:10px; font-size:12px; background-color:#fffcf0">
+					<p><strong>温馨提示</strong></p>
+					<p>1、<strong>指定人员</strong>单选。后期审批的时候，审批人只能该指定人员。</p>
+					<p>2、该审批流程可<strong>回退</strong>，当拒绝审核时，会自动回退到上一位审批人节点。</p>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">抄送人</td>
+			<td colspan="3">
+				<input type="text" name="copy_unames" value="{$detail.copy_unames}" autocomplete="off" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="copy_uids" value="{$detail.copy_uids}">
+			</td>
+		</tr>
+	</table>
+	{/eq}
+	<div class="py-3">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','formSelects','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,formSelects = layui.formSelects;		  
+		//选择应用模块
+		form.on('select(flowcate)', function(data){
+			let callback = function (e) {
+				if (e.code == 0) {
+					if(e.data.length>0){
+						let ops='<option value="">--请选择--</option>';
+						for(var i=0;i<e.data.length;i++){
+							ops+='<option value="'+e.data[i].id+'">'+e.data[i].title+'</option>';
+						}
+						$('[name="flow_item"]').html(ops);
+						form.render();
+					}
+					else{
+						$('[name="flow_item"]').html('');
+						form.render();
+					}
+				}
+			}
+			tool.get("/adm/api/get_flow_item", {cate:data.value}, callback);
+		})
+		
+		//选择应用部门
+		var selcted = $('#department_ids').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selcted,
+		});
+		
+		
+		form.on('radio(checktype)', function(data){
+		  if(data.value==1){
+			$('#flowTr1').show();
+			$('#flowTr2').hide();
+			$('#flowTr3').hide();
+		  }
+		  else if(data.value==2){
+			$('#flowTr1').hide();
+			$('#flowTr2').show();
+			$('#flowTr3').hide();
+		  }
+		  else{
+			$('#flowTr1').hide();
+			$('#flowTr2').hide();
+			$('#flowTr3').show();
+		  }
+		});
+		
+		form.on('select(flowtype)', function(data){
+		  $(data.elem).parents('.layui-form-item').find('.layui-inline').eq(1).attr('class','layui-inline select-'+data.value);
+		});
+
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);					
+				}
+			}
+			tool.post("/adm/flow/add", data.field, callback);
+			return false;
+		});
+    
+		
+		$('#addFlow2').on('click',function(){
+			var len = $('#flowList2').find('.layui-form-item').length;
+			var index = len+1;
+			var timestamp=new Date().getTime();
+			var tem='<div class="layui-form-item  layui-form-pane">\
+						<div class="layui-inline">\
+						  <label class="layui-form-label label-index">第'+index+'级</label>\
+						  <div class="layui-input-inline">\
+							<select name="flowType[]" lay-filter="flowtype">\
+								<option value="1">当前部门负责人</option>\
+								<option value="2">上一级部门负责人</option>\
+								<option value="3">指定人员(多人或签)</option>\
+								<option value="4">指定人员(多人会签)</option>\
+							</select>\
+						  </div>\
+						</div>\
+						<div class="layui-inline select-1">\
+						  <label class="layui-form-label">指定人员</label>\
+						  <div class="layui-input-inline" style="width:360px;">\
+							<input type="text" name="flowNamesA[]" value="" autocomplete="off" readonly class="layui-input picker-admin" data-type="2">\
+							<input type="hidden" name="flowUidsA[]" value="">\
+						  </div>\
+						</div>\
+						<span class="layui-btn layui-btn-danger layui-btn-sm">删除</span>\
+					</div>';
+			$('#flowList2').append(tem);
+			form.render();
+		});
+		
+		$('#flowList2').on('click','.layui-btn-danger',function(){
+			$(this).parents('.layui-form-item').remove();
+			var items = $('.label-index').length;
+			if(items>0){
+				$('.label-index').each(function(index,item){
+					$(this).html('第'+(index+2)+'级');
+				})
+			}
+		});			
+		
+		//================================
+		$('#addFlow3').on('click',function(){
+			var len = $('#flowList3').find('.layui-form-item').length;
+			var index = len+1;
+			var timestamp=new Date().getTime();
+			var tem='<div class="layui-form-item  layui-form-pane">\
+						<div class="layui-inline">\
+						  <label class="layui-form-label label-index">第'+index+'级</label>\
+						  <div class="layui-input-inline">\
+							<input type="text" name="flowName[]" value="" autocomplete="off" placeholder="请输入流程名称" class="layui-input">\
+						  </div>\
+						</div>\
+						<div class="layui-inline select-3">\
+						  <label class="layui-form-label">指定人员</label>\
+						  <div class="layui-input-inline" style="width:360px;">\
+							<input type="text" name="flowNamesB[]" value="" autocomplete="off" readonly class="layui-input picker-one">\
+							<input type="hidden" name="flowUidsB[]" value="">\
+						  </div>\
+						</div>\
+						<span class="layui-btn layui-btn-danger layui-btn-sm">删除</span>\
+					</div>';
+			$('#flowList3').append(tem);
+			form.render();
+		});
+		
+		$('#flowList3').on('click','.layui-btn-danger',function(){
+			$(this).parents('.layui-form-item').remove();
+			var items = $('.label-index').length;
+			if(items>0){
+				$('.label-index').each(function(index,item){
+					$(this).html('第'+(index+2)+'级');
+				})
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

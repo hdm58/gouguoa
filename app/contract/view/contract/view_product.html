@@ -1,0 +1,36 @@
+<tr>
+	<td colspan="6"><strong>产品信息</strong></td>
+</tr>
+<tr>
+	<td colspan="6">				
+		<table class="layui-table layui-table-min" style="margin:0">
+			<tr>
+				<th width="200">产品名称</th>
+				<th width="100">单位</th>
+				<th width="100">规格</th>
+				<th width="100">销售单价</th>
+				<th width="100">数量</th>
+				<th width="100">小计</th>
+				<th>备注信息</th>
+			</tr>
+			{empty name="$detail.content"}
+			<tr class="sale-tr">
+				<td colspan="7" style="padding:12px; text-align:center; color:#999">暂无产品信息</td>
+			</tr>
+			{else/}
+			{volist name="$detail.content" id="vo"}
+			<tr class="sale-tr">
+				<td style="text-align:left;">{$vo.product_title|default=''}</td>
+				<td>{$vo.product_unit|default=''}</td>
+				<td>{$vo.product_specs|default=''}</td>
+				<td>{$vo.product_price|default='0.00'}</td>
+				<td>{$vo.product_num|default='1'}</td>
+				<td>{$vo.product_subtotal|default='0.00'}</td>
+				<td style="text-align:left;">{$vo.product_remark|default=''}</td>
+			</tr>
+			{/volist}
+			{/empty}
+		</table>
+	</td>
+</tr>
+

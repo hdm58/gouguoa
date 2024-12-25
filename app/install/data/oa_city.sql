@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for oa_city
@@ -5,12 +7,12 @@
 DROP TABLE IF EXISTS `oa_city`;
 CREATE TABLE `oa_city`  (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '地区编码',
-  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '地区名称',
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '地区名称',
   `level` tinyint(4) UNSIGNED NOT NULL DEFAULT 0 COMMENT '地区级别',
   `pid` mediumint(8) UNSIGNED NOT NULL DEFAULT 0 COMMENT '地区父编码id',
-  `region_path` varchar(500) NOT NULL DEFAULT '' COMMENT '地区编码路径',
+  `region_path` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '地区编码路径',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '中国省市区乡镇数据表';
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '中国省市区数据表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of oa_city
@@ -2432,14 +2434,19 @@ INSERT INTO `oa_city` VALUES (511621, '岳池县', 3, 511600, ',510000,511600,51
 INSERT INTO `oa_city` VALUES (511622, '武胜县', 3, 511600, ',510000,511600,511622,');
 INSERT INTO `oa_city` VALUES (511623, '邻水县', 3, 511600, ',510000,511600,511623,');
 INSERT INTO `oa_city` VALUES (511681, '华莹市', 3, 511600, ',510000,511600,511681,');
+INSERT INTO `oa_city` VALUES (511682, '前锋县', 3, 511700, ',510000,511600,511682,');
+INSERT INTO `oa_city` VALUES (511683, '枣山区', 3, 511700, ',510000,511600,511683,');
+INSERT INTO `oa_city` VALUES (511684, '经开区', 3, 511700, ',510000,511600,511684,');
 INSERT INTO `oa_city` VALUES (511700, '达州市', 2, 510000, ',510000,511700,');
 INSERT INTO `oa_city` VALUES (511702, '通川区', 3, 511700, ',510000,511700,511702,');
-INSERT INTO `oa_city` VALUES (511721, '达　县', 3, 511700, ',510000,511700,511721,');
+INSERT INTO `oa_city` VALUES (511721, '达川区', 3, 511700, ',510000,511700,511721,');
 INSERT INTO `oa_city` VALUES (511722, '宣汉县', 3, 511700, ',510000,511700,511722,');
 INSERT INTO `oa_city` VALUES (511723, '开江县', 3, 511700, ',510000,511700,511723,');
 INSERT INTO `oa_city` VALUES (511724, '大竹县', 3, 511700, ',510000,511700,511724,');
 INSERT INTO `oa_city` VALUES (511725, '渠　县', 3, 511700, ',510000,511700,511725,');
 INSERT INTO `oa_city` VALUES (511781, '万源市', 3, 511700, ',510000,511700,511781,');
+INSERT INTO `oa_city` VALUES (511782, '高新区', 3, 511700, ',510000,511700,511782,');
+INSERT INTO `oa_city` VALUES (511783, '东部经开区', 3, 511700, ',510000,511700,511783,');
 INSERT INTO `oa_city` VALUES (511800, '雅安市', 2, 510000, ',510000,511800,');
 INSERT INTO `oa_city` VALUES (511802, '雨城区', 3, 511800, ',510000,511800,511802,');
 INSERT INTO `oa_city` VALUES (511821, '名山县', 3, 511800, ',510000,511800,511821,');

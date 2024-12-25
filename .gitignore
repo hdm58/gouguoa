@@ -8,3 +8,4 @@
 /runtime/*
 /public/storage/*
 /public/backup/*
+/app/crud/file/*

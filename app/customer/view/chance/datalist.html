@@ -1,0 +1,115 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-x border-t" lay-filter="barsearchform">
+		{gt name="$is_auth" value="0"}
+		<div class="layui-input-inline user-name" style="width:100px;">
+			<input type="text" name="username" placeholder="选择归属人" class="layui-input picker-admin" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{/gt}
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="stage">
+				<option value="">销售阶段</option>
+				{volist name=":get_base_type_data('basic_customer',4)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:200px;">
+			<input type="text" name="keywords" placeholder="输入关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div>
+  	<h3>线索机会</h3>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool','oaPicker','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form;
+		layui.chanceTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,title:'线索机会列表'
+			,url: "/customer/chance/datalist"
+			,cellMinWidth: 80
+			,page: true //开启分页
+			,is_excel: true
+			,height: 'full-112'
+			,limit: 20
+			,cols:  [[
+					{field: 'id', title: '编号', width: 80, align: 'center'}
+					,{field:'belong_name',title: '归属人',align:'center',width: 80}
+					,{field:'title',title: '机会主题'}
+					,{field:'customer',title: '关联客户',width: 300}
+					,{field:'discovery_time',title: '发现时间',align:'center',width: 100}
+					,{ field: 'expected_time', title: '预计签单时间', width: 110, align: 'center'}
+					,{ field: 'expected_amount', title: '预计签单金额', width: 110, align: 'center'}
+					,{field:'stage_name',title: '当前阶段',width: 80, align: 'center'}
+					,{fixed:'right',width:130,title: '操作', align:'center',templet: function(d){
+						var html = '<div class="layui-btn-group">';
+						var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+						var btn2='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
+						var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+						if(d.admin_id == login_admin){
+							return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+						}
+						else{
+							return '<div class="layui-btn-group">'+btn2+'</div>';
+						}
+					}}			
+				]]
+			});
+			
+			table.on('tool(test)', function(obj){
+				var data = obj.data; //获得当前行数据
+				var layEvent = obj.event;		 
+				if(layEvent === 'edit'){ //编辑
+					let url = '/customer/chance/add/id/'+data.id;
+					tool.side(url);
+				}
+				if(layEvent === 'view'){ //查看
+					let url = '/customer/chance/view/id/'+data.id;
+					tool.side(url);
+				}
+				if(layEvent === 'del'){ //删除
+					layer.confirm('确定要删除该销售机会吗?', {icon: 3, title:'提示'}, function(index){
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+						tool.delete('/customer/chance/chance_del',{'id':data.id},callback);
+						layer.close(index);
+					});
+				}
+				return false;
+			})
+			
+			//监听搜索提交
+			form.on('submit(webform)', function(data) {
+				layui.pageTable.reload({
+					where: data.field,
+					page: {curr: 1}
+				});
+				return false;
+			});
+		}
+	</script>
+{/block}
+<!-- /脚本 -->

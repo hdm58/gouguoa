@@ -1,0 +1,71 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">编辑会议室</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray-2">会议室名称<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="title" value="{$detail.title}" autocomplete="off" lay-verify="required" lay-reqText="请完善会议室名称" placeholder="请完善会议室名称" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">地址(楼层)<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="address" value="{$detail.address}" autocomplete="off" lay-verify="required" lay-reqText="请完善会议室地址(楼层)" placeholder="请输入会议室地址(楼层)" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">管 理 员<font>*</font></td>
+			<td>
+				<input type="text" name="keep_name" value="{$detail.keep_name}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择会议室管理员" placeholder="请选择" class="layui-input picker-admin">
+				<input type="hidden" name="keep_uid" value="{$detail.keep_uid}">
+			</td>
+			<td class="layui-td-gray-2">可容纳人数<font>*</font></td>
+			<td><input type="text" name="num" autocomplete="off" value="{$detail.num}" placeholder="请输入费用金额" lay-verify="required|number" lay-reqText="请输入费用金额" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">内置设备<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="device" value="{$detail.device}" autocomplete="off" lay-verify="required" lay-reqText="请完善会议室内置设备" placeholder="请输入会议室内置设备" class="layui-input">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">相关描述</td>
+			<td colspan="3">
+				<textarea name="remark" placeholder="请输入会议室相关描述" class="layui-textarea">{$detail.remark|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-2">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaPicker'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool;
+	
+	//监听提交
+	form.on('submit(webform)', function(data){
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);				
+			}
+		}
+		tool.post("/adm/meeting/room_add", data.field, callback);
+		return false;
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

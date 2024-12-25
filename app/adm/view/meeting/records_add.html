@@ -1,0 +1,105 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">新增会议纪要</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">会议时间<font>*</font></td>
+			<td><input type="text" name="meeting_date" lay-verify="required" readonly lay-reqText="请选择会议时间" placeholder="请选择会议时间" class="layui-input tool-time" data-type="datetime" data-format ="yyyy-MM-dd HH:mm"></td>
+			<td class="layui-td-gray">主持人<font>*</font></td>
+			<td>
+				<input type="text" name="anchor" lay-verify="required" readonly lay-reqText="请选择主持人" placeholder="请选择主持人" class="layui-input picker-admin">
+				<input type="hidden" name="anchor_id">
+			</td>
+			<td class="layui-td-gray">记录人<font>*</font></td>
+			<td>
+				<input type="text" name="recorder" lay-verify="required" readonly lay-reqText="请选择记录人" placeholder="请选择记录人" class="layui-input picker-admin">
+				<input type="hidden" name="recorder_id">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">会 议 室<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="room_name" autocomplete="off" readonly placeholder="请选择" lay-verify="required" readonly lay-reqText="请选择会议室" class="layui-input picker-oa" data-types="room">
+				<input type="hidden" name="room_id">
+			</td>
+			<td class="layui-td-gray">主办部门<font>*</font></td>
+			<td>
+				<input type="text" name="did_name" autocomplete="off" readonly placeholder="请选择" lay-verify="required" readonly lay-reqText="请选择主办部门" class="layui-input picker-oa" data-types="department">
+				<input type="hidden" name="did">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">参会人员<font>*</font></td>
+			<td colspan="5">
+				<input type="text" name="join" lay-verify="required" readonly lay-reqText="请选择参会人员" placeholder="请选择参会人员" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="join_uids">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">会议主题<font>*</font></td>
+			<td colspan="5"><input type="text" name="title" lay-verify="required" lay-reqText="请输入会议主题" placeholder="请输入会议主题" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">会议内容<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" lay-verify="required" lay-reqText="请输入会议内容"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2" style="vertical-align:top;">下一步<br>工作计划<font>*</font></td>
+			<td colspan="5">
+				<textarea name="plans" placeholder="请输入内容" class="layui-textarea" lay-verify="required" lay-reqText="请输入下一步工作计划"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">参会人员签字<font>*</font></td>
+			<td colspan="5">
+				<input type="text" name="sign" lay-verify="required" readonly lay-reqText="请选择" placeholder="请选择" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="sign_uids">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">共享给谁<font>*</font></td>
+			<td colspan="5">
+				<input type="text" name="share" lay-verify="required" readonly lay-reqText="请选择" placeholder="请选择" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="share_uids">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">备注信息</td>
+			<td colspan="5">
+				<textarea name="remarks" placeholder="请输入内容" class="layui-textarea"></textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="py-3">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/adm/meeting/records_add", data.field, callback);
+			return false;
+		});
+}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,156 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">新增无发票回款申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-3">预回款金额(元)<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入预回款金额" lay-reqText="请输入预回款金额" value=""></td>
+			<td class="layui-td-gray">收款主体<font>*</font></td>
+			<td colspan="3">
+				<select name="invoice_subject" lay-verify="required" lay-reqText="请选择收款主体">
+					<option value="">请选择收款主体</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">付款主体<font>*</font></td>
+			<td>
+				<input type="radio" name="types" lay-filter="type" value="1" title="企业" checked>
+				<input type="radio" name="types" lay-filter="type" value="2" title="个人">
+			</td>
+			<td class="layui-td-gray-2">付款方名称<span class="layui-btn layui-btn-xs invoice-qiye customer-picker">选择</span></td>
+			<td><input type="text" name="invoice_title" class="layui-input" value="" placeholder="请输入付款方名称" lay-verify="required"  lay-reqText="请输入付款方名称"></td>
+			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
+			<td><input type="text" name="invoice_tax" class="layui-input" value=""  placeholder="请输入纳税人识别号，个人输入身份证号码"lay-verify="required"  lay-reqText="请输入纳税人识别号，个人输入身份证号码"></td>
+		</tr>
+		<tr class="invoice-qiye">
+			<td class="layui-td-gray">开户行</td>
+			<td><input type="text" name="invoice_bank" class="layui-input" value="" placeholder="请输入付款方开户行"></td>
+			<td class="layui-td-gray">银行账号</td>
+			<td><input type="text" name="invoice_account" class="layui-input" value="" placeholder="请输入付款方银行账号"></td>
+			<td class="layui-td-gray-2">银行营业网点</td>
+			<td><input type="text" name="invoice_banking" class="layui-input" value="" placeholder="请输入付款方银行营业网点"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">电话号码</td>
+			<td><input type="text" name="invoice_phone" class="layui-input" value="" placeholder="请输入付款方电话号码"></td>
+			<td class="layui-td-gray">地址</td>
+			<td colspan="3"><input type="text" name="invoice_address" class="layui-input" value="" placeholder="请输入付款方地址"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联合同</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的合同" readonly value="">		
+				<input type="hidden" class="layui-input" name="contract_id" value="0">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="">		
+				<input type="hidden" class="layui-input" name="project_id" value="0">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea"></textarea></td>
+		</tr>
+	</table>
+	<div id="checkBox" data-status="0" data-id="0" data-checkflowid="0" class="pt-3"></div>
+	<div class="pt-4">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaPicker = layui.oaPicker,oaCheck = layui.oaCheck,uploadPlus = layui.uploadPlus;
+		//选择抬头类型
+		form.on('radio(type)', function (data) {
+			if(data.value==2){
+				$('.invoice-qiye').hide();
+			}
+			else{
+				$('.invoice-qiye').show();
+			}
+		});
+		
+		//相关附件上传
+		var attachment = new uploadPlus();
+		
+		//审批相关
+		oaCheck.init({
+			check_name:'invoicea',
+			check_btn:0
+		});
+		
+		$('.customer-picker').on('click',function(){
+			let that = $(this),ids = [],titles=[],tax_num=[],tax_bank=[],tax_banksn=[],tax_mobile=[],tax_address=[];
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].name);
+					tax_num.push(data[i].tax_num);
+					tax_bank.push(data[i].tax_bank);
+					tax_banksn.push(data[i].tax_banksn);
+					tax_mobile.push(data[i].tax_mobile);
+					tax_address.push(data[i].tax_address);
+				}
+				//that.val(titles.join(','));
+				//that.next().val(ids.join(','));
+				$('[name="invoice_title"]').val(titles.join(','));
+				$('[name="invoice_tax"]').val(tax_num.join(','));
+				$('[name="invoice_bank"]').val(tax_bank.join(','));
+				$('[name="invoice_account"]').val(tax_banksn.join(','));
+				$('[name="invoice_phone"]').val(tax_mobile.join(','));
+				$('[name="invoice_address"]').val(tax_address.join(','));
+			}
+			oaPicker.picker('customer',1,callback,{});
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'invoicea';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			tool.post("/finance/invoice/add_a", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

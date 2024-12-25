@@ -1,0 +1,59 @@
+<div class="bg-white">
+	<table class="layui-hide" id="scheduleApi" lay-filter="schedule"></table>
+</div>
+<script type="text/html" id="toolbarschedule">
+  <div class="layui-btn-container">
+  	<span class="yellow">如需创建工作日志，请到项目任务的详情页创建</span>
+  </div>
+</script>
+<script>
+function project_schedule(){
+	if($('#projectTab').find('li').eq(2).data('load') =='true'){
+		return false;
+	}
+	$('#projectTab').find('li').eq(2).data('load','true');
+	let form = layui.form,tool = layui.tool,table = layui.tablePlus,work = layui.oaSchedule,oaPicker = layui.oaPicker;
+	//项目工作记录
+	layui.scheduleTable = table.render({
+		elem: '#scheduleApi',
+		title: '工作记录列表',
+		toolbar: '#toolbarschedule',
+		cellMinWidth: 80,
+		url: "/oa/api/get_schedule", //数据接口
+		where: { 'project_id': project_id },
+		cols: [[ //表头
+			{ field: 'id', title: '序号', width: 60, align: 'center' }
+			, {
+				field: 'start_time', title: '工作时间范围', align: 'center', width: 180, templet: function (d) {
+					var html = d.start_time + '至' + d.end_time;
+					return html;
+				}
+			}
+			, { field: 'labor_time', title: '工时', style: 'color: #91CC75;', align: 'center', width: 60 }
+			, { field: 'labor_type_string', title: '工作类型', align: 'center', width: 90,templet:function(d){
+				var html = '<span class="layui-color-'+d.labor_type+'">'+d.labor_type_string+'</span>';
+				return html;
+			}}
+			, { field: 'work_cate', title: '工作类别', align: 'center', width: 100 }
+			, { field: 'title', title: '工作内容' }
+			, { field: 'name', title: '执行员工', align: 'center', width: 80 }
+			, { field: 'department', title: '所在部门', align: 'center', width: 100 }
+			, { field: 'create_time', title: '记录时间', align: 'center', width: 150 }
+			, {title: '操作',fixed:'right', align: 'center', width: 100, templet: function (d) {
+					return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span></div>';
+				}
+			}
+		]]
+	});
+	//监听行工具事件		
+	table.on('tool(schedule)', function (obj) {
+		if (obj.event === 'edit') {
+			work.add(0, obj.data);
+		}
+		if (obj.event === 'view') {
+			work.view(obj.data);
+		}
+		return false;
+	})
+}
+</script>

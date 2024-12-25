@@ -1,175 +1,153 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="body-table">
-    <table class="layui-hide" id="test" lay-filter="test"></table>
+<div class="p-page">
+	<div class="gg-form-bar border-t border-x">
+		<div class="pb-3"><button type="button" class="layui-btn layui-btn-sm side-a" data-href="/home/module/add">新增自定义模块</button>{empty name="$oa_module"}<span class="ml-3 red">温馨提示：可能是网络或其他原因未能请求到官网的模块数据，但不影响系统的正常使用。</span>{/empty}</div>
+	</div>
+	<table cellspacing="0" cellpadding="0" border="0" class="layui-table layui-table-form">
+		<tr>
+			<th style="text-align: center; background-color:#FAFAFA">模块名称</th>
+			<th style="text-align: center; background-color:#FAFAFA">模块所在目录</th>
+			<th style="text-align: center; background-color:#FAFAFA">功能描述</th>
+			<th style="text-align: center; background-color:#FAFAFA">类型</th>
+			<th style="text-align: center; background-color:#FAFAFA">开发者</th>
+			<th style="text-align: center; background-color:#FAFAFA">状态</th>
+			<th style="text-align: center; background-color:#FAFAFA; width:90px">操作</th>
+		</tr>
+		{empty name="sys_module"}
+		<tr>
+			<td colspan="7" align="center">暂无数据</td>
+		</tr>
+		{/empty}
+		{volist name="sys_module" id="vo" key="k"}
+		<tr>
+			<td align="center">{$vo.title}</td>
+			<td>app/{$vo.name}</td>
+			<td>{$vo.desc}</td>
+			<td align="center">
+				{eq name="$vo.type" value="1"}<span class="red">系统模块</span>{/eq}
+				{eq name="$vo.type" value="2"}<span class="blue">普通模块</span>{/eq}
+				{eq name="$vo.type" value="3"}<span class="green">自定义模块</span>{/eq}
+			</td>
+			<td align="center">
+				{eq name="$vo.sourse" value="1"}勾股OA{/eq}
+				{eq name="$vo.sourse" value="2"}第三方{/eq}
+			</td>
+			{eq name="$vo.status" value="-1"}
+			<td align="center">
+				<span class="red">未安装</span>
+			</td>
+			<td align="center">
+				<div class="layui-btn-group">
+					{eq name = "$vo.is_file" value="0"}
+					<a class="layui-btn layui-btn-xs down" href="https://www.gougucms.com/home/pages/detail/s/gouguoa.html" target="_blank">下载</a>
+					{/eq}
+					{eq name = "$vo.is_file" value="1"}
+					<a class="layui-btn layui-btn-xs install" data-name="{$vo.name}">安装</a>
+					{/eq}
+					<a class="layui-btn layui-btn-normal layui-btn-xs view" href="https://www.gougucms.com/home/pages/detail/s/gouguoa.html" target="_blank">演示</a>
+				</div>
+			</td>
+			{/eq}
+			{eq name="$vo.status" value="0"}
+			<td align="center">
+				<span class="yellow">已卸载</span>
+			</td>
+			<td align="center">
+				<div class="layui-btn-group">
+					{eq name="$vo.sourse" value="2"}<a class="layui-btn layui-bg-blue layui-btn-xs side-a" data-href="/home/module/add/id/{$vo.id}">编辑</a>{/eq}
+					<a class="layui-btn layui-btn-xs add" data-name="{$vo.name}" data-type="{$vo.type}">恢复</a>
+				</div>
+			</td>
+			{/eq}
+			{eq name="$vo.status" value="1"}
+			<td align="center">
+				<span class="green">正常</span>
+			</td>
+			<td align="center">
+				{eq name="$vo.type" value="3"}
+				<div class="layui-btn-group">
+					<a class="layui-btn layui-bg-blue layui-btn-xs side-a" data-href="/home/module/add/id/{$vo.id}">编辑</a>
+					<a class="layui-btn layui-btn-danger layui-btn-xs delete" data-name="{$vo.name}" data-id="{$vo.id}" data-type="{$vo.type}">删除</a>
+				</div>
+				{else/}
+				-
+				{/eq}
+			</td>
+			{/eq}
+		</tr>
+		{/volist}
+	</table>
 </div>
-<script type="text/html" id="toolbarDemo">
-  <div class="layui-btn-container">
-  	<button class="layui-btn layui-btn-normal layui-btn-sm addNew" type="button">+ 添加功能模块</button>
-  </div>
-</script>
 {/block}
 <!-- /主体 -->
 
 <!-- 脚本 -->
 {block name="script"}
-	<script>
-		function init(layui){
-			var table=layui.table,
-			layer=layui.layer;
-			
-			var tableIns = table.render({
-			elem: '#test'
-			,toolbar: '#toolbarDemo'
-			,title:'功能模块列表'
-			,url: "/home/module/index"
-			,page: false //开启分页
-			,cellMinWidth: 80
-			,cols: [[
-					{field:'id',width:80, title: 'ID号', align:'center'}
-					,{field:'title',title: '模块名称'}
-					,{field:'name',title: '模块标识'}
-					,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
-						var html1='<span>正常</span>';
-						var html2='<span style="color:#FF5722">禁用</span>';
-						if(d.status==1){
-							return html1;
-						}
-						else{
-							return html2;
-						}
-					}}
-					,{field:'type', title: '类型',width:120,align:'center',templet: function(d){
-						var html1='<span>系统模块</span>';
-						var html2='<span style="color:#FF5722">自定义模块</span>';
-						if(d.type==1){
-							return html1;
-						}
-						else{
-							return html2;
-						}
-					}}
-					,{width:100,title: '操作', align:'center',templet: function(d){
-						var html='';
-						var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
-						var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
-						var btn2='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="open">启用</a>';
-						if(d.status==1){
-							html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
-						}
-						else{
-							html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
-						}
-						return html;
-					}}
-				]]
-			});
-			
-			table.on('tool(test)',function (obj) {
-				if(obj.event === 'edit'){					
-					addExpense(obj.data.id,obj.data.title,obj.data.name);
-				}
-				if(obj.event === 'disable'){
-					layer.confirm('确定要禁用该模块吗?', {icon: 3, title:'提示'}, function(index){
-						$.ajax({
-							url: "/home/module/disable",
-							type: 'post',
-							data: {
-								id: obj.data.id,
-								status: 0
-							},
-							success: function(e) {
-								layer.msg(e.msg);
-								if (e.code == 0) {
-									parent.location.reload();
-								}
-							}
-						}) 
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool;
+
+		$('body').on('click', '.install', function () {
+			let name = $(this).data('name');
+			layer.confirm('确定要安装该模块吗?', { icon: 3, title: '提示' }, function (index) {
+				//layer.msg('该功能内测中...');
+				//return false;
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
 						layer.close(index);
-					});
-				}
-				if(obj.event === 'open'){
-					layer.confirm('确定要启用该模块吗?', {icon: 3, title:'提示'}, function(index){
-						$.ajax({
-							url: "/home/module/disable",
-							type: 'post',
-							data: {
-								id: obj.data.id,
-								status: 1
-							},
-							success: function(e) {
-								layer.msg(e.msg);
-								if (e.code == 0) {
-									parent.location.reload();
-								}
-							}
-						}) 
-						layer.close(index);
-					});
-				}
-			});
-			
-			$('.body-table').on('click','.addNew',function(){
-				addExpense(0,'','');	
-			});
-			
-			function addExpense(id,title,name){
-				var biaoti = '新增模块';
-				if(id>0){
-					biaoti = '编辑模块';
-				}			
-				
-				layer.open({
-					type: 1
-					,title: biaoti
-					,area: '368px;'
-					,id: 'LAY_module' //设定一个id，防止重复弹出
-					,btn: ['确定', '取消']
-					,btnAlign: 'c'
-					,content: '<div style="padding-top:15px;">\
-								<div class="layui-form-item">\
-								  <label class="layui-form-label">模块名称</label>\
-								  <div class="layui-input-inline">\
-									<input type="hidden" name="id" value="'+id+'">\
-									<input type="text" name="title" autocomplete="off" value="'+title+'" placeholder="请输入模块名称" class="layui-input">\
-								  </div>\
-								</div>\
-								<div class="layui-form-item">\
-								  <label class="layui-form-label">模块标识</label>\
-								  <div class="layui-input-inline">\
-									<input type="text" name="name" autocomplete="off" value="'+name+'" placeholder="请输入至少2个大写字符" class="layui-input">\
-								  </div>\
-								</div>\
-							  </div>'
-					,yes: function(index){
-						let id = $('#LAY_module').find('[name="id"]').val();
-						let title = $('#LAY_module').find('[name="title"]').val();
-						let name = $('#LAY_module').find('[name="name"]').val();
-						$.ajax({
-								url: "/home/module/add",
-								type: 'post',
-								data: {
-									id: id,
-									title: title,
-									name: name
-								},
-								success: function(e) {
-									layer.msg(e.msg);
-									if (e.code == 0) {
-										layer.close(index);
-										tableIns.reload();
-									}
-								}
-							})
+						location.reload();
 					}
-					,btn2: function(){
-						layer.closeAll();
-					}
-				});
+				}
+				tool.post("/home/module/install", {name: name}, callback);
+				layer.close(index);
+			});
+		});
+		$('body').on('click', '.delete', function () {
+			let id = $(this).data('id');
+			let name = $(this).data('name');
+			let type = $(this).data('type');
+			if(type==1){
+				layer.msg('系统模块，不支持卸载');
+				return false;
 			}
-		}
-	</script>
-	{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
+			layer.confirm('确定要删除该模块吗?', { icon: 3, title: '提示' }, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layer.close(index);
+						setTimeout(function(){
+							parent.location.reload();
+						},1000)
+					}
+				}
+				tool.post("/home/module/del",{id: id}, callback);
+				layer.close(index);
+			});
+		});
+		
+		$('body').on('click', '.add', function () {
+			let name = $(this).data('name');
+			let type = $(this).data('type');
+			layer.confirm('确定要恢复使用该模块吗?', { icon: 3, title: '提示' }, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layer.close(index);
+						setTimeout(function(){
+							parent.location.reload();
+						},1000)				
+					}
+				}
+				tool.post("/home/module/recovery",{name: name}, callback);
+				layer.close(index);
+			});
+		});
+
+	}
+</script>
 {/block}
 <!-- /脚本 -->

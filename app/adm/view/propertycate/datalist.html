@@ -1,0 +1,86 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-3">
+	<div class="gg-form-bar border-t border-x" style="padding-bottom:10px;">
+		<button class="layui-btn layui-btn-sm add-menu">+ 添加资产分类</button>
+    </div>
+    <div>
+      <table class="layui-hide" id="treeTable" lay-filter="treeTable"></table>
+    </div> 
+</div>
+<script type="text/html" id="switchStatus">
+	<input type="checkbox" name="status" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="status" {{ d.status == 1 ? 'checked' : '' }}>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var treeTable = layui.treeTable, tool = layui.tool;
+		
+		layui.pageTable = treeTable.render({
+			elem: '#treeTable'
+			,url: "/adm/propertycate/datalist"
+			,tree: { // treeTable 特定属性集
+				customName: {name:'title'},
+				data: {},
+				view: {
+					showIcon:false,
+					expandAllDefault:true
+				},
+				async: {},
+				callback: {}
+			}
+				,cols: [[
+					{field:'id',width:80, title: 'ID号', align:'center'}
+					,{field: 'sort', title: '排序',align:'center', width:80}
+					,{field:'title', width:240, title: '分类名称'}
+					,{field:'pid', title: '父级ID', width:80, align:'center'}
+					,{field:'desc', title: '描述', }
+					,{width:160,title: '操作', align:'center',templet: function(d){
+						var html = '<span class="layui-btn-group"><button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="add">添加子分类</button><button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></span>';
+					return html;
+					  }
+					}
+				]]
+				,page:false
+				//,skin:'line'
+			});
+			
+			//表头工具栏事件
+			$('.add-menu').on('click', function(){
+				tool.side('/adm/propertycate/add');
+				return;
+			});
+			
+			//操作按钮
+			treeTable.on('tool(treeTable)', function (obj) {
+				if (obj.event === 'add') {
+					tool.side('/adm/propertycate/add?pid='+obj.data.id);
+					return;
+				}
+				if (obj.event === 'edit') {
+					tool.side('/adm/propertycate/add?id='+obj.data.id);
+					return;
+				}
+				if (obj.event === 'del') {
+					layer.confirm('确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								obj.del();
+							}
+						}
+						tool.delete('/adm/propertycate/del', { id: obj.data.id }, callback);
+						layer.close(index);
+					});
+				}
+			});
+		}
+	</script>
+{/block}
+<!-- /脚本 -->

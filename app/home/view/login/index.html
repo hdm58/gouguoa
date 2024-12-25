@@ -6,80 +6,83 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>{:get_system_config('web','admin_title')}</title>
-		<link rel="stylesheet" href="{__LAYUI__}/css/layui.css?v={:get_system_config('web','version')}" media="all">
+		<link rel="stylesheet" href="{__GOUGU__}/layui/css/layui.css?v={:get_system_config('system','version')}" media="all">
 		<style type="text/css">
-			html,body {width: 100%;height: 100%;background: #34a853;}
+			html,body {width: 100%;height: 100%;background: #EAF3FF;}
+			canvas{display:block;width:100%;height:100%; position: fixed; top: 0;left: 0;}
 			input:-webkit-autofill {
 				-webkit-box-shadow: 0 0 0px 1000px white inset;
 			}
-			#container {width: 100%;height: 100%;position: fixed;top: 0;left: 0;z-index: 999;color: #ffffff;
-				background: url({__IMG__}/bg.jpg);
-				background-size: cover;
-				background: url("{__IMG__}/bg_pattern.png"), -webkit-linear-gradient(to left, #34a853, #4285f4);
-				/* Chrome 10-25, Safari 5.1-6 */
-				background: url("{__IMG__}/bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
-				/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-			}
-			.container h2 {font-size: 36px;padding: 36px 0;font-weight: 500;}
-			.login {width: 400px;text-align: center;position: absolute;top: 50%;left: 50%;margin-top: -240px;margin-left: -200px;border-radius: 12px;box-shadow: 0 2px 6px rgba(26, 26, 26, .36);
-			}
-			.login .top {width: 400px;height: 117px;background-color: #fbbc05;border-radius: 12px 12px 0 0;line-height: 117px;text-align: center;overflow: hidden;
-				-webkit-transform: rotate(0deg);
-				-moz-transform: rotate(0deg);
-				-ms-transform: rotate(0deg);
-				-o-transform: rotate(0deg);
-				transform: rotate(0deg);
-			}
-			.login .top .bg1 {display: inline-block;width: 72px;height: 72px;background: #fff;opacity: .1;border-radius: 0 72px 0 0;position: absolute;left: 0;top: 42px;}
-			.login .top .bg2 {display: inline-block;width: 92px;height: 92px;background: #fff;opacity: .1;border-radius: 50%;position: absolute;right: -16px;top: -16px;}
-			.login .bottom {background-color: #fff;padding: 30px 25px;border-radius: 0 0 12px 12px;}
+			#container {width: 100%;height: 100%;position: fixed;top: 0;left: 0;z-index: 99;background: url({__IMG__}/bg.png);background-size: cover;}
+			.login-wrap {position: relative;overflow: hidden; background-color:#fff; width:800px; height: 448px; position: absolute;top: 50%;left: 50%;margin-top: -240px;margin-left: -400px; border-radius: 12px; display: flex;box-shadow: 0 0 16px rgba(31, 84, 167, 0.2);}
+
+			.login-side {width:400px; height:440px; padding:4px}
+			.login-side .side-img{border-radius: 8px; width:100%; height:100%; background: url({__IMG__}/login.jpg);background-size: cover;}
+			
+			.login-box{width: 392px;height: 404px;}
+			.login-box .top {width: 392px; padding:36px 0; text-align:center; border-bottom:1px solid #eee;}
+			.login-box .bottom {padding:32px;}
 			
 			.layui-input,.layui-textarea {height: 44px;border: 1px solid #ddd;}
-			.captcha_img img{width:142px; height:44px; cursor:pointer;}
-			.layui-btn {height: 48px;font-size: 16px;margin-top: 5px;background-color: #FF6347!important}
-			.foot {position: absolute; font-size: 12px; bottom: 28px;text-align: center;width: 100%;color: #d3e8fa;}
+			.captcha_img img{width:150px; height:44px; cursor:pointer;}
+			.layui-btn {height: 45px;font-size: 16px;margin-top: 6px;background-color: #FF6347!important}
+			.foot {position: absolute; font-size: 12px; bottom: 24px;text-align: center;width: 100%;color: #458BF3;}
 		</style>
 	</head>
 	<body>
 		<div id="container">
-			<div class="login">
-				<div class="top">
-					<img src="{__IMG__}/login_logo.png" height="60" width="200">
-					<span class="bg1"></span>
-					<span class="bg2"></span>
-				</div>
-				<div class="bottom">
-					<form class="layui-form" id="gougu-login">
-						<div class="layui-form-item">
-							<input type="text" name="username" lay-verify="required" value="" placeholder="请输入账户" lay-reqText="请输入账户" autocomplete="off" class="layui-input">
-						</div>
-						<div class="layui-form-item">
-							<input type="password" name="password" lay-verify="required" value="" placeholder="请输入密码" lay-reqText="请输入密码" autocomplete="off" class="layui-input">
-						</div>
-						<div class="layui-form-item">
-							<div class="layui-input-inline" style="width:188px;">
-								<input type="text" name="captcha" lay-verify="required" placeholder="验证码" lay-reqText="请输入验证码" autocomplete="off" class="layui-input">
+			<canvas id="canvas"></canvas>
+			<div class="login-wrap">
+				<div class="login-side"><div class="side-img"></div></div>
+				<div class="login-box">
+					<div class="top">
+						<img src="{:get_system_config('web','logo')}" onerror="javascript:this.src='{__IMG__}/syslogo.png';this.onerror=null;" style="height: 66px;">
+					</div>
+					<div class="bottom">
+						<form class="layui-form" id="gougu-login">
+							<div class="layui-form-item">
+								<input type="text" name="username" lay-verify="required" value="" placeholder="请输入账户或手机号码" lay-reqText="请输入账户或手机号码" autocomplete="off" class="layui-input">
 							</div>
-							<div class="layui-input-inline captcha_img" style="width:142px; height:44px; margin-right:0">
-								{:captcha_img()}
-								<input type="hidden" value="{:make_token()}"/>
+							<div class="layui-form-item">
+								<input type="password" name="password" lay-verify="required" value="" placeholder="请输入密码" lay-reqText="请输入密码" autocomplete="off" class="layui-input">
 							</div>
-						</div>
-						
-						<button id="login-submit" class="layui-btn layui-btn-fluid layui-bg-cyan" lay-submit lay-filter="login-submit">登入系统</button>
-					</form>
+							<div class="layui-form-item">
+								<div class="layui-input-inline" style="width:168px;">
+									<input type="text" name="captcha" lay-verify="required" placeholder="验证码" lay-reqText="请输入验证码" autocomplete="off" class="layui-input">
+								</div>
+								<div class="layui-input-inline captcha_img" style="width:142px; height:44px; margin-right:0">
+									{:captcha_img()}
+									<input type="hidden" value="{:make_token()}"/>
+								</div>
+							</div>
+							
+							<button id="login-submit" class="layui-btn layui-btn-fluid layui-bg-cyan" lay-submit lay-filter="login-submit">登入系统</button>
+						</form>
+					</div>
 				</div>
 			</div>
 			<div class="foot">
-			{:get_system_config('web','copyright')} <a id="beian" href="//www.beian.miit.gov.cn" target="_blank"
-				rel="nofollow" style="margin-left: 15px;color:#d3e8fa;">{:get_system_config('web','icp')}</a>，Powered by GouguCMS
+				<!-- 版权标识 -->
+				<!-- 
+				+------------------------------------------------------------------------------------------
+				勾股OA系统开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
+				+------------------------------------------------------------------------------------------
+				如需去除版权标识使用的，请微信(hdm588)联系作者去除，开源不易，请多支持！
+				+------------------------------------------------------------------------------------------
+				勾股工作室 <hdm58@qq.com>
+				+------------------------------------------------------------------------------------------
+				-->
+				Copyright © 2022-2024 勾股OA - {:CMS_VERSION}  ，Powered by GouguOPEN，<a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow" style="color:#458BF3">{:get_system_config('web','icp')}</a><a target="_blank" rel="nofollow" style="margin-left: 15px;color:#458BF3" href="http://www.beian.gov.cn/portal/registerSystemInfo"> {:get_system_config('web','beian')}</a>
+				<!-- /版权标识 -->
 			</div>
 		</div>
-		<script src="{__LAYUI__}/layui.js?v={:get_system_config('web','version')}"></script>
+		<script src="{__GOUGU__}/layui/layui.js?v={:get_system_config('system','version')}"></script>
 		<script type="text/javascript">
+			var canvas=document.querySelector("#canvas"),ctx=canvas.getContext("2d");canvas.width=window.innerWidth,canvas.height=window.innerHeight,ctx.lineWidth=.3,ctx.strokeStyle=new Color(150).style;var movePos={x:30*canvas.width/100,y:30*canvas.height/100},dots={nb:250,distance:100,d_radius:150,array:[]};function colorValue(t){return Math.floor(255*Math.random()+t)}function createColorStyle(t,o,i){return"rgba("+t+","+o+","+i+", 0.618)"}function mixComponents(t,o,i,a){return(t*o+i*a)/(o+a)}function averageColorStyles(t,o){var i=t.color,a=o.color,s=mixComponents(i.r,t.radius,a.r,o.radius),n=mixComponents(i.g,t.radius,a.g,o.radius),e=mixComponents(i.b,t.radius,a.b,o.radius);return createColorStyle(Math.floor(s),Math.floor(n),Math.floor(e))}function Color(t){t=t||0,this.r=colorValue(t),this.g=colorValue(t),this.b=colorValue(t),this.style=createColorStyle(this.r,this.g,this.b)}function Dot(){this.x=Math.random()*canvas.width,this.y=Math.random()*canvas.height,this.vx=-.5+Math.random(),this.vy=-.5+Math.random(),this.radius=3*Math.random(),this.color=new Color}function createDots(){for(i=0;i<dots.nb;i++)dots.array.push(new Dot)}function moveDots(){for(i=0;i<dots.nb;i++){var t=dots.array[i];t.y<0||t.y>canvas.height?(t.vx=t.vx,t.vy=-t.vy):(t.x<0||t.x>canvas.width)&&(t.vx=-t.vx,t.vy=t.vy),t.x+=t.vx,t.y+=t.vy}}function connectDots(){for(i=0;i<dots.nb;i++)for(j=0;j<dots.nb;j++)i_dot=dots.array[i],j_dot=dots.array[j],i_dot.x-j_dot.x<dots.distance&&i_dot.y-j_dot.y<dots.distance&&i_dot.x-j_dot.x>-dots.distance&&i_dot.y-j_dot.y>-dots.distance&&i_dot.x-movePos.x<dots.d_radius&&i_dot.y-movePos.y<dots.d_radius&&i_dot.x-movePos.x>-dots.d_radius&&i_dot.y-movePos.y>-dots.d_radius&&(ctx.beginPath(),ctx.strokeStyle=averageColorStyles(i_dot,j_dot),ctx.moveTo(i_dot.x,i_dot.y),ctx.lineTo(j_dot.x,j_dot.y),ctx.stroke(),ctx.closePath())}function drawDots(){for(i=0;i<dots.nb;i++){dots.array[i].draw()}}function runDots(){ctx.clearRect(0,0,canvas.width,canvas.height),moveDots(),connectDots(),drawDots(),requestAnimationFrame(runDots)}Dot.prototype={draw:function(){ctx.beginPath(),ctx.fillStyle=this.color.style,ctx.arc(this.x,this.y,this.radius,0,3*Math.PI,!1),ctx.fill()}};var can=document.querySelector("#canvas");can.addEventListener("mousemove",function(t){movePos.x=t.pageX,movePos.y=t.pageY}),can.addEventListener("mouseleave",function(t){movePos.x=canvas.width/2,movePos.y=canvas.height/2}),createDots(),requestAnimationFrame(runDots);
+			
 			layui.use(['form'], function() {
 				var form = layui.form,
-					$ = layui.$;
+					$ = layui.$,
 					layer = layui.layer;
 				// 登录过期的时候，跳出ifram框架
 				if (top.location != self.location) top.location = self.location;
@@ -92,10 +95,13 @@
 						success: function(res) {
 							layer.tips(res.msg, '#login-submit');
 							if (res.code === 0) {
+								var date = new Date();
+								date.setTime(date.getTime() + (-1 * 24 * 60 * 60 * 1000));
+								var expires = "; expires=" + date.toGMTString();
+								document.cookie = "gougutab=''" + expires + "; path=/";
 								setTimeout(function() {
-								//	parent.document.location.reload();
 									parent.document.location.href="/";
-								}, 1500);
+								}, 1200);
 							} else {
 								$('[alt="captcha"]').click();
 							}

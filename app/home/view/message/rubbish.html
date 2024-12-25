@@ -1,0 +1,109 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	{include file="message/msgmenu" /}
+	<div style="margin-left:172px;">
+		<form class="layui-form gg-form-bar border-t border-x">
+			<div class="layui-input-inline" style="width:300px">
+				<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off"/>
+			</div>
+			<div class="layui-input-inline" style="width:150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+			</div>
+		</form> 
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+	<h3>垃圾箱信息</h3>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool ,form = layui.form;
+		  layui.pageTable = table.render({
+			elem: '#test',
+			toolbar: '#toolbarDemo',
+			defaultToolbar:false,
+			title:'垃圾箱',
+			url: "/home/message/rubbish", //数据接口
+			page: true ,//开启分页
+			limit: 20,
+			cellMinWidth: 80,
+			height: 'full-112',
+			cols: [[ //表头
+			  {type:'checkbox',fixed:'left'},
+			  {field: 'sourse', title: '来源',width:90,align:'center',templet: function (d) {
+					return '<span class="layui-color-' + d.types + '">『'+d.sourse+'』</span>';
+				}
+				},
+			  {field: 'from_name', title: '发送人',width:100,align:'center'},
+			  {field: 'title', title: '消息主题',minWidth:240},
+			  {field: 'send_time', title: '发件时间', align:'center',width:160},
+			  {field: 'right', title: '操作',fixed:'right', width:120, align:'center',templet: function (d) {
+					let html='<div class="layui-btn-group">';
+					let btn1='<span class="layui-btn layui-btn-xs" lay-event="recovery">还原</span>';
+					let btn2='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</span>';
+					let btn3='<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="clear">清除</button></div>';
+					return html+btn1+btn2+btn3+'</div>'
+				}
+			  }
+			]]
+		  });
+
+		 //监听行工具事件
+		  table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'clear'){
+				layer.confirm('确定清除该信息吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if(e.code==0){
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/home/message/clear", {ids: data.id,'table':data.table_name}, callback);
+					layer.close(index);
+				})
+			}
+			if(obj.event === 'recovery'){
+				layer.confirm('确定还原该信息吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if(e.code==0){
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/home/message/recovery", {ids: data.id,'table':data.table_name}, callback);
+					layer.close(index);
+				})
+			}
+			if(obj.event === 'view'){
+				if(data.table_name=='msg'){
+					tool.side('/home/message/read?id='+data.id);
+				}
+				else{
+					tool.side('/home/message/view?id='+data.id);
+				}
+				return;
+			}
+		  });
+		  
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			layui.pageTable.reload({where:data.field,page:{curr:1}});
+			return false;
+		});
+	}
+		
+</script>
+{/block}
+<!-- /脚本 -->

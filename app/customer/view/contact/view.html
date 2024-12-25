@@ -1,0 +1,84 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">联系人信息</h3>
+    <table class="layui-table layui-table-form">
+      <tr>
+        <td class="layui-td-gray">客户名称</td>
+        <td colspan="5">{$detail.customer}</td>
+      </tr>
+      <tr>
+        <td class="layui-td-gray">姓名</td>
+        <td>{$detail.name} </td>
+		<td class="layui-td-gray">联系电话</td>
+        <td>{$detail.mobile}</td>
+		<td class="layui-td-gray">性别</td>
+        <td>
+			{eq name="$detail.sex" value="1"}男{/eq}
+			{eq name="$detail.sex" value="2"}女{/eq}
+        </td>
+	  </tr>
+	  <tr>
+		<td class="layui-td-gray">微 信 号</td>
+        <td>{$detail.wechat}</td>
+		<td class="layui-td-gray">QQ号码</td>
+        <td>{$detail.qq}</td>
+		<td class="layui-td-gray">电子邮箱</td>
+        <td>{$detail.email}</td>
+      </tr>
+	  <tr>
+		<td class="layui-td-gray">称谓</td>
+        <td>{$detail.nickname}</td>
+		<td class="layui-td-gray">部门</td>
+        <td>{$detail.department}</td>
+		<td class="layui-td-gray">职务</td>
+        <td>{$detail.position}</td>
+      </tr>
+	  <tr>
+		<td class="layui-td-gray">生日</td>
+        <td>{$detail.birthday}</td>
+		<td class="layui-td-gray">家庭住址</td>
+        <td colspan="3">{$detail.address}</td>
+      </tr>
+	  <tr>
+		<td class="layui-td-gray">家庭成员</td>
+        <td colspan="5">
+			<table id="interfix" class="layui-table layui-table-min" style="margin:0;">
+				<tr>
+					<th width="150">成员姓名</th>
+					<th width="150">成员关系</th>
+					<th>备注信息</th>
+				</tr>
+				{notempty name="$detail.family" }
+				{volist name="$detail.family" id="vo"}
+				<tr class="more_interfix">
+					<td>{$vo.family_name}</td>
+					<td>{$vo.family_relations}</td>
+					<td>{$vo.family_remarks}</td>
+				</tr>
+				{/volist}
+				{else/}
+				<tr class="tr-none">
+					<td colspan="3" style="padding:12px 0; text-align:center;">暂无数据</td>
+				</tr>
+				{/notempty}
+			</table>
+		</td>
+      </tr>
+    </table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

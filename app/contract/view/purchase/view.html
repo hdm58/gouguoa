@@ -1,0 +1,307 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-tab-title .layui-this{background-color:#fff;}
+.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+#checkBox .pb-2{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">采购合同详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">合同名称</td>
+			<td colspan="3">{$detail.name}</td>
+			<td class="layui-td-gray">合同编号</td>
+			<td>{$detail.code}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">签约主体(甲方)</td>
+			<td colspan="3">{$detail.subject_title}</td>
+			<td class="layui-td-gray-2">合同始止日期</td>
+			<td>{$detail.start_time} 至 {$detail.end_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">供应商名称(乙方)</td>
+			<td colspan="3">{$detail.supplier}</td>
+			<td class="layui-td-gray-3">签约供应商代表</td>
+			<td>{$detail.contact_name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">供应商联系地址</td>
+			<td colspan="3">{$detail.contact_address|default='-'}</td>
+			<td class="layui-td-gray">供应商联系电话</td>
+			<td>{$detail.contact_mobile|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">合同金额</td>
+			<td>{$detail.cost}</td>
+			<td class="layui-td-gray">合同性质</td>
+			<td>{$detail.types_name}</td>
+			<td class="layui-td-gray">合同类别</td>
+			<td>{$detail.cate_title}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>签订信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">合同签订人</td>
+			<td>{$detail.sign_name}</td>
+			<td class="layui-td-gray-2">合同所属部门</td>
+			<td>{$detail.sign_department}</td>
+			<td class="layui-td-gray-2">合同签订日期</td>
+			<td>{$detail.sign_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">合同制定人</td>
+			<td>{$detail.prepared_name|default='-'}</td>
+			<td class="layui-td-gray-2">合同保管人</td>
+			<td>{$detail.keeper_name|default='-'} <span id="keeper" data-ids="{$detail.keeper_uid}" data-names="{$detail.keeper_name}" class="layui-btn layui-btn-xs layui-btn-normal ml-1">更改</span></td>
+			<td class="layui-td-gray">合同共享人员</td>
+			<td colspan="3">{$detail.share_names|default='-'} <span id="shares" data-ids="{$detail.share_ids}" data-names="{$detail.share_names}" class="layui-btn layui-btn-xs layui-btn-normal ml-1">更改</span></td>
+		</tr>
+		{eq name="$detail.types" value="2"}{include file="/purchase/view_purchased"}{/eq}		
+		{eq name="$detail.types" value="3"}{include file="/purchase/view_service"}{/eq}	
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td colspan="6"><strong>相关附件</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.remark"}
+		<tr>
+			<td colspan="6"><strong>备注信息</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		
+		<tr>
+			<td colspan="6"><strong>合同情况</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">录入人</td>
+			<td>{$detail.admin_name} </td>
+			<td class="layui-td-gray">录入时间</td>
+			<td colspan="3">{$detail.create_time}</td>
+		</tr>
+		{gt name="$detail.archive_time" value="0"}
+		<tr>
+			<td class="layui-td-gray">归档状态</td>
+			<td>
+				<span class="red">已归档</span>
+				{if ($auth == 1) }
+				<span class="layui-btn layui-btn-danger layui-btn-xs ml-4" data-event="archive" data-status="0">反确认归档</span>
+				{/if}
+			</td>
+			<td class="layui-td-gray">归档人</td>
+			<td>{$detail.archive_name} </td>
+			<td class="layui-td-gray">归档时间</td>
+			<td>{$detail.archive_time|date='Y-m-d H:i:s'}</td>
+		{else/}
+			<td class="layui-td-gray">归档状态</td>
+			<td colspan="5">
+				<span class="green">未归档</span>
+				{if ($auth == 1) AND ($detail.check_status == 2) }
+				<span class="layui-btn layui-btn-xs ml-4" data-event="archive" data-status="1">确认归档</span>
+				{/if}
+			</td>
+		</tr>
+		{/gt}
+			
+		{gt name="$detail.stop_time" value="0"}
+		<tr>
+			<td class="layui-td-gray">中止人</td>
+			<td>{$detail.stop_name}</td>
+			<td class="layui-td-gray">中止时间</td>
+			<td>{$detail.stop_time|date='Y-m-d H:i:s'}</td>
+			<td colspan="2"><span class="layui-btn layui-btn-danger layui-btn-xs" data-event="stop" data-status="0">反中止合同</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">中止备注</td>
+			<td colspan="5">{$detail.stop_remark|default='-'}</td>
+		</tr>
+		{/gt}
+			
+		{gt name="$detail.void_time" value="0"}
+		<tr>
+			<td class="layui-td-gray">作废人</td>
+			<td>{$detail.void_name}</td>
+			<td class="layui-td-gray">作废时间</td>
+			<td>{$detail.void_time|date='Y-m-d H:i:s'}</td>
+			<td colspan="2"><span class="layui-btn layui-btn-danger layui-btn-xs" data-event="void" data-status="0">反作废合同</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">作废备注</td>
+			<td colspan="5">{$detail.void_remark|default='-'}</td>
+		</tr>
+		{/gt}
+	</table>
+	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="purchase" id="purchaseTab">
+		<ul class="layui-tab-title">
+			<li class="layui-this" data-load="true">审批信息</li>
+			<li>操作记录</li>
+		</ul>
+		<div class="layui-tab-content" style="padding:0;">
+			<div class="layui-tab-item layui-show" style="padding-top:12px; background-color:#fff;">	
+				{if ($detail.stop_time == 0) AND ($detail.void_time == 0) }
+				<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}" class="px-3 pb-3"></div>
+				{/if}	
+			</div>
+			<div class="layui-tab-item">
+				{include file="/purchase/view_log" /}
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var purchase_id = {$detail.id};
+	var auth = {$auth};
+	var archive = {$detail.archive_time};
+	var moduleInit = ['tool','oaCheck','oaPicker','oaEdit'];
+	let checking_btn='<span class="layui-btn layui-btn-warm" data-event="stop" data-status="1">中止合同</span><span class="layui-btn layui-btn-danger" data-event="void" data-status="1">作废合同</span>';
+	function gouguInit() {
+		var tool = layui.tool,element = layui.element,oaCheck=layui.oaCheck,oaPicker=layui.oaPicker;	
+		
+		element.on('tab(purchase)', function(data){
+			let index = data.index;
+			if(index == 1){
+				log();	
+			}
+		});
+		
+		oaCheck.init({
+			check_name:'purchase',
+			check_copy:0,
+			check_back:archive==0?auth:0,
+			checking_btn:checking_btn
+		});
+
+		let eventCallback = function (e) {
+			layer.msg(e.msg);
+			parent.layui.pageTable.reload();
+			setTimeout(function(){
+				location.reload();
+			},1200)					
+		}
+		
+		//选择合同保管人弹窗	
+		$('body').on('click','#keeper',function () {
+			let that = $(this);
+			let ids=$(this).data('ids')+'',names = $(this).data('names')+'';
+			oaPicker.employeeInit({
+				ids:ids,
+				names:names,
+				type:1,//1是单选，2是多选
+				callback:function(data){
+					let select_id=[],select_name=[];
+					for(var a=0; a<data.length;a++){
+						select_id.push(data[a].id);
+						select_name.push(data[a].name);
+					}
+					tool.post("/contract/purchase/add", {'id':purchase_id,'keeper_uid':select_id.join(','),'scene':'change'}, eventCallback);
+				}
+			});
+		});
+	
+		//选择共享成员弹窗	
+		$('body').on('click','#shares',function () {
+			let that = $(this);
+			let ids=$(this).data('ids')+'',names = $(this).data('names')+'';
+			oaPicker.employeeInit({
+				ids:ids,
+				names:names,
+				type:2,//1是单选，2是多选
+				callback:function(data){
+					let select_id=[],select_name=[];
+					for(var a=0; a<data.length;a++){
+						select_id.push(data[a].id);
+						select_name.push(data[a].name);
+					}
+					tool.post("/contract/purchase/add", {'id':purchase_id,'share_ids':select_id.join(','),'scene':'change'}, eventCallback);
+				}
+			});
+		});
+		
+		//归档操作
+		$('body').on('click','[data-event="archive"]',function(){
+			let status = $(this).data('status');
+			let tips = '合同归档后将不能进行任何数据操作，确定要提交归档?';
+			if(status==0){
+				tips = '确定要反归档操作?';
+			}
+			layer.confirm(tips, {
+				icon: 3,
+				title: '提示'
+			}, function(index) {
+				tool.post("/contract/api/purchase_archive", {id: purchase_id,archive_status:status}, eventCallback);
+				layer.close(index);
+			});
+		})
+
+		//中止操作
+		$('body').on('click','[data-event="stop"]',function(){
+			let status = $(this).data('status');
+			if(status==1){
+				layer.prompt({
+					formType: 2,
+					title: '请输入中止的理由',
+					area: ['480px', '120px']
+				}, function(value, index, elem){
+					tool.post("/contract/api/purchase_stop", {id: purchase_id,stop_status:status,stop_remark:value}, eventCallback);
+					layer.close(index);
+				});
+			}
+			else{
+				layer.confirm('确定要反中止该合同?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					tool.post("/contract/api/purchase_stop", {id: purchase_id,stop_status:status}, eventCallback);
+					layer.close(index);
+				});
+			}
+		})
+		
+		//作废操作
+		$('body').on('click','[data-event="void"]',function(){
+			let status = $(this).data('status');
+			if(status==1){
+				layer.prompt({
+					formType: 2,
+					title: '请输入作废的理由',
+					area: ['480px', '120px']
+				}, function(value, index, elem){
+					tool.post("/contract/api/purchase_tovoid", {id: purchase_id,void_status:status,void_remark:value}, eventCallback);
+					layer.close(index);
+				});
+			}
+			else{
+				layer.confirm('确定要反作废该合同?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					tool.post("/contract/api/purchase_tovoid", {id: purchase_id,void_status:status}, eventCallback);
+					layer.close(index);
+				});
+			}
+		})		
+	}
+</script>
+{/block}
+<!-- /脚本 -->

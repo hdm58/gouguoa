@@ -1,0 +1,75 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">编辑供应商</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">供应商名称<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" value="{$detail.title}" autocomplete="off" placeholder="请输入供应商名称" lay-verify="required" lay-reqText="请输入供应商名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">供应商电话</td>
+			<td><input type="text" name="phone" value="{$detail.phone}" autocomplete="off" placeholder="请输入供应商电话" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">供应商地址</td>
+			<td colspan="3"><input type="text" name="address" value="{$detail.address}" autocomplete="off" placeholder="请输入供应商地址" class="layui-input"></td>
+			<td class="layui-td-gray-2">供应商邮箱</td>
+			<td><input type="text" name="email" value="{$detail.email}" autocomplete="off" placeholder="请输入供应商邮箱" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">供应商简介</td>
+			<td colspan="5"><textarea name="content" placeholder="请输入内容" class="layui-textarea">{$detail.content}</textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">相关附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{volist name="$detail.file_array" id="vo"}
+						<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-3">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','uploadPlus'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,uploadPlus=layui.uploadPlus;
+
+	//附件上传
+	var attachment = new uploadPlus({
+		"target":'uploadBtn',
+		"targetBox":'uploadBox'
+	});
+	//监听提交
+	form.on('submit(webform)', function(data){
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);				
+			}
+		}
+		tool.post("/contract/supplier/add", data.field, callback);
+		return false;
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

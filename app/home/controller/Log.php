@@ -1,9 +1,15 @@
 <?php
 /**
- * @copyright Copyright (c) 2021 勾股工作室
- * @license https://opensource.org/licenses/GPL-2.0
- * @link https://www.gougucms.com
- */
++-----------------------------------------------------------------------------------------------
+* GouGuOPEN [ 左手研发，右手开源，未来可期！]
++-----------------------------------------------------------------------------------------------
+* @Copyright (c) 2021~2024 http://www.gouguoa.com All rights reserved.
++-----------------------------------------------------------------------------------------------
+* @Licensed 勾股OA，开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
++-----------------------------------------------------------------------------------------------
+* @Author 勾股工作室 <hdm58@qq.com>
++-----------------------------------------------------------------------------------------------
+*/
 
 declare (strict_types = 1);
 
@@ -22,37 +28,39 @@ class Log extends BaseController
             $param = get_params();
             $where = array();
             if (!empty($param['keywords'])) {
-                $where[] = ['name|rule_menu|param_id', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['u.name|a.param_id|a.uid', 'like', '%' . $param['keywords'] . '%'];
             }
             if (!empty($param['action'])) {
-                $where['action'] = $param['action'];
+                $where[] = ['a.action','=',$param['action']];
             }
-            $rows = empty($param['limit']) ? get_config('app . page_size') : $param['limit'];
-            $content = DB::name('AdminLog')
-                ->field("id,uid,name,action,title,content,rule_menu,ip,param_id,param,FROM_UNIXTIME(create_time,'%Y-%m-%d %H:%i:%s') create_time")
-                ->order('create_time desc')
+            $rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
+            $list = DB::name('AdminLog')
+                ->field("a.*,u.name")
+				->alias('a')
+				->join('Admin u', 'a.uid = u.id')
+                ->order('a.create_time desc')
                 ->where($where)
-                ->paginate($rows, false, ['query' => $param]);
-            $content->toArray();
-            foreach ($content as $k => $v) {
-                $data = $v;
-                $param_array = json_decode($v['param'], true);
-				if(is_array($param_array)){
-					$param_value = '';
-					foreach ($param_array as $key => $value) {
-						if (is_array($value)) {
-							$value = implode(',', $value);
+                ->paginate(['list_rows'=> $rows])
+				->each(function($item, $key){
+					$item['content'] = $item['name']. $item['action'] . '了' . $item['subject'];
+					$item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
+					$param_array = json_decode($item['param'], true);
+					if(is_array($param_array)){
+						$param_value = [];
+						foreach ($param_array as $key => $value) {
+							if (is_array($value)) {
+								$value = implode(',', $value);
+							}
+							$param_value[] = $key . ':' . $value;
 						}
-						$param_value .= $key . ':' . $value . '&nbsp;&nbsp;|&nbsp;&nbsp;';
+						$item['param'] = implode(' & ',$param_value);
 					}
-					$data['param'] = $param_value;
-				}
-				else{
-					$data['param'] = $param_array;
-				}
-                $content->offsetSet($k, $data);
-            }
-            return table_assign(0, '', $content);
+					else{
+						$item['param'] = $param_array;
+					}
+					return $item;
+				});
+            return table_assign(0, '', $list);
         } else {
 			$type_action = get_config('log.type_action');
 			View::assign('type_action', $type_action);

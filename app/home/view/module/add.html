@@ -1,0 +1,60 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">自定义模块</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td colspan="4"><strong class="red">注意：自定义模块目录不能和已有的模块目录相同，尽量使用个性化的目录，防止后期可能与官网新推出模块的目录相同，引起升级不必要的麻烦。</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">模块名称<font>*</font></td>
+			<td>
+				<input type="hidden" name="id" value="{$id}" />
+				<input type="hidden" name="type" value="3" />
+				<input type="hidden" name="sourse" value="2" />
+				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入模块名称" lay-reqText="请输入模块名称" class="layui-input" value="{$module.title|default=''}">
+			</td>
+			<td class="layui-td-gray-2">模块所在目录<font>*</font></td>
+			<td>
+				<input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入模块所在目录" lay-reqText="请输入模块所在目录" class="layui-input" value="{$module.name|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">模块描述</td>
+			<td colspan="3">
+				<textarea name="desc" placeholder="请输入模块描述，不能超过200个字" class="layui-textarea">{$module.desc|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					setTimeout(function(){
+						parent.location.reload();
+					},1000)
+				}
+			}
+			tool.post("/home/module/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -2,40 +2,39 @@
 {block name="style"}
 <style>
 .checkbox16 .layui-form-checkbox span{font-size:15px;font-weight:800;}
-.layui-checkbox-disabled span,.layui-checkbox-disabled[lay-skin=primary] span{color: #666666!important;}
+.layui-checkbox-disabled>div{color: #666666!important;}
+.layui-disabled,.layui-radio-disabled>*,.layui-radio-disabled>i{color: #666666!important;}
+.layui-form-checked.layui-checkbox-disabled[lay-skin=primary]>i{background-color:#999!important;}
 </style>
 {/block}
 <!-- 主体 -->
 {block name="body"}
-
-<form class="layui-form page-content">
-	<h3 class="h3-title">员工信息</h3>
+<form class="layui-form p-4">
+	<h3 class="pb-3">员工信息</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">登录账号</td>
-			<td>
-				{$detail.username}
-			</td>
+			<td>{$detail.username}</td>
 			<td class="layui-td-gray">登录密码</td>
 			<td>
 				{empty name="$detail.reg_pwd"}
 					密码已重置
-					<span class="layui-btn layui-btn-normal layui-btn-xs" onclick="resetPsw({$detail.id});">重设新密码</span>
+					<span class="layui-btn layui-btn-normal layui-btn-xs reset-psw" data-id="{$detail.id}">重设新密码</span>
 				{else/}
 					{$detail.reg_pwd}
-					<span class="layui-btn layui-btn-normal layui-btn-xs" onclick="copyToClip('{$detail.reg_pwd}');">复制初始密码</span>
+					<span class="layui-btn layui-btn-normal layui-btn-xs copy-psw" data-pwd="{$detail.reg_pwd}">复制初始密码</span>
 				{/empty}
 			</td>
 			<td class="layui-td-gray">员工状态</td>
 			<td>
 				{eq name="$detail.status" value="0"}<span style="color:#FF5722">禁止登录</span>{/eq}
-				{eq name="$detail.status" value="1"}<span style="color:#009688">正常</span>{/eq}
+				{eq name="$detail.status" value="1"}<span style="color:#16b777">正常</span>{/eq}
 				{eq name="$detail.status" value="2"}<span style="color:#FFB800">已离职</span>{/eq}
 			</td>
-			<td rowspan="3" class="layui-td-gray">头像</td>
-			<td rowspan="3" valign="top" style="width: 100px;">
+			<td rowspan="5" class="layui-td-gray">头像</td>
+			<td rowspan="5" valign="top" style="width: 160px;">
 				<div class="layui-upload">
-					<img src="{$detail.thumb}" style="width:100px; height:100px; max-width:100%" />
+					<img src="{$detail.thumb}" style="width:160px; height:160px; max-width:100%" />
 				</div>
 			</td>
 		</tr>
@@ -43,60 +42,77 @@
 			<td class="layui-td-gray">员工姓名</td>
 			<td>
 				{$detail.name}
+				{eq name="$detail.sex" value="1"}  <span class="layui-badge layui-bg-green">男</span>{/eq}
+				{eq name="$detail.sex" value="2"}  <span class="layui-badge layui-bg-red">女</span>{/eq}
 			</td>
 			<td class="layui-td-gray">手机号码</td>
-			<td>
-				{$detail.mobile}
-			</td>
-			<td class="layui-td-gray">性别</td>
-			<td>
-				{eq name="$detail.sex" value="0"}未知{/eq}
-				{eq name="$detail.sex" value="1"}男{/eq}
-				{eq name="$detail.sex" value="2"}女{/eq}
-			</td>
+			<td>{$detail.mobile}</td>
+			<td class="layui-td-gray">电子邮箱</td>
+			<td>{$detail.email}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">所在部门</td>
+			<td class="layui-td-gray">所在主部门</td>
 			<td>{$detail.department}</td>
+			<td class="layui-td-gray">所在次部门</td>
+			<td>{$detail.department_names|default=''}</td>
+			<td class="layui-td-gray">上级主管</td>
+			<td>{$detail.pname|default=''}</td>
+		</tr>
+		<tr>
 			<td class="layui-td-gray">岗位职称</td>
 			<td>{$detail.position}</td>
 			<td class="layui-td-gray">入职日期</td>
-			<td>
-				{$detail.entry_time | date='Y-m-d'}
-			</td>
-		</tr>
-		<tr>
+			<td>{$detail.entry_time | date='Y-m-d'}</td>
 			<td class="layui-td-gray">员工类型</td>
 			<td>
-				{eq name="$detail.type" value="3"}<span style="color:#5FB878">实 习 生</span>{/eq}
-				{eq name="$detail.type" value="2"}<span style="color:#01AAED">试用员工</span>{/eq}
 				{eq name="$detail.type" value="1"}<span style="color:#393D49">正式员工</span>{/eq}
-			</td>
-			<td class="layui-td-gray2">最后登录时间</td>
-			<td>
-				{$detail.last_login_time}
-			</td>
-			<td class="layui-td-gray">最后登录IP</td>
-			<td>
-				{$detail.last_login_ip}
-			</td>
-			<td class="layui-td-gray2">累计登录次数</td>
-			<td>
-				{$detail.login_num}
+				{eq name="$detail.type" value="2"}<span style="color:#01AAED">试用员工</span>{/eq}
+				{eq name="$detail.type" value="3"}<span style="color:#5FB878">实 习 生</span>{/eq}				
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">员工简介</td>
+			<td class="layui-td-gray">身份类型</td>
+			<td>
+				{eq name="$detail.is_staff" value="1"}<span style="color:#393D49">企业员工</span>{/eq}
+				{eq name="$detail.is_staff" value="2"}<span style="color:#01AAED">劳务派遣</span>{/eq}
+				{eq name="$detail.is_staff" value="3"}<span style="color:#5FB878">兼职员工</span>{/eq}	
+			</td>
+			<td class="layui-td-gray">隐藏联系方式</td>
+			<td colspan="3">
+				{eq name="$detail.is_hide" value="0"}否{/eq}
+				{eq name="$detail.is_hide" value="1"}是{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">最后登录时间</td>
+			<td>{eq name="$detail.last_login_time" value="0"}-{else/}{$detail.last_login_time|date='Y-m-d H:i:s'}{/eq}</td>
+			<td class="layui-td-gray-2">最后登录IP</td>
+			<td>{$detail.last_login_ip}</td>
+			<td class="layui-td-gray-2">累计登录次数</td>
+			<td colspan="3">{$detail.login_num}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">数据权限</td>
 			<td colspan="7">
-				{$detail.desc}
+				<input type="radio" name="auth_did" value="0" disabled title="仅自己关联的数据" {eq name="$detail.auth_did" value="0"}checked{/eq}>
+				<input type="radio" name="auth_did" value="1" disabled title="所属主部门的数据" {eq name="$detail.auth_did" value="1"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="2" disabled title="所属次部门的数据" {eq name="$detail.auth_did" value="2"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="3" disabled title="所属主次部门的数据" {eq name="$detail.auth_did" value="3"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="4" disabled title="所属主部门及其子部门数据" {eq name="$detail.auth_did" value="4"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="5" disabled title="所属次部门及其子部门数据" {eq name="$detail.auth_did" value="5"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="6" disabled title="所属主次部门及其子部门数据" {eq name="$detail.auth_did" value="6"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="7" disabled title="所属主部门所在顶级部门及其子部门数据" {eq name="$detail.auth_did" value="7"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="8" disabled title="所属次部门所在顶级部门及其子部门数据" {eq name="$detail.auth_did" value="8"}checked{/eq}>				
+				<input type="radio" name="auth_did" value="9" disabled title="所属主次部门所在顶级部门及其子部门数据" {eq name="$detail.auth_did" value="9"}checked{/eq}>					
+				<input type="radio" name="auth_did" value="10" disabled title="所有部门数据" {eq name="$detail.auth_did" value="10"}checked{/eq}>				
 			</td>
 		</tr>
 	</table>
-	<h3 class="h3-title2">用户权限</h3>
+	<h3 class="py-3">用户权限</h3>
 	<table class="layui-table layui-table-form">
 		{volist name="role_rule" id="vo"}
 		<tr>
-			<td style="font-weight:800">
+			<td style="font-weight:800; text-align:center;">
 			  <input type="checkbox" disabled value="{$vo.id}" title="{$vo.title}" {eq name="$vo.checked" value="true" }checked{/eq}>
 			</td>
 			{notempty name="vo.children"}
@@ -129,62 +145,45 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var TAB = parent.layui.tab,
-			form = layui.form;
-		//监听返回
-		$('.body-content').on('click', '[lay-event="back"]', function () {
-			//TAB.sonDelete();
-			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-			parent.layer.close(index);//关闭弹出的子页面窗口
-			return false;
-		});
-	}
-	
-	//重设密码
-	function resetPsw(id){
-		layer.confirm('确定要重设该用户的密码？', {
-			icon: 3,
-			title: '提示'
-		}, function (index) {
-			$.ajax({
-				url: "/user/admin/reset_psw",
-				data: {
-					id: id
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var tool=layui.tool;
+		//拷贝密码
+		$('.copy-psw').on('click',function(){
+			let pwd=$(this).data('pwd');
+			lay.clipboard.writeText({
+				text:pwd,
+				done:function(){
+					layer.msg('已复制初始化密码');
 				},
-				success: function (e) {
-					layer.msg(e.msg);
-					if(e.code==0){
-						setTimeout(function(){
-							location.reload();
-						},2000);
-					}							
+				error:function(){
+					layer.msg('复制失败，请点击详情手动复制');
 				}
-			})
-			layer.close(index);
+			});
 		});
-	}
-	
-	//拷贝密码
-	function copyToClip(content) {
-		if (navigator.clipboard) {
-			navigator.clipboard.writeText(content);
-		} else {
-			var copy_textarea = document.createElement('textarea');
-			copy_textarea.style.position = 'fixed';
-			copy_textarea.style.clip = 'rect(0 0 0 0)';
-			copy_textarea.style.top = '10px';
-			copy_textarea.value = content;
-			document.body.appendChild(copy_textarea);
-			copy_textarea.select();
-			document.execCommand('copy', true);
-			document.body.removeChild(copy_textarea);
-		}
-		if (content != '') {
-			layer.msg('复制成功');
-		}
+		//重设密码
+		$('.reset-psw').on('click',function(){
+			let id=$(this).data('id');
+			layer.confirm('确定要重设该用户的密码？', {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layer.msg(e.msg);
+						if(e.code==0){
+							setTimeout(function(){
+								location.reload();
+							},2000);
+						}
+					}
+				}
+				tool.post("/user/user/reset_psw",{id: id}, callback);
+				layer.close(index);
+			})	
+		});
 	}
 </script>
-{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

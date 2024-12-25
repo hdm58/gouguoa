@@ -1,0 +1,110 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this"><a href="/mobile/bar/datalist">BAR菜单</a></li>
+				<li><a href="/mobile/types/datalist">工作台菜单类型</a></li>
+				<li><a href="/mobile/menu/datalist">工作台菜单</a></li>
+			</ul>
+		</div>
+	</div>
+	<table class="layui-hide" id="table_mobile_bar" lay-filter="table_mobile_bar"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/mobile/bar/add">+ 添加Bar菜单</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_mobile_bar"
+			,title: 'Bar菜单列表'
+			,toolbar: '#toolbarDemo'
+			,url: "/mobile/bar/datalist"
+			,page: false
+			,limit: 999
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'icon',title: '菜单图标',width: 80, align: 'center' ,templet: function(d){
+					var html='<strong class="iconfont '+d.icon+'"></strong>';
+					return html;
+				}}
+				,{field:'title',title: '类型名称'}
+				, { field: 'url', title: 'URL链接' }
+				, { field: 'sort', width: 60, title: '排序', align: 'center' }
+				,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+					var html1='<span class="green">正常</span>';
+					var html2='<span class="yellow">禁用</span>';
+					if(d.status==1){
+						return html1;
+					}
+					else{
+						return html2;
+					}
+				}}
+				,{width:100,title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+					if(d.status==1){
+						html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
+					}
+					else{
+						html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_mobile_bar)',function (obj) {
+			if(obj.event === 'edit'){					
+				tool.side('/mobile/bar/add?id='+obj.data.id);
+			}
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该记录吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/mobile/bar/set", {id:obj.data.id,status: 0}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该记录吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/mobile/bar/set", {id:obj.data.id,status:1}, callback);
+					layer.close(index);
+				});
+			}
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

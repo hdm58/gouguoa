@@ -1,0 +1,115 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_template" lay-filter="table_template"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/home/template/add">+ 添加消息模板</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_template"
+			, toolbar: "#toolbarDemo"
+			,title:'消息模板列表'
+			,url: "/home/template/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-112'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'name',title: '模板标识',width:150}
+				,{field:'title',title: '模板名称'}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+					var html1='<span class="green">正常</span>';
+					var html2='<span class="yellow">禁用</span>';
+					if(d.status==1){
+						return html1;
+					}
+					else{
+						return html2;
+					}
+				}}
+				,{width:120,title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</a>';
+					var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+					var btn3='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+					if(d.status==1){
+						html = '<div class="layui-btn-group">'+btn+btn1+btn2+'</div>';
+					}
+					else{
+						html = '<div class="layui-btn-group">'+btn+btn1+btn3+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_template)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该类型吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/home/template/set", { id: obj.data.id,status: 0}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该类型吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/home/template/set", { id: obj.data.id,status: 1}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'edit') {
+				tool.side("/home/template/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'view') {
+				tool.side("/home/template/view?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

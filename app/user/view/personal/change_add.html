@@ -1,31 +1,25 @@
 {extend name="../../base/view/common/base" /}
-<!-- 样式 -->
-{block name="style"}
-  <link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
-  <link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
-{/block}
-<!-- /样式 -->
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">人事调动</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-3">人事调动</h3>
 	{if condition="$id eq 0"}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">调动员工<font>*</font></td>
 			<td>				
-				<input type="hidden" name="uid" value="0" autocomplete="off">
 				<input type="text" name="name" placeholder="请选择需要调动的员工" lay-reqText="请选择需要调动的员工" lay-verify="required" autocomplete="off" class="layui-input" readonly>
+				<input type="hidden" name="uid" value="0" autocomplete="off">
 			</td>
 			<td class="layui-td-gray">调出部门<font>*</font></td>
 			<td>				
 				<input type="hidden" name="from_did" value="0">
-				<input type="text" name="from_department" lay-verify="required" autocomplete="off" placeholder="请选择调出部门" lay-reqText="请选择调出部门"	class="layui-input" readonly>
+				<input type="text" name="from_department" lay-verify="required" autocomplete="off" placeholder="请选择调出部门" lay-reqText="请选择调出部门" class="layui-input" readonly>
 			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">调动日期<font>*</font></td>
-			<td><input type="text" id="move_time" name="move_time" lay-verify="required" autocomplete="off" placeholder="请选择调动日期" lay-reqText="请选择调动日期" readonly class="layui-input">
+			<td><input type="text" name="move_time" lay-verify="required" autocomplete="off" placeholder="请选择调动日期" lay-reqText="请选择调动日期" readonly class="layui-input tool-time">
 			</td>
 			<td class="layui-td-gray">调入部门<font>*</font></td>
 			<td>
@@ -38,14 +32,14 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">调动描述</td>
+			<td class="layui-td-gray">调动原因</td>
 			<td colspan="3">				
-				<textarea name="remark" placeholder="请输入调动描述" class="layui-textarea"></textarea>
+				<textarea name="remark" placeholder="请输入调动原因" class="layui-textarea"></textarea>
 			</td>
 		</tr>
 	</table>
 	{else/}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">调动员工<font>*</font></td>
 			<td>				
@@ -71,14 +65,14 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">调动描述</td>
+			<td class="layui-td-gray">调动原因</td>
 			<td colspan="3">				
-				<textarea name="remark" placeholder="请输入调动描述" class="layui-textarea">{$detail.remark}</textarea>
+				<textarea name="remark" placeholder="请输入调动原因" class="layui-textarea">{$detail.remark}</textarea>
 			</td>
 		</tr>
 	</table>
 	{/if}
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}" />
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -86,45 +80,43 @@
 </form>
 {/block}
 <!-- /主体 -->
-
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var form = layui.form
-			, layer = layui.layer
-			, laydate = layui.laydate
-			,employeepicker = layui.employeepicker;
-
-		laydate.render({
-			elem: '#move_time',
-			showBottom:false
-		});
-
-		$('.page-content').on('click','[name="from_department"]',function(){
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaPicker = layui.oaPicker;
+		
+		$('body').on('click','[name="from_department"]',function(){
 			var val=$(this).val();
 			if(val==''){
 				layer.msg('请先选择需要调动的员工');
 			}			
-		});
-		
+		});		
 		
 		//选择员工弹窗	
-		$('.page-content').on('click','[name="name"]',function () {
-			var ids=$('[name="uid"]').val(),names=$('[name="name"]').val(),dids=$('[name="from_did"]').val(),departments=$('[name="from_department"]').val();
-			employeepicker.init({
+		$('body').on('click','[name="name"]',function () {
+			let that = $(this);
+			let ids=that.next().val()+'',names = that.val()+'';
+			oaPicker.employeeInit({
 				ids:ids,
 				names:names,
-				dids:dids,
-				departments:departments,
-				department_url: "/api/index/get_department_tree",
-				employee_url: "/api/index/get_employee",
-				type:0,
-				callback:function(ids,names,dids,departments){
-					$('[name="uid"]').val(ids);
-					$('[name="name"]').val(names);
-					$('[name="from_did"]').val(dids);
-					$('[name="from_department"]').val(departments);
+				type:1,//1是单选，2是多选
+				callback:function(data){
+					//这里是选择后的回调方法，可以根据具体需求自定义写哦
+					let select_id=[],select_name=[],select_did=[],select_department=[];
+					for(var a=0; a<data.length;a++){
+						select_id.push(data[a].id);
+						select_name.push(data[a].name);
+						select_did.push(data[a].did);
+						select_department.push(data[a].department);
+					}
+					that.val(select_name.join(','));
+					that.next().val(select_id.join(','));
+					$('[name="uid"]').val(select_id.join(','));
+					$('[name="name"]').val(select_name.join(','));
+					$('[name="from_did"]').val(select_did.join(','));
+					$('[name="from_department"]').val(select_department.join(','));
 				}
 			});
 		}); 
@@ -136,29 +128,25 @@
 				layer.msg('请选择要调用的员工');
 				return false;
 			}
+			if(data.field.to_did==''){
+				layer.msg('请选择要调用的部门');
+				return false;
+			}			
 			if(data.field.to_did==data.field.from_did){
 				layer.msg('要调入的部门和调出的部门不能是同一个部门');
 				return false;
 			}
-			$.ajax({
-				url: "/user/personal/change_add",
-				type: 'post',
-				data: data.field,
-				success: function (e) {
-					layer.msg(e.msg);
-					if(e.code==0){
-						parent.tableIns.reload();
-						setTimeout(function(){
-							parent.layui.rightpage.close();
-						},1000);
-					}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
 				}
-			})
+			}
+			tool.post("/user/personal/change_add", data.field, callback);
 			return false;
 		});
 	}
 
 </script>
-{include file="../../base/view/common/layui" base='base' extend="['employeepicker']" callback="init" /}
 {/block}
 <!-- /脚本 -->

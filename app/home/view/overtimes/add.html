@@ -1,0 +1,170 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page" lay-filter="form-overtimes">
+	<h3 class="pb-3">加班</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">开始时间<font>*</font></td>
+			<td>
+				<div class="layui-input-inline" style="width:120px; margin-right:16px;">
+					<input id="start_date" name="start_date" autocomplete="off" class="layui-input select-time" value="{$detail.start_date|default=''}" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+				</div>
+				<div class="layui-input-inline">
+					{empty name="$detail"}
+					<input type="radio" name="start_span" value="1" title="上午" checked lay-filter="start-span">
+					<input type="radio" name="start_span" value="2" title="下午" lay-filter="start-span">
+					{else/}
+					<input type="radio" name="start_span" value="1" title="上午" {eq name="$detail.start_span" value="1"} checked{/eq} lay-filter="start-span">
+					<input type="radio" name="start_span" value="2" title="下午" {eq name="$detail.start_span" value="2"} checked{/eq} lay-filter="start-span">
+					{/empty}
+				</div>
+			</td>
+			<td class="layui-td-gray">结束时间<font>*</font></td>
+			<td>
+				<div class="layui-input-inline" style="width:120px; margin-right:16px;">
+					<input id="end_date" name="end_date" autocomplete="off" class="layui-input select-time" value="{$detail.end_date|default=''}" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间">
+				</div>
+				<div class="layui-input-inline">
+					{empty name="$detail"}
+					<input type="radio" name="end_span" value="1" title="上午" lay-filter="end-span">
+					<input type="radio" name="end_span" value="2" title="下午" checked lay-filter="end-span">
+					{else/}
+					<input type="radio" name="end_span" value="1" title="上午" {eq name="$detail.end_span" value="1"} checked{/eq} lay-filter="end-span">
+					<input type="radio" name="end_span" value="2" title="下午" {eq name="$detail.end_span" value="2"} checked{/eq} lay-filter="end-span">
+					{/empty}
+				</div>
+			</td>
+			<td class="layui-td-gray">加班天数</td>
+			<td id="days">共{$detail.duration|default=0}天</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">加班事由<font>*</font></td>
+			<td colspan="5">
+				<textarea name="reason" placeholder="请输入加班事由" class="layui-textarea" lay-verify="required" lay-reqText="请输入加班事由">{$detail.reason|default=''}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray"><div class="layui-input-inline">附件</div> <div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div></td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input data-type="file" type="hidden" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+	<div class="pt-3">
+		<input type="hidden" name="id" value="{$detail.id|default=0}">
+		<input type="hidden" id="duration" name="duration" value="{$detail.duration|default=0}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+/*
+ * 时长计算
+  */
+function daysBetweenDates(date1, date2) {
+	if(date1=='' || date2==''){
+		return -1;
+	}
+    var startDate = new Date(date1);
+    var endDate = new Date(date2);
+    var millisecondsPerDay = 24 * 60 * 60 * 1000;
+    var differenceInMilliseconds = endDate - startDate;
+    var differenceInDays = differenceInMilliseconds / millisecondsPerDay;
+    return Math.round(differenceInDays);
+}
+
+const moduleInit = ['tool','uploadPlus','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus=layui.uploadPlus,laydate = layui.laydate,oaCheck=layui.oaCheck;
+		oaCheck.init({
+			check_name:'overtimes',
+			check_btn:0
+		});	
+		var fileUp = new uploadPlus();
+	
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			if(data.field.duration==0){
+				layer.msg('加班时间选择有误');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'overtimes';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			tool.post("/home/overtimes/add", data.field, callback);
+			return false;
+		});
+		
+		function countDuration(){
+			var date1 = $('#start_date').val();
+			var date2 = $('#end_date').val();
+			let days = daysBetweenDates(date1,date2);
+			if(days < 0){
+				$('#duration').val(0);
+				$('#days').html('-');
+			}
+			else{
+				let formData = form.val('form-overtimes');
+				console.log(formData);
+				if(formData.start_span==1){
+					days=days+1;
+				}
+				if(formData.start_span==2){
+					days=days+0.5;
+				}
+				if(formData.end_span==1){
+					days=days-0.5;
+				}
+				if(days<0){
+					days=0;
+				}
+				$('#duration').val(days);
+				$('#days').html(days);
+			}
+		}		
+		
+		//日期时间范围
+		lay('.select-time').each(function () {
+			laydate.render({
+				elem: this,
+				trigger: 'click',
+				done:function(){
+					countDuration();
+				}
+			});
+		});		
+		form.on('radio(start-span)',function(data){
+			countDuration();
+		});
+		form.on('radio(end-span)',function(data){
+			countDuration();
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

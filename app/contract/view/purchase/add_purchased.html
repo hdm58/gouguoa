@@ -1,0 +1,116 @@
+<tr>
+	<td colspan="6"><strong>物品信息</strong> <span class="layui-btn layui-btn-sm" type="button" id="purchasedAdd">+ 添加物品</span></td>
+</tr>
+<tr>
+	<td colspan="6">				
+		<table id="purchasedTable" class="layui-table layui-table-min" style="margin:0">
+			<tr>
+				<th width="200">物品名称</th>
+				<th width="100">单位</th>
+				<th width="100">规格</th>
+				<th width="100">采购单价</th>
+				<th width="100">数量</th>
+				<th width="100">小计</th>
+				<th>备注信息</th>
+				<th width="60">操作</th>
+			</tr>
+			<tr class="purchased-tr">
+				{eq name="is_purchased" value="1"}
+				<td><input type="text" name="purchased_title[]" value="" class="layui-input purchased-picker" readonly lay-verify="required" lay-reqText="请输入物品名称"><input type="hidden" name="purchased_id[]" value="0"></td>
+				{else/}
+				<td><input type="text" name="purchased_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入物品名称"><input type="hidden" name="purchased_id[]" value="0"></td>
+				{/eq}
+				<td><input type="text" name="purchased_unit[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入单位"></td>
+				<td><input type="text" name="purchased_specs[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入物品规格"></td>
+				<td><input type="text" name="purchased_price[]" value="0.00" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入采购单价"></td>
+				<td><input type="text" name="purchased_num[]" value="1" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入物品数量"></td>
+				<td><input type="text" name="purchased_subtotal[]" value="0.00" class="layui-input layui-input-readonly" readonly></td>
+				<td><input type="text" name="purchased_remark[]" value="" class="layui-input"></td>
+				<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+			</tr>
+		</table>
+	</td>
+</tr>
+<script>
+const is_purchased={$is_purchased};
+function purchased_fun(layui){
+	let form = layui.form,oaPicker = layui.oaPicker;
+	
+	//选择物品弹窗        
+	$('body').on('click','.purchased-picker',function () {
+		let that = $(this),ids = [],titles=[],purchase_price=[],unit=[],specs=[],map = {},types = 'purchased',type = 1;
+		let callback = function(data){
+			for ( var i = 0; i <data.length; i++){
+				ids.push(data[i].id);
+				titles.push(data[i].title);
+				unit.push(data[i].unit);
+				specs.push(data[i].specs);
+				purchase_price.push(data[i].purchase_price);
+			}
+			that.val(titles.join(','));
+			that.next().val(ids.join(','));
+			that.parents('.purchased-tr').find('input').eq(2).val(unit.join(','));
+			that.parents('.purchased-tr').find('input').eq(3).val(specs.join(','));
+			that.parents('.purchased-tr').find('input').eq(4).val(purchase_price.join(','));
+			that.parents('.purchased-tr').find('input').eq(6).val(purchase_price.join(','));
+			count_cost();
+		}
+		oaPicker.picker(types,type,callback,map);
+	});
+	
+	//添加物品信息表格
+	$('#purchasedAdd').on('click',function(){
+		var html = '',purchased_title=' class="layui-input"';
+		if(is_purchased==1){
+			purchased_title=' class="layui-input purchased-picker" readonly';
+		}
+		html += '<tr class="purchased-tr">\
+					<td><input type="text" name="purchased_title[]" value="" '+purchased_title+' lay-verify="required" lay-reqText="请输入物品名称"><input type="hidden" name="purchased_id[]" value="0"></td>\
+					<td><input type="text" name="purchased_unit[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入单位"></td>\
+					<td><input type="text" name="purchased_specs[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入物品规格"></td>\
+					<td><input type="text" name="purchased_price[]" value="0.00" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入采购单价"></td>\
+					<td><input type="text" name="purchased_num[]" value="1" class="layui-input input-num" lay-verify="required|number" lay-reqText="请输入物品数量"></td>\
+					<td><input type="text" name="purchased_subtotal[]" value="0.00" class="layui-input layui-input-readonly" readonly></td>\
+					<td><input type="text" name="purchased_remark[]" value="" class="layui-input"></td>\
+					<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>\
+				</tr>';
+		$('#purchasedTable').append(html).find('.tr-none').remove();
+		form.render();
+	});	
+
+	$('#purchasedTable').on('click', '[lay-event="del"]', function() {
+		if($('.purchased-tr').length<2){
+			layer.msg('至少保留一个物品选项');
+			return false;
+		}
+		$(this).parents('.purchased-tr').remove();
+		count_cost();
+	});	
+	
+	//计算价格
+	$('#purchasedTable').on('input', '.input-num', function() {
+		var inputs = $(this).parents('.purchased-tr').find("input");
+		var purchased_price = inputs.eq(4).val();
+		var purchased_num = inputs.eq(5).val();
+		var purchased_amount = (purchased_price*purchased_num).toFixed(2);			  
+		if(isNaN(purchased_amount)){ 
+			purchased_amount = 0.00;
+		}
+		inputs.eq(6).val(purchased_amount);
+		count_cost();
+	});
+	 
+	//计算总价
+	function count_cost(){
+		var purchased_subtotal = $('#purchasedTable').find('[name="purchased_subtotal[]"]');
+		var total = 0;
+		for (var m = 0; m < purchased_subtotal.length; m++) {
+			total+=$(purchased_subtotal[m]).val()*1000;
+		}
+		if(isNaN(total)){ 
+			total = 0;
+		}
+		$('[name="cost"]').val((total/1000).toFixed(2));
+	}
+}
+</script>

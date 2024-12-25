@@ -1,0 +1,33 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-title">项目列表</div>
+			<div style="padding: 12px;">
+				<table id="Project" lay-filter="Project" class="layui-hide" style="margin-top:0"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//项目
+function layoutProject(table){
+	table.render({
+		elem: '#Project'
+		, url: "/project/api/get_project?limit=10" //数据接口
+		, page: false //开启分页
+		, cols: [[ //表头
+			{field: 'id', title: '项目编号', align: 'center','width': 90, templet: function (d) {
+				return 'P' + d.id;
+			}}
+			,{ field: 'status', title: '项目状态', align: 'center', width: 90, templet: function (d) {
+				var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+				return html;
+				}
+			}
+			,{field: 'name', title: '项目名称',minWidth:240,templet: '<div><a data-href="/project/index/view/id/{{d.id}}.html" class="side-a">{{d.name}}</a></div>'}
+			,{field:'director_name',title: '负责人',width:80,align:'center'}
+			,{ field:'range_time', title: '项目计划周期', align: 'center', width: 180}
+		]]
+	});
+}
+</script>

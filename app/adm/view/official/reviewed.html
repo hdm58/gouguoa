@@ -1,0 +1,64 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_official" lay-filter="table_official"></table>
+</div>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_official"
+			,toolbar: false
+			,url: "/adm/official/reviewed"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 60
+			,height: 'full-112'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '公文主题',minWidth:240}
+				,{field:'code',title: '公文编号',width:160}
+				,{field:'secrets_str',title: '密级程度',width:80, align:'center'}
+				,{field:'urgency_str',title: '紧急程度',width:80, align:'center'}
+				,{field:'draft_name',title: '拟稿人',width:80, align:'center'}
+				,{field:'draft_time',title: '拟稿日期',width:100, align:'center'}
+				,{field:'draft_dname',title: '拟稿部门',width:100, align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:80,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					return btn1;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_official)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/official/view?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

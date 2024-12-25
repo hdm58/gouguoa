@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>iconfont</title>
+  <link rel="stylesheet" href="demo.css">
+  <link rel="stylesheet" href="iconfont.css">
+  <script src="/static/jquery.min.js"></script> 
+  <style>
+    .main .logo {
+      margin-top: 0;
+      height: auto;
+    }
+
+    .main .logo a {
+      display: flex;
+      align-items: center;
+    }
+
+    .main .logo .sub-title {
+      margin-left: 0.5em;
+      font-size: 22px;
+      color: #fff;
+      background: linear-gradient(-45deg, #3967FF, #B500FE);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+	
+	.icon_lists li {
+  width: 100px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  text-align: center;
+  list-style: none !important;
+  cursor: default;
+  display: inline-block;
+      vertical-align: top;
+    font-size: 12px;
+    letter-spacing: normal;
+    word-spacing: normal;
+    line-height: inherit;
+	  cursor:pointer;
+}
+  </style>
+</head>
+<body>
+  <div class="main">
+    <div class="tab-container">
+	<div class="font-class">
+        <ul id="iconLists" class="icon_lists dib-box"></ul>
+        <div class="article markdown">
+        <h2 id="font-class-">font-class 引用</h2>
+        <hr>
+        <p>使用步骤如下：</p>
+        <h3 id="-fontclass-">第一步：引入项目下面生成的 fontclass 代码：</h3>
+<pre><code class="language-html">&lt;link rel="stylesheet" href="./iconfont.css"&gt;
+</code></pre>
+        <h3 id="-">第二步：挑选相应图标并获取类名，应用于页面：</h3>
+<pre><code class="language-html">&lt;span class="iconfont icon-xxx"&gt;&lt;/span&gt;
+</code></pre>
+        <blockquote>
+          <p>"
+            iconfont" 是你项目下的 font-family。可以通过编辑项目查看，默认是 "iconfont"。</p>
+        </blockquote>
+      </div>
+      </div>
+     
+    </div>
+  </div>
+
+<script>
+
+ $.ajax({
+	url: "iconfont.json",
+	type:'get',
+	success: function (res) {
+		let item='',data = res.glyphs;
+				console.log(data);
+		for(var i=0;i<data.length;i++){
+			item+='<li class="dib">\
+            <span class="icon iconfont icon-'+data[i].font_class+'"></span>\
+            <div class="name">'+data[i].name+'</div>\
+            <div class="code-name">icon-'+data[i].font_class+'</div>\
+          </li>';
+		}
+		$('#iconLists').html(item);
+	}
+})
+
+    $('#iconLists').on('click','.dib', function(){
+		var iconclass = $(this).find('.code-name').text();
+		var copied = copy(iconclass);
+		if(copied){
+			alert('已复制图标名称 '+ iconclass);
+		}
+    });
+    function copy(text){
+		var textarea = document.createElement('textarea');
+		textarea.value = text;
+		textarea.style.position = 'absolute';
+		textarea.style.opacity = '0';
+		document.body.appendChild(textarea);
+		textarea.select();
+		var copied = false;
+		try{
+			copied = document.execCommand('copy');
+		}catch(err){
+			console.log('error', err);
+		}
+		textarea.remove();
+		return copied;
+    }
+</script>
+</body>
+</html>

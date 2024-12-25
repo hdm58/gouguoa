@@ -1,0 +1,141 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-table-min th{text-align:center; background-color:#f8f8f8;}
+.layui-table-min td{padding:6px;text-align:center;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-1">资产详情</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">资产名称</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray">资产编码</td>
+			<td>{$detail.code}</td>		
+			<td class="layui-td-gray" rowspan="5">缩略图</td>
+			<td rowspan="5" style="width:180px;">
+				<div class="layui-upload-list" style="width: 180px; height:160px; overflow: hidden;">
+					<img src="{:get_file($detail.thumb)}" style="max-width: 100%; height:160px;" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">资产分类</td>
+			<td>{$detail.cate|default=""}</td>
+			<td class="layui-td-gray">资产品牌</td>
+			<td>{$detail.brand|default=""}</td>	
+			<td class="layui-td-gray">资产型号</td>
+			<td>{$detail.model|default=""}</td>
+		</tr>
+		<tr>		
+			<td class="layui-td-gray">购买价格</td>
+			<td>{$detail.price} 元</td>
+			<td class="layui-td-gray">购买日期</td>
+			<td>{$detail.buy_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray">年折旧率</td>
+			<td>{$detail.rate}%</td>
+		</tr>
+		<tr>		
+			<td class="layui-td-gray">质保日期</td>
+			<td>{$detail.quality_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray">使用人员</td>
+			<td>{$detail.users_name|default="-"}</td>
+			<td class="layui-td-gray">使用部门</td>
+			<td>{$detail.dids_title|default="-"}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">放置地址</td>
+			<td colspan="3">{$detail.address}</td>
+			<td class="layui-td-gray">单位</td>
+			<td>{$detail.unit|default=""}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">资产来源</td>
+			<td colspan="3">{$detail.source_str}</td>
+			<td class="layui-td-gray">当前状态</td>
+			<td colspan="3">{$detail.status_str}</td>
+		</tr> 
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray" colspan="8" style="text-align:left; color:#666"><strong>资产附件</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8" style="line-height:inherit">
+				{volist name="$detail.fileArray" id="vo"}
+					<div class="layui-col-md4" id="fileItem{$vo.id}">{:file_card($vo,'view')}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray" colspan="8" style="text-align:left; color:#666"><strong>资产描述</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">{:nl2br($detail.content)}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" colspan="8" style="text-align:left; color:#666"><strong>维修记录</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="repair" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="90">维修日期</th>
+						<th width="100">维修费用(元)</th>
+						<th width="80">跟进人</th>
+						<th>原因说明</th>
+						<th width="120">记录时间</th>
+						<th width="120">操作</th>
+					</tr>
+					{empty name="$detail.repair"}
+					<tr class="tr-none">
+						<td colspan="6">暂无维修记录</td>
+					</tr>
+					{else/}
+					{volist name="$detail.repair" id="vo"}
+					<tr>
+						<td>{$vo.repair_time|date="Y-m-d"}</td>
+						<td>{$vo.cost}</td>
+						<td>{$vo.director_name}</td>
+						<td style="text-align:left;">{$vo.content|default="-"}</td>
+						<td>{$vo.create_time|date="Y-m-d H:i"}</td>
+						<td><div class="layui-btn-group"><a class="layui-btn layui-btn-xs side-a" data-href="/adm/property/repair_add?id={$vo.id}">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/adm/property/repair_view?id={$vo.id}">详情</a><a class="layui-btn layui-btn-danger layui-btn-xs del" data-id="{$vo.id}">删除</a></div></td>
+					</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+	</table>
+
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool;
+		$('#repair').on('click','.del',function(){
+			let id=$(this).data('id');
+			layer.confirm('确定要删除该维修记录吗?', {icon: 3, title:'提示'}, function(index){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						tool.reload(1000);
+					}
+				}
+				tool.post("/adm/property/repair_del", {id: id}, callback);
+				layer.close(index);
+			});
+			return;
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

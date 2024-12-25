@@ -1,0 +1,42 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__GOUGU__}/third_party/prism/prism.css"/>
+<style>
+.text-detial-ops{line-height: 30px; color:#999; font-size: 12px; padding: 12px 0;}
+.text-detial-ops span{margin-right: 20px;}
+.text-detial-ops a{margin-right:10px;}
+.text-detial-content{padding: 8px 0; color:#333; word-break: break-all; border-top:1px solid #e8e8e8;font-size: 16px!important; line-height: 1.72!important;}
+.text-detial-content p{padding: 8px 0;}
+.text-detial-content img{max-width:98%!important; margin:0 auto; display:block; border: 1px solid #e6e6e6; -webkit-box-shadow: 0 2px 6px rgba(26,26,26,.08); box-shadow: 0 2px 6px rgba(26,26,26,.08); border-radius: 4px;}
+.text-detial-content h1,.text-detial-content h2,.text-detial-content h3,.text-detial-content h4,.text-detial-content h5{margin-top:10px;}
+.text-detial-content a{color:#186AF2; font-style:italic;}
+.text-detial-content a:hover{text-decoration:underline;}
+
+.text-detial-content p code,.blog-detial-content pre{margin:0 3px;font-size: 14px; font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background: #f6f6f6; padding: 10px; border-radius: 2px;}
+.text-detial-content p code{border: 1px solid #eee;padding: 2px 4px;}
+.text-detial-content table {border-collapse: collapse; border-spacing: 0; display: block; width: 100%; overflow: auto;  word-break: normal;word-break: keep-all; margin-top: 0;margin-bottom: 16px;}
+.text-detial-content table tr {background-color: #fff;border-top: 1px solid #ccc;}
+.text-detial-content table tr:nth-child(2n) {background-color: #f8f8f8;}
+.text-detial-content table td, .blog-detial-content table th { padding: 6px 12px;border: 1px solid #ddd; font-size:14px; }
+.text-detial-content table th {font-weight: 800;}
+.text-detial-content li {list-style: initial;margin-left: 20px;}
+:not(pre)>code[class*=language-], pre[class*=language-]{background:#fff!important;border:1px solid #e8e8e8!important; border-radius:3px;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h1>{$detail.title}</h1>
+	<div class="text-detial-ops">
+		<span>{$detail.admin_name}发表于：{$detail.create_time}</span><span>关联项目：{$detail.project_name}</span>
+	</div>
+	<div class="text-detial-content">
+	{$detail.content|raw}
+	</div>
+</div>
+{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script src="{__GOUGU__}/third_party/prism/prism.js"></script>
+{/block}
+<!-- /脚本 -->

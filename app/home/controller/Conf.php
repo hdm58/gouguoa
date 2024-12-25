@@ -1,9 +1,15 @@
 <?php
 /**
- * @copyright Copyright (c) 2021 勾股工作室
- * @license https://opensource.org/licenses/GPL-2.0
- * @link https://www.gougucms.com
- */
++-----------------------------------------------------------------------------------------------
+* GouGuOPEN [ 左手研发，右手开源，未来可期！]
++-----------------------------------------------------------------------------------------------
+* @Copyright (c) 2021~2024 http://www.gouguoa.com All rights reserved.
++-----------------------------------------------------------------------------------------------
+* @Licensed 勾股OA，开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
++-----------------------------------------------------------------------------------------------
+* @Author 勾股工作室 <hdm58@qq.com>
++-----------------------------------------------------------------------------------------------
+*/
 
 declare (strict_types = 1);
 
@@ -23,11 +29,8 @@ class Conf extends BaseController
             $param = get_params();
             $where = array();
             $where[] = ['status', '>=', 0];
-            $rows = empty($param['limit']) ? get_config('app . page_size') : $param['limit'];
-            $content = Db::name('Config')
-                ->where($where)
-                ->paginate($rows, false, ['query' => $param]);
-            return table_assign(0, '', $content);
+			$list = Db::name('Config')->where($where)->select();
+            return to_assign(0, '', $list);
         } else {
             return view();
         }
@@ -103,13 +106,21 @@ class Conf extends BaseController
         } else {
             $id = isset($param['id']) ? $param['id'] : 0;
             $conf = Db::name('Config')->where('id', $id)->find();
+            $module = strtolower(app('http')->getName());
+            $class = strtolower(app('request')->controller());
+            $action = strtolower(app('request')->action());
+            $template = $module . '/view/' . $class . '/' . $conf['name'] . '.html';
             $config = [];
             if ($conf['content']) {
                 $config = unserialize($conf['content']);
             }
             View::assign('id', $id);
             View::assign('config', $config);
-            return view($conf['name']);
+            if (isTemplate($template)) {
+                return view($conf['name']);
+            } else {
+                return view('../../base/view/common/errortemplate', ['file' => $template]);
+            }
         }
     }
 }

@@ -24,7 +24,7 @@ return [
     'taglib_end' => '}',
     'tpl_replace_string' => array(
         '{__STATIC__}' => '/static',
-        '{__LAYUI__}' => '/static/layui',
+        '{__GOUGU__}' => '/static/assets',
         '{__CSS__}' => '/static/home/css',
         '{__JS__}' => '/static/home/js',
         '{__IMG__}' => '/static/home/images'

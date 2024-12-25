@@ -1,0 +1,111 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm side-a" type="button" data-href="/adm/flow/cate_add">+ 添加审批类型</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,defaultToolbar: false
+			,title:'审批类型'
+			,url: "/adm/flow/catelist"
+			,limit: 100
+			,page: false
+			,cellMinWidth: 60
+			,cols: [[
+					{field:'id',width:80, title: 'ID号', align:'center'}
+					,{field:'icon',title: '审批类型名称',width: 120,templet: function(d){
+						var html='<strong class="iconfont '+d.icon+'"></strong> ' +d.title;
+						return html;
+					}}
+					,{field:'module',title: '所属审批模块',width:100, align:'center'}
+					,{field:'check_table',title: '数据表',width:100}
+					,{field:'name',title: '类型标识',width:100}
+					,{field:'departments',title: '应用部门',minWidth:200}
+					,{field:'add_url',title: '审批新增链接',minWidth:200}
+					,{field:'view_url',title: '审批查看链接',minWidth:200}
+					,{field:'is_list',title: '列表显示',width:80,align:'center',templet: function(d){
+						var html1='<span class="green">显示</span>';
+						var html2='<span class="yellow">不显示</span>';
+						if(d.is_list==1){
+							return html1;
+						}
+						else{
+							return html2;
+						}
+					}}
+					,{field:'sort',title: '排序',width:60, align:'center'}
+					,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+						var html1='<span class="green">正常</span>';
+						var html2='<span class="yellow">禁用</span>';
+						if(d.status==1){
+							return html1;
+						}
+						else{
+							return html2;
+						}
+					}}
+					,{width:90,fixed:'right',title: '操作', align:'center',templet: function(d){
+						var html='';
+						var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
+						var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+						var btn2='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+						if(d.status==1){
+							html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
+						}
+						return html;
+					}}
+				]]
+			});
+			
+			table.on('tool(test)',function (obj) {
+				if(obj.event === 'edit'){					
+					tool.side('/adm/flow/cate_add?id='+obj.data.id);
+				}
+				if(obj.event === 'disable'){
+					layer.confirm('确定要禁用该审批类型吗?', {icon: 3, title:'提示'}, function(index){
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+						tool.post("/adm/flow/cate_check", { id: obj.data.id,status: 0,title: obj.data.title}, callback);
+						layer.close(index);
+					});
+				}
+				if(obj.event === 'open'){
+					layer.confirm('确定要启用该审批类型吗?', {icon: 3, title:'提示'}, function(index){
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+						tool.post("/adm/flow/cate_check", { id: obj.data.id,status: 1,title: obj.data.title}, callback);
+						layer.close(index);
+					});
+				}
+			});
+		}
+	</script>
+{/block}
+<!-- /脚本 -->

@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">岗位职称</h3>
+<form class="layui-form p-4">
+	<h3 class="pb-3">岗位职称</h3>
 	{if condition="$id eq 0"}
 	<table class="layui-table">
 		<tr>
@@ -10,7 +10,7 @@
 			<td>
 				<input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入岗位名称" lay-reqText="请输入岗位名称" class="layui-input">
 			</td>
-			<td class="layui-td-gray3">岗位工时单价(元)<font>*</font></td>
+			<td class="layui-td-gray-3">岗位工时单价(元)<font>*</font></td>
 			<td>
 				<input type="text" name="work_price" lay-verify="required|number" placeholder="请输入岗位工时单价" lay-reqText="请输入岗位工时单价" autocomplete="off" class="layui-input">
 			</td>
@@ -44,7 +44,7 @@
 			<td>
 				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入岗位名称" lay-reqText="请输入岗位名称" class="layui-input">
 			</td>
-			<td class="layui-td-gray3">岗位工时单价(元)<font>*</font></td>
+			<td class="layui-td-gray-3">岗位工时单价(元)<font>*</font></td>
 			<td>
 				<input type="text" name="work_price" value="{$detail.work_price}" lay-verify="required|number" placeholder="请输入岗位工时单价" lay-reqText="请输入岗位工时单价" autocomplete="off" class="layui-input">
 			</td>
@@ -72,7 +72,7 @@
 		</tr>
 	</table>
 	{/if}
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -84,31 +84,34 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var form = layui.form,
-			layer = layui.layer;
-
-		//监听提交
-		form.on('submit(webform)', function (data) {
-			$.ajax({
-				url: "/user/position/add",
-				type: 'post',
-				data: data.field,
-				success: function (e) {
-					layer.msg(e.msg);
-					if (e.code == 0) {
-						parent.tableIns.reload();
-						setTimeout(function(){
-							parent.layui.rightpage.close();
-						},1000);
-					}
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					setTimeout(function () {
+						parent.location.reload();
+					}, 1000);					
 				}
-			})
+			}
+			tool.post("/user/position/add", data.field, callback);
+			return false;
+		});
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/user/position/add", data.field, callback);
 			return false;
 		});
 	}
 
 </script>
-{include file="../../base/view/common/layui" base='base' extend="[]" callback="init" /}
 {/block}
 <!-- /脚本 -->

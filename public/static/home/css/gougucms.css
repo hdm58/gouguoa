@@ -28,7 +28,7 @@ user-select: none;}
 
 .menulist-bg-gray{background-color:#001529;}
 .menulist {width:100%;height:100%; border-right:1px solid #ccc; font-size:14px; color:#aaaaaa;}
-
+.layui-side.menulist-bg-gray::-webkit-scrollbar{width: 0; height: 0;}
 .menulist-top {padding: 10px 12px; font-size:0; border-bottom: 1px solid #17232c; text-align:center;}
 .menulist-top a {background-color:#34a853; opacity:1; width: 25%; margin:0; padding: 5px 0; display:inline-block;}
 .menulist-top .layui-icon {color:#fff;font-size:16px;}

@@ -1,0 +1,173 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">编辑开票申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">开票金额<font>*</font></td>
+			<td>
+				<input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入开票金额" lay-reqText="请输入开票金额" value="{$detail.amount}">	
+			</td>
+			<td class="layui-td-gray">开票类型<font>*</font></td>
+			<td>
+			<select name="invoice_type" lay-verify="required" lay-reqText="请选择开票类型">
+				<option value="">请选择开票类型</option>
+				<option value="1" {eq name="$detail.invoice_type" value="1"}selected{/eq}>增值税专用发票</option>
+				<option value="2" {eq name="$detail.invoice_type" value="2"}selected{/eq}>普通发票</option>
+				<option value="3" {eq name="$detail.invoice_type" value="3"}selected{/eq}>专业发票</option>
+			  </select>
+			</td>
+			<td class="layui-td-gray">开票主体<font>*</font></td>
+			<td>
+				<select name="invoice_subject" lay-verify="required" lay-reqText="请选择开票主体">
+					<option value="">请选择开票主体</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$vo.id" value="$detail.invoice_subject"}selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">抬头类型<font>*</font></td>
+			<td>
+				<input type="radio" name="types" lay-filter="type" value="1" title="企业" {eq name="$detail.types" value="1"}checked{/eq}>
+				<input type="radio" name="types" lay-filter="type" value="2" title="个人" {eq name="$detail.types" value="2"}checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">开票抬头<span class="layui-btn layui-btn-xs invoice-qiye customer-picker">选择</span></td>
+			<td><input type="text" name="invoice_title" class="layui-input" placeholder="请输入开票抬头" lay-verify="required"  lay-reqText="请输入开票抬头" value="{$detail.invoice_title}"></td>
+			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
+			<td><input type="text" name="invoice_tax" class="layui-input" placeholder="请输入纳税人识别号，个人输入身份证号码"lay-verify="required"  lay-reqText="请输入纳税人识别号，个人输入身份证号码" value="{$detail.invoice_tax}"></td>
+		</tr>
+		<tr class="invoice-qiye">
+			<td class="layui-td-gray">开户行<font>*</font></td>
+			<td><input type="text" name="invoice_bank" class="layui-input" value="{$detail.invoice_bank}"></td>
+			<td class="layui-td-gray">银行账号<font>*</font></td>
+			<td><input type="text" name="invoice_account" class="layui-input" value="{$detail.invoice_account}"></td>
+			<td class="layui-td-gray-2">银行营业网点</td>
+			<td><input type="text" name="invoice_banking" class="layui-input" value="{$detail.invoice_banking}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">电话号码</td>
+			<td><input type="text" name="invoice_phone" class="layui-input" value="{$detail.invoice_phone}"></td>
+			<td class="layui-td-gray">地址</td>
+			<td colspan="3"><input type="text" name="invoice_address" class="layui-input" value="{$detail.invoice_address}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联合同</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的合同" readonly value="{$detail.contract_name|default=''}">		
+				<input type="hidden" class="layui-input" name="contract_id" value="{$detail.contract_id}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="{$detail.project_name|default=''}">		
+				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
+		</tr>
+	</table>	
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaPicker = layui.oaPicker,oaCheck = layui.oaCheck,uploadPlus = layui.uploadPlus;
+		//选择抬头类型
+		form.on('radio(type)', function (data) {
+			if(data.value==2){
+				$('.invoice-qiye').hide();
+			}
+			else{
+				$('.invoice-qiye').show();
+			}
+		});
+		
+		//相关附件上传
+		var attachment = new uploadPlus();
+		
+		//审批相关
+		oaCheck.init({
+			check_name:'invoice',
+			check_btn:0
+		});
+		
+		$('.customer-picker').on('click',function(){
+			let that = $(this),ids = [],titles=[];
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].name);
+					tax_num.push(data[i].tax_num);
+					tax_bank.push(data[i].tax_bank);
+					tax_banksn.push(data[i].tax_banksn);
+					tax_mobile.push(data[i].tax_mobile);
+					tax_address.push(data[i].tax_address);
+				}
+				//that.val(titles.join(','));
+				//that.next().val(ids.join(','));
+				$('[name="invoice_title"]').val(titles.join(','));
+				$('[name="invoice_tax"]').val(tax_num.join(','));
+				$('[name="invoice_bank"]').val(tax_bank.join(','));
+				$('[name="invoice_account"]').val(tax_banksn.join(','));
+				$('[name="invoice_phone"]').val(tax_mobile.join(','));
+				$('[name="invoice_address"]').val(tax_address.join(','));
+			}
+			oaPicker.picker('customer',1,callback,{});
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'invoice';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			tool.post("/finance/invoice/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

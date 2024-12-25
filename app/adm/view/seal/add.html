@@ -1,0 +1,121 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">添加用章申请</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">申请主题<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" autocomplete="off" placeholder="请输入用章申请主题" lay-verify="required" lay-reqText="请输入用申请主题" class="layui-input"></td>
+			<td class="layui-td-gray">印章类型<font>*</font></td>
+			<td>
+				<select name="seal_cate_id" lay-verify="required" lay-reqText="请输入印章类型">
+					<option value="">选择印章类型</option>
+					{volist name=":get_base_data('seal_cate')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">盖章次数<font>*</font></td>
+			<td>
+				<input type="text" name="num" value='' placeholder="请输入盖章次数" lay-verify="required|number" lay-reqText="请输入盖章次数" class="layui-input">
+			</td>
+			<td class="layui-td-gray">用印部门<font>*</font></td>
+			<td><select id="did" name="did" xm-selected="" xm-select="select1" xm-select-skin="default" xm-select-radio="true" lay-verify="required" lay-reqText="请完善用印部门"></select></td>
+			<td class="layui-td-gray-2">预期用印日期<font>*</font></td>
+			<td><input type="text" name="use_time" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择预期用印日期" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">印章是否外借<font>*</font></td>
+			<td>
+				<input type="radio" name="is_borrow" value="0" title="否" checked>
+				<input type="radio" name="is_borrow" value="1" title="是">
+			</td>
+			<td class="layui-td-gray-2">印章借用日期</td>
+			<td><input type="text" name="start_time" value='' readonly placeholder="请选择" class="layui-input tool-time"></td>
+			<td class="layui-td-gray">结束借用日期</td>
+			<td><input type="text" name="end_time" value='' readonly placeholder="请选择" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">盖章内容<font>*</font></td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" lay-verify="required" lay-reqText="请完善盖章内容"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">相关附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+	</table>
+	
+	<div id="checkBox" data-status="0" data-id="0" data-checkflowid="0"></div>
+	
+	<div class="pt-3">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','uploadPlus','oaPicker','formSelects','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus= layui.uploadPlus,formSelects= layui.formSelects,oaCheck=layui.oaCheck;	
+		oaCheck.init({
+			check_name:'seal',
+			check_btn:0
+		});	
+		//选择用印部门
+		var selected_a = $('#did').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selected_a
+		});
+
+		//相关附件上传
+		var attachment = new uploadPlus();
+		//监听提交
+		form.on('submit(webform)', function(data){
+			if (data.field.is_borrow==1 && data.field.start_time == '') {
+				layer.msg('请完善印章借用日期');
+				return false;
+			}
+			if (data.field.is_borrow==1 && data.field.end_time == '') {
+				layer.msg('请完善结束借用日期');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'seal';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			tool.post("/adm/seal/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

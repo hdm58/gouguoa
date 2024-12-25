@@ -1,0 +1,170 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-x border-t" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="source_id">
+				<option value="">渠道来源</option>
+				{volist name=":get_base_data('customer_source')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="industry_id">
+				<option value="">所属行业</option>
+				{volist name=":get_base_data('Industry')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="grade_id">
+				<option value="">客户等级</option>
+				{volist name=":get_base_data('customer_grade')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:240px;">
+			<input type="text" name="keywords" placeholder="输入关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+<h3>废弃客户</h3>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '废弃客户列表',
+			toolbar: '#toolbarDemo',
+			defaultToolbar: false,
+			url: "/customer/index/trash", //数据接口
+			cellMinWidth: 80,
+			page: true, //开启分页
+			limit: 20,
+			height: 'full-112',
+			cols: [
+				[ //表头
+					{
+						field: 'id',title: '编号',align: 'center',width: 80,templet: function (d) {
+							return'C' + d.id;
+						}
+					},{
+						field: 'name',
+						title: '客户名称',
+						minWidth:240,
+						templet: '<div><a data-href="/customer/customer/view/id/{{d.id}}.html" class="side-a">{{d.name}}</a></div>'
+					},{
+						field: 'contact_name',
+						title: '联系人',
+						align: 'center',
+						width: 80
+					},{
+						field: 'contact_mobile',
+						title: '手机号码',
+						align: 'center',
+						width: 100
+					},{
+						field: 'contact_email',
+						title: '电子邮箱',
+						width: 200
+					},{
+						field: 'grade',
+						title: '客户等级',
+						align: 'center',
+						width: 100
+					},{
+						field: 'source',
+						title: '来源渠道',
+						align: 'center',
+						width: 100
+					},{
+						field: 'industry',
+						title: '所属行业',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '创建时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'update_time',
+						title: '最后编辑时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 150,
+						align: 'center',
+						templet: function (d) {
+							var html = '<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-xs" lay-event="back">拉回公海</span>';
+							var btn2='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">彻底删除</span>';
+							return html+btn1+btn2+'</div>';
+						}						
+					}
+				]
+			]
+		});
+		
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if(obj.event === 'view'){
+				tool.side('/customer/index/view?id='+data.id);
+			}
+			if (obj.event === 'back') {
+				layer.confirm('确定要把该客户拉回公海吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/customer/index/to_revert", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要彻底删除该客户吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/customer/customer/del", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+			return;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

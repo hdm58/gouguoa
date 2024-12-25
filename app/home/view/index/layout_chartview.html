@@ -1,0 +1,122 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div id="chartView" style="width: 100%;height:300px;"></div>
+		</div>
+	</div>
+</div>
+<script>
+var chartView;
+function layoutChartView() {
+	chartView = echarts.init(document.getElementById('chartView'));
+	$.ajax({
+		url: "/home/api/get_view_data",
+		type: 'get',
+		data: {},
+		success: function (e) {
+			if (e.code == 0) {
+				var data_first = e.data.data_first;
+				var data_second = e.data.data_second;
+				var myDate = new Date();
+				var nowHour = myDate.getHours(); //获取当前小时数(0-23)
+				var xData = [];
+				var yData1 = [];
+				var yData2 = [];
+				$.each(data_first, function (key, value) {
+					if (key <= nowHour) {
+						yData1.push(value);
+					}
+				});
+				$.each(data_second, function (key, value) {
+					xData.push(setHour(key));
+					yData2.push(value);
+				});
+				var ops = {
+					title: {
+						top: '12px',
+						text: '今日与昨日员工活跃度',
+						left: '6px',
+						textStyle: {
+							fontSize: '18',
+							color: '#333',
+						}
+					},
+					color: ["#1AAD19", "#1890FF"],
+					grid: {
+						left: '16px',
+						right: '30px',
+						bottom: '12px',
+						top: '60px',
+						containLabel: true
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'cross',
+							crossStyle: {
+								color: '#999'
+							}
+						}
+					},
+					toolbox: {
+						show: true,
+					},
+					legend: {
+						data: ["今日", "昨日"],
+						top: '16px',
+					},
+					xAxis: [{
+						type: "category",
+						boundaryGap: !1,
+						data: xData,
+						axisLine: {
+							lineStyle: {
+								color: '#999999',
+								width: 1,
+							}
+						},
+					}],
+					yAxis: [{
+						type: "value",
+						axisLine: {
+							show: true,
+							lineStyle: {
+								color: '#999999',
+								width: 1,
+							}
+						},
+					}],
+					series: [{
+						name: "今日",
+						type: "line",
+						smooth: !0,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: "default",
+									opacity: 0.2
+								}
+							}
+						},
+						data: yData1
+					}, {
+						name: "昨日",
+						type: "line",
+						smooth: !0,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: "default",
+									opacity: 0.2
+								}
+							}
+						},
+						data: yData2
+					}]
+				}
+				chartView.setOption(ops);
+			}
+		}
+	})
+}
+</script>

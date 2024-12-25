@@ -1,0 +1,42 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-title">任务列表</div>
+			<div style="padding: 12px;">
+				<table id="Task" lay-filter="Task" class="layui-hide" style="margin-top:0"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//任务
+function layoutTask(table){
+	table.render({
+		elem: '#Task'
+		, url: "/project/api/get_task?limit=10" //数据接口
+		, page: false //开启分页
+		, cols: [[ //表头
+			{field: 'id', title: '任务编号', width: 80, align: 'center', fixed: 'left', templet: function (d) {
+					return 'T' + d.id;
+				}}
+				,{ field: 'status', title: '任务状态', align: 'center', width: 90, templet: function (d) {
+						var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+						return html;
+						}
+					}
+				,{field:'title',title: '任务主题', minWidth: 300,templet:function(d){
+					var html = '<span class="layui-badge layui-bg-'+d.priority+'">'+d.priority_name+'</span> <a data-href="/project/task/view/id/'+d.id+'.html" class="side-a">'+d.title+'</a>';
+					return html;
+				}}
+				,{field:'director_name',title: '负责人', align:'center',width: 80}		
+				,{field:'end_time',title: '预计结束日期', width: 150,templet:function(d){
+					var html = d.end_time;	
+					if(d.delay>0){
+						html+= '<span class="red ml-1" style="font-size:12px;">逾期'+d.delay+'天</span>';	
+					}			
+					return html;
+				}}
+		]]
+	});
+}
+</script>

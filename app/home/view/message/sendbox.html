@@ -1,0 +1,159 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	{include file="message/msgmenu" /}
+	<div style="margin-left:172px;">
+		<form class="layui-form gg-form-bar border-t border-x">
+			<div class="layui-input-inline" style="width:200px">
+				<input type="text" autocomplete="off" name="range_time" readonly class="layui-input tool-time" data-range="~" placeholder="发送日期">
+			</div>
+			<div class="layui-input-inline" style="width:300px">
+				<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off"/>
+			</div>
+			<div class="layui-input-inline" style="width:150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+			</div>
+		</form> 
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+	<div class="layui-btn-container">
+		<div class="layui-btn-group">
+			<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>新建消息</button>
+			<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del"><i class="layui-icon">&#xe640;</i>批量删除</button>
+		</div>
+	</div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool ,form = layui.form;
+		  layui.pageTable = table.render({
+			elem: '#test',
+			toolbar: '#toolbarDemo',
+			defaultToolbar:false,
+			title:'发件箱',
+			url: "/home/message/sendbox", //数据接口
+			page: true ,//开启分页
+			limit: 20,
+			cellMinWidth: 80,
+			height: 'full-112',
+			cols: [[ //表头
+			  {type:'checkbox',fixed:'left'},
+			  {field: 'title', title: '消息主题',minWidth:240},
+			  {field: 'types', title: '接收人类型',width:100,align:'center',templet: function (d) {
+					var html = '<span class="layui-color-' + d.types + '">『同事』</span>';
+					if(d.types==2){
+						html = '<span class="layui-color-' + d.types + '">『部门』</span>';
+					}
+					if(d.types==3){
+						html = '<span class="layui-color-' + d.types + '">『职位』</span>';
+					}
+					if(d.types==4){
+						html = '<span class="layui-color-' + d.types + '">『全部』</span>';
+					}
+					return html;
+				}			  
+			  },
+			  {field: 'to_name', title: '接收人',width:200,templet: function (d) {
+					var html = d.to_name;
+					if(d.types==2){
+						html = d.to_department;
+					}
+					if(d.types==3){
+						html = d.to_position;
+					}
+					if(d.types==4){
+						html = '全部员工';
+					}
+					return html;
+				}			  
+			  },
+			  {field: 'copy_names', title: '抄送人', width:160},
+			  {field: 'send_time_str', title: '发件时间', align:'center',width:160},
+			  {field: 'right', title: '操作',fixed:'right', width:90, align:'center',templet: function (d) {
+					let html='<div class="layui-btn-group">';
+					let btn1='<span class="layui-btn layui-btn-xs" lay-event="view">查看</span>';
+					let btn2='<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>';
+					return html+btn1+btn2+'</div>'
+				}
+			  }
+			]]
+		  });
+
+		 //监听行工具事件
+		  table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'del'){
+				layer.confirm('确定该信息要放入垃圾箱吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if(e.code==0){
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/home/message/del", {ids: data.id}, callback);
+					layer.close(index);
+				})
+			}
+			if(obj.event === 'view'){
+				tool.side('/home/message/view?id='+data.id);
+				return;
+			}
+		  });
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data; 
+			if (obj.event === 'add') {
+				tool.side("/home/message/add");
+				return;
+			}
+			if(data.length==0){
+				layer.msg('请选择要操作的消息');
+				return false;
+			}
+			var idArray=[],msg='是否执行该操作？';
+			for(var i=0;i<data.length;i++){
+				idArray.push(data[i].id);
+			}
+			switch(obj.event){
+				case 'del':
+					msg = '确定把选中的信息要放入垃圾箱吗?';
+				break;
+			};
+			
+			layer.confirm(msg, {
+				icon: 3,
+				title: '提示'
+			}, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						layui.pageTable.reload();
+					}
+				}
+				tool.delete("/home/message/del", {ids: idArray.join(',')}, callback);
+				layer.close(index);
+			});
+		});
+		  
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			layui.pageTable.reload({where:data.field,page:{curr:1}});
+			return false;
+		});
+	}
+		
+</script>
+{/block}
+<!-- /脚本 -->

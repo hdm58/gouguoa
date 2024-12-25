@@ -1,0 +1,110 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">新建任务</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">任务主题<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" lay-verify="required" lay-reqText="请输入任务主题" placeholder="请输入任务主题" class="layui-input" value=""></td>
+			<td class="layui-td-gray-2">任务优先级<span style="color: red">*</span></td>
+			<td>
+				<select name="priority" lay-verify="required" lay-reqText="请选择优先级">
+					{volist name=":get_priority()" id="vo"}
+					{gt name="$key" value="0"}
+					<option value="{$key}">{$vo}</option>
+					{/gt}
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工作类型<span style="color: red">*</span></td>
+			<td>
+				<select name="work_id" lay-verify="required" lay-reqText="请选择工作类型">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('WorkCate')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">预估工时<span style="color: red">*</span></td>
+			<td><input type="text" name="plan_hours" lay-verify="required|number" lay-reqText="请填写预估工时" placeholder="请填写预估工时" class="layui-input" value=""></td>
+			<td class="layui-td-gray-2">预计结束日期<span style="color: red">*</span></td>
+			<td><input type="text" name="end_time" readonly lay-verify="required" lay-reqText="请选择预计结束日期" placeholder="请选择时间" class="layui-input tool-time" value=""></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">负责人</td>
+			<td>
+				<input type="text" name="director_name" placeholder="请选择" readonly class="layui-input picker-admin" value="">
+				<input type="hidden" name="director_uid" readonly value="0">
+			</td>
+			{empty name="$project_id"}
+			<td class="layui-td-gray">协作人</td>
+			<td>
+				<input type="text" name="assist_admin_names" placeholder="请选择" readonly class="layui-input picker-admin" data-type="2" value="">
+				<input type="hidden" name="assist_admin_ids" readonly value="">
+			</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td>
+				<input type="text" name="project_name" placeholder="所属项目" readonly class="layui-input picker-oa" data-types="project" autocomplete="off" />
+				<input type="hidden" name="project_id" value="0" />
+			</td>
+			{else/}
+			<td class="layui-td-gray">协作人</td>
+			<td colspan="3">
+				<input type="hidden" name="project_id" readonly value="{$project_id}">
+				<input type="text" name="assist_admin_names" placeholder="请选择" readonly class="layui-input picker-admin" data-type="2" value="">
+				<input type="hidden" name="assist_admin_ids" readonly value="">
+			</td>
+			{/empty}
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">详细描述<font>*</font></td>
+			<td colspan="5">
+			  <textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0"></textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="0" />
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','tinymce','oaPicker'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool, oaPicker = layui.oaPicker;
+	
+	//编辑器初始化
+	var editor = layui.tinymce;
+	var edit = editor.render({
+		selector: "#container",
+		images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+		height: 500
+	});
+	
+	//监听提交
+	form.on('submit(webform)', function (data) {
+		data.field.content = tinyMCE.editors['container'].getContent();
+			if (data.field.content == '') {
+				layer.msg('请先完善任务描述内容');
+				return false;
+			}
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);
+			}
+		}
+		tool.post("/project/task/add", data.field, callback);
+		return false;
+	});
+}
+</script>
+{/block}

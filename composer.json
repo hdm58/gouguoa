@@ -1,38 +1,36 @@
 {
-    "name": "topthink/think",
-    "description": "the new thinkphp framework",
+    "name": "gougu/oa",
+    "description": "the gouguoa project",
     "type": "project",
     "keywords": [
-        "framework",
-        "thinkphp",
-        "ORM"
+        "dev",
+        "oa",
+        "cms"
     ],
-    "homepage": "http://thinkphp.cn/",
+    "homepage": "http://www.gouguoa.com",
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "liu21st",
-            "email": "liu21st@gmail.com"
-        },
-        {
-            "name": "yunwuxin",
-            "email": "448901948@qq.com"
+            "name": "oa",
+            "email": "hdm58@qq.com"
         }        
     ],
     "require": {
-        "php": ">=7.1.0",
-        "topthink/framework": "^6.0.0",
-        "topthink/think-orm": "^2.0",
+        "php": ">=8.0",
+        "topthink/framework": "^8.0",
+		"topthink/think-filesystem": "^2.0",
         "topthink/think-multi-app": "^1.0",
-        "topthink/think-view": "^1.0",
+        "topthink/think-view": "^2.0",
         "topthink/think-captcha": "^3.0",
-        "phpmailer/phpmailer": "^6.3",
-        "lcobucci/jwt": "3.3.3",
-        "overtrue/pinyin": "^4.0"
+        "topthink/think-helper": "^3.1",
+        "overtrue/pinyin": "^5.2",
+        "phpmailer/phpmailer": "^6.8",
+        "firebase/php-jwt": "^6.8",
+        "phpoffice/phpspreadsheet": "^1.2"
     },
     "require-dev": {
-        "symfony/var-dumper": "^4.2",
-        "topthink/think-trace":"^1.0"
+        "symfony/var-dumper": "^6.0",
+        "topthink/think-trace":"^1.6"
     },
     "autoload": {
         "psr-4": {

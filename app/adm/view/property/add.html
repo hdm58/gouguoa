@@ -1,0 +1,183 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-1">新增资产</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">资产名称<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="title" autocomplete="off" placeholder="请输入资产名称" lay-verify="required" lay-reqText="请输入资产名称" class="layui-input">
+			</td>
+			<td class="layui-td-gray-2" rowspan="5">
+			资产缩略图
+			<button type="button" class="layui-btn layui-btn-sm" id="uploadImg">+ 上传图片</button>
+			</td>
+			<td rowspan="5" style="width:252px;">
+				  <div id="demo1" style="width: 240px; height:136px; overflow: hidden;">
+					<img src="" style="max-width: 100%; height:136px;" />
+					<input type="hidden" name="thumb" value="">
+				  </div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">资产编码<font>*</font></td>
+			<td>
+				<input type="text" name="code" autocomplete="off" value="{:get_codeno('ZC')}" class="layui-input" lay-verify="required">
+			</td>
+			<td class="layui-td-gray">资产型号<font>*</font></td>
+			<td><input type="text" name="model" autocomplete="off" value="" class="layui-input" lay-verify="required"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">资产分类<font>*</font></td>
+			<td>
+			  <select name="cate_id" lay-verify="required" lay-reqText="请选择资产分类">
+				<option value="">请选择大分类</option>
+				{volist name=":set_recursion(get_base_data('PropertyCate'))" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray">资产品牌<font>*</font></td>
+			<td>
+				<select name="brand_id" lay-verify="required" lay-reqText="请选择品牌">
+				<option value="">请选择品牌</option>
+				{volist name=":get_base_data('PropertyBrand')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">质保到期日</td>
+			<td><input type="text" name="quality_time" autocomplete="off" readonly placeholder="请选择质保到期日" class="layui-input tool-time"></td>
+			<td class="layui-td-gray">资产单位<font>*</font></td>
+			<td>
+				<select name="unit_id" lay-verify="required" lay-reqText="请选择资产单位">
+				<option value="">请选择单位</option>
+				{volist name=":get_base_data('PropertyUnit')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">使用人员</td>
+			<td>
+				<input type="text" name="users_name" autocomplete="off" readonly placeholder="请选择使用人员" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="user_ids" value="">
+			</td>
+			<td class="layui-td-gray">使用部门</td>
+			<td><select id="user_dids" name="user_dids" xm-selected="" xm-select="select1" xm-select-skin="default"></select></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">购买价格<font>*</font></td>
+			<td><input type="text" name="price" autocomplete="off" placeholder="请输入购买价格" lay-verify="required|number" lay-reqText="请输入购买价格" class="layui-input"></td>
+			<td class="layui-td-gray">购买日期<font>*</font></td>
+			<td><input type="text" name="buy_time" autocomplete="off" readonly placeholder="请选择购买日期" lay-verify="required" lay-reqText="请选择购买日期" class="layui-input tool-time"></td>
+			<td class="layui-td-gray">年折旧率(%)<font>*</font></td>
+			<td><input type="text" name="rate" autocomplete="off" placeholder="请输入年折旧率，不需要输入%" lay-verify="required|number" lay-reqText="请输入年折旧率，不需要%" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">资产状态<font>*</font></td>
+			<td colspan="5">
+				{volist name="$status" id="vo"}
+				<input type="radio" name="status" value="{$key}" title="{$vo}">
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">资产来源<font>*</font></td>
+			<td colspan="5">
+				{volist name="$source" id="vo"}
+				{gt name="$key" value="0"}
+				<input type="radio" name="source" value="{$key}" title="{$vo}">
+				{/gt}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">放置地址</td>
+			<td colspan="5"><input type="text" name="address" autocomplete="off" placeholder="请输入放置地址" class="layui-input"></td>
+		</tr> 
+		<tr>
+			<td class="layui-td-gray-2">
+				<div class="layui-input-inline">相关附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr> 
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">资产描述</td>
+			<td colspan="5">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container"></textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-2">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','formSelects','uploadPlus','oaPicker'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,uploadPlus = layui.uploadPlus, formSelects = layui.formSelects;
+	
+	//选择部门
+	var selected = $('#department_ids').attr('xm-selected');
+	formSelects.data('select1', 'server', {
+		url: '/api/index/get_department_select',
+		keyword: selected
+	});
+    //单图上传
+	var photoUpload = new uploadPlus({
+		'use':'single',
+		'target':'uploadImg',
+		'callback':function(res){
+			layer.msg(res.msg);
+			if (res.code == 0) {
+				//上传成功
+				$('#demo1 input').attr('value', res.data.id);
+				$('#demo1 img').attr('src', res.data.filepath);
+			}
+		}
+	});
+
+	//相关附件上传
+	var attachment = new uploadPlus();
+	
+	//监听提交
+	form.on('submit(webform)', function(data){
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);				
+			}
+		}
+		if(!data.field.status){
+			layer.msg('请选择资产状态');
+			return false;
+		}
+		if(!data.field.source){
+			layer.msg('请选择资产来源');
+			return false;
+		}
+		tool.post("/adm/property/add", data.field, callback);
+		return false;
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,71 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="body-table layui-tab layui-tab-brief border" lay-filter="tab" style="background-color:#fff; margin:0; border-bottom:0">
+		<ul class="layui-tab-title" style="border:none;">
+			<li class="layui-this">全部</li>
+			<li>待审批</li>
+			<li>审批通过</li>
+			<li>审批拒绝</li>
+		</ul>				
+	</div>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+<h3 class="h3-title" style="height:28px;">我申请的审批</h3>
+</script>						
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool ,element=layui.element;
+			
+		element.on('tab(tab)', function(data){
+			layui.pageTable.reload({where:{status:data.index},page:{curr:1}});
+			return false;
+		});			
+			
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,defaultToolbar: false
+			,title:'审批列表'
+			,url: "/home/approve/mylist"
+			,page: true //开启分页
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-92'
+			,cols: [[
+					{field:'types_name',title: '审批类型',width:100, align:'center'}
+					,{field:'check_status',title: '审核状态',width:110, align:'center',templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						return html;
+					}}
+					,{field:'admin_name',title: '申请人',width:90,align:'center'}
+					,{field:'create_time',title: '申请时间',width:150,align:'center'}
+					,{field:'department',title: '所属部门',width:120,align:'center'}
+					,{field:'check_users',title: '当前审批人'}
+					,{field:'check_copy_users',title: '抄送人员',width:150}
+					,{width:90,title: '操作', align:'center',templet: function(d){
+						var btn0='<a class="layui-btn layui-btn-xs layui-btn-normal side-a" data-href="'+d.view_url+'?id='+d.id+'">详情</a>';
+						var btn1='<a class="layui-btn layui-btn-xs side-a" data-href="'+d.add_url+'?id='+d.id+'">编辑</a>';
+						var html='';
+						if(d.check_status==0 ||d.check_status ==4){
+							html='<div class="layui-btn-group">'+btn0+btn1+'</div>';
+						}
+						else{
+							html=btn0;
+						}
+						return html;
+					}}
+				]]
+			});
+		}
+	</script>
+{/block}
+<!-- /脚本 -->

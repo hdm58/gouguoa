@@ -1,21 +1,15 @@
 {extend name="../../base/view/common/base" /}
-<!-- 样式 -->
-{block name="style"}
-  <link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/dtree.css">
-  <link rel="stylesheet" href="{__LAYUI__}/plugin/dtree/font/dtreefont.css">
-{/block}
-<!-- /样式 -->
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form page-content">
-	<h3 class="h3-title">离职档案</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-3">离职档案</h3>
 	{if condition="$id eq 0"}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">离职员工<font>*</font></td>
 			<td>				
+				<input type="text" name="name" placeholder="请选择离职员工" lay-reqText="请选择离职员工" lay-verify="required" autocomplete="off" class="layui-input picker" readonly>
 				<input type="hidden" name="uid" value="0" autocomplete="off">
-				<input type="text" name="name" placeholder="请选择离职员工" lay-reqText="请选择离职员工" lay-verify="required" autocomplete="off" class="layui-input" readonly>
 			</td>
 			<td class="layui-td-gray">所在部门</td>
 			<td>
@@ -24,18 +18,23 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">离职日期<font>*</font></td>
-			<td><input type="text" id="quit_time" name="quit_time" lay-verify="required" autocomplete="off" placeholder="请选择离职日期" lay-reqText="请选择离职日期" readonly class="layui-input">
+			<td><input type="text" name="quit_time" lay-verify="required" autocomplete="off" placeholder="请选择离职日期" lay-reqText="请选择离职日期" readonly class="layui-input tool-time">
 			</td>
-			<td class="layui-td-gray">部门负责人<font>*</font></td>
+			<td class="layui-td-gray-2">部门负责人<font>*</font></td>
 			<td>
-			<input type="text" name="lead_admin_name" autocomplete="off" lay-verify="required" placeholder="请选择部门负责人" lay-reqText="请选择部门负责人" readonly class="layui-input">
+			<input type="text" name="lead_admin_name" autocomplete="off" lay-verify="required" placeholder="请选择部门负责人" lay-reqText="请选择部门负责人" readonly class="layui-input picker-admin">
 			<input type="hidden" name="lead_admin_id" autocomplete="off" value="0">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">交接人员<font>*</font></td>
-			<td colspan="3">				
-				<input type="text" name="connect_names" autocomplete="off" lay-verify="required" placeholder="请选择交接人员" lay-reqText="请选择交接人员" readonly class="layui-input">
+			<td class="layui-td-gray-2">资料接受人<font>*</font></td>
+			<td>				
+				<input type="text" name="connect_name" autocomplete="off" lay-verify="required" placeholder="请选择资料接受人" lay-reqText="请选择资料接受人" readonly class="layui-input picker-admin">
+				<input type="hidden" name="connect_id" class="layui-input">
+			</td>
+			<td class="layui-td-gray-2">参与交接人员<font>*</font></td>
+			<td>				
+				<input type="text" name="connect_names" autocomplete="off" lay-verify="required" placeholder="请选择参与交接人员" lay-reqText="请选择参与交接人员" readonly class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="connect_uids" class="layui-input">
 			</td>
 		</tr>
@@ -47,32 +46,32 @@
 		</tr>
 	</table>
 	{else/}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">离职员工<font>*</font></td>
-			<td>				
-				<input type="hidden" name="uid" value="{$detail.uid}" autocomplete="off">
-				<input type="text" name="name" value="{$detail.name}" placeholder="请选择离职员工" lay-reqText="请选择离职员工" lay-verify="required" autocomplete="off" class="layui-input" readonly>
-			</td>
+			<td class="layui-td-gray">离职员工</td>
+			<td>{$detail.name}</td>
 			<td class="layui-td-gray">所在部门</td>
-			<td>
-				<input type="text" name="department" value="{$detail.department}" autocomplete="off" class="layui-input" readonly>
-			</td>
+			<td>{$detail.department}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">离职日期<font>*</font></td>
-			<td><input type="text" id="quit_time" name="quit_time" value="{$detail.quit_time}" lay-verify="required" autocomplete="off" placeholder="请选择离职日期" lay-reqText="请选择离职日期" readonly class="layui-input">
+			<td><input type="text" name="quit_time" value="{$detail.quit_time}" lay-verify="required" autocomplete="off" placeholder="请选择离职日期" lay-reqText="请选择离职日期" readonly class="layui-input tool-time">
 			</td>
-			<td class="layui-td-gray">部门负责人<font>*</font></td>
+			<td class="layui-td-gray-2">部门负责人<font>*</font></td>
 			<td>
-			<input type="text" name="lead_admin_name" autocomplete="off" value="{$detail.lead_admin_name}" lay-verify="required" placeholder="请选择部门负责人" lay-reqText="请选择部门负责人" readonly class="layui-input">
+			<input type="text" name="lead_admin_name" autocomplete="off" value="{$detail.lead_admin_name}" lay-verify="required" placeholder="请选择部门负责人" lay-reqText="请选择部门负责人" readonly class="layui-input picker-admin">
 			<input type="hidden" name="lead_admin_id" autocomplete="off" value="{$detail.lead_admin_id}">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">交接人员<font>*</font></td>
-			<td colspan="3">				
-				<input type="text" name="connect_names" autocomplete="off" lay-verify="required" placeholder="请选择交接人员" lay-reqText="请选择交接人员" readonly class="layui-input" value="{$detail.connect_names}">
+			<td class="layui-td-gray-2">资料接受人<font>*</font></td>
+			<td>				
+				<input type="text" name="connect_name" autocomplete="off" lay-verify="required" placeholder="请选择资料接受人" lay-reqText="请选择资料接受人" readonly class="layui-input picker-admin" value="{$detail.connect_name}">
+				<input type="hidden" name="connect_id" class="layui-input" value="{$detail.connect_id}">
+			</td>
+			<td class="layui-td-gray-2">参与交接人员<font>*</font></td>
+			<td>				
+				<input type="text" name="connect_names" autocomplete="off" lay-verify="required" placeholder="请选择参与交接人员" lay-reqText="请选择参与交接人员" readonly class="layui-input picker-admin" data-type="2" value="{$detail.connect_names}">
 				<input type="hidden" name="connect_uids" class="layui-input" value="{$detail.connect_uids}">
 			</td>
 		</tr>
@@ -84,7 +83,7 @@
 		</tr>
 	</table>
 	{/if}
-	<div style="padding: 10px 0">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}" />
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -92,81 +91,46 @@
 </form>
 {/block}
 <!-- /主体 -->
-
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	function init(layui) {
-		var form = layui.form
-			, layer = layui.layer
-			, laydate = layui.laydate
-			,employeepicker = layui.employeepicker;
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaPicker = layui.oaPicker;
 
-		laydate.render({
-			elem: '#quit_time',
-			showBottom:false
-		});
-
-		$('.page-content').on('click','[name="department"]',function(){
+		$('body').on('click','[name="department"]',function(){
 			var val=$(this).val();
 			if(val==''){
 				layer.msg('请选择离职员工');
 			}			
-		});
-		
+		});		
 		
 		//选择员工弹窗	
-		$('.page-content').on('click','[name="name"]',function () {
-			var ids=$('[name="uid"]').val(),names=$('[name="name"]').val(),departments=$('[name="department"]').val();
-			employeepicker.init({
+		$('body').on('click','.picker',function () {
+			let that = $(this);
+			let ids=that.next().val()+'',names = that.val()+'';
+			oaPicker.employeeInit({
 				ids:ids,
 				names:names,
-				departments:departments,
-				department_url: "/api/index/get_department_tree",
-				employee_url: "/api/index/get_employee",
-				type:0,
-				callback:function(ids,names,dids,departments){
-					$('[name="uid"]').val(ids);
-					$('[name="name"]').val(names);
-					$('[name="department"]').val(departments);
+				type:1,//1是单选，2是多选
+				callback:function(data){
+					//这里是选择后的回调方法，可以根据具体需求自定义写哦
+					let select_id=[],select_name=[],select_did=[],select_department=[];
+					for(var a=0; a<data.length;a++){
+						select_id.push(data[a].id);
+						select_name.push(data[a].name);
+						select_did.push(data[a].did);
+						select_department.push(data[a].department);
+					}
+					that.val(select_name.join(','));
+					that.next().val(select_id.join(','));
+					$('[name="uid"]').val(select_id.join(','));
+					$('[name="name"]').val(select_name.join(','));
+					//$('[name="from_did"]').val(select_did.join(','));
+					$('[name="department"]').val(select_department.join(','));
 				}
 			});
 		}); 
-
-		//监听部门负责人
-		$('.page-content').on('click','[name="lead_admin_name"]',function () {
-			var ids=$('[name="lead_admin_id"]').val(),names=$('[name="lead_admin_name"]').val();
-			employeepicker.init({
-				ids:ids,
-				names:names,
-				department_url: "/api/index/get_department_tree",
-				employee_url: "/api/index/get_employee",
-				type:0,
-				callback:function(ids,names,dids,departments){
-					$('[name="lead_admin_id"]').val(ids);
-					$('[name="lead_admin_name"]').val(names);
-				}
-			});
-		}); 
-
-		//监听交接成员
-		$('.page-content').on('click','[name="connect_names"]',function () {
-			var ids=$('[name="connect_uids"]').val(),names=$('[name="connect_names"]').val(),idsArray=[],namesArray=[];
-			if(ids!=''){
-				idsArray=ids.split(',');
-				namesArray=names.split(',');
-			}
-			employeepicker.init({
-				ids:idsArray,
-				names:namesArray,
-				department_url: "/api/index/get_department_tree",
-				employee_url: "/api/index/get_employee",
-				callback:function(ids,names){
-					$('[name="connect_uids"]').val(ids.join(',')),
-					$('[name="connect_names"]').val(names.join(','));
-				}
-			});
-		});
 
 		//监听提交
 		form.on('submit(webform)', function (data) {
@@ -178,25 +142,21 @@
 				layer.msg('离职员工和部门负责人不能是同一个人');
 				return false;
 			}
-			$.ajax({
-				url: "/user/personal/leave_add",
-				type: 'post',
-				data: data.field,
-				success: function (e) {
-					layer.msg(e.msg);
-					if(e.code==0){
-						parent.tableIns.reload();
-						setTimeout(function(){
-							parent.layui.rightpage.close();
-						},1000);
-					}
+			if(data.field.uid==data.field.connect_id){
+				layer.msg('离职员工和资料接受人不能是同一个人');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
 				}
-			})
+			}
+			tool.post("/user/personal/leave_add", data.field, callback);
 			return false;
 		});
 	}
 
 </script>
-{include file="../../base/view/common/layui" base='base' extend="['employeepicker']" callback="init" /}
 {/block}
 <!-- /脚本 -->

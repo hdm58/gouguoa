@@ -1,0 +1,157 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	{eq name="is_area" value="0"}
+	<div class="gg-form-bar border" style="padding-bottom:12px;">
+		<span class="red">全国城市数据还未导入，请点击按钮导入</span> <button class="layui-btn layui-btn-sm import-area">导入省市区数据</button>
+	</div>
+	{else/}
+	<div class="gg-form-bar border-t border-x" style="padding-bottom:0;">
+		<div class="layui-input-inline" style="width: 120px;"><h3>全国省市区</h3></div>		
+		<div class="layui-input-inline" style="width: 260px;">
+			<div class="layui-btn-group" >
+				<a href="/home/api/areaJson?type=province" class="layui-btn layui-bg-blue" target="_blank">导出省</a>
+				<a href="/home/api/areaJson?type=city" class="layui-btn layui-bg-blue" target="_blank">导出市</a>
+				<a href="/home/api/areaJson?type=district" class="layui-btn layui-bg-blue" target="_blank">导出区</a>
+			</div>
+		</div>
+		<div class="layui-input-inline layui-form" id="areaSelect" style="margin:0">
+			<div class="layui-input-inline" style="width: 200px;">
+				<select name="province" class="province-select" data-value="440000" lay-filter="province-1">
+					<option value="">请选择省</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width: 200px;">
+				<select name="city" class="city-select" data-value="440100" lay-filter="city-1">
+					<option value="">请选择市</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width: 200px;">
+				<select name="district" class="district-select" data-value="440106" lay-filter="county-1">
+					<option value="">请选择区</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div>
+		<table class="layui-hide" id="treeTable" lay-filter="treeTable"></table>
+	</div>
+	{/eq}
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','areaSelect'];
+	function gouguInit() {
+		var treeTable = layui.treeTable, tool = layui.tool,areaSelect = layui.areaSelect;
+		areaSelect.render({
+			elem: '#areaSelect',
+			change: function (res) {
+				//选择结果
+				console.log(res);
+			}
+		});
+		
+		layui.trees = treeTable.render({
+			elem: '#treeTable'
+			,url: "/home/area/datalist"
+			,tree: { // treeTable 特定属性集
+				customName: {name:'name'},
+				data: {},
+				view: {showIcon:false},
+				async: {},
+				callback: {}
+			}
+			, cellMinWidth: 80
+			, cols: [[
+				{ field: 'id', width: 80, title: 'ID号', align: 'center' }
+				, { field: 'sort', width: 60, title: '排序', align: 'center' }
+				, { field: 'name', width: 200, title: '名称' }
+				, { field: 'pid', title: '父ID', width: 80, align: 'center' }
+				, { field: 'shortname', width: 100, title: '简称' }
+				, { field: 'longitude', title: '经度' }
+				, { field: 'latitude', title: '纬度' }
+				, { field: 'level', title: '级别', width: 80, align: 'center'}
+				, {
+					field: 'status', width: 100, title: '是否开启', align: 'center', templet: function (d) {
+						var html = '<span style="color:#fbbc05">禁用</span>';
+						if (d.status == '1') {
+							html = '<span style="color:#12bb37">开启</span>';
+						}
+						return html;
+					}
+				}
+				, {
+					width: 188, title: '操作', align: 'center'
+					, templet: function (d) {
+						var html = '<span class="layui-btn-group"><button class="layui-btn layui-btn-xs" lay-event="add">添加子城市</button><button class="layui-btn layui-btn-normal  layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</button>';
+						if(d.status==0){
+							html = '<span class="layui-btn-group"><button class="layui-btn layui-btn-xs" lay-event="add">添加子城市</button><button class="layui-btn layui-btn-normal  layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-xs" lay-event="recovery">启用</button>';
+						}
+						return html;
+					}
+				}
+			]]
+			, page: false
+		});
+		//表头工具栏事件
+		$('.add-area').on('click', function () {
+			tool.side("/home/area/add");
+			return;
+		});
+
+		//操作按钮
+		treeTable.on('tool(treeTable)', function (obj) {
+			console.log(obj);
+			if (obj.event === 'add') {
+				tool.side('/home/area/add?pid=' + obj.data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side('/home/area/add?id=' + obj.data.id);
+				return;
+			}
+			if (obj.event === 'disable') {
+				layer.confirm('确定要禁用吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							location.reload();
+						}
+					}
+					tool.delete("/home/area/set", { id: obj.data.id,status:0}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'recovery') {
+				layer.confirm('确定要禁用吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							location.reload();
+						}
+					}
+					tool.delete("/home/area/set", { id: obj.data.id,status:1}, callback);
+					layer.close(index);
+				});
+			}
+		});
+		
+		$('.import-area').on('click', function () {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					//location.reload();
+				}
+			}
+			tool.post("/home/area/set", {id:0}, callback);
+			return;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

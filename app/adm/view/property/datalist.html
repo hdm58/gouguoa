@@ -1,0 +1,158 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+  <style>
+	.tree-left{width:220px; float:left; height:calc(100% - 40px); overflow: scroll; border:1px solid #eeeeee; background-color:#fff; padding:12px 12px 12px 5px;}
+	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
+  </style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page" style="height:100%; box-sizing: border-box;">
+	<div class="tree-left">
+		<h3>资产分类</h3>
+		<div id="cate"></div>
+	</div>
+	<div class="body-table" style="margin-left:248px; overflow:hidden;">
+		<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:120px">
+				<select name="brand_id">
+					<option value="">资产品牌</option>
+					{volist name=":get_base_data('PropertyBrand')" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:100px">
+				<select name="status">
+					<option value="">资产状态</option>
+					{volist name="$status" id="vo"}
+					<option value="{$key}">{$vo}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:300px">
+				<input type="text" name="keywords" placeholder="输入关键字" class="layui-input" autocomplete="off" />
+			</div>
+			<div class="layui-input-inline" style="width:150px">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+			</div>
+		</form>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/adm/property/add">+ 添加资产</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const status_types = [{"id":0,"title":"闲置"},{"id":1,"title":"在用"},{"id":2,"title":"维修"},{"id":3,"title":"报废"},{"id":4,"title":"丢失"}];
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool,tree = layui.tree,form = layui.form,dropdown = layui.dropdown;			
+		$.ajax({
+			url: "/adm/api/get_propertycate_tree",
+			type:'get',
+			success:function(res){					
+				//仅节点左侧图标控制收缩
+				tree.render({
+					elem: '#cate',
+					data: res.trees,
+					onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
+					click: function(obj){
+						//layer.msg(JSON.stringify(obj.data));
+						layui.pageTable.reload({
+						   where: {cate_id: obj.data.id},
+						   page:{curr:1}
+						});
+						$('[name="keywords"]').val('');
+						$('[name="brand_id"]').val('');
+						$('[name="status"]').val('');
+						form.render();
+					}
+				});	
+			}
+		})
+		
+		
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,title:'资产列表'
+			,url: "/adm/property/datalist"
+			,is_excel: true
+			,page: true
+			,cellMinWidth: 60
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'code',width:160, title: '资产编码', align:'center'}
+				,{field:'cate',width:120, title: '资产分类', align:'center'}
+				,{field:'title',minWidth:240,title: '资产名称'}
+				,{field:'brand',title: '品牌',align: 'center',width: 100}
+				,{field:'model',title: '型号',align: 'center',width: 100}
+				,{field:'unit',title: '单位',align: 'center',width: 60}
+				,{field:'price',width:100, title: '价格(元)', align:'center',style:"color:#16b777"}
+				,{field:'status_str', title: '状态',width:60,align:'center'}
+				,{field:'create_name',title: '创建人',align: 'center',width: 80}
+				,{field:'create_time',title: '创建时间',align: 'center',width: 145}
+				,{field:'update_name',title: '最后修改人',align: 'center',width: 100}
+				,{field:'update_time_str',title: '最后修改时间',align: 'center',width: 145}
+				,{width:200,fixed:'right', title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
+					var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="set">设置状态 <i class="layui-icon layui-icon-down layui-font-12"></i></a>';
+					var btn2='<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="repair">维修</a>';
+						html = '<div class="layui-btn-group">'+btn+btn1+btn2+'</div>';
+					return html;
+				}}
+			]]
+		});
+		
+		table.on('tool(test)',function (obj) {
+			var that = this;
+			if(obj.event === 'edit'){					
+				tool.side("/adm/property/add?id="+obj.data.id);
+			}
+			if(obj.event === 'view'){					
+				tool.side("/adm/property/view?id="+obj.data.id);
+			}
+			if(obj.event === 'repair'){					
+				tool.side("/adm/property/repair_add?pid="+obj.data.id);
+			}
+			if(obj.event === 'set'){
+				dropdown.render({
+					elem: that,
+					show: true, // 外部事件触发即显示
+					data: status_types,
+					click: function(item){
+						layer.confirm('确定要修改该资产状态为【'+item.title+'】吗?', {icon: 3, title:'提示'}, function(index){
+							let callback = function (e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									layui.pageTable.reload();
+								}
+							}
+							tool.post("/adm/property/check", { id: obj.data.id,status: item.id}, callback);
+							layer.close(index);
+						});
+					}
+				});
+				return;
+			}
+		});
+		
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			layui.pageTable.reload({where:data.field,page:{curr:1}});
+			return false;
+		});
+	}
+	</script>
+{/block}
+<!-- /脚本 -->

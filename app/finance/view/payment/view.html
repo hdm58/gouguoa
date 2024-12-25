@@ -1,0 +1,190 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	{eq name="$detail.invoice_type" value="0"}
+	<h3 class="pb-3">无发票付款详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">预付款金额(元)</td>
+			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray">付款方</td>
+			<td>{$detail.subject}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">收款方(供应商)</td>
+			<td colspan="3">{$detail.supplier_name}</td>
+		</tr>
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">关联附件</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{else/}
+	<h3 class="pb-3">发票信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">发票金额(元)</td>
+			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray">发票类型</td>
+			<td>
+			{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
+			{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
+			{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发票抬头</td>
+			<td>{$detail.subject}</td>
+			<td class="layui-td-gray-3">开票主体(供应商)</td>
+			<td>{$detail.supplier_name}</td>
+		</tr>
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">{$detail.remark}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">关联附件</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">发票号码</td>
+			<td>{$detail.code}</td>
+			<td class="layui-td-gray">开票时间</td>
+			<td>{$detail.open_time|date='Y-m-d'}</td>
+		</tr>
+		{notempty name="$detail.other_file_ids"}
+		<tr>
+			<td class="layui-td-gray">发票附件</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.other_file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{/eq}
+	
+	<h3 class="py-3">付款信息</h3>
+	<form class="layui-form">
+		<table class="layui-table layui-table-form">
+			<tr>
+				<td class="layui-td-gray">付款状态</td>
+				<td>
+					{if condition="($detail.pay_status == 0)"}
+						<span class="red">未付款</span>
+					{elseif condition="($detail.pay_status == 1)"}
+						<span class="blue">部分付款</span>
+					{elseif condition="($detail.pay_status == 2)"}
+						<span  class="green">全部付款</span>
+					{/if}
+				</td>
+				<td class="layui-td-gray-2">未付款金额(元)</td>
+				<td class="red">{$detail.not_pay}</td>
+				<td class="layui-td-gray-2">已付款金额(元)</td>
+				<td class="green">{$detail.pay_amount}</td>
+			</tr>
+			<tr>
+				<td class="layui-td-gray">付款记录</td>
+				<td colspan="5">
+					<table class="layui-table layui-table-min" style="margin:0">
+						<tr>
+							<th style="width:150px;">付款日期</th>
+							<th style="width:150px;">付款金额(元)</th>
+							<th>备注</th>
+							<th style="width:100px;">登记人</th>
+							<th style="width:150px;">登记时间</th>
+						</tr>
+						{empty name="$detail.payment"}
+						<tr class="none_interfix">
+							<td colspan="5" style="text-align: center;">暂无付款记录</td>
+						</tr>
+						{else/}
+						{volist name="$detail.payment" id="vo"}
+						<tr class="more_interfix">
+							<td>{$vo.pay_time | date='Y-m-d'}</td>
+							<td>{$vo.amount}</td>
+							<td style="text-align:left;">{$vo.remarks}</td>
+							<td>{$vo.admin}</td>
+							<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						</tr>
+						{/volist}
+						{/empty}
+					</table>
+				</td>
+			</tr>
+		</table>
+	</form>
+	<input type="hidden" name="id" value="{$detail.id}">
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaTool'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool, oaTool = layui.oaTool;
+
+	oaTool.addFile({
+		isSave:true,
+		uidDelete:true,
+		ajaxSave:function(val){
+			$.ajax({
+				url: "/finance/api/upload_ticket",
+				type:'post',
+				data:{
+					id:$('[name="id"]').val(),
+					other_file_ids:val
+				},
+				success: function (e) {
+					location.reload();
+				}
+			})
+		},
+		ajaxDelete:function(val){
+			$.ajax({
+				url: "/finance/api/upload_ticket",
+				type:'post',
+				data:{
+					id:$('[name="id"]').val(),
+					other_file_ids:val
+				},
+				success: function (e) {
+					location.reload();
+				}
+			})
+		}
+	})
+}
+</script>
+{/block}
+<!-- /脚本 -->

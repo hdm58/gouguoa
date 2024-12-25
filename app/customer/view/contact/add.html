@@ -1,0 +1,135 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">新增联系人</h3>
+    <table class="layui-table layui-table-form">
+      <tr>
+        <td class="layui-td-gray">客户名称</td>
+        <td colspan="5">{$customer_name|default=''}</td>
+      </tr>
+      <tr>
+        <td class="layui-td-gray">姓名<font>*</font></td>
+        <td>
+          <input type="text" name="name" autocomplete="off" lay-verify="required" lay-reqText="请输入联系人姓名" placeholder="请输入联系人姓名" class="layui-input">
+        </td>
+		<td class="layui-td-gray">联系电话<font>*</font></td>
+        <td>
+			<input type="text" name="mobile" autocomplete="off" lay-verify="required" lay-reqText="请输入联系人电话" placeholder="请输入联系人电话" class="layui-input">
+        </td>
+		<td class="layui-td-gray">性别<font>*</font></td>
+        <td>
+			<input type="radio" name="sex" value="1" title="男">
+			<input type="radio" name="sex" value="2" title="女">
+        </td>
+	  </tr>
+	  <tr>
+		<td class="layui-td-gray">微 信 号</td>
+        <td>
+			<input type="text" name="wechat" autocomplete="off" placeholder="请输入联系人微信号" class="layui-input">
+        </td>
+		<td class="layui-td-gray">QQ号码</td>
+        <td>
+			<input type="text" name="qq" autocomplete="off" placeholder="请输入联系人QQ号码" class="layui-input">
+        </td>
+		<td class="layui-td-gray">电子邮箱</td>
+        <td>
+			<input type="text" name="email" autocomplete="off" placeholder="请输入联系人电子邮箱" class="layui-input">
+        </td>
+      </tr>
+	  <tr>
+		<td class="layui-td-gray">称谓</td>
+        <td>
+			<input type="text" name="nickname" autocomplete="off" placeholder="请输入联系人的称谓" class="layui-input">
+        </td>
+		<td class="layui-td-gray">部门</td>
+        <td>
+			<input type="text" name="department" autocomplete="off" placeholder="请输入联系人所在部门" class="layui-input">
+        </td>
+		<td class="layui-td-gray">职务</td>
+        <td>
+			<input type="text" name="position" autocomplete="off" placeholder="请输入联系人担任的职务" class="layui-input">
+        </td>
+      </tr>
+	  <tr>
+		<td class="layui-td-gray">生日</td>
+        <td><input type="text" name="birthday" readonly placeholder="请选择" class="layui-input tool-time"></td>
+		<td class="layui-td-gray">家庭住址</td>
+        <td colspan="3"><input type="text" name="address" placeholder="请输入联系人家庭住址" class="layui-input"></td>
+      </tr>
+	  <tr>
+		<td class="layui-td-gray">家庭成员</td>
+        <td colspan="5">
+				<table id="interfix" class="layui-table layui-table-min" style="margin:0;">
+					<tr>
+						<th width="150">成员姓名</th>
+						<th width="150">成员关系</th>
+						<th>备注信息</th>
+						<th width="60">操作</th>
+					</tr>
+					<tr class="tr-none">
+						<td colspan="4" style="padding:12px 0; text-align:center;">暂无数据</td>
+					</tr>
+				</table>
+				<div class="pt-2">
+					<button class="layui-btn layui-btn-sm" type="button" id="addInterfix">+ 家庭成员</button>
+				</div>
+		</td>
+      </tr>
+    </table>
+    <div class="pt-4">
+	   <input type="hidden" name="cid" value="{$customer_id}">
+      <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		
+		//添加家庭成员表格
+		$('#addInterfix').on('click',function(){
+			var html = '';
+			html += '<tr class="more_interfix">\
+						<td><input type="text" name="family_name[]" value="" placeholder="请输入" class="layui-input" lay-verify="required" lay-reqText="请完善成员姓名"></td>\
+						<td><input type="text" name="family_relations[]" value=""  placeholder="请输入，如:父子" class="layui-input" lay-verify="required" lay-reqText="请完善成员关系"></td>\
+						<td><input type="text" name="family_remarks[]" class="layui-input" value=""></td>\
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" lay-event="del">删除</a></td>\
+					</tr>';
+			$("#interfix").append(html).find('.tr-none').remove();
+			form.render();
+		});
+
+		$('#interfix').on('click', '[lay-event="del"]', function() {
+			$(this).parents(".more_interfix").remove();
+			if($('.more_interfix').length<1){
+				$("#interfix").append('<tr class="tr-none"><td colspan="4" style="padding:12px 0; text-align:center;">暂无数据</td></tr>')
+			}
+		});
+		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			if(!data.field.sex){
+				layer.msg('请选择性别');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000,'contactTable');
+				}
+			}
+			tool.post("/customer/contact/add", data.field, callback);
+			return false;
+		});
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

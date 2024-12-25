@@ -1,0 +1,127 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="layui-row gg-form-bar border-x border-t">
+		<div class="layui-input-inline"><button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="webform">换一批客户</button></div>
+		<div class="layui-input-inline red">每点击一次随机获取20个公海客户的信息，每天最多可抢<strong class="mx-1">{$max_num|default="0"}</strong>个客户，你今天已抢了<strong class="mx-1" id="count">{$count}</strong>个客户</div>
+    </div>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool ,form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '抢客宝列表',
+			toolbar: false,
+			defaultToolbar: false,
+			url: "/customer/index/rush", //数据接口
+			cellMinWidth: 80,
+			page: false, //开启分页
+			limit: 20,
+			height: 'full-112',
+			cols: [
+				[ //表头
+					{
+						field: 'id',title: 'ID号',align: 'center',width: 80
+					},{
+						field: 'name',
+						title: '客户名称',
+						minWidth:240,
+						templet: '<div><a data-href="/customer/customer/view/id/{{d.id}}.html" class="side-a">{{d.name}}</a></div>'
+					},{
+						field: 'contact_name',
+						title: '联系人',
+						align: 'center',
+						width: 80
+					},{
+						field: 'contact_mobile',
+						title: '手机号码',
+						align: 'center',
+						width: 100
+					},{
+						field: 'contact_email',
+						title: '电子邮箱',
+						width: 200
+					},{
+						field: 'grade',
+						title: '客户等级',
+						align: 'center',
+						width: 100
+					},{
+						field: 'source',
+						title: '来源渠道',
+						align: 'center',
+						width: 100
+					},{
+						field: 'industry',
+						title: '所属行业',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '创建时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'update_time',
+						title: '最后编辑时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 80,
+						align: 'center',
+						templet: function (d) {
+							if(login_admin==1){
+								return '-';
+							}
+							else{
+								return '<span class="layui-btn layui-btn-xs" lay-event="get">领取客户</span>';
+							}
+						}						
+					}
+				]
+			]
+		});
+		
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'get') {
+				layer.confirm('确定要获取该客户?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+							let count =$('#count').text();
+							$('#count').html(++count);
+						}
+					}
+					tool.post("/customer/index/to_get", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});
+
+		//监听搜索提交
+		form.on('submit(webform)', function(data) {
+			layui.pageTable.reload();
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

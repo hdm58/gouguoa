@@ -1,0 +1,138 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-table-1 .tr-2,.layui-table-1 .tr-3{display:none;}
+.layui-table-2 .tr-1,.layui-table-2 .tr-3{display:none;}
+.layui-table-3 .tr-1,.layui-table-3 .tr-2{display:none;}
+.layui-table-4 .tr-1,.layui-table-4 .tr-2,.layui-table-4 .tr-3,.layui-table-4 .tr-4{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">回复消息</h3>
+	<table id="messageTable" class="layui-table layui-table-form layui-table-1">
+		<tr>
+			<td class="layui-td-gray-2">接收人类型</td>
+			<td>
+				<input type="radio" name="types"  lay-filter="types" value="1" title="同事"checked>
+				<input type="radio" name="types"  lay-filter="types" value="2" title="部门">
+				<input type="radio" name="types"  lay-filter="types" value="3" title="岗位">
+				<input type="radio" name="types"  lay-filter="types" value="4" title="全部">
+			</td>
+		</tr>
+		<tr class="tr-1">
+			<td class="layui-td-gray">收件人<font>*</font></td>
+			<td>
+				<input type="text" name="unames" value="{$detail.from_name|default=''}" placeholder="请选择收件人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="uids" value="{$detail.from_uid|default=''}">
+			</td>
+		</tr>
+		<tr class="tr-2">
+			<td class="layui-td-gray">收件部门<font>*</font></td>
+			<td>
+				<input type="text" name="dnames" value="{$detail.dnames|default=''}" placeholder="请选择收件部门" readonly class="layui-input picker-oa" data-types="department" data-type="2">
+				<input type="hidden" name="dids" value="{$detail.dids|default=''}">
+			</td>
+		</tr>
+		<tr class="tr-3">
+			<td class="layui-td-gray">收件岗位<font>*</font></td>
+			<td>
+				<input type="text" name="pnames" value="{$detail.pnames|default=''}" placeholder="请选择收件岗位" readonly class="layui-input picker-oa" data-types="position" data-type="2"">
+				<input type="hidden" name="pids" value="{$detail.pids|default=''}">
+			</td>
+		</tr>
+		<tr class="tr-4">
+			<td class="layui-td-gray">抄送人</td>
+			<td>
+				<input type="text" name="copy_names" value="{$detail.copy_names|default=''}" placeholder="请选择抄送人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="copy_uids" value="{$detail.copy_uids|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">消息主题<font>*</font></td>
+			<td><input type="text" name="title" value="回复：{$detail.title|default=''}" lay-verify="required" lay-reqText="请输入消息主题" placeholder="请输入消息主题" class="layui-input" lay-verify="required"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">消息内容<font>*</font></td>
+			<td>
+				<textarea name="content" placeholder="请输入消息内容" class="layui-textarea" style="height: 200px;" lay-verify="required" lay-reqText="请输入消息内容"></textarea>
+				<table class="layui-table" style="margin-top:10px">
+				<tr>
+					<td class="layui-td-gray-2">回复消息内容</td>
+					<td>{$detail.content|default=''}</td>
+				</tr>
+				{notempty name="$detail.file_array"}
+				<tr>
+					<td class="layui-td-gray" style="vertical-align:top">回复消息附件</td>
+					<td style="line-height:inherit">
+						<div class="layui-row">
+							{volist name="$detail.file_array" id="vo"}
+							<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+							{/volist}
+						</div>
+					</td>
+				</tr>
+				{/notempty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray"><div class="layui-input-inline">附件</div> <div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div></td>
+			<td>
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" value="0" name="id">
+		<input type="hidden" value="{$detail.id}" name="msg_id">
+		<button class="layui-btn" lay-submit="" lay-filter="draftform">存为草稿</button>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即发送</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus=layui.uploadPlus;
+		let uploada = new uploadPlus();
+		//监听保存到草稿并发送
+		form.on('submit(webform)', function(data){
+			data.field.is_draft=1;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/home/message/save", data.field, callback);
+		});
+		  
+		//监听保存到草稿
+		form.on('submit(draftform)', function(data){
+			data.field.is_draft=2;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/home/message/save", data.field, callback);
+			return false;
+		});
+
+		//选择收件人类型
+		form.on('radio(types)', function (data) {
+			$('#messageTable').attr('class','layui-table layui-table-form layui-table-'+data.value);
+		});		
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

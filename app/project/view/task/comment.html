@@ -1,0 +1,111 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-unselect dl {max-height:188px;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-x border-t" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:100px;">
+			<input type="text" name="username"  placeholder="请选择评论人" class="layui-input picker-admin" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		<div class="layui-input-inline" style="width:300px;">
+			<input type="text" name="keywords"  placeholder="关键字，输入评论内容" class="layui-input"/>
+		</div>	
+		<div class="layui-input-inline" style="width:150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form> 
+	<div>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+<h3>任务评论</h3>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,table = layui.tablePlus,tool=layui.tool, work = layui.oaSchedule;	  
+		layui.commentTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,title:'评论列表'
+			,url: "/project/task/comment"
+			,cellMinWidth: 80
+			,is_excel:true
+			,height: 'full-110'
+			,cols: [[ //表头
+				{field: 'id', title: '序号',fixed: 'left', width:80, align:'center'}
+				,{field: 'content', title: '评论内容'}
+				,{field: 'project', title: '关联项目&任务', width:300,templet:function(d){
+					var html='';
+					if(d.labor_type==0){
+						html='<span class="layui-color-'+d.labor_type+'">-</span>';
+					}
+					else if(d.module =='project'){
+						html='<span class="green">『项目』</span><a data-href="/project/index/view/id/'+d.topic_id+'.html" class="side-a">'+d.topic_name+'</a>';
+					}
+					else{
+						html='<span class="blue">『任务』</span><a data-href="/project/task/view/id/'+d.topic_id+'.html" class="side-a">'+d.topic_name+'</a>';
+					}
+					return html;
+				}}
+				,{field: 'to_names', title: '@关联人', width:160}
+				,{field: 'admin_name', title: '评论人', align:'center',width:80}
+				,{field: 'create_time', title: '评论时间', align:'center',width:150}
+				,{field: 'right', title: '操作',fixed:'right', width:90, align:'center',templet:function(d){
+					if(d.read==0){
+						return '<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="read">设为已读</button>';
+					}
+					else if(d.read==2){
+						return '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</button>';
+					}
+					else{
+						return '-';
+					}
+				}}
+			]]
+		});
+
+		table.on('tool(test)', function(obj){
+			var data = obj.data;
+			if (obj.event === 'read') {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layui.commentTable.reload();
+					}
+				}
+				tool.post("/project/api/read_comment", { id: data.id }, callback);
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该评论吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/project/api/delete_comment", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+			return;
+		});
+		   
+	}
+		
+	</script>
+{/block}
+<!-- /脚本 -->

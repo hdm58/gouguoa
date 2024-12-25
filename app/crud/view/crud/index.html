@@ -1,0 +1,66 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">一键CRUD信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray" style="background-color:#FEF7ED">使用说明</td>
+			<td colspan="5" style="background-color:#FEF7ED">勾股OA系统自带的一键CRUD功能没教程，这个功能是我们内部为了提高日常开发效率开发的简单工具，本来不打算放出来的，但是想想也没啥秘密，就干脆不屏蔽了的。
+				<br>有开发能力的人就用起来，没开发能力的当着该功能不存在就行，不影响系统的使用的。如果需要教学的，请加微信号【hdm588】付费咨询或教学。</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">中文名称</td>
+			<td><input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入中文名称" lay-reqText="请输入中文名称"class="layui-input" value=""></td>
+			<td class="layui-td-gray">模板类型</td>
+			<td colspan="3">
+				<input type="radio" name="types" value="1" title="常规分类" checked>
+				<input type="radio" name="types" value="2" title="简单分类" >
+				<input type="radio" name="types" value="3" title="常规模块" >
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">模块名称</td>
+			<td><input type="text" name="module" lay-verify="required" autocomplete="off" placeholder="请输入模块名称，小写" lay-reqText="请输入模块名称"class="layui-input" value=""></td>
+			<td class="layui-td-gray-2">控制器名称</td>
+			<td><input type="text" name="controller" lay-verify="required" autocomplete="off" placeholder="请输入控制器名称，小写" lay-reqText="请输入控制器名称"class="layui-input" value=""></td>
+			<td class="layui-td-gray-2">数据表名称</td>
+			<td><input type="text" name="table" lay-verify="required" autocomplete="off" placeholder="请输入数据表名称，小写，可_隔开" lay-reqText="请输入数据表名称"class="layui-input" value=""></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">一键CRUD生成代码</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				console.log(e);
+				if (e == '') {
+					layer.msg('crud生成成功');
+				}
+				else{
+					if(e.code==1){
+						layer.msg(e.msg);
+					}
+					else{
+						layer.msg('代码已生成，如需重新生成，请删除后再重试');
+					}					
+				}
+			}
+			tool.post("/crud/crud/crud", data.field, callback);
+			return false;
+		});
+	}
+
+</script>
+{/block}

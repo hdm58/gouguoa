@@ -1,0 +1,70 @@
+<div class="p-3">
+	<button class="layui-btn layui-btn-sm add-chance">+ 新建线索机会</button>
+</div>
+<div>
+	<table class="layui-hide" id="chance" lay-filter="chance"></table>
+</div>
+<script>
+function chance(){
+	if($('#customerTab').find('li').eq(4).data('load') =='true'){
+		return false;
+	}
+	$('#customerTab').find('li').eq(4).data('load','true');
+	let tool = layui.tool, table = layui.table;
+	//项目任务
+	layui.chanceTable = table.render({
+		elem: '#chance',
+		title: '线索机会列表',
+		cellMinWidth:80,
+		url: "/customer/api/get_chance",
+		where:{'cid':customer_id},
+		page: true, //开启分页
+		limit: 20,
+		cols:  [[
+			{field: 'id', title: '序号', width: 80, align: 'center'}
+			,{field:'belong_name',title: '归属人',align:'center',width: 80}
+			,{field:'title',title: '机会主题'}
+			,{field:'stage_name',title: '当前阶段',width: 90, align: 'center'}
+			,{field:'discovery_time',title: '发现时间',align:'center',width: 90}
+			,{ field: 'expected_time', title: '预计签单时间', width: 100, align: 'center'}
+			,{ field: 'expected_amount', title: '预计签单金额', width: 100, align: 'center'}
+			,{fixed:'right',width:132,title: '操作', align:'center',templet: function(d){
+					var html = '<div class="layui-btn-group">';
+					var btn0='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					return html+btn0+btn1+btn2+'</div>';
+			}}			
+		]]
+	});
+	$('body').on('click','.add-chance',function(){
+		tool.side('/customer/chance/add?cid='+customer_id);
+	});
+	
+	table.on('tool(chance)', function(obj){
+		var data = obj.data; //获得当前行数据
+		var layEvent = obj.event;		 
+		if(layEvent === 'edit'){ //编辑
+			let url = '/customer/chance/add/id/'+data.id;
+			tool.side(url);
+		}
+		if(layEvent === 'view'){ //查看
+			let url = '/customer/chance/view/id/'+data.id;
+			tool.side(url);
+		}
+		if(layEvent === 'del'){ //删除
+			layer.confirm('确定要删除该线索机会吗?', {icon: 3, title:'提示'}, function(index){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layui.chanceTable.reload();
+					}
+				}
+				tool.delete("/customer/chance/del",{"id":data.id},callback);
+				layer.close(index);
+			});
+		}
+		return false;
+	})
+}
+</script>

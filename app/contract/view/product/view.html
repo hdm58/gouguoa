@@ -1,0 +1,77 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-4">
+	<h3 class="pb-1">产品详情</h3>
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">产品名称</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray">产品分类</td>
+			<td>{$detail.cate}</td>
+			<td class="layui-td-gray" rowspan="4">缩略图</td>
+			<td rowspan="4" style="width:150px;">
+				<div class="layui-upload-list" id="demo1" style="width: 150px; height:80px; overflow: hidden;">
+					<img src="{:get_file($detail.thumb)}" style="max-width: 100%; height:66px;" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">产品编码</td>
+			<td>{$detail.code}</td>
+			<td class="layui-td-gray">产品单位</td>
+			<td>{$detail.unit}</td>
+			<td class="layui-td-gray">产品规格</td>
+			<td>{$detail.specs}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">销售价(元)</td>
+			<td>{$detail.sale_price}</td>
+			<td class="layui-td-gray">成本价(元)</td>
+			<td>{$detail.base_price}</td>
+			<td class="layui-td-gray">采购价(元)</td>
+			<td>{$detail.purchase_price}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">是否实物</td>
+			<td colspan="7">
+				{eq name="$detail.is_object" value="1"}是{/eq}
+				{eq name="$detail.is_object" value="2"}否{/eq}
+			</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="7" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray" colspan="8" style="text-align:left; color:#666"><strong>产品描述</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				{$detail.content|raw}
+			</td>
+		</tr>
+	</table>
+
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

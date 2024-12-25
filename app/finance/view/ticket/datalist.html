@@ -1,0 +1,210 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">全部</li>
+				<li>我申请的</li>
+				<li>待我审批</li>
+				<li>我已审批</li>
+				<li>抄送我的</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择发票时间区间" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline  search-item" style="width:120px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				{volist name=":get_check_status()" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline  search-item" style="width:120px;">
+			<select name="open_status">
+				<option value="">发票状态</option>
+				<option value="1">正常</option>
+				<option value="2">作废</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0"/>
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_ticket" lay-filter="table_ticket"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/finance/ticket/add">+ 添加收票信息</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
+		
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		layui.pageTable = table.render({
+			elem: "#table_ticket"
+			,toolbar: "#toolbarDemo"
+			,title: '发票列表'
+			,url: "/finance/ticket/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-152'
+			,cols: [[
+				{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					},{
+						field: 'supplier_name',
+						title: '供应商[发票主体]',
+						minWidth: 240
+					},{
+						field: 'amount',
+						title: '发票金额(元)',
+						align: 'right',
+						width: 100,
+					},{
+						field: 'code',
+						title: '发票号码',
+						align: 'center',
+						width: 160
+					},{
+						field: 'invoice_type',
+						title: '开票类型',
+						align: 'center',
+						width: 120,
+						templet:function(d){
+							var html='-';
+							if(d.invoice_type==1){
+								html='<span class="green">增值税专用发票</span>';
+							}
+							else if(d.invoice_type==2){
+								html='<span class="blue">普通发票</span>';
+							}
+							else if(d.invoice_type==3){
+								html='<span class="red">专业发票</span>';
+							}
+							return html;
+						}
+					},{
+						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
+							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+							return html;
+						}
+					},
+					{
+						field: 'admin_name',
+						title: '收票员工',
+						align: 'center',
+						width: 100
+					},{
+						field: 'department',
+						title: '收票部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '收取时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'check_user',
+						title: '当前审核人'
+					},{
+						field: 'open_status',
+						title: '发票状态',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='';
+							if(d.check_status==2){
+								html = '<span class="green">『正常』</span>';
+								if(d.open_status==2){
+									html = '<span class="red">『已作废』</span>';
+								}
+							}
+							else{
+								html='-';
+							}
+							return html;
+						}
+					},{
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 130,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+							html+=btn1;
+							if((d.check_status==0 ||d.check_status==4) && d.admin_id==login_admin){
+								html+=btn2+btn3;
+							}
+							html+='</div>';
+							return html;
+						}
+					}
+				]
+			]
+		});
+			
+		table.on('tool(table_ticket)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/finance/ticket/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/finance/ticket/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该记录吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/finance/ticket/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

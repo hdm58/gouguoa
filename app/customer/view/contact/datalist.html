@@ -1,0 +1,103 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="输入关键字，姓名/手机/邮箱" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_customer_contact" lay-filter="table_customer_contact"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div>
+  	<h3>客户联系人</h3>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.contactTable = table.render({
+			elem: "#table_customer_contact"
+			,toolbar: "#toolbarDemo"
+			,url: "/customer/contact/datalist"
+			,page: true
+			,limit: 20
+			,is_excel: true
+			,cellMinWidth: 80
+			,height: 'full-112'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'name',title: '姓名',align:'center',width:80}
+				,{field:'mobile',title: '手机号码', align:'center',width:100}
+				,{field:'email',title: '电子邮箱',width:200,templet: function(d){
+					return d.email==''?'-':d.email;
+				}}
+				,{field:'qq',title: 'QQ号码', align:'center',width:100,templet: function(d){
+					return d.qq==''?'-':d.qq;
+				}}
+				,{field:'wechat',title: '微信号', align:'center',width:100,templet: function(d){
+					return d.wechat==''?'-':d.wechat;
+				}}
+				,{field:'customer',title: '关联客户'}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn0='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</a>';
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn0+btn1+btn2+'</div>';
+					if(d.admin_id == login_admin){
+						return html;
+					}
+					else{
+						return btn0;
+					}
+				}}
+			]]
+		});
+			
+		table.on('tool(table_customer_contact)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/customer/contact/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/customer/contact/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该联系人吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/customer/contact/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

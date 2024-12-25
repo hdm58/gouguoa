@@ -1,0 +1,54 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-1">审批模块</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">模块名称<font>*</font></td>
+			<td><input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入模块名称" lay-reqText="请输入审批模块名称" class="layui-input"></td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" autocomplete="off" class="layui-input"></td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table">
+		<tr>
+			<td class="layui-td-gray">模块名称<font>*</font></td>
+			<td><input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入审批模块名称" lay-reqText="请输入模块名称" class="layui-input"></td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" value="{$detail.sort}" autocomplete="off" class="layui-input"></td>
+		</tr>
+	</table>
+	{/eq}
+	<div class="pt-2">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','formSelects'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,formSelects=layui.formSelects;
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);					
+				}
+			}
+			tool.post("/adm/flow/module_add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

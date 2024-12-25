@@ -1,0 +1,103 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		{gt name="$is_auth" value="0"}
+		<div class="layui-input-inline user-name" style="width:100px;">
+			<input type="text" name="username" placeholder="选择跟进人" class="layui-input picker-admin" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{/gt}
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="follow_time" placeholder="下次跟进日期" readonly name="follow_time">
+		</div>
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_customer_trace" lay-filter="table_customer_trace"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div>
+  	<h3>跟进记录</h3>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','laydatePlus','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form,laydatePlus=layui.laydatePlus;
+		var follow_time = new laydatePlus({'target':'follow_time'});
+		layui.traceTable = table.render({
+			elem: "#table_customer_trace"
+			, toolbar: "#toolbarDemo"
+			,url: "/customer/trace/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,is_excel: true
+			,height: 'full-112'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'stage_name',title: '当前阶段',width:100,align:'center'}
+				,{field:'content',title: '沟通内容',minWidth:300}
+				,{field:'chance',title: '销售机会',width:200}
+				,{field:'type_name',title: '跟进方式',width:80,align:'center'}
+				,{field:'admin_name',title: '跟进人',width:80,align:'center'}
+				,{field:'follow_time', title: '跟进日期',width:130,align:'center'}
+				,{field:'next_time', title: '下次跟进日期',width:130,align:'center',style:'color:#16b777'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					if(d.admin_id == login_admin){
+						return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					}
+					else{
+						return '<div class="layui-btn-group">'+btn1+'</div>';
+					}
+				}}
+			]]
+		});
+			
+		table.on('tool(table_customer_trace)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/customer/trace/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/customer/trace/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该线索机会吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/customer/trace/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

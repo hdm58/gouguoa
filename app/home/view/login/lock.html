@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="renderer" content="webkit" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>{:get_system_config('web','admin_title')}</title>
+		<link rel="stylesheet" href="{__GOUGU__}/layui/css/layui.css?v={:get_system_config('system','version')}" media="all">
+		<style type="text/css">
+			html,body {width: 100%;height: 100%;background: #EAF3FF;}
+			canvas{display:block;width:100%;height:100%; position: fixed; top: 0;left: 0;}
+			input:-webkit-autofill {
+				-webkit-box-shadow: 0 0 0px 1000px white inset;
+			}
+			#container {width: 100%;height: 100%;position: fixed;top: 0;left: 0;z-index: 99;
+				background: url({__IMG__}/bg.png);
+				background-size: cover;
+			}
+			#container .lock{width: 100%;height: 100%; position:absolute; top:0; left:0;
+				background:#000 url({__IMG__}/lock_bg.svg);
+				background-size: cover;
+				opacity:0.72
+			}
+			.login {width: 398px; text-align: center; position: absolute; top: 50%; left: 50%; margin-top: -240px; margin-left: -199px; border-radius: 12px; box-shadow: 0 2px 6px rgba(92, 110, 136, .32);}
+			.login .top {width: 398px;height: 117px; background-color:#7EC54B; border-radius: 12px 12px 0 0; line-height: 117px; text-align: center; overflow: hidden;
+				-webkit-transform: rotate(0deg);
+				-moz-transform: rotate(0deg);
+				-ms-transform: rotate(0deg);
+				-o-transform: rotate(0deg);
+				transform: rotate(0deg);
+			}
+			.login .top .bg1 {display: inline-block;width: 72px;height: 72px;background: #fff;opacity: .1;border-radius: 0 72px 0 0;position: absolute;left: 0;top: 42px;}
+			.login .top .bg2 {display: inline-block;width: 92px;height: 92px;background: #fff;opacity: .1;border-radius: 50%;position: absolute;right: -16px;top: -16px;}
+			.login .bottom {background-color: #fff;padding:26px 24px;border-radius: 0 0 12px 12px;}			
+			.layui-input,.layui-textarea {height: 44px;border: 1px solid #ddd;}
+			.captcha_img img{width:142px; height:44px; cursor:pointer;}
+			.layui-btn {height: 45px;font-size: 16px;margin-top: 6px;background-color: #FF6347!important}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<div class="lock"></div>
+			<canvas id="canvas"></canvas>
+			<div class="login">
+				<div class="top">
+					<img src="{:get_system_config('web','logo')}" onerror="javascript:this.src='{__IMG__}/syslogo.png';this.onerror=null;" style="height: 66px;">
+					<span class="bg1"></span>
+					<span class="bg2"></span>
+				</div>
+				<div class="bottom">
+					<form class="layui-form" id="gougu-lock">
+						<div class="layui-form-item" style="font-size:32px; color:#FF6347; padding:16px 0">
+							当前是锁屏状态
+						</div>
+						<div class="layui-form-item">
+							<input type="password" name="lock_password" lay-verify="required" value="" placeholder="请输入登录密码解锁" lay-reqText="请输入登录密码" autocomplete="off" class="layui-input">
+						</div>						
+						<button id="lock-submit" class="layui-btn layui-btn-fluid layui-bg-cyan" lay-submit lay-filter="lock-submit">解锁进入系统</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="{__GOUGU__}/layui/layui.js?v={:get_system_config('system','version')}"></script>
+		<script type="text/javascript">
+			var canvas=document.querySelector("#canvas"),ctx=canvas.getContext("2d");canvas.width=window.innerWidth,canvas.height=window.innerHeight,ctx.lineWidth=.3,ctx.strokeStyle=new Color(150).style;var movePos={x:30*canvas.width/100,y:30*canvas.height/100},dots={nb:250,distance:100,d_radius:150,array:[]};function colorValue(t){return Math.floor(255*Math.random()+t)}function createColorStyle(t,o,i){return"rgba("+t+","+o+","+i+", 0.618)"}function mixComponents(t,o,i,a){return(t*o+i*a)/(o+a)}function averageColorStyles(t,o){var i=t.color,a=o.color,s=mixComponents(i.r,t.radius,a.r,o.radius),n=mixComponents(i.g,t.radius,a.g,o.radius),e=mixComponents(i.b,t.radius,a.b,o.radius);return createColorStyle(Math.floor(s),Math.floor(n),Math.floor(e))}function Color(t){t=t||0,this.r=colorValue(t),this.g=colorValue(t),this.b=colorValue(t),this.style=createColorStyle(this.r,this.g,this.b)}function Dot(){this.x=Math.random()*canvas.width,this.y=Math.random()*canvas.height,this.vx=-.5+Math.random(),this.vy=-.5+Math.random(),this.radius=3*Math.random(),this.color=new Color}function createDots(){for(i=0;i<dots.nb;i++)dots.array.push(new Dot)}function moveDots(){for(i=0;i<dots.nb;i++){var t=dots.array[i];t.y<0||t.y>canvas.height?(t.vx=t.vx,t.vy=-t.vy):(t.x<0||t.x>canvas.width)&&(t.vx=-t.vx,t.vy=t.vy),t.x+=t.vx,t.y+=t.vy}}function connectDots(){for(i=0;i<dots.nb;i++)for(j=0;j<dots.nb;j++)i_dot=dots.array[i],j_dot=dots.array[j],i_dot.x-j_dot.x<dots.distance&&i_dot.y-j_dot.y<dots.distance&&i_dot.x-j_dot.x>-dots.distance&&i_dot.y-j_dot.y>-dots.distance&&i_dot.x-movePos.x<dots.d_radius&&i_dot.y-movePos.y<dots.d_radius&&i_dot.x-movePos.x>-dots.d_radius&&i_dot.y-movePos.y>-dots.d_radius&&(ctx.beginPath(),ctx.strokeStyle=averageColorStyles(i_dot,j_dot),ctx.moveTo(i_dot.x,i_dot.y),ctx.lineTo(j_dot.x,j_dot.y),ctx.stroke(),ctx.closePath())}function drawDots(){for(i=0;i<dots.nb;i++){dots.array[i].draw()}}function runDots(){ctx.clearRect(0,0,canvas.width,canvas.height),moveDots(),connectDots(),drawDots(),requestAnimationFrame(runDots)}Dot.prototype={draw:function(){ctx.beginPath(),ctx.fillStyle=this.color.style,ctx.arc(this.x,this.y,this.radius,0,3*Math.PI,!1),ctx.fill()}};var can=document.querySelector("#canvas");can.addEventListener("mousemove",function(t){movePos.x=t.pageX,movePos.y=t.pageY}),can.addEventListener("mouseleave",function(t){movePos.x=canvas.width/2,movePos.y=canvas.height/2}),createDots(),requestAnimationFrame(runDots);
+			
+			layui.use(['form'], function() {
+				var form = layui.form,
+					$ = layui.$,
+					layer = layui.layer;
+				// 登录过期的时候，跳出ifram框架
+				if (top.location != self.location) top.location = self.location;
+				form.on('submit(lock-submit)', function(data) {
+					$.ajax({
+						url: "/home/login/lock",
+						data: $('#gougu-lock').serialize(),
+						type: 'post',
+						async: false,
+						success: function(res) {
+							layer.tips(res.msg, '#lock-submit');
+							if (res.code === 0) {
+								setTimeout(function() {
+									parent.document.location.href="/";
+								}, 1200);
+							}
+							else if (res.code === 2) {
+								setTimeout(function() {
+									parent.document.location.href="/home/login/index.html";
+								}, 1200);
+							}
+						}
+					})
+					return false;
+				});
+			});
+		</script>
+	</body>
+</html>

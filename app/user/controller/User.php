@@ -1,9 +1,15 @@
 <?php
 /**
- * @copyright Copyright (c) 2021 勾股工作室
- * @license https://opensource.org/licenses/GPL-2.0
- * @link https://www.gougucms.com
- */
++-----------------------------------------------------------------------------------------------
+* GouGuOPEN [ 左手研发，右手开源，未来可期！]
++-----------------------------------------------------------------------------------------------
+* @Copyright (c) 2021~2024 http://www.gouguoa.com All rights reserved.
++-----------------------------------------------------------------------------------------------
+* @Licensed 勾股OA，开源且可免费使用，但并不是自由软件，未经授权许可不能去除勾股OA的相关版权信息
++-----------------------------------------------------------------------------------------------
+* @Author 勾股工作室 <hdm58@qq.com>
++-----------------------------------------------------------------------------------------------
+*/
 
 declare (strict_types = 1);
 
@@ -11,6 +17,7 @@ namespace app\user\controller;
 
 use app\base\BaseController;
 use app\user\model\Admin as AdminList;
+use app\user\model\Department as DepartmentModel;
 use app\user\validate\AdminCheck;
 use avatars\MDAvatars;
 use Overtrue\Pinyin\Pinyin;
@@ -25,27 +32,52 @@ class User extends BaseController
         if (request()->isAjax()) {
             $param = get_params();
             $where = array();
+            $whereOr = array();
             if (!empty($param['keywords'])) {
-                $where[] = ['id|username|name|nickname|mobile|desc', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['a.id|a.username|a.name|a.nickname|a.mobile|a.desc', 'like', '%' . $param['keywords'] . '%'];
             }
-            $where[] = ['status', '<', 2];
-            if (isset($param['status'])) {
-                $where[] = ['status', '=', $param['status']];
+            if (isset($param['status']) && $param['status']!='') {
+                $where[] = ['a.status', '=', $param['status']];
             }
+			else{
+				$where[] = ['a.status', '<', 2];
+			}
             if (!empty($param['type'])) {
-                $where[] = ['type', '=', $param['type']];
+                $where[] = ['a.type', '=', $param['type']];
             }
             if (!empty($param['did'])) {
-                $department_array = get_department_son($param['did']);
-                $where[] = ['did', 'in', $department_array];
+				$admin_array = Db::name('DepartmentAdmin')->where('department_id',$param['did'])->column('admin_id');
+				$map1=[
+					['a.id','in',$admin_array],
+				];
+				$map2=[
+					['a.did', '=', $param['did']],
+				];
+				$whereOr =[$map1,$map2];
             }
-            $rows = empty($param['limit']) ? get_config('app . page_size') : $param['limit'];
-            $admin = AdminList::where($where)
-                ->order('id desc')
-                ->paginate($rows, false, ['query' => $param])
+			$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
+			$admin = AdminList::alias('a')
+				->with('departments')
+				->field('a.*,p.title as position,d.title as department')
+				->join('Department d', 'd.id = a.did','left')
+				->join('Position p', 'p.id = a.position_id','left')
+				->where($where)
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})
+				->paginate(['list_rows'=> $rows])
+				->order('a.id desc')
                 ->each(function ($item, $key) {
-                    $item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
-                    $item->position = Db::name('Position')->where(['id' => $item->position_id])->value('title');
+					//遍历次要部门数据
+					$departments = $item->departments->toArray();
+					if(empty($departments)){
+						$item->departments = '-';
+					}
+					else{
+						$item->departments = split_array_field($departments,'title');
+					}
                     $item->entry_time = empty($item->entry_time) ? '-' : date('Y-m-d', $item->entry_time);
                     $item->last_login_time = empty($item->last_login_time) ? '-' : date('Y-m-d H:i', $item->last_login_time);
                     $item->last_login_ip = empty($item->last_login_ip) ? '-' : $item->last_login_ip;
@@ -56,20 +88,32 @@ class User extends BaseController
         }
     }
 
+    //生成登录名
+    public function create_name($name,$id=0,$total=0,$old='')
+    {
+		$count = Db::name('Admin')->where([['username','=',$name],['id','<>',$id]])->count();
+		if($total==0){
+			$old = $name;
+		}
+		$total++;
+		if($count>0){
+			$newname = $old.$total;
+			$name = $this->create_name($newname,$id,$total,$old);
+		}
+		return $name;
+    }
+
     //添加
     public function add()
     {
         $param = get_params();
         if (request()->isAjax()) {
+			$id = isset($param['id'])?$param['id']:0;
             $param['entry_time'] = strtotime($param['entry_time']);
             $param['nickname'] = $param['name'];
-            $pinyin = new Pinyin();
-            $username = $pinyin->name($param['name'], PINYIN_UMLAUT_V);
-            $param['username'] = implode('', $username);
-            if (!empty($param['id']) && $param['id'] > 0) {
-				$count = Db::name('Admin')->where([['username', '=', $param['username']], ['id', '<>', $param['id']]])->count();
-				if ($count > 0) {
-					$param['username'] = implode('', $username) . $count;
+            if ($id > 0) {
+				if($id == 1){
+					return to_assign(1, '超级管理员信息不支持编辑');
 				}
                 try {
                     validate(AdminCheck::class)->scene('edit')->check($param);
@@ -77,15 +121,32 @@ class User extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				$detail = get_admin($param['id']);
+				$department_ids = Db::name('DepartmentAdmin')->where('admin_id',$param['id'])->column('department_id');
+				$detail['department_ids'] = implode(',',$department_ids);
                 // 启动事务
                 Db::startTrans();
                 try {
-                    Db::name('Admin')->where(['id' => $param['id']])->strict(false)->field(true)->update($param);
-                    if (!isset($param['thumb']) || $param['thumb'] == '') {
+                    Db::name('Admin')->where(['id' => $id])->strict(false)->field(true)->update($param);
+					if($detail['department_ids'] != $param['department_ids']){
+						Db::name('DepartmentAdmin')->where('admin_id',$id)->whereIn('department_id', $detail['department_ids'])->delete();
+						if(!empty($param['department_ids'])){
+							$dids = explode(',',$param['department_ids']);
+							foreach ($dids as $did) {
+								Db::name('DepartmentAdmin')->insert(['admin_id'=>$param['id'],'department_id'=>$did,'create_time' => time()]);
+							}
+						}
+					}
+                    if(empty($param['thumb'])){
                         $char = mb_substr($param['name'], 0, 1, 'utf-8');
-                        Db::name('Admin')->where('id', $param['id'])->update(['thumb' => $this->to_avatars($char)]);
+                        Db::name('Admin')->where('id', $id)->update(['thumb' => $this->to_avatars($char)]);
                     }
-                    add_log('edit', $param['id'], $param);
+					$info = Db::name('Admin')->where('id', $id)->find();
+					$model = new DepartmentModel();
+					$auth_dids = $model->get_auth_departments($info);
+					$son_dids = $model->get_son_departments($info);
+					Db::name('Admin')->where('id',$id)->update(['auth_dids'=>$auth_dids,'son_dids'=>$son_dids]);
+                    add_log('edit', $id, $param);
                     //清除菜单\权限缓存
                     clear_cache('adminMenu');
                     // 提交事务
@@ -96,26 +157,36 @@ class User extends BaseController
                     return to_assign(1, '提交失败:' . $e->getMessage());
                 }
             } else {
-                $count = Db::name('Admin')->where('username', $param['username'])->count();
-                if ($count > 0) {
-                    $param['username'] = implode('', $username) . $count;
-                }
+				$username = Pinyin::name($param['name'],'none')->join('');
+				$param['username'] = $this->create_name($username,$id);
                 try {
                     validate(AdminCheck::class)->scene('add')->check($param);
                 } catch (ValidateException $e) {
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+                $param['create_time'] = time();
                 $param['salt'] = set_salt(20);
                 $param['pwd'] = set_password($param['reg_pwd'], $param['salt']);
                 // 启动事务
                 Db::startTrans();
                 try {
                     $uid = Db::name('Admin')->strict(false)->field(true)->insertGetId($param);
-                    if (!isset($param['thumb']) || $param['thumb'] == '') {
+					if(!empty($param['department_ids'])){
+						$dids = explode(',',$param['department_ids']);
+						foreach ($dids as $did) {
+							Db::name('DepartmentAdmin')->insert(['admin_id'=>$uid,'department_id'=>$did,'create_time' => time()]);
+						}
+					}
+                    if(empty($param['thumb'])){
                         $char = mb_substr($param['name'], 0, 1, 'utf-8');
                         Db::name('Admin')->where('id', $uid)->update(['thumb' => $this->to_avatars($char)]);
                     }
+					$info = Db::name('Admin')->where('id', $uid)->find();
+					$model = new DepartmentModel();
+					$auth_dids = $model->get_auth_departments($info);
+					$son_dids = $model->get_son_departments($info);
+					Db::name('Admin')->where('id',$uid)->update(['auth_dids'=>$auth_dids,'son_dids'=>$son_dids]);
                     add_log('add', $uid, $param);
                     // 提交事务
                     Db::commit();
@@ -132,6 +203,9 @@ class User extends BaseController
             $position = Db::name('Position')->where('status', '>=', 0)->order('create_time asc')->select();
             if ($id > 0) {
                 $detail = get_admin($id);
+                $detail['pname'] =  Db::name('Admin')->where('id',$detail['pid'])->value('name');
+				$department_ids = Db::name('DepartmentAdmin')->where('admin_id',$param['id'])->column('department_id');
+				$detail['department_ids'] = implode(',',$department_ids);
                 View::assign('detail', $detail);
             } else {
                 //初始化密码
@@ -172,11 +246,15 @@ class User extends BaseController
     {
         $id = get_params('id');
         $detail = get_admin($id);
+		$department_ids = Db::name('DepartmentAdmin')->where('admin_id',$id)->column('department_id');
+		$department_names = Db::name('Department')->whereIn('id',$department_ids)->column('title');
+		$detail['department_names'] = implode(',',$department_names);
+		$detail['pname'] =  Db::name('Admin')->where('id',$detail['pid'])->value('name');
         //查询所有菜单和权限节点
         $menu = Db::name('AdminRule')->where(['menu' => 1])->order('sort asc,id asc')->select()->toArray();
         $rule = Db::name('AdminRule')->order('sort asc,id asc')->select()->toArray();
 
-        //查询用户拥有的查单和节点
+        //查询用户拥有的菜单和节点
         $user_groups = Db::name('PositionGroup')
             ->alias('a')
             ->join("AdminGroup g", "a.group_id=g.id", 'LEFT')
@@ -267,12 +345,12 @@ class User extends BaseController
             if (!empty($param['rule_menu'])) {
                 $where['rule_menu'] = $param['rule_menu'];
             }
-            $rows = empty($param['limit']) ? get_config('app . page_size') : $param['limit'];
+            $rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
             $content = DB::name('AdminLog')
                 ->field("id,uid,name,action,title,content,rule_menu,ip,param_id,param,FROM_UNIXTIME(create_time,'%Y-%m-%d %H:%i:%s') create_time")
                 ->order('create_time desc')
                 ->where($where)
-                ->paginate($rows, false, ['query' => $param]);
+                ->paginate(['list_rows'=> $rows]);
             $content->toArray();
             foreach ($content as $k => $v) {
                 $data = $v;

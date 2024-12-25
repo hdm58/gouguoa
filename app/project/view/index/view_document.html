@@ -1,0 +1,86 @@
+<div class="bg-white">
+	<table class="layui-hide" id="document" lay-filter="document"></table>
+</div>
+<script type="text/html" id="toolbardocument">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm" lay-event="add">+ 新建文档</button>
+  </div>
+</script>
+<script>
+function project_document(){
+	if($('#projectTab').find('li').eq(3).data('load') =='true'){
+		return false;
+	}
+	$('#projectTab').find('li').eq(3).data('load','true');
+	let tool = layui.tool, table = layui.tablePlus;
+	//项目任务
+	parent.layui.documentTable = table.render({
+		elem: '#document',
+		title: '文档列表',
+		toolbar: '#toolbardocument',
+		cellMinWidth:80,
+		url: "/project/document/datalist",
+		where:{'project_id':project_id},
+		page: true, //开启分页
+		limit: 20,
+		cols:  [[
+			{field: 'id', title: '文档编号', width: 80, align: 'center', templet: function (d) {
+					return 'D' + d.id;
+				}
+			}
+			,{field: 'title', title: '文档主题'}
+			,{field:'admin_name',title: '创建人', align:'center',width: 80}			
+			,{field:'create_time',title: '创建时间', align:'center', width: 150}
+			,{
+				field: 'right',
+				fixed:'right',
+				title: '操作',
+				width: 120,
+				align: 'center',
+				templet: function (d) {
+					var html = '<div class="layui-btn-group">';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>'
+					var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+					var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+					return html+btn1+btn2+btn3+'</div>';
+				}						
+			}
+		]]
+	});
+	
+	//触发事件
+	table.on('toolbar(document)', function(obj){
+		if (obj.event === 'add') {
+			tool.side('/project/document/add?project_id='+project_id);
+			return;
+		}
+	});
+	
+	table.on('tool(document)', function(obj){
+		var data = obj.data; //获得当前行数据		
+		if(obj.event === 'view'){ //查看
+			let url = '/project/document/view/id/'+data.id;
+			tool.side(url);
+		}
+		if(obj.event === 'edit'){
+			tool.side('/project/document/add?id='+data.id);
+			return;
+		}
+		if (obj.event === 'del') {
+			layer.confirm('确定要删除吗?', {
+				icon: 3,
+				title: '提示'
+			}, function(index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						obj.del();
+					}
+				}
+				tool.delete("/project/document/delete", {id: data.id}, callback);
+				layer.close(index);
+			});
+		}
+	})
+}
+</script>

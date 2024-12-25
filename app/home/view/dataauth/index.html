@@ -1,0 +1,72 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<table class="layui-hide" id="conf" lay-filter="conf"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<h3>模块配置及数据权限配置</h3>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#conf',
+			title: '配置列表',
+			toolbar: '#toolbarDemo',
+			defaultToolbar: false,
+			url: "/home/dataauth/index",
+			cellMinWidth: 80,
+			page: false, //开启分页				
+			limit: 20,
+			cols: [
+				[{
+					field: 'id',
+					width: 80,
+					title: 'ID编号',
+					align: 'center'
+				}, {
+					field: 'title',
+					width: 200,
+					title: '权限名称'
+				}, {
+					field: 'name',
+					width: 200,
+					title: '权限标识'
+				}, {
+					field: 'desc',
+					minWidth: 300,
+					title: '描述'
+				}, {
+					width: 100,
+					title: '操作',
+					align: 'center',
+					templet: function (d) {
+						var html = '<button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit" >编辑配置</button>';
+						return html;
+					}
+				}]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(conf)', function (obj) {
+			var data = obj.data;
+			if (obj.event === 'edit') {
+				tool.side('/home/dataauth/edit?id=' + data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

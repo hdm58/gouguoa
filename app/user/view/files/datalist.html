@@ -1,0 +1,245 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+  <style>
+	.tree-left{width:200px; float:left; height:calc(100vh - 79px); overflow-y: auto; border:1px solid #eeeeee; border-right:0; background-color:#fbfbfb; padding:12px 12px 12px 5px;}
+	.tree-left::-webkit-scrollbar {width: 0;}
+	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
+  </style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="tree-left">
+		<h3>企业组织架构</h3>
+		<div id="depament"></div>
+	</div>
+	<div class="body-table" style="margin-left:200px; overflow:hidden;">
+		<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:124px">
+				<select name="status">
+					<option value="">选择员工状态</option>
+					<option value="1">正常状态</option>
+					<option value="2">离职状态</option>
+					<option value="0">禁止登录</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:124px">
+				<select name="political">
+					<option value="">选择政治面貌</option>
+					<option value="1">中共党员</option>
+					<option value="2">团员</option>
+					<option value="0">无</option>
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:136px">
+				<select name="position_name">
+					<option value="">选择员工职务</option>
+					{volist name=":get_base_type_data('basic_user',1)" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:136px">
+				<select name="position_rank">
+					<option value="">选择员工职级</option>
+					{volist name=":get_base_type_data('basic_user',2)" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</div>
+			<div class="layui-input-inline" style="width:360px">
+				<input type="text" name="keywords" placeholder="关键字，如：ID号/姓名/登录账号/手机号码/电子邮箱" class="layui-input" autocomplete="off" />
+			</div>
+			<div class="layui-input-inline" style="width:150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+			</div>
+		</form>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+
+<script type="text/html" id="thumb">
+	<img src="{{d.thumb}}" width="30" height="30" />
+</script>
+<script type="text/html" id="toolbara">
+	<h3>员工档案</h3>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus,tool = layui.tool,tree = layui.tree,form = layui.form;			
+		$.ajax({
+			url: "/api/index/get_department_tree",
+			type:'get',
+			success:function(res){					
+				//仅节点左侧图标控制收缩
+				tree.render({
+					elem: '#depament',
+					data: res.trees,
+					onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
+					click: function(obj){
+						//layer.msg(JSON.stringify(obj.data));
+						$('#depament').find('.layui-tree-main').removeClass('on');
+						$(obj.elem).find('.layui-tree-main').eq(0).addClass('on');
+						layui.pageTable.reload({
+						   where:{did: obj.data.id},
+						   page:{curr:1}
+						});
+						$('[name="keywords"]').val('');
+						$('[name="status"]').val('');
+						$('[name="type"]').val('');
+						layui.form.render('select');
+					}
+				});	
+			}
+		});
+		
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '员工列表',
+			toolbar: '#toolbara',
+			defaultToolbar: [],
+			is_excel:true,
+			url: "/user/files/datalist", //数据接口	
+			height: 'full-112',
+			cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						fixed:'left',
+						width: 80
+					},{
+						field: 'type',
+						title: '员工类型',
+						align: 'center',
+						width: 80,
+						templet: function (d) {
+							var html = '<span style="color:#393D49">正式员工</span>';
+							if(d.type == 2){
+								html = '<span style="color:#01AAED">试用员工</span>'
+							}
+							else if(d.type == 3){
+								html = '<span style="color:#5FB878">实 习 生</span>'
+							}
+							return html;
+						}
+					}, {
+						field: 'name',
+						title: '员工姓名',
+						align: 'center',
+						width: 80
+					}, {
+						field: 'thumb',
+						title: '头像',
+						toolbar: '#thumb',
+						align: 'center',
+						width: 50
+					}, {
+						field: 'mobile',
+						title: '手机号码',
+						align: 'center',
+						width: 120
+					},{
+						field: 'email',
+						title: '电子邮箱',
+						width: 200
+					},{
+						field: 'sex',
+						title: '性别',
+						align: 'center',
+						width: 50,
+						templet: function (d) {
+							var html = '未知';
+							if(d.sex == 1){
+								html = '男'
+							}
+							else if(d.sex == 2){
+								html = '女'
+							}
+							return html;
+						}
+					},{
+						field: 'department',
+						title: '所在主部门',
+						width: 100
+					}, {
+						field: 'departments',
+						title: '所在次部门',
+						width: 160
+					}, {
+						field: 'position',
+						title: '岗位职称',
+						align: 'center',
+						width: 100
+					}, {
+						field: 'job_number',
+						title: '工号',
+						align: 'center',
+						width: 120
+					},{
+						field: 'entry_time',
+						title: '入职日期',
+						align: 'center',
+						width: 100
+					}, {
+						field: 'birthday',
+						title: '出生日期',
+						align: 'center',
+						width: 90
+					}, {
+						field: 'nation',
+						title: '民族',
+						align: 'center',
+						minWidth: 60
+					}, {
+						field: 'native_place',
+						title: '籍贯',
+						align: 'center',
+						minWidth: 90
+					}, {
+						field: 'political',
+						title: '政治面貌',
+						align: 'center',
+						minWidth: 80
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 90,
+						align: 'center',
+						templet: function (d) {
+							var html = '';
+							var btn1 = '<span class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</span>';
+							var btn2 = '<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							html = '<div class="layui-btn-group">'+btn1+btn2+'</div>';
+							return html;
+						}						
+					}
+				]
+			]
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function (obj) {
+			var data = obj.data;			
+			if (obj.event === 'view') {
+				tool.side('/user/files/view?id='+data.id);
+				return;
+			}
+			if(obj.event === 'edit'){
+				tool.side('/user/files/add?id='+data.id);
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

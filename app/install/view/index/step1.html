@@ -7,7 +7,7 @@
 	<meta name="renderer" content="webkit">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link rel="stylesheet" href="{__LAYUI__}/css/layui.css" media="all">
+	<link rel="stylesheet" href="{__GOUGU__}/layui/css/layui.css" media="all">
 	<style>
 		body {
 			width: 100%;
@@ -16,15 +16,13 @@
 			background-size: cover;
 			background: url("{__IMG__}/bg_pattern.png"), #7b4397;
 			background: url("{__IMG__}/bg_pattern.png"), -webkit-linear-gradient(to left, #34a853, #4285f4);
-			/* Chrome 10-25, Safari 5.1-6 */
-			background: url("{__IMG__}bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
-			/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			background: url("{__IMG__}/bg_pattern.png"), linear-gradient(to left, #34a853, #4285f4);
 		}
 	</style>
 </head>
 
 <body>
-	<div style="width:200px;margin: 20px auto;"><img src="{__IMG__}/login_logo.png" alt="勾股OA安装" width="200"></div>
+	<div style="width:200px;margin: 20px auto;"><img src="{__IMG__}/syslogo.png" alt="勾股OA安装" width="300"></div>
 	<div style="width:888px;margin:0 auto 30px;">
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header layui-bg-red" style="border-radius:6px 6px 0 0; position:relative;">
@@ -34,10 +32,13 @@
 				</ul>
 			</div>
 			<div style="padding:20px; background-color:#fff;line-height: 27px; border-radius:0 0 6px 6px">
-				<p>勾股OA是一套基于ThinkPHP{:TP_VERSION} + Layui{:LAYUI_VERSION} + MySql打造的轻量级、高性能OA办公系统。简单实用,系统集成了系统设置、人事管理模块、消息管理模块、日常办公、财务管理等基础模块。系统易于功能扩展，方便二次开发，让开发者更专注于业务深度需求的开发，帮助开发者简单高效降低二次开发成本，通过二次开发之后可以用来做CRM，ERP，业务管理等系统。<br><br>
-					<strong>免责声明：</strong><br>
-					1、使用勾股OA系统构建的网站的任何信息内容以及导致的任何版权纠纷和法律争议及后果，本(勾股OA)系统不承担任何责任。<br>
-					2、您一旦安装使用勾股OA系统，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。
+				<p>勾股OA是一套基于ThinkPHP{$TP_VERSION} + Layui{:LAYUI_VERSION} + MySql打造的轻量级、高性能OA办公系统。简单实用,系统集成了十二大办公基本的功能模块：系统管理、基础数据、员工管理、消息通知、企业公告、知识文章、办公审批、日常办公、财务管理、客户管理、合同管理、项目管理等基础模块。系统易于功能扩展，方便二次开发，让开发者更专注于业务深度需求的开发，帮助开发者简单高效降低二次开发成本，通过二次开发之后可以用来做CRM，ERP，业务管理等系统。<br><br>
+					<strong>有限担保和免责声明：</strong><br>
+					1、本软件及所附带的文件是作为不提供任何明确的或隐含的赔偿或担保的形式提供的。<br>
+					2、用户出于自愿而使用本软件，您必须了解使用本软件的风险。<br>
+					3、我们不承诺提供任何形式的技术支持、使用担保，也不承担任何因使用本软件而产生问题的相关责任。<br>
+					4、使用本软件构建的网站系统的任何信息内容以及导致的任何版权纠纷和法律争议及后果，本系统不承担任何责任。<br>
+					5、您一旦安装使用本软件，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。
 				</p>
 				<div style="margin:10px auto;width: 90px;">
 					<a href="/index.php?s=install/index/step2" class="layui-btn layui-bg-blue">接受协议</a>
@@ -45,7 +46,7 @@
 			</div>
 		</div>
 	</div>
-	<script src="{__LAYUI__}/layui.js" charset="utf-8"></script>
+	<script src="{__GOUGU__}/layui/layui.js" charset="utf-8"></script>
 </body>
 
 </html>

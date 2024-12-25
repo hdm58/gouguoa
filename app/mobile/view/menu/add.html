@@ -1,0 +1,97 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">工作台菜单</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">菜单名称<font>*</font></td>
+			<td><input type="text" class="layui-input" name="title" placeholder="请输入菜单名称，建议4个字" lay-verify="required" lay-reqText="请输入菜单名称" value="{$detail.title|default=''}"></td>
+			<td class="layui-td-gray">所属类型<font>*</font></td>
+			<td>
+				{empty name="$detail"}
+				<select name="types" lay-verify="required" lay-reqText="请选择所属类型">
+				  <option value="">请选择</option>
+				  {volist name=":get_base_data('mobile_types')" id="vo"}
+				  <option value="{$vo.id}">{$vo.title}</option>
+				  {/volist}
+				</select>
+				{else/}
+				<select name="types" lay-verify="required" lay-reqText="请选择所属类型">
+				  <option value="">请选择</option>
+				  {volist name=":get_base_data('mobile_types')" id="vo"}
+				  <option value="{$vo.id}" {eq name="$detail.types" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+				  {/volist}
+				</select>
+				{/empty}			
+			</td>
+			<td class="layui-td-gray">排序</td>
+			<td><input type="text" name="sort" placeholder="请输入排序，数字" class="layui-input" value="{$detail.sort|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">菜单URL<font>*</font></td>
+			<td><input type="text" class="layui-input" name="url" placeholder="请输入菜单URL" lay-verify="required" lay-reqText="请输入菜单URL" value="{$detail.url|default=''}"></td>
+			<td class="layui-td-gray">背景色<font>*</font></td>
+			<td>
+				{empty name="$detail"}
+				<select name="bgcolor" lay-verify="required" lay-reqText="请选择背景色">
+				  <option value="">请选择</option>
+				  <option value="red">红</option>
+				  <option value="orange">橙</option>
+				  <option value="yellow">黄</option>
+				  <option value="green">绿</option>
+				  <option value="blue">蓝</option>
+				  <option value="cyan">青</option>
+				  <option value="purple">紫</option>
+				</select>
+				{else/}
+				<select name="bgcolor" lay-verify="required" lay-reqText="请选择背景色">
+				  <option value="">请选择</option>
+				  <option value="red" {eq name="$detail.bgcolor" value="red"} selected{/eq}>红</option>
+				  <option value="orange" {eq name="$detail.bgcolor" value="orange"} selected{/eq}>橙</option>
+				  <option value="yellow" {eq name="$detail.bgcolor" value="yellow"} selected{/eq}>黄</option>
+				  <option value="green" {eq name="$detail.bgcolor" value="green"} selected{/eq}>绿</option>
+				  <option value="blue" {eq name="$detail.bgcolor" value="blue"} selected{/eq}>蓝</option>
+				  <option value="cyan" {eq name="$detail.bgcolor" value="cyan"} selected{/eq}>青</option>
+				  <option value="purple" {eq name="$detail.bgcolor" value="purple"} selected{/eq}>紫</option>
+				</select>
+				{/empty}			
+			</td>
+			<td class="layui-td-gray">菜单图标<font>*</font></td>
+			<td>
+				<input style="width:150px; display:inline" type="text" name="icon" value="{$detail.icon|default=''}" placeholder="请输入图标" lay-verify="required" lay-reqText="请输入图标" class="layui-input">
+				<strong class="iconfont icon-xiangmuguanli"></strong><a href="/static/assets/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/mobile/menu/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

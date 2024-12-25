@@ -1,0 +1,312 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tr-none td{padding:20px 0; color:#999;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">{$detail.name}员工档案详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td colspan="8"><strong>基本信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.name}</td>
+			<td class="layui-td-gray-2">员工性别</td>
+			<td>
+				{eq name="$detail.sex" value="1"}男{/eq}
+				{eq name="$detail.sex" value="2"}女{/eq}
+			</td>
+			<td rowspan="7" class="layui-td-gray-2">头像</td>
+			<td rowspan="7" valign="top" style="width: 180px;">
+				<div class="layui-upload" style="width: 180px;">
+					<img src="{$detail.thumb}" style="max-width: 100%;" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">出生日期</td>
+			<td>{$detail.birthday}</td>
+			<td class="layui-td-gray">身份证号码</td>
+			<td>{$detail.idcard}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">政治面貌</td>
+			<td>
+				{eq name="$detail.political" value="0"}无{/eq}
+				{eq name="$detail.political" value="1"}中共党员{/eq}
+				{eq name="$detail.political" value="2"}团员{/eq}
+			</td>
+			<td class="layui-td-gray">婚姻状况</td>
+			<td>
+				{eq name="$detail.marital_status" value="1"}未婚{/eq}
+				{eq name="$detail.marital_status" value="2"}已婚{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">民族</td>
+			<td>{$detail.nation}</td>
+			<td class="layui-td-gray">籍贯</td>
+			<td>{$detail.native_place}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">户口性质</td>
+			<td>
+				{eq name="$detail.resident_type" value="1"}农村户口{/eq}
+				{eq name="$detail.resident_type" value="2"}城镇户口{/eq}
+			</td>
+			<td class="layui-td-gray">户口所在地</td>
+			<td>{$detail.resident_place}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">毕业院校</td>
+			<td>{$detail.graduate_school}</td>
+			<td class="layui-td-gray">毕业日期</td>
+			<td>{$detail.graduate_day}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">最高学位</td>
+			<td>{$detail.education}</td>
+			<td class="layui-td-gray">专业</td>
+			<td>{$detail.speciality}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">家庭住址</td>
+			<td>{$detail.home_address}</td>
+			<td class="layui-td-gray">手机号码</td>
+			<td>{$detail.mobile}</td>
+			<td class="layui-td-gray">电子邮箱</td>
+			<td>{$detail.email}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">现住地址</td>
+			<td>{$detail.current_address}</td>
+			<td class="layui-td-gray">紧急联系人</td>
+			<td>{$detail.contact}</td>
+			<td class="layui-td-gray">紧急联系电话</td>
+			<td>{$detail.contact_mobile}</td>
+		</tr>
+
+		<tr>
+			<td class="layui-td-gray">员工简介</td>
+			<td colspan="7">
+				{$detail.desc|default=''}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>入职信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所在部门</td>
+			<td>{$detail.department}</td>
+			<td class="layui-td-gray">上级主管</td>
+			<td>{$detail.pname|default='无'}</td>
+			<td class="layui-td-gray">岗位</td>
+			<td>{$detail.position}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">入职日期</td>
+			<td>{$detail.entry_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray">职务</td>
+			<td>
+				{volist name=":get_base_type_data('basic_user',1)" id="v"}
+				{eq name="$detail.position_name" value="$v.id"}{$v.title}{/eq}
+				{/volist}
+			</td>
+			<td class="layui-td-gray">职级</td>
+			<td>
+				{volist name=":get_base_type_data('basic_user',2)" id="v"}
+				{eq name="$detail.position_rank" value="$v.id"}{$v.title}{/eq}>
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工类型</td>
+			<td>
+				{eq name="$detail.type" value="3"}实习{/eq}
+				{eq name="$detail.type" value="2"}试用{/eq}
+				{eq name="$detail.type" value="1"}正式{/eq}
+			</td>
+			<td class="layui-td-gray">工资卡开户行</td>
+			<td>{$detail.bank_info}</td>
+			<td class="layui-td-gray">工资卡帐号</td>
+			<td>{$detail.bank_account}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">公积金号</td>
+			<td>{$detail.provident_account}</td>
+			<td class="layui-td-gray">社保卡号</td>
+			<td>{$detail.social_account}</td>
+			<td class="layui-td-gray">参加工作时间</td>
+			<td>{$detail.work_date}</td>
+		</tr>
+		{notempty name="$edu"}
+		<tr>
+			<td colspan="8"><strong>教育经历</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="edu_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="150">开始时间</th>
+						<th width="150">结束时间</th>
+						<th width="200">就读院校</th>
+						<th width="150">学习专业</th>
+						<th width="100">所获学历</th>
+						<th>备注说明</th>
+					</tr>
+					{volist name="$edu" id="v"}
+						<tr class="edu_interfix">
+							<td>{$v.start_time}</td>
+							<td>{$v.end_time}</td>
+							<td>{$v.title}</td>
+							<td>{$v.speciality}</td>
+							<td>{$v.education}</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$work"}
+		<tr>
+			<td colspan="8"><strong>工作经历</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="work_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="150">开始时间</th>
+						<th width="150">结束时间</th>
+						<th width="200">公司名称</th>
+						<th width="100">职位</th>
+						<th>备注说明</th>
+					</tr>
+					{volist name="$work" id="v"}
+						<tr class="work_interfix">
+							<td>{$v.start_time}</td>
+							<td>{$v.end_time}</td>
+							<td>{$v.title}</td>
+							<td>{$v.position}</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$certificate"}
+		<tr>
+			<td colspan="8"><strong>相关证书</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="certificate_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="150">证书名称</th>
+						<th width="150">获得时间</th>
+						<th width="200">颁发机构</th>
+						<th>备注说明</th>
+					</tr>
+					{volist name="$certificate" id="v"}
+						<tr class="certificate_interfix">
+							<td>{$v.title}</td>
+							<td>{$v.start_time}</td>
+							<td>{$v.authority}</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$certificate"}
+		<tr>
+			<td colspan="8"><strong>计算机技能</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="skills_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="200">技能名称</th>
+						<th width="150">熟悉程度</th>
+						<th>备注说明</th>
+					</tr>
+					{volist name="$skills" id="v"}
+					<tr class="skills_interfix">
+						<td>{$v.title}</td>
+						<td>
+							{eq name="$v.know" value="1"}熟练{/eq}
+							{eq name="$v.know" value="2"}良好{/eq}
+							{eq name="$v.know" value="3"}一般{/eq}
+							{eq name="$v.know" value="4"}较差{/eq}
+						</td>
+						<td style="text-align:left;">{$v.remark}</td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$language"}
+		<tr>
+			<td colspan="8"><strong>语言能力</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8">
+				<table id="language_table" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="200">语言名称</th>
+						<th width="150">熟悉程度</th>
+						<th>备注说明</th>
+					</tr>
+					{volist name="$language" id="v"}
+						<tr class="skills_interfix">
+							<td>{$v.title}</td>
+							<td>
+								{eq name="$v.know" value="1"}熟练{/eq}
+								{eq name="$v.know" value="2"}良好{/eq}
+								{eq name="$v.know" value="3"}一般{/eq}
+								{eq name="$v.know" value="4"}较差{/eq}
+							</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td colspan="8"><strong>档案相关附件</strong></td>
+		</tr>
+		<tr>
+			<td colspan="8" style="line-height:inherit">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+	
+	}
+
+</script>
+{/block}
+<!-- /脚本 -->

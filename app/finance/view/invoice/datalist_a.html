@@ -1,0 +1,270 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li><a href="/finance/income/datalist">有发票回款</a></li>
+				<li class="layui-this"><a href="/finance/invoice/datalist_a">无发票回款</a></li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x" id="barsearchform">
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择回款时间区间" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="enter_status">
+				<option value="">请选择状态</option>
+				<option value="0">未回款</option>
+				<option value="1">部分回款</option>
+				<option value="2">全部回款</option>
+			</select>
+		</div>
+		<div class="layui-input-inline  search-item" style="width:120px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				{volist name=":get_check_status()" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/finance/invoice/add_a">+ 添加无发票回款申请</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = "{$auth}";
+	const moduleInit = ['tool','tablePlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
+		
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		layui.pageTable = table.render({
+			elem: "#test"
+			,toolbar: "#toolbarDemo"
+			,url: "/finance/invoice/datalist_a"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-152'
+			,cellMinWidth: 80		
+			,page: true //开启分页
+			,limit: 20
+			,cols: [
+				[
+					{
+						field: 'id',
+						title: 'ID号',
+						align: 'center',
+						width: 80
+					},{
+						field: 'enter_status',
+						title: '回款状态',
+						align: 'center',
+						width: 100,
+						templet:function(d){
+							var html='<span class="red">『未回款』</span>';
+							if(d.enter_status==1){
+								html='<span class="blue">『部分回款』</span>';
+							}
+							else if(d.enter_status==2){
+								html='<span class="green">『全部回款』</span>';
+							}
+							return html;
+						}
+					},{
+						field: 'enter_amount',
+						title: '回款金额(元)',
+						align: 'right',
+						width: 100,
+					},{
+						field: 'enter_time',
+						title: '最新回款时间',
+						align: 'center',
+						width: 136
+					},{
+						field: 'invoice_title',
+						minWidth: 240,		
+						title: '回款方名称',
+						templet:function(d){
+							var html='<span class="layui-badge layui-bg-blue">企业</span> '+d.invoice_title;
+							if(d.types==2){
+								html='<span class="layui-badge layui-bg-green">个人</span> '+d.invoice_title;
+							}
+							return html;
+						}
+					},{field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
+							let html='';
+							if(d.open_status==2){
+								html = '<span class="check-status-color-3">『已作废』</span>';
+							}
+							else{
+								html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+							}							
+							return html;
+						}
+					},{
+						field: 'amount',
+						title: '申请回款金额(元)',
+						align: 'right',
+						width: 120,
+					},{
+						field: 'admin_name',
+						title: '申请回款人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'department',
+						title: '所属部门',
+						align: 'center',
+						width: 120
+					},{
+						field: 'create_time',
+						title: '申请时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'check_user',
+						title: '当前审核人'
+					},{
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 180,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-xs" lay-event="add">回款管理</span>';
+							var btn2='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">回款详情</span>';
+							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="tovoid">作废</span>';
+							var btn4='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="novoid">反作废</span>';
+							
+							var btna1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view_a">详情</span>';
+							var btna2='<span class="layui-btn layui-btn-xs" lay-event="edit_a">编辑</span>';
+							var btna3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del_a">删除</span>';
+							if(d.check_status==2){
+								if(auth == 1){
+									if(d.enter_status==0){
+										if(d.open_status==2){
+											html+=btn4+'</div>';
+										}
+										else{
+											html+=btn1+btn2+btn3+'</div>';
+										}
+									}
+									else{
+										html+=btn1+btn2+'</div>';
+									}
+								}
+								else{
+									html+=btn2+'</div>';
+								}
+							}
+							else{
+								html+=btna1;
+								if((d.check_status==0 ||d.check_status==4) && d.admin_id==login_admin){
+									html+=btna2+btna3;
+								}
+								html+='</div>';
+							}
+							return html;
+						}
+					}
+				]
+			]
+		});
+		//监听行工具事件
+		table.on('tool(test)', function(obj) {
+			var data = obj.data;
+			if (obj.event === 'add') {
+				tool.side("/finance/income/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'view') {
+				tool.side("/finance/income/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'tovoid') {
+				layer.confirm('确定作废该无发票回款吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/finance/api/tovoid",
+						type:'post',
+						data: {
+							id: data.id
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'novoid') {
+				layer.confirm('确定反作废该无发票回款吗？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					$.ajax({
+						url: "/finance/api/novoid",
+						type:'post',
+						data: {
+							id: data.id
+						},
+						success: function(res) {
+							layer.msg(res.msg);
+							if (res.code == 0) {
+								layui.pageTable.reload();
+							}
+						}
+					})
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'view_a') {
+				tool.side("/finance/invoice/view_a?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit_a') {
+				tool.side("/finance/invoice/add_a?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del_a') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/finance/invoice/del_a", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

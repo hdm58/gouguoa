@@ -1,0 +1,359 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">车辆信息详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">车辆名称</td>
+			<td>{$detail.title}</td>
+			<td class="layui-td-gray">车牌号码</td>
+			<td>{$detail.name}</td>
+			<td class="layui-td-gray-2" rowspan="5">车辆缩略图</td>
+			<td rowspan="5" style="width:252px;">
+			    <div id="demo1" style="width: 240px; height:136px; overflow: hidden;">
+					<img src="{:get_file($detail.thumb)}" style="max-width: 100%; height:136px;" />
+			    </div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">购买日期</td>
+			<td>{$detail.buy_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray-2">购买价格</td>
+			<td>{$detail.price}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">车身颜色</td>
+			<td>{$detail.color}</td>
+			<td class="layui-td-gray">座位数</td>
+			<td>{$detail.seats}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发动机号</td>
+			<td>{$detail.engine}</td>
+			<td class="layui-td-gray-2">车架号</td>
+			<td>{$detail.vin}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">车险到期日期</td>
+			<td>{$detail.insure_time|date='Y-m-d'}</td>
+			<td class="layui-td-gray-2">车审到期日期</td>
+			<td>{$detail.review_time|date='Y-m-d'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">车辆油耗</td>
+			<td>{$detail.oil}</td>
+			<td class="layui-td-gray-2">当前里程数</td>
+			<td>{$detail.latestMileage}（开始里程数：{$detail.mileage}）</td>
+			<td class="layui-td-gray-2">驾驶员</td>
+			<td>{$detail.driver_name|default=''}</td>
+		</tr>
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5">{$detail.remark|default=''}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td colspan="6"><strong>相关附件<strong></td>
+		</tr>
+		<tr>
+			<td colspan="6" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">					
+					{volist name="$detail.file_array" id="vo"}
+						<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}					
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td colspan="6"><strong>里程记录<strong> <span class="layui-btn layui-btn-xs add-mileage">+ 里程记录</span></td>
+		</tr>
+		<tr>
+			<td colspan="6"><table class="layui-hide" id="mileage" lay-filter="mileage"></table></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>费用记录<strong> <span class="layui-btn layui-btn-xs side-a" data-href="/adm/car/fee_add?cid={$detail.id}">+ 费用记录</span></td>
+		</tr>
+		<tr>
+			<td colspan="6"><table class="layui-hide" id="fee" lay-filter="fee"></table></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>维修记录<strong> <span class="layui-btn layui-btn-xs side-a" data-href="/adm/car/repair_add?cid={$detail.id}">+ 维修记录</span></td>
+		</tr>
+		<tr>
+			<td colspan="6"><table class="layui-hide" id="repair" lay-filter="repair"></table></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>保养记录<strong> <span class="layui-btn layui-btn-xs side-a" data-href="/adm/car/protect_add?cid={$detail.id}">+ 保养记录</span></td>
+		</tr>
+		<tr>
+			<td colspan="6"><table class="layui-hide" id="protect" lay-filter="protect"></table></td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var car_id = {$detail.id};
+	var moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool,table = layui.table;
+		
+		layui.mileageTable = table.render({
+			elem: '#mileage',
+			title: '里程记录',
+			cellMinWidth: 80,
+			url: "/adm/api/get_car_mileage", //数据接口
+			where: { 'car_id': car_id },
+			page: true, //开启分页
+			limit: 10,
+			cols: [[ //表头
+				{ field: 'id', title: '序号', width: 60, align: 'center' }
+				, { field: 'mileage', title: '里程数', align: 'center', width: 120}
+				, { field: 'mileage_time', title: '里程月份', align: 'center', width: 120 }
+				, { field: 'admin_name', title: '创建人', align: 'center', width: 120 }
+				, { field: 'create_time', title: '记录时间', align: 'center', minWidth: 150,}
+				, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
+						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
+					}
+				}
+			]]
+		});
+		
+		$('body').on('click','.add-mileage',function(){
+			addMileage(0,'','');	
+		});
+		
+		function addMileage(id,mileage_time,mileage){
+			var biaoti = '新增里程记录';
+			if(id>0){
+				biaoti = '编辑里程记录';
+			}				
+			layer.open({
+				type: 1
+				,title: biaoti
+				,area: '368px;'
+				,id: 'LAY_module' //设定一个id，防止重复弹出
+				,btn: ['确定', '取消']
+				,btnAlign: 'c'
+				,content: '<div style="padding-top:15px;">\
+							<div class="layui-form-item">\
+							  <label class="layui-form-label">里程月份</label>\
+							  <div class="layui-input-inline">\
+								<input type="hidden" name="id" value="'+id+'">\
+								<input type="text" name="mileage_time" autocomplete="off" value="'+mileage_time+'" placeholder="请输入里程月份" readonly class="layui-input tool-time" data-type="month">\
+							  </div>\
+							</div>\
+							<div class="layui-form-item">\
+							  <label class="layui-form-label">里程数</label>\
+							  <div class="layui-input-inline">\
+								<input type="text" name="mileage" autocomplete="off" value="'+mileage+'" placeholder="请输入里程数" class="layui-input">\
+							  </div>\
+							</div>\
+						  </div>'
+				,yes: function(index){
+					let id = $('#LAY_module').find('[name="id"]').val();
+					let mileage_time = $('#LAY_module').find('[name="mileage_time"]').val();
+					let mileage = $('#LAY_module').find('[name="mileage"]').val();
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.mileageTable.reload();	
+							layer.close(index);			
+						}
+					}
+					tool.post("/adm/car/mileage_add", {
+						id: id,
+						mileage_time: mileage_time,
+						mileage: mileage,
+						car_id:car_id
+					}, callback);						
+				}
+				,btn2: function(){
+					layer.closeAll();
+				}
+			});
+		}
+			
+			
+		//监听行工具事件
+		table.on('tool(mileage)', function(obj) {
+			var data = obj.data;			
+			if(obj.event === 'edit'){
+				addMileage(data.id,data.mileage_time,data.mileage)
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/car/mileage_del", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});
+		
+		layui.feeTable = table.render({
+			elem: '#fee',
+			title: '费用记录',
+			cellMinWidth: 80,
+			url: "/adm/api/get_car_fee", //数据接口
+			where: { 'car_id': car_id },
+			page: true, //开启分页
+			limit: 10,
+			cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'fee_time',title: '费用日期',align: 'center',width: 100}
+				,{field:'types_str',title: '费用类型',align: 'center',width: 100}
+				,{field:'amount',width:100, title: '费用金额(元)', align:'center',style:"color:#16b777"}
+				,{field:'title',minWidth:300,title: '费用主题'}
+				,{field:'handled_name',title: '跟进人',align: 'center',width: 80}
+				,{field:'create_time',title: '记录时间',align: 'center',width: 130}
+				,{width:120,fixed:'right', title: '操作', align:'center',templet: function(d){
+					var html='<div class="layui-btn-group"><a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></div>';
+					return html;
+				}}
+			]]
+		});
+		//监听行工具事件
+		table.on('tool(fee)', function(obj) {
+			var data = obj.data;			
+			if(obj.event === 'edit'){
+				tool.side('/adm/car/fee_add?id='+data.id);
+				return;
+			}
+			if(obj.event === 'view'){
+				tool.side('/adm/car/fee_view?id='+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/car/fee_del", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});	
+
+		layui.repairTable = table.render({
+			elem: '#repair',
+			title: '维修记录',
+			cellMinWidth: 80,
+			url: "/adm/api/get_car_repair", //数据接口
+			where: { 'car_id': car_id },
+			page: true, //开启分页
+			limit: 10,
+			cols: [[ //表头
+				{ field: 'id', title: '序号', width: 60, align: 'center' }
+				, { field: 'amount', title: '维修金额', style: 'color: #91CC75;', align: 'center', width: 100 }
+				, { field: 'repair_time', title: '维修日期', align: 'center', width: 100 }
+				, { field: 'content', title: '维修内容',minWidth:240}
+				, { field: 'handled_name', title: '经手人', align: 'center', width: 80 }
+				, { field: 'create_time', title: '记录时间', align: 'center', width: 136}
+				, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
+						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
+					}
+				}
+			]]
+		});
+		//监听行工具事件
+		table.on('tool(repair)', function(obj) {
+			var data = obj.data;			
+			if(obj.event === 'edit'){
+				tool.side('/adm/car/repair_add?id='+data.id);
+				return;
+			}
+			if(obj.event === 'view'){
+				tool.side('/adm/car/repair_view?id='+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/car/repair_del", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});
+		
+		
+		layui.protectTable = table.render({
+			elem: '#protect',
+			title: '保养记录',
+			cellMinWidth: 80,
+			url: "/adm/api/get_car_protect", //数据接口
+			where: { 'car_id': car_id },
+			page: true, //开启分页
+			limit: 10,
+			cols: [[ //表头
+				{ field: 'id', title: '序号', width: 60, align: 'center' }
+				, { field: 'amount', title: '保养金额', style: 'color: #91CC75;', align: 'center', width: 100 }
+				, { field: 'repair_time', title: '保养日期', align: 'center', width: 100 }
+				, { field: 'content', title: '保养内容',minWidth:240}
+				, { field: 'handled_name', title: '经手人', align: 'center', width: 80 }
+				, { field: 'create_time', title: '记录时间', align: 'center', width: 136}
+				, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
+						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
+					}
+				}
+			]]
+		});
+		//监听行工具事件
+		table.on('tool(protect)', function(obj) {
+			var data = obj.data;			
+			if(obj.event === 'edit'){
+				tool.side('/adm/car/protect_add?id='+data.id);
+				return;
+			}
+			if(obj.event === 'view'){
+				tool.side('/adm/car/protect_view?id='+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/car/protect_del", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

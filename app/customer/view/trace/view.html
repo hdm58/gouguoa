@@ -1,0 +1,57 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">跟进记录详细</h3>
+    <table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">客户名称</td>
+			<td colspan="5">{$detail.customer}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">联 系 人</td>
+			<td>{$detail.contact}</td>
+			<td class="layui-td-gray">跟进方式</td>
+			<td>{$detail.types_name}</td>
+			<td class="layui-td-gray">跟进时间</td>
+			<td>{$detail.follow_time|date='Y-m-d H:i'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">沟通内容</td>
+			<td colspan="5">{$detail.content}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">当前阶段</td>
+			<td>{$detail.stage_name}</td>
+			<td class="layui-td-gray">销售机会</td>
+			<td>{$detail.chance}</td>
+			<td class="layui-td-gray-2">下次沟通时间</td>
+			<td>{$detail.next_time|date='Y-m-d H:i'}</td>
+		 </tr>
+		 {notempty name="$detail.file_ids"}
+		 <tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">					
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		 </tr>
+		 {/notempty}
+    </table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->
