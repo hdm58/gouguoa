@@ -115,7 +115,6 @@ class Contact extends BaseController
 			$res = SupplierContact::strict(false)->field(true)->update($param);
 			if ($res) {
 				add_log('edit', $param['id'], $param);
-				to_log($this->uid,2,$param,['delete_time'=>0]);
 				return to_assign();
 			} else {
 				return to_assign(1, '操作失败');

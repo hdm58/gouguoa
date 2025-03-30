@@ -101,7 +101,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/user/rewards/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/user/rewards/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

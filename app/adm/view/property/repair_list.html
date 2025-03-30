@@ -1,7 +1,7 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="p-page" style="height:100%; box-sizing: border-box;">
+<div class="p-page">
 	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:300px;">
 			<input type="text" class="layui-input" id="diff_time" placeholder="维修日期" readonly name="diff_time">
@@ -23,7 +23,6 @@
 </script>
 {/block}
 <!-- /主体 -->
-{block name="copyright"}{/block}
 <!-- 脚本 -->
 {block name="script"}
 	<script>
@@ -40,6 +39,7 @@
 			,is_excel: true
 			,page: true
 			,cellMinWidth: 60
+			,height: 'full-114'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'repair_time',title: '维修日期',align: 'center',width: 100}

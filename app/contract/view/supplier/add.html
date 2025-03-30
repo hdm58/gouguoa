@@ -6,13 +6,13 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">供应商名称<font>*</font></td>
-			<td colspan="3"><input type="text" name="title" autocomplete="off" placeholder="请输入供应商名称" lay-verify="required" lay-reqText="请输入供应商名称" class="layui-input"></td>
+			<td colspan="3"><input type="text" name="title" placeholder="请输入供应商名称" lay-verify="required" lay-reqText="请输入供应商名称" class="layui-input"></td>
 			<td class="layui-td-gray-2">供应商电话</td>
 			<td><input type="text" name="phone" autocomplete="off" placeholder="请输入供应商电话" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray-2">供应商地址</td>
-			<td colspan="3"><input type="text" name="address" autocomplete="off" placeholder="请输入供应商地址" class="layui-input"></td>
+			<td colspan="3"><input type="text" name="address" placeholder="请输入供应商地址" class="layui-input"></td>
 			<td class="layui-td-gray-2">供应商邮箱</td>
 			<td><input type="text" name="email" autocomplete="off" placeholder="请输入供应商邮箱" class="layui-input"></td>
 		</tr>
@@ -27,7 +27,7 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
@@ -82,7 +82,8 @@ function gouguInit() {
 				tool.sideClose(1000);				
 			}
 		}
-		tool.post("/contract/supplier/add", data.field, callback);
+		let clickbtn = $(this);
+		tool.post("/contract/supplier/add", data.field, callback,clickbtn);
 		return false;
 	});
 }

@@ -17,21 +17,21 @@ mbui.define(['tool','layer','userPicker','loadData'], function (exports) {
 				template:function(data){
 					let to_names = '', ops = '' ,ptext='';
 						if (data.to_names !='') {
-							to_names = `<span class="mbui-text-blue">@${data.to_names}</span>`;
+							to_names = `<span class="text-blue">@${data.to_names}</span>`;
 						}
 						if (data.admin_id == login_admin) {
-							ops = `<span class="mbui-btn mbui-btn-primary mbui-btn-xs" data-event="edit" data-id="${data.id}">编辑</span><span class="mbui-btn mbui-btn-primary mbui-btn-xs" data-event="del" data-id="${data.id}">删除</span>`;
+							ops = `<span class="mbui-btn mbui-btn-primary xs" data-event="edit" data-id="${data.id}">编辑</span><span class="mbui-btn mbui-btn-primary xs" data-event="del" data-id="${data.id}">删除</span>`;
 						}
 						else{
-							ops = `<span class="mbui-btn mbui-btn-primary mbui-btn-xs" data-event="replay" data-id="${data.id}" data-uid="${data.admin_id}" data-unames="${data.name}">回复</span>`;
+							ops = `<span class="mbui-btn mbui-btn-primary xs" data-event="replay" data-id="${data.id}" data-uid="${data.admin_id}" data-unames="${data.name}">回复</span>`;
 						}
 						if(data.pid>0){
 							ptext=`<div style="padding-bottom:8px;"><fieldset><legend>回复『${data.padmin}』${data.ptimes}的评论</legend>${data.pcontent}</fieldset></div>`;
 						}
 							
 					let listItem = `
-							<div id="comment_${data.id}" class="mbui-comment-box" data-content="${data.content}">
-								<div class="comment-avatar" title="${data.admin_name}">
+							<div id="comment_${data.id}" class="mbui-comment-box border-bottom" data-content="${data.content}">
+								<div class="comment-avatar" title="${data.name}">
 									<img class="comment-image" src="${data.thumb}">
 								</div>
 								<div class="comment-body">

@@ -141,7 +141,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/customer/customer/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/customer/customer/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

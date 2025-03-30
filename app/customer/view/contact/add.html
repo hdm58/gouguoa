@@ -125,7 +125,8 @@
 					tool.sideClose(1000,'contactTable');
 				}
 			}
-			tool.post("/customer/contact/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/customer/contact/add", data.field, callback,clickbtn);
 			return false;
 		});
 

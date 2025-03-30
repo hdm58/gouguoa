@@ -15,8 +15,8 @@
 </div>
 
 <script type="text/html" id="toolbarDemo">
-  <div class="layui-btn-container">
-	<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加离职档案记录</button> <span style="font-size:12px; margin-left:20px; color:#FF5722">删除离职档案即可恢复在职状态，已交接的资料无法恢复</span>
+  <div>
+	<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加离职档案记录</button> <div class="layui-inline" style="font-size:12px; margin-left:20px; color:#FF5722">删除离职档案即可恢复在职状态，已交接的资料无法恢复</div>
   </div>
 </script>
 {/block}
@@ -35,6 +35,7 @@
 			, url: "/user/personal/leave"
 			, page: true //开启分页
 			, limit: 20
+			, height: 'full-114'
 			, cols: [[
 				{ field: 'id', width: 80, title: '序号', align: 'center' }
 				, { field: 'name', width: 110, title: '离职员工', align: 'center','style':'color:#FF5722'}

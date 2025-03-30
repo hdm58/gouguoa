@@ -28,6 +28,7 @@ class TicketPayment extends Model
 				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
 				$item['pay_time'] = date('Y-m-d',$item['pay_time']);
 				$item['code'] = Db::name('Ticket')->where('id',$item['ticket_id'])->value('code');
+				$item['create_time'] = to_date($item['create_time']);
 			});
 			return $list;
         } catch(\Exception $e) {

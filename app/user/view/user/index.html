@@ -1,7 +1,7 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
   <style>
-	.tree-left{width:200px; float:left; height:calc(100vh - 79px); overflow-y: auto; border:1px solid #eeeeee; border-right:0; background-color:#fbfbfb; padding:12px 12px 12px 5px;}
+	.tree-left{width:200px; float:left; height:calc(100vh - 81px); overflow-y: auto; border:1px solid #eeeeee; border-right:0; background-color:#fbfbfb; padding:12px 12px 12px 5px;}
 	.tree-left::-webkit-scrollbar {width: 0;}
 	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
   </style>
@@ -95,7 +95,7 @@
 			title: '员工列表',
 			toolbar: '#toolbara',
 			url: "/user/user/index", //数据接口	
-			height: 'full-112',
+			height: 'full-114',
 			cols: [
 				[
 					{type:'checkbox',fixed:'left'},
@@ -207,6 +207,7 @@
 						title: '操作',
 						width: 150,
 						align: 'center',
+						ignoreExport:true,
 						templet: function (d) {
 							var html = '';
 							var btn1 = '<span class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</span>';

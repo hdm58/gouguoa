@@ -39,6 +39,7 @@ class Seal extends Model
 				$item->admin_name = Db::name('Admin')->where('id','=',$item->admin_id)->value('name');
 				$item->use_dname = Db::name('Department')->where('id','=',$item->did)->value('title');
 				$item->seal_cate = Db::name('SealCate')->where('id','=',$item->seal_cate_id)->value('title');
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -95,6 +96,12 @@ class Seal extends Model
 		else{
 			$info['start_time'] = '';
 			$info['end_time'] = '';	
+		}
+		if($info['use_time']>0){
+			$info['use_time'] = date('Y-m-d',$info['use_time']);
+		}
+		else{
+			$info['use_time'] = '';
 		}
 		$status_str = '未使用';
 		if($info['status'] == 1){

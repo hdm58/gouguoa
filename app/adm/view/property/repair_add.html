@@ -8,7 +8,7 @@
 		<tr>
 			<td class="layui-td-gray">资产名称<font>*</font></td>
 			<td colspan="5">
-				<input type="text" name="property_name" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择资产" placeholder="请选择" class="layui-input picker-oa" data-types="property">
+				<input type="text" name="property_name" readonly lay-verify="required" lay-reqText="请选择资产" placeholder="请选择" class="layui-input picker-oa" data-types="property">
 				<input type="hidden" name="property_id" value="">
 			</td>
 		</tr>
@@ -20,12 +20,12 @@
 		{/eq}
 		<tr>
 			<td class="layui-td-gray">维修日期<font>*</font></td>
-			<td><input type="text" name="repair_time" autocomplete="off" readonly placeholder="请选择维修日期" class="layui-input tool-time"></td>
+			<td><input type="text" name="repair_time" readonly placeholder="请选择维修日期" class="layui-input tool-time"></td>
 			<td class="layui-td-gray">维修费用<font>*</font></td>
-			<td><input type="text" name="cost" autocomplete="off" placeholder="请输入维修费用" lay-verify="required|number" lay-reqText="请输入维修费用" class="layui-input"></td>
+			<td><input type="text" name="cost" placeholder="请输入维修费用" lay-verify="required|number" lay-reqText="请输入维修费用" class="layui-input"></td>
 			<td class="layui-td-gray">跟进人<font>*</font></td>
 			<td>
-				<input type="text" name="director_name" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择负责人" placeholder="请选择" class="layui-input picker-admin">
+				<input type="text" name="director_name" readonly lay-verify="required" lay-reqText="请选择负责人" placeholder="请选择" class="layui-input picker-admin">
 				<input type="hidden" name="director_id">
 			</td>
 		</tr>
@@ -36,16 +36,16 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
 			</td>
 		</tr> 
 		<tr>
-			<td class="layui-td-gray" style="vertical-align:top;">维修原因</td>
+			<td class="layui-td-gray" style="vertical-align:top;">维修原因<font>*</font></td>
 			<td colspan="5">
-				<textarea name="content" placeholder="请输入内容" class="layui-textarea"></textarea>
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" lay-verify="required" lay-reqText="请完善维修原因"></textarea>
 			</td>
 		</tr>
 	</table>
@@ -77,7 +77,8 @@ function gouguInit() {
 				tool.sideClose(1000);				
 			}
 		}
-		tool.post("/adm/property/repair_add", data.field, callback);
+		let clickbtn = $(this);
+		tool.post("/adm/property/repair_add", data.field, callback,clickbtn);
 		return false;
 	});
 }

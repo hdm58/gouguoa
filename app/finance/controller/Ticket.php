@@ -48,13 +48,12 @@ class Ticket extends BaseController
 			$where[]=['delete_time','=',0];
 			$where[]=['invoice_type','>',0];
 			if($tab == 0){
-				//全部
-				$whereOr[] = ['admin_id', '=', $this->uid];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
 				$auth = isAuthInvoice($uid);
 				if($auth == 0){
+					$whereOr[] = ['admin_id', '=', $this->uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
 					$dids_a = get_leader_departments($uid);	
 					$dids_b = get_role_departments($uid);
 					$dids = array_merge($dids_a, $dids_b);
@@ -135,6 +134,9 @@ class Ticket extends BaseController
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);
+				if(is_mobile()){
+					return view('qiye@/finance/add_ticket');
+				}
 				return view('edit');
 			}
 			if(is_mobile()){
@@ -169,8 +171,10 @@ class Ticket extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {
@@ -295,6 +299,9 @@ class Ticket extends BaseController
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);
+				if(is_mobile()){
+					return view('qiye@/finance/add_ticket_a');
+				}
 				return view('edit_a');
 			}
 			if(is_mobile()){

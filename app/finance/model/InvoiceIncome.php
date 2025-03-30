@@ -28,6 +28,7 @@ class InvoiceIncome extends Model
 				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
 				$item['enter_time'] = date('Y-m-d',$item['enter_time']);
 				$item['code'] = Db::name('Invoice')->where('id',$item['invoice_id'])->value('code');
+				$item['create_time'] = to_date($item['create_time']);
 			});
 			return $list;
         } catch(\Exception $e) {

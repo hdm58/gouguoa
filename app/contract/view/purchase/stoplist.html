@@ -72,7 +72,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 60
-			,height: 'full-152'
+			,height: 'full-154'
 			,cols: [[ //表头
 				{
 					field: 'id',
@@ -95,12 +95,12 @@
 					align: 'center',
 					width: 100
 				},{
-					field: 'type_name',
+					field: 'types_name',
 					title: '合同性质',
 					align: 'center',
 					width: 80,
 					templet: function (d) {
-						var html = '<span class="layui-color-' + d.type_a + '">' + d.type_name + '</span>';
+						var html = '<span class="layui-color-' + d.types + '">' + d.types_name + '</span>';
 						return html;
 					}
 				},{

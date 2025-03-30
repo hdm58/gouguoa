@@ -60,7 +60,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-112'
+			,height: 'full-114'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{ field: 'status', title: '项目状态', align: 'center', width: 90, templet: function (d) {
@@ -83,6 +83,10 @@
 					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
 					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
 					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					if(d.status==3){
+						btn2='';
+						btn3='';
+					}
 					if(auth == 1 || d.admin_id == login_admin || d.director_uid == login_admin){
 						return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
 					}

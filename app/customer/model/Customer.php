@@ -35,6 +35,7 @@ class Customer extends Model
 			->orderRaw($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
+				$item->create_time = to_date($item->create_time);
 				if($item->belong_uid>0){
 					$item->belong_name = Db::name('Admin')->where('id',$item->belong_uid)->value('name');
 					$item->belong_department = Db::name('Department')->where(['id' => $item->belong_did])->value('title');

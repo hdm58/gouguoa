@@ -74,7 +74,6 @@ class Api extends BaseController
 			$data['distribute_time'] = time();
 			if (Db::name('Customer')->update($data) !== false) {
 				add_log('allot', $data['id'],[],'客户');
-				to_log($this->uid,0,$data,['belong_uid'=>0]);
 				return to_assign(0, "操作成功");
 			} else {
 				return to_assign(1, "操作失败");
@@ -186,7 +185,6 @@ class Api extends BaseController
 			$res = CustomerContact::where(['id' => $param['id']])->update(['is_default'=>1]);
 			if ($res) {
 				add_log('edit', $param['id'], $param,'客户联系人');
-				to_log($this->uid,2,$param,$detail);
 				return to_assign();
 			} else {
 				return to_assign(1, '操作失败');

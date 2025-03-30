@@ -16,20 +16,27 @@ use think\model;
 use think\facade\Db;
 class Disk extends Model
 {
+	protected $autoWriteTimestamp=false;
     /**
     * 获取分页列表
     * @param $where
     * @param $param
     */
-    public function datalist($where, $param)
+    public function datalist($param,$where,$whereOr=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
         try {
             $list = self::where($where)
+			->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})
 			->orderRaw("case when types = 2 then 1 else 2 end, id desc")
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
+				$item->department = Db::name('Department')->where('id',$item->did)->value('title');
 				if($item->types == 0){
 					$item->filepath = Db::name('File')->where('id',$item->action_id)->value('filepath');
 				}

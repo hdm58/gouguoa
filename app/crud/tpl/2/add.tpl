@@ -35,7 +35,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/<module>/<controller>/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/<module>/<controller>/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

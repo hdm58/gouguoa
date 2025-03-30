@@ -161,8 +161,10 @@ class Trace extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

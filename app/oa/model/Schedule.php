@@ -59,6 +59,7 @@ class Schedule extends Model
 					$item->end_time_b = empty($item->end_time) ? '' : date('H:i', $item->end_time);
                     $item->start_time = empty($item->start_time) ? '' : date('Y-m-d H:i', $item->start_time);
                     $item->end_time = empty($item->end_time) ? '' : date('H:i', $item->end_time);
+					$item->create_time = to_date($item->create_time );
                 });
 			return $list;
         } catch(\Exception $e) {

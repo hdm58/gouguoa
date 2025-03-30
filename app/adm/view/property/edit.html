@@ -7,7 +7,7 @@
 		<tr>
 			<td class="layui-td-gray">资产名称<font>*</font></td>
 			<td colspan="3">
-				<input type="text" name="title" value="{$detail.title}" autocomplete="off" placeholder="请输入资产名称" lay-verify="required" lay-reqText="请输入资产名称" class="layui-input">
+				<input type="text" name="title" value="{$detail.title}"  placeholder="请输入资产名称" lay-verify="required" lay-reqText="请输入资产名称" class="layui-input">
 			</td>
 			<td class="layui-td-gray-2" rowspan="5">
 			缩略图
@@ -26,7 +26,7 @@
 				<input type="text" name="code" value="{$detail.code}" class="layui-input" lay-verify="required">
 			</td>
 			<td class="layui-td-gray">资产型号<font>*</font></td>
-			<td><input type="text" name="model" autocomplete="off" value="{$detail.model}"  class="layui-input" lay-verify="required"></td>
+			<td><input type="text" name="model"  value="{$detail.model}"  class="layui-input" lay-verify="required"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray-2">资产分类<font>*</font></td>
@@ -49,8 +49,8 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">质保到期日</td>
-			<td><input type="text" name="quality_time" value="{$detail.quality_time|date='Y-m-d'}" autocomplete="off" readonly placeholder="请选择质保到期日" class="layui-input tool-time"></td>
+			<td class="layui-td-gray">质保到期日<font>*</font></td>
+			<td><input type="text" name="quality_time" value="{$detail.quality_time|date='Y-m-d'}" readonly placeholder="请选择质保到期日" class="layui-input tool-time" lay-verify="required" lay-reqText="请完善质保到期日"></td>
 			<td class="layui-td-gray">单位<font>*</font></td>
 			<td>
 				<select name="unit_id" lay-verify="required" lay-reqText="请选择单位">
@@ -64,7 +64,7 @@
 		<tr>
 			<td class="layui-td-gray">使用人员</td>
 			<td>
-				<input type="text" name="users_name" value="{$detail.users_name|default=''}" autocomplete="off" readonly placeholder="请选择使用人员" class="layui-input picker-admin">
+				<input type="text" name="users_name" value="{$detail.users_name|default=''}"  readonly placeholder="请选择使用人员" class="layui-input picker-admin">
 				<input type="hidden" name="users" value="{$detail.user_ids}">
 			</td>
 			<td class="layui-td-gray">使用部门</td>
@@ -72,11 +72,11 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">购买价格<font>*</font></td>
-			<td><input type="text" name="price" value="{$detail.price}" autocomplete="off" placeholder="请输入购买价格" lay-verify="required|number" lay-reqText="请输入购买价格" class="layui-input"></td>
+			<td><input type="text" name="price" value="{$detail.price}"  placeholder="请输入购买价格" lay-verify="required|number" lay-reqText="请输入购买价格" class="layui-input"></td>
 			<td class="layui-td-gray">购买日期<font>*</font></td>
-			<td><input type="text" name="buy_time" value="{$detail.buy_time|date='Y-m-d'}" autocomplete="off" readonly placeholder="请选择购买日期" lay-verify="required" lay-reqText="请选择购买日期" class="layui-input tool-time"></td>
+			<td><input type="text" name="buy_time" value="{$detail.buy_time|date='Y-m-d'}"  readonly placeholder="请选择购买日期" lay-verify="required" lay-reqText="请选择购买日期" class="layui-input tool-time"></td>
 			<td class="layui-td-gray">年折旧率(%)<font>*</font></td>
-			<td><input type="text" name="rate" value="{$detail.rate}" autocomplete="off" placeholder="请输入年折旧率，不需要输入%" lay-verify="required|number" lay-reqText="请输入年折旧率，不需要%" class="layui-input"></td>
+			<td><input type="text" name="rate" value="{$detail.rate}"  placeholder="请输入年折旧率，不需要输入%" lay-verify="required|number" lay-reqText="请输入年折旧率，不需要%" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">资产状态<font>*</font></td>
@@ -98,7 +98,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">放置地址</td>
-			<td colspan="5"><input type="text" name="address" value="{$detail.address}" autocomplete="off" placeholder="请输入放置地址" class="layui-input"></td>
+			<td colspan="5"><input type="text" name="address" value="{$detail.address}"  placeholder="请输入放置地址" class="layui-input"></td>
 		</tr> 
 		<tr>
 			<td class="layui-td-gray-2">
@@ -107,7 +107,7 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.fileArray"}
@@ -180,7 +180,8 @@ function gouguInit() {
 			layer.msg('请选择资产来源');
 			return false;
 		}
-		tool.post("/adm/property/add", data.field, callback);
+		let clickbtn = $(this);
+		tool.post("/adm/property/add", data.field, callback,clickbtn);
 		return false;
 	});
 }

@@ -46,7 +46,7 @@ class Customer extends BaseController
 			$uid = $this->uid;
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
             if (!empty($param['keywords'])) {
-                $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['id|name', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['customer_status'])) {
                 $where[] = ['customer_status', '=', $param['customer_status']];
@@ -90,6 +90,9 @@ class Customer extends BaseController
 						if(!empty($dids)){
 							$whereOr[] = ['belong_did','in',$dids];
 						}
+					}
+					else{
+						$where[] = ['belong_did','<>',0];
 					}
 				}
 			}
@@ -206,8 +209,10 @@ class Customer extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

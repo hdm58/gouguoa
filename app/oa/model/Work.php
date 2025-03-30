@@ -37,6 +37,7 @@ class Work extends Model
 					$to_names = Db::name('Admin')->where('status', 1)->where('id', 'in', $item['to_uids'])->column('name');
 					$item['to_names'] = implode(",", $to_names);
 					$item['files'] = Db::name('File')->where('id', 'in', $item['file_ids'])->count();
+					$item->create_time = to_date($item->create_time);
 				});
 				return $list;
         } catch(\Exception $e) {

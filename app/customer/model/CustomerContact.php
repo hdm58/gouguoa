@@ -31,6 +31,7 @@ class CustomerContact extends Model
 			->each(function ($item, $key){
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				$item->customer = Db::name('Customer')->where(['id' => $item->cid])->value('name');
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -79,7 +80,7 @@ class CustomerContact extends Model
     {
         $info = self::find($id);
 		if(!empty($info['family'])){
-			$info['family'] = unserialize($info['family']);
+			$info['family_array'] = unserialize($info['family']);
 		}
 		if(!empty($info['birthday'])){
 			$info['birthday'] = date('Y-m-d',$info['birthday']);

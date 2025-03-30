@@ -1,24 +1,52 @@
 {extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-table-1 .tr_2{display:none}
+</style>
+{/block}
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
 	<h3 class="pb-3">消息模板详情</h3>
-	<table class="layui-table layui-table-form">
+	<table class="layui-table layui-table-form layui-table-{$detail.types|default=2}">
 		<tr>
-			<td class="layui-td-gray">模板名称</td>
+			<td class="layui-td-gray-2">模板名称</td>
 			<td>{$detail.title|default=''}</td>
 			<td class="layui-td-gray">模板标识</td>
 			<td>{$detail.name|default=''}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">消息标题</td>
-			<td>{$detail.msg_title|default=''}</td>
+			<td class="layui-td-gray">消息类型</td>
+			<td>
+				{eq name="$detail.types" value="1"}普通消息{/eq}
+				{eq name="$detail.types" value="2"}审批消息{/eq}
+			</td>
 			<td class="layui-td-gray">消息链接</td>
 			<td>{$detail.msg_link|default=''}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">消息模板内容</td>
-			<td colspan="3">{$detail.msg_content|default=''}</td>
+			<td class="layui-td-gray"><span class="tr_2">审批中的<br></span>消息模板标题</td>
+			<td colspan="3">{$detail.msg_title_0|default=''}</td>			
+		</tr>
+		<tr>
+			<td class="layui-td-gray"><span class="tr_2">审批中的<br></span>消息模板内容</td>
+			<td colspan="3">{$detail.msg_content_0|default=''}</td>
+		</tr>
+		<tr class="tr_2">
+			<td class="layui-td-gray">审批通过的<br>消息模板标题</td>
+			<td colspan="3">{$detail.msg_title_1|default=''}</td>			
+		</tr>
+		<tr class="tr_2">
+			<td class="layui-td-gray">审批通过的<br>消息模板内容</td>
+			<td colspan="3">{$detail.msg_content_1|default=''}</td>
+		</tr>
+		<tr class="tr_2">
+			<td class="layui-td-gray">审批拒绝的<br>消息模板标题</td>
+			<td colspan="3">{$detail.msg_title_2|default=''}</td>			
+		</tr>
+		<tr class="tr_2">
+			<td class="layui-td-gray">审批拒绝的<br>消息模板内容</td>
+			<td colspan="3">{$detail.msg_content_2|default=''}</td>
 		</tr>
 	</table>
 </form>

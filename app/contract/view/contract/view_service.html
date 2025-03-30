@@ -12,12 +12,12 @@
 				<th width="100">小计</th>
 				<th>备注信息</th>
 			</tr>
-			{empty name="$detail.content"}
+			{empty name="$detail.content_array"}
 			<tr class="sale-tr">
 				<td colspan="6" style="padding:12px text-align:center; color:#999">暂无服务信息</td>
 			</tr>
 			{else/}
-			{volist name="$detail.content" id="vo"}
+			{volist name="$detail.content_array" id="vo"}
 			<tr class="sale-tr">
 				<td style="text-align:left;">{$vo.service_title|default=''}</td>
 				<td>{$vo.service_date|default=''}</td>

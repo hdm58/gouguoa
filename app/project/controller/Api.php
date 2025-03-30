@@ -347,12 +347,15 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isPost()) {
+			if($param['uid'] == 0){
+				to_assign(1, '已取消');
+			}
 			$has = Db::name('ProjectUser')->where(['uid' => $param['uid'],'project_id'=>$param['project_id']])->find();
 			if(!empty($has)){
 				to_assign(1, '该员工已经是项目成员');
 			}
 			$project = Db::name('Project')->where(['id' => $param['project_id']])->find();
-			if($this->uid == $project['admin_id'] || $this->uid == $project['director_uid']){
+			if($this->uid == 1 || $this->uid == $project['admin_id'] || $this->uid == $project['director_uid']){
 				$param['admin_id'] = $this->uid;
 				$param['create_time'] = time();
 				$res = Db::name('ProjectUser')->strict(false)->field(true)->insert($param);
@@ -526,6 +529,7 @@ class Api extends BaseController
 				'check_uid' => $this->uid,
 				'check_time' => time(),
 				'status' => $param['check'],
+				'content' => $param['content'],
 				'create_time' => time()
 			);
 			Db::name('ProjectStepRecord')->strict(false)->field(true)->insertGetId($checkData);

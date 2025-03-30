@@ -81,7 +81,8 @@
 					}, 1000);					
 				}
 			}
-			tool.post("/contract/purchasedcate/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/contract/purchasedcate/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

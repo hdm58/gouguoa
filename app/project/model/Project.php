@@ -64,6 +64,7 @@ class Project extends Model
 				else{						
 					$item->step = '-';
 				}
+				$item['create_time'] = to_date($item['create_time'],'Y-m-d H:i:s');
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -95,6 +96,25 @@ class Project extends Model
         try {
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
+			$step_users=[];
+			//项目阶段
+			foreach ($step as $key => &$value) {
+				if($key==0){
+					$value['is_current'] = 1;
+				}
+				else{
+					$value['is_current'] = 0;
+				}
+				$value['project_id'] = $insertId;
+				if(!empty($value['director_uid'])){
+					$step_users[] = $value['director_uid'];
+				}
+				if(!empty($value['uids'])){
+					$step_users[] = $value['uids'];
+				}
+			}
+			Db::name('ProjectStep')->strict(false)->field(true)->insertAll($step);
+			$step_users_str = implode(',',$step_users);
 			//项目成员
 			$project_users = $param['admin_id'];
 			if (!empty($param['director_uid'])){
@@ -102,6 +122,9 @@ class Project extends Model
 			}
 			if (!empty($param['team_admin_ids'])){
 				$project_users.=",".$param['team_admin_ids'];
+			}
+			if (!empty($step_users_str)){
+				$project_users.=",".$step_users_str;
 			}
 			$project_array = explode(",",(string)$project_users);
 			$project_array = array_unique($project_array);
@@ -117,17 +140,8 @@ class Project extends Model
 				}
 			}
 			Db::name('ProjectUser')->strict(false)->field(true)->insertAll($project_user_array);
-			//项目阶段
-			foreach ($step as $key => &$value) {
-				if($key==0){
-					$value['is_current'] = 1;
-				}
-				else{
-					$value['is_current'] = 0;
-				}
-				$value['project_id'] = $insertId;
-			}
-			Db::name('ProjectStep')->strict(false)->field(true)->insertAll($step);	
+			
+			
 			add_log('add', $insertId, $param);
 			$log=new EditLog();
 			$log->add('Project',$insertId);
@@ -153,6 +167,7 @@ class Project extends Model
             $param['update_time'] = time();
 			$old = self::find($param['id']);
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			$current_step = Db::name('ProjectStep')->where(['project_id' => $param['id'], 'is_current' => 1,'delete_time'=>0])->value('sort');
 			//项目阶段
 			foreach ($step as $key => $value) {
 				$value['project_id'] = $param['id'];
@@ -161,6 +176,12 @@ class Project extends Model
 				}
 				else{
 					$value['update_time'] = time();
+					if($value['sort'] == $current_step){
+						$value['is_current'] = 1;
+					}
+					else{
+						$value['is_current'] = 0;
+					}
 					Db::name('ProjectStep')->strict(false)->field(true)->update($value);
 				}
 			}			
@@ -203,6 +224,8 @@ class Project extends Model
 		$info['director_name'] = Db::name('Admin')->where(['id' => $info['director_uid']])->value('name');
 		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
 		$info['contract_name'] = Db::name('Contract')->where(['id' => $info['contract_id']])->value('name');
+		$info['create_time'] = to_date($info['create_time'],'Y-m-d H:i:s');
+		$info['update_time'] = to_date($info['update_time'],'Y-m-d H:i:s');
 		//项目阶段			
 		$step_array = Db::name('ProjectStep')
 			->field('s.*,a.name as director_name')

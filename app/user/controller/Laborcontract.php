@@ -251,8 +251,10 @@ class Laborcontract extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {
@@ -263,21 +265,21 @@ class Laborcontract extends BaseController
    /**
     * 解除、恢复
     */
-    public function set($id,$status)
+    public function set()
     {
 		if (request()->isAjax()) {
 			$param = get_params();
-			$renewal = Db::name('LaborContract')->where(['renewal_pid'=>$id,'delete_time'=>0])->count();
-			$change = Db::name('LaborContract')->where(['change_pid'=>$id,'delete_time'=>0])->count();			
+			$renewal = Db::name('LaborContract')->where(['renewal_pid'=> $param['id'],'delete_time'=>0])->count();
+			$change = Db::name('LaborContract')->where(['change_pid'=> $param['id'],'delete_time'=>0])->count();			
 			if($renewal>0 || $change>0){
 				return to_assign(1, "已续签或者已变更的合同不支持该操作");
 			}
-			$this->model::where('id', $id)->strict(false)->field(true)->update(['status'=>$status]);
-			if($status==3){
-				add_log('secure', $id, $param);
+			$this->model::where('id', $param['id'])->strict(false)->field(true)->update(['status'=> $param['status']]);
+			if($param['status']==3){
+				add_log('secure',$param['id'], $param);
 			}
 			else{
-				add_log('recovery', $id, $param);
+				add_log('recovery', $param['id'], $param);
 			}
 			return to_assign();
 		} else {

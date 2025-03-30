@@ -38,7 +38,7 @@
 		</tr>
 	</table>
 	{/eq}
-	<div class="py-3">
+	<div class="pt-3">
 		<input type="hidden" name="id" value="{$id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -61,7 +61,8 @@
 					tool.sideClose(1000);				
 				}
 			}
-			tool.post("/adm/propertyunit/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/adm/propertyunit/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

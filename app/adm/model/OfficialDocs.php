@@ -45,6 +45,7 @@ class OfficialDocs extends Model
 				$item->draft_time = date('Y-m-d', $item->draft_time);
 				$item->draft_name = Db::name('Admin')->where('id','=',$item->draft_uid)->value('name');
 				$item->draft_dname = Db::name('Department')->where('id','=',$item->did)->value('title');
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {

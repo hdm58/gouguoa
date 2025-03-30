@@ -58,7 +58,7 @@ class Purchase extends BaseController
 			if (!empty($param['cate_id'])) {
                 $where[] = ['cate_id', '=',$param['cate_id']];
             }
-			if (!empty($param['check_status'])) {
+			if (isset($param['check_status']) && $param['check_status']!='') {
                 $where[] = ['check_status', '=',$param['check_status']];
             }
 			if (!empty($param['sign_time'])) {
@@ -74,8 +74,8 @@ class Purchase extends BaseController
 					$where[] = ['sign_uid', '=', $param['uid']];
 				}
 				else{
-					//是否是客户管理员
-					$auth = isAuth($uid,'customer_admin','conf_1');
+					//是否是合同管理员
+					$auth = isAuth($uid,'contract_admin','conf_1');
 					if($auth == 0){
 						$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
@@ -381,7 +381,7 @@ class Purchase extends BaseController
 				if($detail['check_status'] == 1 || $detail['check_status'] == 2 || $detail['check_status'] == 3){
 					return view(EEEOR_REPORTING,['code'=>403,'warning'=>'当前状态不支持编辑']);
 				}
-				$detail['content'] = unserialize($detail['content']);
+				$detail['content_array'] = unserialize($detail['content']);
 				View::assign('detail', $detail);
 				return view('edit');
 			}
@@ -407,7 +407,7 @@ class Purchase extends BaseController
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
 			if($detail['types'] > 1){
-				$detail['content'] = unserialize($detail['content']);
+				$detail['content_array'] = unserialize($detail['content']);
 			}
 			$detail['status_name'] = check_status_name($detail['check_status']);
 			$detail['cate_title'] = Db::name('ContractCate')->where(['id' => $detail['cate_id']])->value('title');
@@ -440,8 +440,10 @@ class Purchase extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

@@ -57,9 +57,9 @@ mbui.define(['layer'], function (exports) {
 				userGroups[firstLetter].push(users[i]);
 			}
 			alphabet.sort();
-			var $container = $('<div class="user-selector"><header class="mbui-bar"><a class="mbui-bar-item left" href="javascript:;"><i class="mbui-bar-arrow-left"></i>返回</a><a class="mbui-bar-item right" href="javascript:;">确认</a><h1 class="mbui-bar_title">选择员工</h1></header></div>');
+			var $container = $('<div class="mbui-picker-selector"><header class="mbui-bar"><a class="mbui-bar-item left" href="javascript:;"><i class="mbui-bar-arrow-left"></i>关闭</a><a class="mbui-bar-item right text-blue" href="javascript:;">确认</a><h1 class="mbui-bar-title">选择员工</h1></header></div>');
 			var $letters = $('<div class="letters"></div>');
-			var $userList = $('<div class="contacts mbui-' + types + '" data-toggle="buttons"></div>');
+			var $userList = $('<div class="contacts mbui-' + types + '"></div>');
 
 			var item = '';
 			for (var j = 0; j < alphabet.length; j++) {
@@ -69,12 +69,11 @@ mbui.define(['layer'], function (exports) {
 				item += '<div class="mbui-contacts-title" id="' + alphabet[j] + '">' + alphabet[j] + '</div>';
 				var userData = userGroups[alphabet[j]];
 				for (var k = 0; k < userData.length; k++) {
-					item += '<label class="mbui-contacts-item border-top border-bottom btn" data-id="' + userData[k]['id'] + '" data-did="' + userData[k]['did'] + '" data-name="' + userData[k]['name'] + '" data-department="' + userData[k]['department'] + '">\
-						<input type="'+ types + '" value="' + userData[k]['id'] + '">\
-						<span class="mbui-'+ types + '_ft"></span>\
-						<i class="mbui-'+ types + '_hd"><img src="' + userData[k]['thumb'] + '" width="32" height="32" align="mbui" style="border-radius:6px;"></i>\
-						<span class="mbui-'+ types + '_bd">' + userData[k]['name'] + '<span class="department">『' + userData[k]['department'] + '』</span></span>\
-					</label>';
+					item += '<label class="mbui-picker-item" data-id="' + userData[k]['id'] + '" data-did="' + userData[k]['did'] + '" data-name="' + userData[k]['name'] + '" data-department="' + userData[k]['department'] + '">\
+								<input class="mbui-input-'+types+'" name="radio_user[]" type="'+types+'" value="' + userData[k]['id'] + '">\
+								<i class="mbui-picker-avatar"><img src="' + userData[k]['thumb'] + '" width="32" height="32" align="'+userData[k]['name']+'" style="border-radius:6px;"></i>\
+								<span class="mbui-picker-name">' + userData[k]['name'] + ' <span class="text-gray f14">『' + userData[k]['department'] + '』</span></span>\
+							</label>';
 				}
 			}
 			$userList.append(item);
@@ -97,17 +96,18 @@ mbui.define(['layer'], function (exports) {
 			});
 
 			$container.find('.right').click(function () {
-				let selected = $container.find('.active');
+				let selected = $container.find('input:checked');
 				if (selected.length == 0) {
 					layer.msg('请选择员工');
 					return false;
 				}
 				let ids = [], names = [], dids = [],departments=[];
 				for (var m = 0; m < selected.length; m++) {
-					ids.push($(selected[m]).data('id'));
-					names.push($(selected[m]).data('name'));
-					dids.push($(selected[m]).data('dids'));
-					departments.push($(selected[m]).data('departments'));
+					let selected_item = $(selected[m]).parent();
+					ids.push(selected_item.data('id'));
+					names.push(selected_item.data('name'));
+					dids.push(selected_item.data('dids'));
+					departments.push(selected_item.data('departments'));
 				}
 				that.config.callback(ids,names,dids,departments);
 				$container.fadeOut(function () {
@@ -140,91 +140,3 @@ mbui.define(['layer'], function (exports) {
 		userPicker.init(options);
 	});
 });
-
-
-// BUTTON PUBLIC CLASS DEFINITION
-// ==============================
-var Button = function (element, options) {
-    this.$element  = $(element)
-    this.options   = $.extend({}, Button.DEFAULTS, options)
-    this.isLoading = false
-}
-Button.DEFAULTS = {
-    loadingText: 'loading...'
-}
-
-Button.prototype.setState = function (state) {
-    var d    = 'disabled'
-    var $el  = this.$element
-    var val  = $el.is('input') ? 'val' : 'html'
-    var data = $el.data()
-
-    state += 'Text'
-
-    if (data.resetText == null) $el.data('resetText', $el[val]())
-
-    // push to event loop to allow forms to submit
-    setTimeout($.proxy(function () {
-      $el[val](data[state] == null ? this.options[state] : data[state])
-
-      if (state == 'loadingText') {
-        this.isLoading = true
-        $el.addClass(d).attr(d, d)
-      } else if (this.isLoading) {
-        this.isLoading = false
-        $el.removeClass(d).removeAttr(d)
-      }
-    }, this), 0)
-}
-
-Button.prototype.toggle = function () {
-	var changed = true
-	var $parent = this.$element.closest('[data-toggle="buttons"]')
-
-	if ($parent.length) {
-	  var $input = this.$element.find('input')
-	  if ($input.prop('type') == 'radio') {
-		if ($input.prop('checked')) changed = false
-		$parent.find('.active').removeClass('active')
-		this.$element.addClass('active')
-	  } else if ($input.prop('type') == 'checkbox') {
-		if (($input.prop('checked')) !== this.$element.hasClass('active')) changed = false
-		this.$element.toggleClass('active')
-	  }
-	  $input.prop('checked', this.$element.hasClass('active'))
-	  if (changed) $input.trigger('change')
-	} else {
-	  this.$element.attr('aria-pressed', !this.$element.hasClass('active'))
-	  this.$element.toggleClass('active')
-	}
-}
-
-
-// BUTTON PLUGIN DEFINITION
-// ========================
-
-function Plugin(option) {
-	return this.each(function () {
-	  var $this   = $(this)
-	  var data    = $this.data('bs.button')
-	  var options = typeof option == 'object' && option
-
-	  if (!data) $this.data('bs.button', (data = new Button(this, options)))
-
-	  if (option == 'toggle') data.toggle()
-	  else if (option) data.setState(option)
-	})
-}
-
-$.fn.button = Plugin
-// BUTTON DATA-API
-// ===============
-
-$(document).on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      var $btn = $(e.target)
-      if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
-      Plugin.call($btn, 'toggle')
-      if (!($(e.target).is('input[type="radio"]') || $(e.target).is('input[type="checkbox"]'))) e.preventDefault()
-    }).on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-      $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
-})

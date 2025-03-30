@@ -39,7 +39,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/customer/grade/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/customer/grade/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

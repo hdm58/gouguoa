@@ -4,7 +4,7 @@
 <style>
 .layui-table-tool-temp{padding-right:0}
 </style>
-<div class="p-3">
+<div class="p-page">
 	<form class="layui-form gg-form-bar border-x border-t" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:300px;">
 			<input type="text" class="layui-input" id="diff_time" placeholder="会议日期" readonly name="diff_time">
@@ -47,6 +47,7 @@
 			defaultToolbar: false,
 			page: true, //开启分页
 			limit: 20,
+			height: 'full-114',
 			url: "/adm/meeting/records", //数据接口		
 			cols: [
 				[

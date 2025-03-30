@@ -78,7 +78,8 @@
 					tool.sideClose(1000,'chanceTable');
 				}
 			}
-			tool.post("/customer/chance/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/customer/chance/add", data.field, callback,clickbtn);
 			return false;
 		});
 

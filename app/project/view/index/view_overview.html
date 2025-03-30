@@ -40,13 +40,17 @@
 	<div class="px-3 py-1 border-b">
 		<div class="flow-flexbox check-items flow-flex-row">
 			{volist name="$detail.step_array" id="vo"}
-			<div class='flow-flexbox flow-flex-row check-item {eq name="$vo.is_current" value="1"} blue{/eq} {notempty name="$step"}{lt name="$vo.sort" value="$step.sort"} green{/lt}{else/} green{/notempty}'>
-				<strong class="iconfont icon-bianji blue"></strong>
-				<strong class="iconfont icon-kaoheguanli green"></strong>
-				<strong class="iconfont icon-genjinjilu black"></strong>
-				<div class="check-item-name">{$vo.title}</div>
-				<div class="check-item-status">{$vo.check_name|default=''}</div>
-				<span class="layui-icon layui-icon-right"></span>
+			<div class='flow-flexbox flow-flex-row check-item {eq name="$vo.is_current" value="1"} blue{/eq} {notempty name="$step"}{lt name="$vo.sort" value="$step.sort"} gray{/lt}{else/} gray{/notempty}'>
+				<div class="check-item-icon">
+					<strong class="iconfont icon-bianji blue"></strong>
+					<strong class="iconfont icon-kaoheguanli gray"></strong>
+					<strong class="iconfont icon-genjinjilu black"></strong>
+				</div>
+				<div>
+					<div class="check-item-name"><strong class="f16">{$vo.title}</strong> {$vo.director_name|default=''}</div>
+					<div class="check-item-time">{$vo.start_time|date='Y-m-d'} 到 {$vo.end_time|date='Y-m-d'}</div>
+				</div>
+				<div class="layui-icon layui-icon-right"></div>
 			</div>
 			{/volist}
 		</div>
@@ -82,9 +86,9 @@
 				<li class="layui-timeline-item delete_{$vo.delete_time}">
 					<i class="layui-icon layui-timeline-axis">&#xe63f;</i>
 					{if ($vo.status == 1)}
-					<p style="padding-left:24px">{$vo.check_time_str}<span class="black mx-1">{$vo.check_name}</span><span class="mr-1 green">{$vo.status_str}</span>了『{$vo.title}』的工作。</p>
+					<p style="padding-left:24px">{$vo.check_time_str}<span class="black mx-1">{$vo.check_name}</span><span class="mr-1 green">{$vo.status_str}</span>了『{$vo.title}』的工作。操作意见：<span class="green">{$vo.content|default='-'}</span></p>
 					{else /}
-					<p style="padding-left:24px">{$vo.check_time_str}<span class="black mx-1">{$vo.check_name}</span>在了『{$vo.title}』执行了<span class="mx-1 red">{$vo.status_str}</span>操作。操作意见：<span class="red">{$vo.content}</span></p>
+					<p style="padding-left:24px">{$vo.check_time_str}<span class="black mx-1">{$vo.check_name}</span>在阶段『{$vo.title}』执行了<span class="mx-1 red">{$vo.status_str}</span>操作。操作意见：<span class="red">{$vo.content|default='-'}</span></p>
 					{/if}					
 				</li>
 			{/volist}
@@ -198,13 +202,14 @@ function overview(){
 		let callback = function (e) {
 			layer.msg(e.msg);
 			if(e.code==0){
-				parent.layui.pageTable.reload();
 				setTimeout(function(){
 					location.reload();
 				},2000)
+				parent.layui.pageTable.reload();
 			}
 		}
 		if(check == 2){
+			$(parent.$('.express-close')).addClass('parent-colse');
 			layer.open({
 				type: 1,
 				title: '请输入退回的原因或理由',
@@ -212,6 +217,9 @@ function overview(){
 				content: '<div style="padding:5px;"><textarea class="layui-textarea" id="remarkTextarea" style="width: 100%; height:132px;"></textarea></div>',
 				btnAlign: 'c',
 				btn: ['确认回退'],
+				end: function(){
+					$(parent.$('.express-close')).removeClass('parent-colse');
+				},
 				yes: function () {
 					let remark = $("#remarkTextarea").val();
 					if (remark != '') {
@@ -223,12 +231,25 @@ function overview(){
 			})
 		}
 		else{
-			layer.confirm('确认已完成该阶段工作，进入下个阶段？', {
-				icon: 3,
-				title: '提示'
-			},
-			function(index) {
-				tool.post("/project/api/step_check", {id: project_id,check:check}, callback);
+			$(parent.$('.express-close')).addClass('parent-colse');
+			layer.open({
+				type: 1,
+				title: '请输入操作意见',
+				area: ['500px', '252px'],
+				content: '<div style="padding:5px;"><textarea class="layui-textarea" id="remarkTextarea" style="width: 100%; height:132px;"></textarea></div>',
+				btnAlign: 'c',
+				btn: ['确认完成'],
+				end: function(){
+					$(parent.$('.express-close')).removeClass('parent-colse');
+				},
+				yes: function () {
+					let remark = $("#remarkTextarea").val();
+					if (remark != '') {
+						tool.post("/project/api/step_check", {id: project_id,check:check,content:remark}, callback);
+					} else {
+						layer.msg('请输入操作意见');
+					}
+				}
 			})
 		}
 	});

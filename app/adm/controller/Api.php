@@ -122,16 +122,18 @@ class Api extends BaseController
     }
 	
 	//获取审核类型
-    public function get_flow_item($cate=0)
+    public function get_flow_item()
     {
-		$flows = Db::name('FlowItem')->where(['flow_cate'=>$cate,'status'=>1])->select()->toArray();
+        $param = get_params();
+		$flows = Db::name('FlowItem')->where(['flow_cate'=>$param['cate'],'status'=>1])->select()->toArray();
 		return to_assign(0, '', $flows);
 	} 
 
 	//修改公章状态
-    public function set_seal_status($id,$status)
+    public function set_seal_status()
     {
-		$res = Db::name('Seal')->where(['id'=>$id])->update(['status'=>$status]);
+		$param = get_params();
+		$res = Db::name('Seal')->where(['id'=>$param['id']])->update(['status'=>$param['status']]);
 		if($res!==false){
 			return to_assign();
 		}

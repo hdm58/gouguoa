@@ -67,8 +67,8 @@
 					<th>备注信息</th>
 					<th width="60">操作</th>
 				</tr>
-				{notempty name="$detail.family" }
-				{volist name="$detail.family" id="vo"}
+				{notempty name="$detail.family_array" }
+				{volist name="$detail.family_array" id="vo"}
 				<tr class="more_interfix">
 					<td><input type="text" name="family_name[]" value="{$vo.family_name}" placeholder="请输入" class="layui-input" lay-verify="required" lay-reqText="请完善成员姓名"></td>
 					<td><input type="text" name="family_relations[]" value="{$vo.family_relations}"  placeholder="请输入，如:父子" class="layui-input" lay-verify="required" lay-reqText="请完善成员关系"></td>
@@ -136,7 +136,8 @@
 					tool.sideClose(1000,'contactTable');
 				}
 			}
-			tool.post("/customer/contact/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/customer/contact/add", data.field, callback,clickbtn);
 			return false;
 		});
 

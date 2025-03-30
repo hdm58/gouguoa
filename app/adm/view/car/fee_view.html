@@ -25,7 +25,7 @@
 		{notempty name="$detail.fileArray"}
 		<tr>
 			<td class="layui-td-gray">相关附件</div></td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">					
 					{volist name="$detail.fileArray" id="vo"}
 					<div class="layui-col-md4" id="fileItem{$vo.id}">{:file_card($vo,'view')}</div>

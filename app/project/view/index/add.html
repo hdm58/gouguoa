@@ -9,7 +9,7 @@
 			<td colspan="3"><input type="text" name="name" lay-verify="required" lay-reqText="请输入项目名称" placeholder="请输入项目名称" class="layui-input" value=""></td>
 			<td class="layui-td-gray">项目类别<font>*</font></td>
 			<td>
-				<select name="cate_id" lay-verify="required" lay-reqText="请选择项目类别">
+				<select name="cate_id" lay-filter="cate" lay-verify="required" lay-reqText="请选择项目类别">
 					<option value="">请选择</option>
 					{volist name = ":get_base_data('ProjectCate')" id="vo"}
 					<option value="{$vo.id}">{$vo.title}</option>
@@ -32,7 +32,7 @@
 		<tr>
 			<td class="layui-td-gray">项目成员<span style="color: red">*</span></td>
 			<td colspan="5">
-				<input type="text" name="team_admin_names"  placeholder="请选择项目成员" readonly class="layui-input picker-admin" data-type="2" value="">
+				<input type="text" name="team_admin_names"  placeholder="请选择项目成员" readonly class="layui-input picker-admin" data-type="2" value="" lay-verify="required" lay-reqText="请完善项目成员">
 				<input type="hidden" name="team_admin_ids" class="layui-input" value="">
 			</td>
 		</tr>
@@ -50,19 +50,22 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="6" style="background-color:#FAFAFA;"><strong>项目阶段</strong><span style="color: red">*</span> <span class="layui-btn layui-btn-xs" id="stepAdd">+ 添加阶段</span></td>
+			<td colspan="6" style="background-color:#FAFAFA;">
+				<strong>项目阶段</strong><span style="color: red">*</span>
+				<span class="layui-btn layui-btn-sm" id="stepAdd">+ 添加阶段</span>				
+			</td>
 		</tr>
 		<tr>
 			<td colspan="6">
 				<table id="stepTable" class="layui-table layui-table-min" style="margin:0">
 					<tr>
 						<th width="60">序号</th>
-						<th width="200">阶段名称</th>
+						<th width="180">阶段名称</th>
 						<th width="80">阶段负责人</th>
 						<th width="180">阶段成员</th>
 						<th width="162">阶段周期</th>
 						<th>阶段说明</th>
-						<th width="60">操作</th>
+						<th width="120">操作</th>
 					</tr>
 					{volist name = ":get_base_data('step')" id="vo" key="k"}
 					<tr class="step-tr">
@@ -80,7 +83,11 @@
 						<td><input type="text" name="step_remark[]" value="" class="layui-input"></td>
 						<td>
 							<input type="hidden" name="step_id[]" value="0" class="layui-input">
-							<a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0">删除</a>
+							<div class="layui-btn-group">
+								<span class="layui-btn layui-btn-xs step-up">上移</span>
+								<span class="layui-btn layui-btn-normal layui-btn-xs step-down">下移</span>
+								<span class="layui-btn layui-btn-danger layui-btn-xs step-del" data-id="0">删除</span>
+							</div>
 						</td>
 					</tr>
 					{/volist}
@@ -124,7 +131,7 @@
 					$('[name="department"]').val(select_dname.join(','));
 				}
 			});
-		});	
+		});
 		
 		//添加阶段信息表格
 		$('#stepAdd').on('click',function(){
@@ -144,7 +151,11 @@
 						<td><input type="text" name="step_remark[]" value="" class="layui-input"></td>\
 						<td>\
 							<input type="hidden" name="step_id[]" value="0" class="layui-input">\
-							<a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0">删除</a>\
+							<div class="layui-btn-group">\
+								<span class="layui-btn layui-btn-xs step-up">上移</span>\
+								<span class="layui-btn layui-btn-normal layui-btn-xs step-down">下移</span>\
+								<span class="layui-btn layui-btn-danger layui-btn-xs step-del" data-id="0">删除</span>\
+							</div>\
 						</td>\
 					</tr>';
 			$('#stepTable').append(html).find('.tr-none').remove();
@@ -153,7 +164,7 @@
 			})
 			form.render();
 		});
-		$('#stepTable').on('click','.layui-btn-danger',function(){
+		$('#stepTable').on('click','.step-del',function(){
 			if($('.step-tr').length<2){
 				layer.msg('至少保留一个项目阶段');
 				return false;
@@ -163,6 +174,50 @@
 				$(this).html('第 <strong>'+(index+1)+'</strong> 阶段');
 			})
 		});
+		
+		$('#stepTable').on('click','.step-up',function(e){
+			let obj = $(e.target).closest('tr');
+            tr_pre($(obj[0]));
+		})
+		
+		$('#stepTable').on('click','.step-down',function(e){
+			var obj = $(e.target).closest('tr');
+            tr_next($(obj[0]));
+		})
+		
+		
+		function tr_pre(o) {
+			var pres = o.prevAll('tr.step-tr');
+			if (pres.length > 0) {
+				var tmp = o.clone(true);
+				var oo = pres[0];
+				o.remove();
+				$(oo).before(tmp);
+				$('#stepTable').find('.step-key').each(function(index,item){
+					$(this).html('第 <strong>'+(index+1)+'</strong> 阶段');
+				})
+			}
+			else{
+				layer.msg('已经第一个了');
+			}
+		}
+
+		function tr_next(o) {
+			var nexts = o.nextAll('tr.step-tr');
+			if (nexts.length > 0) {
+				var tmp = o.clone(true);
+				var oo = nexts[0];
+				o.remove();
+				$(oo).after(tmp);
+				$('#stepTable').find('.step-key').each(function(index,item){
+					$(this).html('第 <strong>'+(index+1)+'</strong> 阶段');
+				})
+			}else{
+				layer.msg('已经最后一个了');
+			}
+		}
+		
+		
 		//监听提交
 		form.on('submit(webform)', function (data) {
 			let callback = function (e) {
@@ -171,7 +226,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/project/index/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/project/index/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

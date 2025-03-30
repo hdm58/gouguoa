@@ -49,6 +49,8 @@ class Property extends Model
 					}
 					$item->status_str = self::$property_status[$item->status];
 					$item->source_str = self::$property_source[$item->source];
+					$item->create_time = to_date($item->create_time);
+					$item->update_time_str = to_date($item->update_time);
 				});
 			return $list;
         } catch(\Exception $e) {

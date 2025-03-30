@@ -216,7 +216,7 @@ class Index extends BaseController
 		$map3[] = ['', 'exp', Db::raw("FIND_IN_SET({$uid},assist_admin_ids)")];
 		$map4[] = ['project_id', 'in', $project_ids];
 		
-		$whereOr =[$map1,$map2,$map3,$map4];
+		$whereOr =[$map1,$map2,$map3];
 		$taskCount = Db::name('ProjectTask')
 			->where(function ($query) use ($whereOr) {
 				if (!empty($whereOr))

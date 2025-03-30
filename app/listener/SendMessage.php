@@ -23,6 +23,9 @@ class SendMessage
 			if(empty($template)){
 				return true;
 			}
+			if(empty($msg['template_field'])){
+				$msg['template_field'] = 0;
+			}
 			$title_field = 'msg_title_'.$msg['template_field'];
 			$content_field = 'msg_content_'.$msg['template_field'];
 			$title = $template[$title_field];

@@ -15,7 +15,7 @@ declare (strict_types = 1);
 
 namespace app\home\controller;
 
-use app\api\BaseController;
+use app\base\BaseController;
 use app\home\model\Trips as TripsModel;
 use app\home\validate\tripsValidate;
 use think\exception\ValidateException;
@@ -97,14 +97,6 @@ class Trips extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			$detail['start_span_name'] = '上午';
-			$detail['end_span_name'] = '上午';
-			if($detail['start_span'] == 2){
-				$detail['start_span_name'] = '下午';
-			}
-			if($detail['end_span'] == 2){
-				$detail['end_span_name'] = '下午';
-			}
 			View::assign('create_user', get_admin($detail['admin_id']));
 			View::assign('detail', $detail);
 			if(is_mobile()){
@@ -120,8 +112,10 @@ class Trips extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

@@ -57,7 +57,7 @@ class Files extends BaseController
 				$whereOr =[$map1,$map2];
             }
 			$where[] = ['a.id', '>', 1];
-			$admin = AdminList::alias('a')
+			$list = AdminList::alias('a')
 				->with('departments')
 				->field('a.*,p.title as position,d.title as department')
 				->join('Department d', 'd.id = a.did','left')
@@ -74,26 +74,27 @@ class Files extends BaseController
 					//遍历次要部门数据
 					$departments = $item->departments->toArray();
 					if(empty($departments)){
-						$item->departments = '-';
+						$item['departments'] = '-';
 					}
 					else{
-						$item->departments = split_array_field($departments,'title');
+						$item['departments'] = split_array_field($departments,'title');
 					}
-                    $item->entry_time = empty($item->entry_time) ? '-' : date('Y-m-d', $item->entry_time);
-                    $item->birthday = empty($item->birthday) ? '-' : date('Y-m-d', $item->birthday);
-                    $item->last_login_time = empty($item->last_login_time) ? '-' : date('Y-m-d H:i', $item->last_login_time);
-                    $item->last_login_ip = empty($item->last_login_ip) ? '-' : $item->last_login_ip;
-					if($item->political==1){
-						$item->political = '中共党员';
+					if($item['political']==1){
+						$item['political_str'] = '中共党员';
 					}
-					else if($item->political==2){
-						$item->political = '团员';
+					else if($item['political']==2){
+						$item['political_str'] = '团员';
 					}
 					else{
-						$item->political = '-';
+						$item['political_str'] = '-';
 					}
+                    $item['entry_time'] = to_date($item['entry_time'],'Y-m-d');
+                    $item['birthday_str'] = to_date($item['birthday'],'Y-m-d');
+					$item['last_login_time'] = to_date('Y-m-d H:i', $item->last_login_time);
+                    $item['last_login_ip'] = empty($item['last_login_ip']) ? '-' : $item['last_login_ip'];
+					return $item;
                 });
-            return table_assign(0, '', $admin);
+            return table_assign(0, '', $list);
         } else {
             return view();
         }

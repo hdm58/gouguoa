@@ -31,15 +31,16 @@ class Car extends Model
 			->each(function ($item, $key){
 				$item->buy_time = date('Y-m-d', $item->buy_time);
 				$item->insure_time = date('Y-m-d', $item->insure_time);
-				$item->insure_time_note = count_days($item->insure_time);
+				$item->insure_time_note = count_days(date("Y-m-d"),$item->insure_time);
 				$item->review_time = date('Y-m-d', $item->review_time);
-				$item->review_time_note = count_days($item->review_time);
+				$item->review_time_note = count_days(date("Y-m-d"),$item->review_time);
 				if($item->driver>0){
 					$item->driver_name = Db::name('Admin')->where('id','=',$item->driver)->value('name');
 				}
 				else{
 					$item->driver_name='-';
 				}
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {

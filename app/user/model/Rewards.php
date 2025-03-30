@@ -32,7 +32,8 @@ class Rewards extends Model
 				$item->cate = Db::name('RewardsCate')->where('id',$item->rewards_cate)->value('title');
 				$item->user_name = Db::name('Admin')->where('id',$item->uid)->value('name');
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
-				$item->rewards_time = date('Y-m-d',$item->rewards_time);
+				$item->rewards_time = to_date($item->rewards_time,'Y-m-d');
+				$item->create_time = to_date($item->create_time,'Y-m-d H:i:s');
 			});
 			return $list;
         } catch(\Exception $e) {

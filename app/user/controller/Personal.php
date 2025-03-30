@@ -44,7 +44,7 @@ class Personal extends BaseController
                 ->order('p.id desc')
 				->paginate(['list_rows'=> $rows])
                 ->each(function ($item, $key) {
-                    $item->move_time = date('Y-m-d', $item->move_time);
+                    $item->move_time = to_date($item->move_time,'Y-m-d');
 					$adepartment = Db::name('Department')->whereIn('id',$item->from_did)->column('title');
 					$item->adepartment = implode(',', $adepartment);
 					$bdepartment = Db::name('Department')->whereIn('id',$item->to_did)->column('title');
@@ -125,19 +125,18 @@ class Personal extends BaseController
                 ->order('p.id desc')
                 ->paginate(['list_rows'=> $rows])
                 ->each(function ($item, $key) {
-                    $item->quit_time = date('Y-m-d', $item->quit_time);
+                    $item->quit_time = to_date($item->quit_time,'Y-m-d');
 					$item->connect_time_str='-';
 					if($item->connect_time>0){
-						$item->connect_time_str = date('Y-m-d', $item->connect_time);
+						$item->connect_time_str = to_date($item->connect_time,'Y-m-d');
 					}
                     $item->lead_admin = Db::name('admin')->where(['id' => $item->lead_admin_id])->value('name');
                     $item->connect_name = Db::name('admin')->where(['id' => $item->connect_id])->value('name');
                     $this_uids_name = Db::name('admin')->where([['id','in', $item->connect_uids]])->column('name');
                     $item->connect_names = implode(',', $this_uids_name);
 					
-					$dids =  Db::name('DepartmentAdmin')->where('admin_id',$item->uid)->column('department_id');
-					$department = Db::name('Department')->whereIn('id',$dids)->column('title');
-					$item->department = implode(',', $department);
+					$did =  Db::name('Admin')->where('id',$item->uid)->value('did');
+					$item->department = Db::name('Department')->where('id',$did)->value('title');
                 });
             return table_assign(0, '', $list);
         } else {
@@ -182,9 +181,8 @@ class Personal extends BaseController
                 $detail['quit_time'] = date('Y-m-d', $detail['quit_time']);
 				$detail['connect_name'] = Db::name('admin')->where(['id' => $detail['connect_id']])->value('name');
 				
-				$dids =  Db::name('DepartmentAdmin')->where('admin_id',$detail['uid'])->column('department_id');
-				$department = Db::name('Department')->whereIn('id',$dids)->column('title');
-				$detail['department'] = implode(',', $department);
+				$did =  Db::name('Admin')->where('id',$detail['uid'])->value('did');
+				$detail['department'] = Db::name('Department')->where('id',$did)->value('title');
                 View::assign('detail', $detail);
             }
             View::assign('id', $id);

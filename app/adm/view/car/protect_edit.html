@@ -9,17 +9,17 @@
 			<td>{$detail.car}</td>
 			<td class="layui-td-gray">保养地点<font>*</font></td>
 			<td colspan="3">
-				<input type="text" name="address" autocomplete="off" value="{$detail.address}" lay-verify="required" lay-reqText="请完善保养地点" placeholder="请完善保养地点" class="layui-input">
+				<input type="text" name="address" value="{$detail.address}" lay-verify="required" lay-reqText="请完善保养地点" placeholder="请完善保养地点" class="layui-input">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">保养日期</td>
-			<td><input type="text" name="repair_time" readonly value="{$detail.repair_time|date='Y-m-d'}" autocomplete="off" readonly placeholder="请选择保养日期" class="layui-input tool-time" data-max="0"></td>
+			<td class="layui-td-gray">保养日期<font>*</font></td>
+			<td><input type="text" name="repair_time" readonly value="{$detail.repair_time|date='Y-m-d'}" placeholder="请选择保养日期" class="layui-input tool-time" data-max="0" lay-verify="required" lay-reqText="请完善保养日期"></td>
 			<td class="layui-td-gray">保养费用<font>*</font></td>
-			<td><input type="text" name="amount" value="{$detail.amount}" autocomplete="off" placeholder="请输入保养费用" lay-verify="required|number" lay-reqText="请输入保养费用" class="layui-input"></td>
-			<td class="layui-td-gray">经手人</td>
+			<td><input type="text" name="amount" value="{$detail.amount}" placeholder="请输入保养费用" lay-verify="required|number" lay-reqText="请输入保养费用" class="layui-input"></td>
+			<td class="layui-td-gray">经手人<font>*</font></td>
 			<td>
-				<input type="text" name="handled_name" value="{$detail.handled_name}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择经手人" class="layui-input picker-admin">
+				<input type="text" name="handled_name" value="{$detail.handled_name}" readonly lay-verify="required" lay-reqText="请选择经手人" class="layui-input picker-admin">
 				<input type="hidden" name="handled" value="{$detail.handled}">
 			</td>
 		</tr>
@@ -30,7 +30,7 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.fileArray"}
@@ -42,9 +42,9 @@
 			</td>
 		</tr> 
 		<tr>
-			<td class="layui-td-gray" style="vertical-align:top;">保养内容</td>
+			<td class="layui-td-gray" style="vertical-align:top;">保养内容<font>*</font></td>
 			<td colspan="5">
-				<textarea name="content" placeholder="请输入保养内容" class="layui-textarea">{$detail.content|default=''}</textarea>
+				<textarea name="content" placeholder="请输入保养内容" class="layui-textarea" lay-verify="required" lay-reqText="请完善保养内容">{$detail.content|default=''}</textarea>
 			</td>
 		</tr>
 	</table>
@@ -74,7 +74,8 @@ function gouguInit() {
 				tool.sideClose(1000,'protectTable');				
 			}
 		}
-		tool.post("/adm/car/protect_add", data.field, callback);
+		let clickbtn = $(this);
+		tool.post("/adm/car/protect_add", data.field, callback,clickbtn);
 		return false;
 	});
 }

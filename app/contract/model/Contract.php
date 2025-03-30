@@ -128,6 +128,7 @@ class Contract extends Model
         $info = self::find($id);
 		$types_title=contract_types_name($info['types']);
 		$info['types_name'] = $types_title['title'];
+		$info['create_time'] = to_date($info['create_time']);
 		$info['sign_time'] = date('Y-m-d', $info['sign_time']);
 		$info['start_time'] = date('Y-m-d', $info['start_time']);
 		$info['end_time'] = date('Y-m-d', $info['end_time']);

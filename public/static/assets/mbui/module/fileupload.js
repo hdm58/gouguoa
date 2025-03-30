@@ -11,7 +11,7 @@ mbui.define(['layer'], function (exports) {
 			uploadBtn: "#uploadBtn",
 			uploadBox: "#uploadBox",
 			url: "/api/index/upload",
-			accept: ".png,.jpg,.gif,.jpeg,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.pdf,.zip,.rar,.7z,.txt,.wps,.avi,.wmv,.mpg,.mov,.rm,.flv,.mp4,.mp3,.wav,.wma,.flac,.midi,.dwg,.dxf,.dwt,.xmind",
+			accept: "application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,.csv,image/*,text/plain,video/*,audio/*,application/x-zip-compressed",
 			onlyImage: false,
 			template:function(data){
 				let exts = ['jpg', 'png', 'gif', 'jpeg'];
@@ -20,16 +20,14 @@ mbui.define(['layer'], function (exports) {
 				if(exts.includes(data.fileext)){
 					fileshow='<div class="mbui-file-icon file-img"><img src="'+data.filepath+'" alt="'+data.name+'"></div>';
 				}
-				return `<li data-id="${data.id}">
-							<div class="mbui-file-div">
-								${fileshow}
-								<div class="mbui-file-info">
-									<div class="mbui-file-name line-limit-1">${data.name}</div>
-									<div class="mbui-file-size">${filesize}，刚刚</div>
-								</div>
-								<div class="mbui-file-del"><i class="iconfont icon-cuowukongxin"></i></div>
+				return `<div class="mbui-file-div" data-id="${data.id}">
+							${fileshow}
+							<div class="mbui-file-info">
+								<div class="mbui-file-name line-limit-1">${data.name}</div>
+								<div class="mbui-file-size">${filesize}，刚刚</div>
 							</div>
-						</li>`;
+							<div class="mbui-file-del"><i class="iconfont icon-cuowukongxin"></i></div>
+						</div>`;
 			},
 			ajaxUpload:null
 		};
@@ -43,7 +41,7 @@ mbui.define(['layer'], function (exports) {
 			that.config.accept = "image/jpeg,image/png,image/bmp";
 		}
 		var uploadBtn = $(that.config.uploadBtn),uploadBox = $(that.config.uploadBox),fileInput = 'fileInput_'+timestamp;		
-		uploadBox.append('<input id="'+fileInput+'" type="file" multiple="" accept="'+that.config.accept+'" style="display:none;"><ul></ul>');
+		uploadBox.append('<input id="'+fileInput+'" type="file" multiple="" accept="'+that.config.accept+'" style="display:none;">');
 		
 		//点击上传
 		uploadBtn.click(function() {
@@ -57,8 +55,8 @@ mbui.define(['layer'], function (exports) {
 		//赋值到form表单
 		function fileValue(){
 			let file_array = [];
-			uploadBox.find('li').each(function () {
-				var $id = $(this).data('id');
+			uploadBox.find('.mbui-file-div').each(function () {
+				let $id = $(this).data('id');
 				file_array.push($id);
 			});		
 			uploadBox.find('[data-type="file"]').val(file_array.join(','));
@@ -66,21 +64,8 @@ mbui.define(['layer'], function (exports) {
 		
 		//删除已上传
 		uploadBox.on('click','.mbui-file-del',function() {
-			$(this).parent().parent().remove();
+			$(this).parent().remove();
 			fileValue();
-		});
-		
-		//查看图片
-		uploadBox.on('click','.mbui-file-icon',function(e) {
-			e.preventDefault();
-			let img = $(this).find('img');
-			let href = img.attr('src');
-			if (href!=undefined && href!='') {					
-				layer.photo(href);
-			}
-			else {
-				layer.msg('企业微信不支持下载文件附件<br>请到PC端下载查看');
-			}
 		});
 		
 		//附件上传
@@ -109,12 +94,10 @@ mbui.define(['layer'], function (exports) {
 					},500)					
 				},
 				success: function(res) {
-					console.log('文件上传成功');
 					if(res.code==0){
-						console.log(that.config.ajaxUpload);
 						if(typeof(that.config.ajaxUpload) == "undefined" || that.config.ajaxUpload==null){
 							var listItem = that.config.template(res.data);
-							uploadBox.find('ul').append(listItem);
+							uploadBox.append(listItem);
 						}
 						else{
 							 that.config.ajaxUpload(res);
@@ -133,7 +116,18 @@ mbui.define(['layer'], function (exports) {
 		  });
 	};
 
-
+	//查看图片
+	$('body').on('click','.mbui-file-icon',function(e) {
+		e.preventDefault();
+		let img = $(this).find('img');
+		let href = img.attr('src');
+		if (href!=undefined && href!='') {					
+			layer.photo(href);
+		}
+		else {
+			layer.msg('企业微信不支持下载文件附件<br>请到PC端下载查看');
+		}
+	});
 	// 导出loadData模块
 	exports('fileupload', function (options) {
 		var fileupload = new fileUpload();

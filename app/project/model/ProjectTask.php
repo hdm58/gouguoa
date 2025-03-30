@@ -88,6 +88,7 @@ class ProjectTask extends Model
 			if($detail['director_uid'] > 0){
 				$detail['director_name'] = Db::name('Admin')->where(['id' => $detail['director_uid']])->value('name');
 			}
+			$detail['schedules'] = Db::name('Schedule')->where(['tid' =>  $detail['id'], 'delete_time' => 0])->count();
             $detail['logs'] = Db::name('EditLog')->where(['name' => 'Task', 'action_id' => $detail['id']])->count();
 			$detail['comments'] = Db::name('Comment')->where(['module' => 'task', 'delete_time' => 0, 'topic_id' => $detail['id']])->count();
             $detail['assist_admin_names'] = '';

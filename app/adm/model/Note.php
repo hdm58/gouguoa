@@ -35,6 +35,7 @@ class Note extends Model
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				$item->start_time = empty($item->start_time) ? '-' : date('Y-m-d', $item->start_time);
                 $item->end_time = empty($item->end_time) ? '-' : date('Y-m-d', $item->end_time);
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {

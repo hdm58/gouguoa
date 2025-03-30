@@ -59,6 +59,7 @@ class LaborContract extends Model
 				$item->diff_time = $item->start_time.' 至 '.$item->end_time;
 				$item->renewal = Db::name('LaborContract')->where(['renewal_pid'=>$item->id,'delete_time'=>0])->count();
 				$item->change = Db::name('LaborContract')->where(['change_pid'=>$item->id,'delete_time'=>0])->count();
+				$item->create_time = to_date($item->create_time,'Y-m-d H:i:s');
 			});
 			return $list;
         } catch(\Exception $e) {

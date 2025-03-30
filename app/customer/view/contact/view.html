@@ -50,8 +50,8 @@
 					<th width="150">成员关系</th>
 					<th>备注信息</th>
 				</tr>
-				{notempty name="$detail.family" }
-				{volist name="$detail.family" id="vo"}
+				{notempty name="$detail.family_array" }
+				{volist name="$detail.family_array" id="vo"}
 				<tr class="more_interfix">
 					<td>{$vo.family_name}</td>
 					<td>{$vo.family_relations}</td>

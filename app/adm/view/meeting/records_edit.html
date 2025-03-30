@@ -97,7 +97,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/adm/meeting/records_add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/adm/meeting/records_add", data.field, callback,clickbtn);
 			return false;
 		});
 }

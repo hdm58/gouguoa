@@ -118,11 +118,14 @@ class Task extends BaseController
         if (request()->isPost()) {
             if (isset($param['end_time'])) {
                 $param['end_time'] = strtotime(urldecode($param['end_time']));
-            }if (isset($param['status'])) {
+            }
+			if (isset($param['status'])) {
                 if ($param['status'] == 3) {
                     $param['over_time'] = time();
+                    $param['done_ratio'] = 100;
                 } else {
                     $param['over_time'] = 0;
+					$param['done_ratio'] = 10;
                 }
             }
             if (!empty($param['id']) && $param['id'] > 0) {
@@ -134,6 +137,9 @@ class Task extends BaseController
                     return to_assign(1, $e->getError());
                 }
                 $param['update_time'] = time();
+				if(!empty($param['director_uid'])){
+					$param['did'] = Db::name('Admin')->where(['id' => $param['director_uid']])->value('did');
+				}
                 $res = ProjectTask::where('id', $param['id'])->strict(false)->field(true)->update($param);
                 if ($res) {
                     add_log('edit', $param['id'], $param);
@@ -150,6 +156,12 @@ class Task extends BaseController
                 }
                 $param['create_time'] = time();
                 $param['admin_id'] = $this->uid;
+				if(empty($param['director_uid'])){
+					$param['did'] = $this->did;
+				}
+				else{
+					$param['did'] = Db::name('Admin')->where(['id' => $param['director_uid']])->value('did');
+				}
                 $insertId = ProjectTask::strict(false)->field(true)->insertGetId($param);
                 if ($insertId) {
                     add_log('add', $insertId, $param);
@@ -183,7 +195,7 @@ class Task extends BaseController
 		$auth = isAuth($this->uid,'project_admin','conf_1');
 		if (in_array($detail['project_id'], $project_ids) || in_array($this->uid, $role_uid) || in_array($this->uid, explode(",",$detail['assist_admin_ids'])) || $auth==1) {
 			$file_array = Db::name('ProjectFile')
-			->field('mf.id,mf.topic_id,mf.admin_id,f.name,f.filesize,f.filepath,f.fileext,f.create_time,f.admin_id,a.name as admin_name')
+			->field('mf.id,mf.topic_id,mf.admin_id,mf.file_id,f.name,f.filesize,f.filepath,f.fileext,f.create_time,f.admin_id,a.name as admin_name')
 			->alias('mf')
 			->join('File f', 'mf.file_id = f.id', 'LEFT')
 			->join('Admin a', 'mf.admin_id = a.id', 'LEFT')
@@ -230,12 +242,16 @@ class Task extends BaseController
             $param = get_params();
 			$uid = $this->uid;
 			$auth = isAuth($uid,'project_admin','conf_1');
-            //按时间检索
-            $start_time = isset($param['start_time']) ? strtotime($param['start_time']) : 0;
-            $end_time = isset($param['end_time']) ? strtotime($param['end_time']) : 0;
             $tid = isset($param['tid']) ? $param['tid'] : 0;
             $where = [];
             $whereOr = [];
+			
+            //按时间检索
+			if (!empty($param['range_time'])) {
+				$range_time =explode('至', $param['range_time']);
+				$where[] = ['a.start_time', 'between',[strtotime($range_time[0]),strtotime($range_time[1])]];
+			}
+			
 			if ($tid>0) {
                 $task_ids = Db::name('ProjectTask')->where(['delete_time' => 0, 'project_id' => $param['tid']])->column('id');
 				$where[] = ['a.tid', 'in', $task_ids];
@@ -244,9 +260,6 @@ class Task extends BaseController
 				$where[] = ['a.tid', '>', 0];
 				if (!empty($param['keywords'])) {
 					$where[] = ['a.title', 'like', '%' . trim($param['keywords']) . '%'];
-				}
-				if ($start_time > 0 && $end_time > 0) {
-					$where[] = ['a.start_time', 'between', [$start_time, $end_time]];
 				}
 				if($auth == 0){
 					if (!empty($param['uid'])) {

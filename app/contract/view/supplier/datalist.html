@@ -2,13 +2,13 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<form class="layui-form gg-form-bar border-x border-t">
+	<form class="layui-form gg-form-bar border-x border-t" id="barsearchform">
 		<div class="layui-input-inline" style="width:240px;">
-			<input type="text" name="keywords" placeholder="供应商名称/联系人名称" class="layui-input" autocomplete="off" />
+			<input type="text" name="keywords" placeholder="供应商名称/联系人名称" class="layui-input" />
 		</div>
-		<div class="layui-input-inline" style="width:150px;">
-			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
-			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
 	</form>
     <table class="layui-hide" id="test" lay-filter="test"></table>
@@ -26,7 +26,7 @@
 	<script>
 	const moduleInit = ['tool','tablePlus'];
 	function gouguInit() {
-		var table = layui.table, tool = layui.tool, form = layui.form;
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form;
 		layui.pageTable = table.render({
 			elem: '#test'
 			,toolbar: '#toolbarDemo'

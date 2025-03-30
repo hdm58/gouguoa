@@ -3,7 +3,7 @@
 <style>
     ::-webkit-scrollbar { display: none; width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #e1e1e1;}
-	.disk-left{width:120px; float:left; height:calc(100vh - 83px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px;}
+	.disk-left{width:120px; float:left; height:calc(100vh - 86px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px;}
 	.disk-left::-webkit-scrollbar {width: 0;}
 	.disk-left h3{font-size:18px; height:30px; padding-left:10px; font-weight:800}
 	.disk-types{padding:12px 0;}
@@ -13,34 +13,37 @@
 	.disk-types li.on-this{background-color:#F2FAFF; color:#1E9FFF}
 	.disk-line{border-bottom:1px solid #eee; margin:6px 0;}
 	
-	.disk-table{margin-left:120px; overflow:hidden; height:calc(100vh - 53px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
+	.disk-table{margin-left:120px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
 	.layui-btn.tool-add{padding:0 12px;}
 	
-	.disk-path{height:43px;padding:0 4px 0 12px;}
+	.disk-path{height:48px;padding:0 4px 0 12px;}
 	.disk-breadcrumb{float:left; padding:11px 0}
 	.disk-breadcrumb span{color:#666; margin:0 8px; font-size:10px;}
 	.layui-tab{margin:0;}
-    .file-item {height:calc(100vh - 120px); overflow-y: auto;}
+    .file-item {height:calc(100vh - 216px); overflow-y: auto;}
 	.disk-path .layui-form-checkbox[lay-skin=primary]>div{padding-right:4px}
 	
     /** 文件 **/
     .file-item .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
     .file-item .file-subject:hover::-webkit-scrollbar { display: block; }
     .file-item .file-subject ul { display: flex; flex-wrap: wrap; }
-    .file-item .file-subject ul li {position: relative; height: 124px; margin: 8px; padding: 6px; border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 3px; transition: all 0.2s ease-in-out; }
+    .file-item .file-subject ul li {position: relative; height: 144px; margin:20px 10px; padding: 6px; border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 3px; transition: all 0.2s ease-in-out; }
     .file-item .file-subject ul li:hover {border: 1px solid #eee; background-color:#f8f8f8;}
     .file-item .file-subject ul li.on {border: 1px solid #ff5722; }
-    .file-item .file-subject ul li img { width: 66px; height: 66px; padding:16px;}
-    .file-item .file-subject ul li img.file-image { width: 98px; height: 98px; padding:0; border-radius: 2px; }
+    .file-item .file-subject ul li img { width: 86px; height: 86px; padding:16px;}
+    .file-item .file-subject ul li img.file-image { width: 118px; height: 118px; padding:0; border-radius: 2px; }
     .file-item .file-subject ul li video { width: 60px; height: 60px; border-radius: 3px; }
-    .file-item .file-subject ul li p {overflow: hidden; margin: 5px 0 0; width: 98px; font-size: 13px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+    .file-item .file-subject ul li p {overflow: hidden; margin: 5px 0 0; width: 118px; font-size: 13px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
     .file-item .file-subject ul li .file-check{position: absolute; width:20px; height:20px; left: 0; top: 0; display: none; font-size: 14px; border-radius:2px 0 4px 0; text-align: center; line-height: 20px; color: #ffffff; background-color:#fff; border-right:1px solid #eee; border-bottom:1px solid #eee; cursor:pointer;}	
 	.file-item .file-subject ul li:hover .file-check{display: block;}
     .file-item .file-subject ul li.on .file-check{ display: block; background: #ff5722; border-color:#ff5722}
 	.file-item .file-subject ul li .layui-btn-ctrl{position:absolute; top:0; right:0; display:none;}
 	.file-item .file-subject ul li:hover .layui-btn-ctrl{display:block}
 	.file-folder,.file-image,.file-pdf,.file-video,.file-audio{cursor:pointer;}
-    .file-item .file-subject ul li .has-share{position: absolute; width:20px; height:20px; right: 2px; top: 72px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#1E9FFF; border:1px solid #fff; padding:2px;}	
+    .file-item .file-subject ul li .has-share{position: absolute; width:20px; height:20px; right: 2px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#1E9FFF; border:1px solid #fff; padding:2px;}	
+	.file-item .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 32px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
+	
+	.file-item .file-subject ul li .file-info{position: absolute; width:100%; height:23px; left: 0; top: 0; text-align:center; font-size: 12px; line-height: 23px; background-color:rgba(0,0,0,.12);border-radius:2px 2px 0 0;}	
 	
     .file-footer { display: flex; align-items: center; padding: 5px 15px 0; height: 45px; border-top: 1px solid #f2f2f2; text-align: center; background: #ffffff; }
 
@@ -75,12 +78,13 @@
 			<div class="layui-input-inline" style="width:150px">
 				<input type="hidden" name="pid" value="0" />
 				<input type="hidden" name="ext" value="" />
+				<input type="hidden" name="limit" value="48" />
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 				<button type="reset" class="layui-btn layui-btn-reset">清空</button>
 			</div>
 		</form>
 		<div class="disk-path layui-form border-b">
-			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-component"></i> <a href="javascript:void(0);" data-id="0">共享文件</a></div>
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-component"></i> <a href="javascript:void(0);" data-id="0">回收站文件</a></div>
 		</div>
 		<!-- 主体 -->
 		<div class="file-item">
@@ -238,7 +242,7 @@
 						});
 
 						let folder = res.totalRow;
-						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">共享文件</a>';
+						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">回收站文件</a>';
 						if(folder.length>0){
 							for(var f=0;f<folder.length;f++){
 								folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
@@ -303,8 +307,7 @@
 									<div class="layui-btn-ctrl">'+ctrl+'\
 									<span class="file-back" style="display:none;" id="fileBack'+item[a].id+'" title="还原"></span>\
 									<span class="file-clear" style="display:none;" id="fileClear'+item[a].id+'" title="清除"></span>\
-									</div>\
-									<div class="file-check">✔</div>'+is_share+'</li>';
+									</div>'+is_share+'</li>';
 							}
 							$('#filesBox').html(li);
 							$('#laypage').show();

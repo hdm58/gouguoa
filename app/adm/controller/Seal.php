@@ -127,6 +127,9 @@ class Seal extends BaseController
 				}
 				if($detail['check_status']==0 || $detail['check_status']==4){
 					View::assign('detail', $detail);
+					if(is_mobile()){
+						return view('qiye@/approve/add_seal');
+					}
 					return view('edit');
 				}
 				return view(EEEOR_REPORTING,['code'=>403,'warning'=>'当前状态不支持编辑']);
@@ -164,8 +167,10 @@ class Seal extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

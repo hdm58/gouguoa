@@ -63,6 +63,10 @@ class Work extends BaseController
         if (request()->isAjax()) {
             $param = get_params();
             $map = [];
+			//按关键字检索
+			if( !empty($param['keywords']) ){
+				$map[] = ['works', 'like', '%'.$param['keywords'].'%'];
+			}
 			if($param['send']==1){
 				if (!empty($param['types'])) {
 					$map[] = ['types', '=', $param['types']];
@@ -111,6 +115,9 @@ class Work extends BaseController
 			$id = $param['id'] ? $param['id'] : 0;
 			if(!empty($param['start_date'])){
 				$param['start_date'] = strtotime($param['start_date']);
+			}
+			if(!empty($param['end_date'])){
+				$param['end_date'] = strtotime($param['end_date']);
 			}
 			if(!empty($param['range_date'])){
 				$range_date =explode('~', $param['range_date']);
@@ -239,7 +246,7 @@ class Work extends BaseController
 		$sender = get_admin($detail['admin_id']);
 		$detail['person_name'] = $sender['name'];
 		if($detail['send_time']>0){
-			$detail['send_time'] = date('Y-m-d H:i:s',$detail['send_time']);
+			$detail['send_time'] = to_date($detail['send_time']);
 		}
         //接收人查询
 		$user_names = Db::name('Admin')->where('status', 1)->where('id', 'in', $detail['to_uids'])->column('name');		

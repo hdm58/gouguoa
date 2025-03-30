@@ -15,7 +15,7 @@ declare (strict_types = 1);
 
 namespace app\home\controller;
 
-use app\api\BaseController;
+use app\base\BaseController;
 use app\home\model\Message as MessageList;
 use app\home\model\Msg as MsgList;
 use think\facade\Db;

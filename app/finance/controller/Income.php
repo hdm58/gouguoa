@@ -234,7 +234,7 @@ class Income extends BaseController
     }
 
     //删除到账记录
-    public function delete()
+    public function del()
     {
         $param = get_params();
         if (request()->isAjax()) {

@@ -39,6 +39,7 @@ class ProjectDocument extends Model
 					else{						
 						$item->project = '-';
 					}
+					$item['create_time'] = to_date($item['create_time']);
 				});
 			return $list;
         } catch(\Exception $e) {
@@ -56,7 +57,7 @@ class ProjectDocument extends Model
             }
             $detail['admin_name'] = Db::name('Admin')->where(['id' => $detail['admin_id']])->value('name');
             $detail['times'] = time_trans($detail['create_time']);
-            $detail['create_time'] = date('Y-m-d H:i:s', $detail['create_time']);
+            $detail['create_time'] = to_date($detail['create_time']);
         }
         return $detail;
     }

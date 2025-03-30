@@ -6,7 +6,7 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td colspan="4" class="red" style="line-height:1.8">
-				<p><strong>项目模块使用说明：</strong></p>
+				<p><strong>模块使用说明：</strong></p>
 				<p>{$detail.desc}</p>
 			</td>
 		</tr>
@@ -54,6 +54,15 @@
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_4</td>
+		</tr>
+		<tr>		
+			<td class="layui-td-gray-3">报销编号自动生成</td>
+			<td>
+				<input type="radio" name="conf_10" value="1" title="开启" {eq name="$detail.conf_10" value="1"}checked{/eq}>
+				<input type="radio" name="conf_10" value="0" title="不开启" {eq name="$detail.conf_10" value="0"}checked{/eq}>
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_10</td>
 		</tr>
 	</table>
 	<div class="pt-4">

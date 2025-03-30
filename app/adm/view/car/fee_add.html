@@ -8,7 +8,7 @@
 		<tr>
 			<td class="layui-td-gray">车辆名称<font>*</font></td>
 			<td colspan="3">
-				<input type="text" name="car_name" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择车辆" placeholder="请选择" class="layui-input picker-oa" data-types="car">
+				<input type="text" name="car_name" readonly lay-verify="required" lay-reqText="请选择车辆" placeholder="请选择" class="layui-input picker-oa" data-types="car">
 				<input type="hidden" name="car_id" value="">
 			</td>
 			<td class="layui-td-gray">费用类型<font>*</font></td>
@@ -39,17 +39,17 @@
 		<tr>
 			<td class="layui-td-gray">费用主题<font>*</font></td>
 			<td colspan="5">
-				<input type="text" name="title" autocomplete="off" lay-verify="required" lay-reqText="请完善费用主题" placeholder="请完善费用主题" class="layui-input">
+				<input type="text" name="title" lay-verify="required" lay-reqText="请完善费用主题" placeholder="请完善费用主题" class="layui-input">
 			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">收费日期<font>*</font></td>
-			<td><input type="text" name="fee_time" autocomplete="off" readonly placeholder="请选择收费日期" class="layui-input tool-time" data-max="0"></td>
+			<td><input type="text" name="fee_time" readonly placeholder="请选择收费日期" class="layui-input tool-time" data-max="0"></td>
 			<td class="layui-td-gray">费用金额<font>*</font></td>
-			<td><input type="text" name="amount" autocomplete="off" placeholder="请输入费用金额" lay-verify="required|number" lay-reqText="请输入费用金额" class="layui-input"></td>
+			<td><input type="text" name="amount" placeholder="请输入费用金额" lay-verify="required|number" lay-reqText="请输入费用金额" class="layui-input"></td>
 			<td class="layui-td-gray">经手人<font>*</font></td>
 			<td>
-				<input type="text" name="handled_name" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择经手人" placeholder="请选择" class="layui-input picker-admin">
+				<input type="text" name="handled_name" readonly lay-verify="required" lay-reqText="请选择经手人" placeholder="请选择" class="layui-input picker-admin">
 				<input type="hidden" name="handled">
 			</td>
 		</tr>
@@ -60,16 +60,16 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
 			</td>
 		</tr> 
 		<tr>
-			<td class="layui-td-gray" style="vertical-align:top;">收费内容</td>
+			<td class="layui-td-gray" style="vertical-align:top;">收费内容<font>*</font></td>
 			<td colspan="5">
-				<textarea name="content" placeholder="请输入收费内容" class="layui-textarea"></textarea>
+				<textarea name="content" placeholder="请输入收费内容" class="layui-textarea" lay-verify="required" lay-reqText="请完善收费内容"></textarea>
 			</td>
 		</tr>
 	</table>
@@ -101,7 +101,8 @@ function gouguInit() {
 				tool.sideClose(1000,'feeTable');				
 			}
 		}
-		tool.post("/adm/car/fee_add", data.field, callback);
+		let clickbtn = $(this);
+		tool.post("/adm/car/fee_add", data.field, callback,clickbtn);
 		return false;
 	});
 }

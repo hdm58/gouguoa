@@ -4,16 +4,15 @@
 .layui-tab-title .layui-this{background-color:#fff;}
 .layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0;}
 .layui-card-tips {color: #969696;}
-.layui-card-value {padding: 4px 0 16px;font-size: 18px;color: #1E9FFF;}
-.layui-tab-title .layui-this:after{z-index:1}
+.layui-card-value {padding: 4px 0 5px;font-size: 18px;color: #1E9FFF;}
 
 .check-items{overflow-x: auto; padding: 2px 0;}
 
-.check-item strong{margin-right:3px; font-size:20px;}
-.check-item strong.blue,.check-item strong.green{display:none;}
-.check-item.blue strong.black,.check-item.green strong.black{display:none;}
+.check-item .check-item-icon strong{margin-right:3px; font-size:36px;}
+.check-item strong.blue,.check-item strong.gray{display:none;}
+.check-item.blue strong.black,.check-item.gray strong.black{display:none;}
 .check-item.blue strong.blue{display:block;}
-.check-item.green strong.green{display:block;}
+.check-item.gray strong.gray{display:block;}
 
 .flow-flex-row {box-direction: row;
 	box-orient: horizontal;
@@ -32,14 +31,15 @@
     align-items: center;
 	flex-wrap: wrap;
 }
-.check-item{width: auto; -ms-flex-negative: 0; flex-shrink: 0; padding:4px 0;}
+.check-item{width: auto; -ms-flex-negative: 0; flex-shrink: 0; padding:8px 0;}
 .check-item i{font-size:20px; margin-right:3px;}
-.check-item span{color:#999;margin:0 1px;}
 .layui-icon[data-ok]{color:#34a853}
 .layui-icon[data-no]{color:#FF5722;}
 .layui-icon[data-on]{color:#4285f4;}
-.check-item-status{color:#969696; font-size:12px; margin-left:3px;}
+.check-item-time{color:#969696; font-size:12px; margin-left:3px;}
+.check-item .layui-icon.layui-icon-right{font-size:20px;}
 .check-item:last-child .layui-icon-right{display:none;}
+.file-card{line-height:normal;}
 </style>
 {/block}
 <!-- 主体 -->

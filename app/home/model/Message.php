@@ -61,6 +61,7 @@ class Message extends Model
 					$copy_name = Db::name('Admin')->where([['id','in',$item->copy_uids]])->column('name');
 					$item->copy_names = implode(',',$copy_name);
 				}
+				$item['create_time'] = to_date($item['create_time'],'Y-m-d H:i:s');	
 			});
 			return $list;
         } catch(\Exception $e) {

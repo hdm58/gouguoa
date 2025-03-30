@@ -61,7 +61,7 @@
 			<div>相关附件</div>
 			<div><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn">附件上传</button></div>
 		</td>
-		<td colspan="5" style="line-height:inherit">
+		<td colspan="5">
 			<div class="row" id="uploadBox">
 			{volist name="$detail.file_array" id="vo"}
 			<div class="layui-col-md4" id="file_{$vo.id}">{:file_card($vo)}</div>

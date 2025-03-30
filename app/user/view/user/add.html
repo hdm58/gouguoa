@@ -284,7 +284,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/user/user/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/user/user/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

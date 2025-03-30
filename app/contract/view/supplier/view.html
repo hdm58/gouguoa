@@ -20,14 +20,12 @@
 			<td class="layui-td-gray" style="vertical-align:top;">供应商简介</td>
 			<td colspan="3">{$detail.content}</td>
 		</tr>
+		{notempty name="$detail.file_ids"}
 		<tr>
 			<td class="layui-td-gray-2">
 				<div class="layui-input-inline">相关附件</div>
-				<div class="layui-input-inline">
-					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
-				</div>
 			</td>
-			<td colspan="3" style="line-height:inherit">
+			<td colspan="3">
 				<div class="layui-row" id="uploadBox">
 					{volist name="$detail.file_array" id="vo"}
 						<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
@@ -35,6 +33,7 @@
 				</div>
 			</td>
 		</tr>
+		{/notempty}
 		<tr>
 			<td colspan="6"><strong>联系人信息</strong><span class="layui-btn layui-btn-xs add-contact ml-3">+ 新增联系人</span></td>
 		</tr>

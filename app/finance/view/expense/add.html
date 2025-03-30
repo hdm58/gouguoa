@@ -8,11 +8,20 @@
 			<td class="layui-td-gray">报销员工</td>
 			<td>{$user.name}</td>
 			<td class="layui-td-gray">报销部门</td>
-			<td colspan="3">{$user.department}</td>
+			<td>{$user.department}</td>
+			<td class="layui-td-gray">报销主体</td>
+			<td>
+				<select name="subject_id" lay-verify="required" lay-reqText="请选择报销主体">
+					<option value="">请选择报销主体</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">凭证编号<font>*</font></td>
-			<td><input type="text" name="code" autocomplete="off" lay-verify="required" placeholder="请输入报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value=""></td>
+			<td><input type="text" name="code" value="{$codeno}" {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" placeholder="请输入报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value=""></td>
 			<td class="layui-td-gray">单据日期<font>*</font></td>
 			<td><input type="text" class="layui-input tool-time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="">	
 			</td>
@@ -60,7 +69,7 @@
 				<div class="layui-input-inline">附件</div>
 				<div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
@@ -127,23 +136,23 @@
 				return false;
 			}
 			tool.ask('审核期间不能编辑修改，确定报销数据无误？', function(index) {
-					let callback = function (e) {
-						layer.msg(e.msg);
-						if (e.code == 0) {
-							let checkCallback = function (e) {
-								layer.msg(e.msg);
-								if (e.code == 0) {
-									tool.sideClose(1000);				
-								}
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						let checkCallback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								tool.sideClose(1000);				
 							}
-							data.field.check_name = 'expense';
-							data.field.action_id = e.data.return_id;
-							oaCheck.submit(data.field,checkCallback);
 						}
+						data.field.check_name = 'expense';
+						data.field.action_id = e.data.return_id;
+						oaCheck.submit(data.field,checkCallback);
 					}
-					tool.post("/finance/expense/add", data.field, callback);
-					layer.close(index);
-				});
+				}
+				tool.post("/finance/expense/add", data.field, callback);
+				layer.close(index);
+			});
 			return false;
 		});
 	}		

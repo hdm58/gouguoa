@@ -7,7 +7,7 @@
 {/block}
 <!-- 主体 -->
 {block name="body"}
-<div class="p-page" style="height:calc(100% - 36px); box-sizing: border-box;">
+<div class="p-page" style="height:calc(100% - 40px); box-sizing: border-box;">
 	<div class="tree-left">
 		<h3>产品分类</h3>
 		<div id="cate"></div>
@@ -22,7 +22,7 @@
 				</select>
 			</div>
 			<div class="layui-input-inline" style="width:300px;">
-				<input type="text" name="keywords" placeholder="关键字，产品名称/产品编码" class="layui-input" autocomplete="off" />
+				<input type="text" name="keywords" placeholder="关键字，产品名称/产品编码" class="layui-input" />
 			</div>
 			<div class="layui-input-inline" style="width:150px;">
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
@@ -75,7 +75,7 @@
 			,url: "/contract/product/datalist"
 			,is_excel: true
 			,cellMinWidth: 60
-			,height: 'full-112'
+			,height: 'full-114'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'code',width:150, title: '产品编码', align:'center'}
@@ -152,7 +152,7 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.delete("/contract/product/set", { id: obj.data.id,status: 1,title: obj.data.title}, callback);
+					tool.delete("/contract/product/del", { id: obj.data.id,status: 1,title: obj.data.title}, callback);
 					layer.close(index);
 				});
 			}

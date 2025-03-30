@@ -34,7 +34,7 @@ class Msg extends Model
 			->each(function ($item, $key){
 				$item->from_name = '系统';
 				$item->thumb = '/static/home/images/icon.png';
-				
+				$item['create_time'] = to_date($item['create_time'],'Y-m-d H:i:s');	
 				if($item->from_uid>0){
 					$from_name = Db::name('Admin')->where('id',$item->from_uid)->find();
 					$item->from_name = $from_name['name'];
@@ -72,6 +72,7 @@ class Msg extends Model
 				$from_file_array = Db::name('File')->order('create_time desc')->where([['id','in',$detail['from_file_ids']]])->select()->toArray();
 				$detail['from_file_array'] = $from_file_array;
 			}
+			$detail['create_time'] = to_date($detail['create_time'],'Y-m-d H:i:s');	
 		}
         return $detail;
     }

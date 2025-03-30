@@ -65,7 +65,7 @@
 				{notempty name="$detail.file_array"}
 				<tr>
 					<td class="layui-td-gray" style="vertical-align:top">转发消息附件</td>
-					<td style="line-height:inherit">
+					<td>
 						<div class="layui-row">
 							{volist name="$detail.file_array" id="vo"}
 							<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>

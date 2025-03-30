@@ -847,14 +847,14 @@ function time_trans($time, $format = 'd')
  * @param string $format 默认'Y-m-d H:i:s'
  * @return string 完整的时间显示
  */
-function to_date($time = NULL, $format = 'Y-m-d H:i:s')
+function to_date($time = 0, $format = 'Y-m-d H:i:s')
 {
 	if(empty($time)){
 		return '';
 	}
 	else{
 		if (is_numeric($time)) {
-		return date($format, intval($time));
+			return date($format, intval($time));
 		}
 		else{
 			return $time;
@@ -975,16 +975,14 @@ function file_item($file,$view=''){
 	}
 	$filesize = to_size($file['filesize']);
 	$filedate = date('Y-m-d H:i',$file['create_time']);
-	$item = '<li data-id="'.$file['id'].'">
-							<div class="mbui-file-div">
-								'.$fileshow.'
-								<div class="mbui-file-info">
-									<div class="mbui-file-name line-limit-1">'.$file['name'].'</div>
-									<div class="mbui-file-size">'.$filesize.'，'.$filedate.'</div>
-								</div>
-								'.$file_del.'
-							</div>
-						</li>';
+	$item = '<div class="mbui-file-div"data-id="'.$file['id'].'">
+				'.$fileshow.'
+				<div class="mbui-file-info">
+					<div class="mbui-file-name line-limit-1">'.$file['name'].'</div>
+					<div class="mbui-file-size">'.$filesize.'，'.$filedate.'</div>
+				</div>
+				'.$file_del.'
+			</div>';
 	return $item;
 }
 

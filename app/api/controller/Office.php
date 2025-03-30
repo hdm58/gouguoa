@@ -31,6 +31,7 @@ class Office extends BaseController
 		$extension = pathinfo($path, PATHINFO_EXTENSION);
 		$filename = pathinfo($path, PATHINFO_FILENAME);
 		$office_config = get_system_config('other');
+		$office_config['token'] = 'secret_8JFhzy';
 		//$directory = substr($path, 0, 16);
 		//$key = set_salt(10).str_replace("/", "T", $directory).$filename.'.'.$extension;
 		$key = "key".$file['audit_time']."T".$id;

@@ -18,13 +18,12 @@ use think\Validate;
 class ProductValidate extends Validate
 {
     protected $rule = [
-        'title' => 'require|unique:product',
+        'title' => 'require',
         'id' => 'require',
     ];
 
     protected $message = [
         'title.require' => '名称不能为空',
-        'title.unique' => '同样的名称已经存在',
         'id.require' => '缺少更新条件',
     ];
 

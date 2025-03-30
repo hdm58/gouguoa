@@ -4,7 +4,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 	const tool = mbui.tool;
 	const opts={
 		"checkBox":"checkBox",//审核容器id
-		"check_copy": 1,//是否需要操送人
+		"check_copy": 1,//是否需要抄送人
 		"check_name": "",//审核类型标识
 		"check_btn":1,//是否显示提交审核按钮
 		"check_back":0,//是否支持反确认审核操作
@@ -74,7 +74,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 		btnTemplate: function () {
 			let me = this;
 			let tem =`
-			<div class="padding-xl center">
+			<div class="padding-16 center">
 				<button class="mbui-btn mbui-btn-normal" data-event="submit">提交审批</button>
 				<button type="reset" class="mbui-btn mbui-btn-primary">重置</button>
 				${me.sets.checking_btn}
@@ -90,11 +90,11 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let me = this;
 			let tem ='';
 			if(record.length>0){
-				tem+='<div class="padding">';
-				tem+='<p style="padding-bottom:12px;"><strong>审批记录</strong></p>';
+				tem+='<div class="padding-12 border-top">';
+				tem+='<div class="padding-12-b"><span class="f16 mbui-text-gray">审批记录</span></div>';
 				tem+='<div class="mbui-steps">';
 						for(let l=0;l<record.length;l++){
-						tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="black ml-2">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="green">'+record[l].content+'。</span></small></div>';
+						tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="text-black">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="text-black">'+record[l].content+'。</span></small></div>';
 						}
 					tem+='</div>';
 				tem+='</div>';
@@ -106,7 +106,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="mbui-bg-white">
+					<div class="bg-white">
 						${me.flowTemplate(flow)}
 						<div id="checkTR">${me.uidsTemplate()}</div>
 						${me.copyTemplate()}
@@ -121,7 +121,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="mbui-bg-white">
+					<div class="bg-white">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
@@ -134,7 +134,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let viewHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="mbui-bg-white">
+					<div class="bg-white">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 					</div>
@@ -276,13 +276,12 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 							${detail.check_unames}
 						</div>
 					</div>
-					
-					<div class="mbui-bg-white">
-						${(me.sets.check_copy == 1&&detail.check_copy_uids!='') ? checkCopy : ""}
-						<div class="padding border-top">
-							<strong class="f14">审批流</strong>
+					${(me.sets.check_copy == 1&&detail.check_copy_uids!='') ? checkCopy : ""}					
+					<div class="bg-white">
+						<div class="padding-12 border-top">
+							<span class="f16 mbui-text-gray">审批流</span>
 						</div>
-						<div class="mbui-bg-gray radius" style="padding:4px 12px; margin:0 12px;">
+						<div class="bg-gray radius-4" style="padding:4px 8px; margin:0 12px 12px;">
 							<div class="flow-flexbox check-items flow-flex-row" id="flowList">
 								<div class="flow-flexbox check-item flow-flex-row">
 										<i class="iconfont icon-fangkuai2" data-ok=""></i>
@@ -297,7 +296,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 						${detail.is_checker==1 && detail.step.check_role==0?checkNode:''}
 						${detail.is_checker==1?checkContent:''}
 					</div>
-					<div class="padding-xl center">
+					<div class="padding-16 center">
 						<input type="hidden" name="check_role" value="${detail.step.check_role}">
 						${detail.is_checker==1?btnCheck:''}
 						${detail.is_creater==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
@@ -312,12 +311,12 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let me = this;
 			let btnHtml ='';
 			if(me.sets.check_btn == 1){
-				btnHtml ='<div class="padding-xl center"><button class="mbui-btn mbui-btn-normal" data-event="submit">提交审批</button><button type="reset" class="mbui-btn mbui-btn-primary">重置</button></div>';
+				btnHtml ='<div class="padding-16 center"><button class="mbui-btn mbui-btn-normal" data-event="submit">提交审批</button><button type="reset" class="mbui-btn mbui-btn-primary">重置</button></div>';
 			}
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="mbui-bg-white">
+					<div class="bg-white">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
@@ -330,7 +329,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let viewHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="mbui-bg-white">
+					<div class="bg-white">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 					</div>
@@ -455,7 +454,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 									}
 									if(flow_data[a].check_role==5){
 										check_role = flow_data[a].flow_name;
-										check_types= ' <span class="mbui-badge mbui-bg-green">可回退</span>';
+										check_types= ' <span class="mbui-badge mbui-bg-text-green">可回退</span>';
 									}
 									let check_uids_info=flow_data[a].check_uids_info;
 									if(check_uids_info.length>0){

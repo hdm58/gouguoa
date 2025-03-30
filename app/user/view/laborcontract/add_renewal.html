@@ -96,7 +96,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray"><strong>相关附件</strong> <button class="layui-btn layui-btn-xs add-tr" type="button" data-type="upload" id="uploadBtn">+ 上传附件</button></td>
-			<td colspan="3" style="line-height:inherit">
+			<td colspan="3">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
@@ -134,7 +134,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/user/laborcontract/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/user/laborcontract/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

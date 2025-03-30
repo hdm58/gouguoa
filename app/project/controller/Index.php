@@ -108,9 +108,7 @@ class Index extends BaseController
                 $range_time = explode('到',$param['range_time']);
 				$param['start_time'] = strtotime(urldecode(trim($range_time[0])));
 				$param['end_time'] = strtotime(urldecode(trim($range_time[1])));
-            }			
-			$param['status'] = 2;
-			$param['step_sort'] = 0;
+            }
 			$step_title_data = isset($param['step_title']) ? $param['step_title'] : '';
 			$step_director_uid_data = isset($param['step_director_uid']) ? $param['step_director_uid'] : '';
 			$step_uids_data = isset($param['step_uids']) ? $param['step_uids'] : '';
@@ -121,32 +119,34 @@ class Index extends BaseController
 			$step = [];
 			$time_1 = $param['start_time'];
 			$time_2 = $param['end_time'];
-			foreach ($step_title_data as $key => $value) {
-				if (!$value) {
-					continue;
-				}				
-				$step_cycle_time = explode('到',$step_cycle_time_data[$key]);
-				$start_time = strtotime(urldecode(trim($step_cycle_time[0])));
-				$end_time = strtotime(urldecode(trim($step_cycle_time[1])));
-				if($start_time<$time_1){
-					return to_assign(1, '第'.($key+1).'阶段的开始时间不能小于项目计划周期的开始时间');
-					break;
+			if(!empty($step_title_data)){
+				foreach ($step_title_data as $key => $value) {
+					if (!$value) {
+						continue;
+					}				
+					$step_cycle_time = explode('到',$step_cycle_time_data[$key]);
+					$start_time = strtotime(urldecode(trim($step_cycle_time[0])));
+					$end_time = strtotime(urldecode(trim($step_cycle_time[1])));
+					if($start_time<$time_1){
+						return to_assign(1, '第'.($key+1).'阶段的开始时间不能小于项目计划周期的开始时间');
+						break;
+					}
+					if($end_time>$time_2){
+						return to_assign(1, '第'.($key+1).'阶段的结束时间不能大于项目计划周期的结束时间');
+						break;
+					}
+					$item = [];
+					$item['title'] = $value;
+					$item['director_uid'] = $step_director_uid_data[$key];
+					$item['uids'] = $step_uids_data[$key];
+					$item['sort'] = $key;
+					$item['start_time'] = $start_time;
+					$item['end_time'] = $end_time;
+					$item['remark'] = $step_remark_data[$key];
+					$item['id'] = $step_id_data[$key];
+					$item['create_time'] = time();
+					$step[]=$item;	
 				}
-				if($end_time>$time_2){
-					return to_assign(1, '第'.($key+1).'阶段的结束时间不能大于项目计划周期的结束时间');
-					break;
-				}
-				$item = [];
-				$item['title'] = $value;
-				$item['director_uid'] = $step_director_uid_data[$key];
-				$item['uids'] = $step_uids_data[$key];
-				$item['sort'] = $key;
-				$item['start_time'] = $start_time;
-				$item['end_time'] = $end_time;
-				$item['remark'] = $step_remark_data[$key];
-				$item['id'] = $step_id_data[$key];
-				$item['create_time'] = time();
-				$step[]=$item;	
 			}
             if (!empty($param['id']) && $param['id'] > 0) {
                 try {
@@ -163,6 +163,8 @@ class Index extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				$param['status'] = 2;
+				$param['step_sort'] = 0;
 				$param['admin_id'] = $this->uid;
                 $this->model->add($param,$step);
             }	 
@@ -170,6 +172,7 @@ class Index extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
 			if ($id>0) {
 				$detail = $this->model->getById($id);
+				$detail['current_step'] = Db::name('ProjectStep')->where(['project_id' => $id, 'is_current' => 1,'delete_time'=>0])->value('sort');
 				View::assign('detail', $detail);
 				return view('edit');
 			}
@@ -217,7 +220,7 @@ class Index extends BaseController
 
 			//相关附件
 			$file_array = Db::name('ProjectFile')
-                ->field('mf.id,mf.topic_id,mf.admin_id,f.name,f.filesize,f.filepath,f.fileext,f.create_time,f.admin_id,a.name as admin_name')
+                ->field('mf.id,mf.topic_id,mf.admin_id,f.id as file_id,f.name,f.filesize,f.filepath,f.fileext,f.create_time,f.admin_id,a.name as admin_name')
                 ->alias('mf')
                 ->join('File f', 'mf.file_id = f.id', 'LEFT')
                 ->join('Admin a', 'mf.admin_id = a.id', 'LEFT')
@@ -276,8 +279,10 @@ class Index extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

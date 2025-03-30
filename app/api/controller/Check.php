@@ -213,19 +213,19 @@ class Check extends BaseController
     public function get_flow_nodes($check_name='',$action_id=0,$flow_id=0)
     {		
 		$flow_cate = Db::name('FlowCate')->where(['name' => $check_name])->find();
+		$did = $this->did;
+		$map = [];
+		$map[] = ['cate_id','=',$flow_cate['id']];
+		$map[] = ['status','=',1];
+		$map[] = ['delete_time','=',0];		
+		$map1=[
+			['department_ids','=','']
+		];
+		$map2=[
+			['', 'exp', Db::raw("FIND_IN_SET('{$did}',department_ids)")]
+		];
+		$whereOr =[$map1,$map2];
 		if($action_id==0){
-			$did = $this->did;
-			$map = [];
-			$map[] = ['cate_id','=',$flow_cate['id']];
-			$map[] = ['status','=',1];
-			$map[] = ['delete_time','=',0];		
-			$map1=[
-				['department_ids','=','']
-			];
-			$map2=[
-				['', 'exp', Db::raw("FIND_IN_SET('{$did}',department_ids)")]
-			];
-			$whereOr =[$map1,$map2];
 			$flow = Db::name('Flow')
 				->where($map)
 				->where(function ($query) use($whereOr) {
@@ -275,7 +275,15 @@ class Check extends BaseController
 		}
 		$detail['check_record'] = $check_record;
 		if($detail['check_status']==0 || $detail['check_status']==4){
-			$flow = Db::name('Flow')->where(['cate_id' => $flow_cate['id'],'status'=>1,'delete_time'=>0])->select()->toArray();
+			//$flow = Db::name('Flow')->where(['cate_id' => $flow_cate['id'],'status'=>1,'delete_time'=>0])->select()->toArray();
+			$flow = Db::name('Flow')
+				->where($map)
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})
+				->select()->toArray();
 			$detail['flow'] = $flow;
 		}
 		else{				

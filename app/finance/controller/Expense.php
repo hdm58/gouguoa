@@ -89,6 +89,7 @@ class Expense extends BaseController
 					if(!empty($dids)){
 						$whereOr[] = ['did','in',$dids];
 					}
+					$whereOr[] = ['admin_id', '=', $this->uid];
 				}
 			}
 			//按时间检索
@@ -159,13 +160,23 @@ class Expense extends BaseController
             }	 
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
+			$is_codeno = Db::name('DataAuth')->where('name','finance_admin')->value('conf_10');
+			View::assign('is_codeno', $is_codeno);
             View::assign('expense_cate', Db::name('ExpenseCate')->where(['status' => 1])->select()->toArray());
+			View::assign('user', get_admin($this->uid));
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);
+				if(is_mobile()){
+					return view('qiye@/finance/add_expense');
+				}
 				return view('edit');
 			}
-            View::assign('user', get_admin($this->uid));
+			$codeno='';
+			if($is_codeno==1){
+				$codeno = get_codeno(3);
+			}
+            View::assign('codeno', $codeno);
 			if(is_mobile()){
 				return view('qiye@/finance/add_expense');
 			}
@@ -197,8 +208,10 @@ class Expense extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

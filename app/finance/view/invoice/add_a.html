@@ -63,7 +63,7 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
@@ -147,7 +147,8 @@
 					oaCheck.submit(data.field,checkCallback);
 				}
 			}
-			tool.post("/finance/invoice/add_a", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/finance/invoice/add_a", data.field, callback,clickbtn);
 			return false;
 		});
 	}

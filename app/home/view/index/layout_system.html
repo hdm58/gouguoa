@@ -21,6 +21,7 @@
 						<td class="info-td">执行时间限制</td>
 						<td>{:get_system_info('max_execution_time')}</td>
 					</tr>
+					{eq name=":get_system_config('system','qrcode')" value="2"}
 					<tr>
 						<td class="info-td">勾股OA</td>
 						<td colspan="3">{:CMS_VERSION}<a class="layui-badge layui-bg-blue" style="margin-left:8px"
@@ -34,7 +35,6 @@
 						<td class="info-td">Layui版本</td>
 						<td colspan="3">{:LAYUI_VERSION}<a class="layui-badge layui-bg-blue" style="margin-left:8px" href="https://layui.dev/docs/2/" target="_blank">Layui文档</a></td>
 					</tr>
-					{eq name=":get_system_config('system','qrcode')" value="2"}
 					<tr>
 						<td class="info-td">合作联系</td>
 						<td colspan="3"><i class="iconfont icon-weixin green"></i>微信号：hdm588，业务合作、功能定制请备注</td>
@@ -48,11 +48,11 @@
 						<td colspan="3"><a class="layui-badge layui-bg-blue" style="margin-right:8px" href="https://gitee.com/gouguopen/gougucms" target="_blank">勾股CMS</a><a class="layui-badge layui-bg-blue" style="margin-right:8px" href="https://gitee.com/gouguopen/blog" target="_blank">勾股BLOG</a><a class="layui-badge layui-bg-blue" href="https://gitee.com/gouguopen/dev" target="_blank" style="margin-right:8px">勾股DEV</a><a class="layui-badge layui-bg-blue" href="https://gitee.com/gouguopen/guoguadmin" target="_blank">勾股ADMIN</a></td>
 					</tr>
 					<tr>
-						<td colspan="4" style="text-align:center; color:#D2873D">🍗🍗 <strong>给作者加鸡腿 </strong>🍗🍗</td>
+						<td colspan="4" style="color:#E94335; font-size:14px"><strong>腾讯云服务器，通过我们的代理购买低至 1 折，点击图片了解详情</strong></td>
 					</tr>
 					<tr>
 						<td colspan="4">
-							<img src="https://www.gougucms.com/static/home/images/zfb.png" data-event="pay" style="width:50%; max-width:100%; cursor:pointer;" align=center /><img src="https://www.gougucms.com/static/home/images/wx.png" data-event="pay" style="width:50%; max-width:100%; cursor:pointer;"  align=center />
+							<a href="https://curl.qcloud.com/h3ibq5lX" target="_blank"><img src="https://blog.gougucms.com/storage/image/480x300.jpg" style="width:100%; max-width:100%; border-radius:6px; cursor:pointer;" align=center /></a>
 						</td>
 					</tr>
 					{/eq}
@@ -63,13 +63,6 @@
 </div>
 <script>
 function layoutSystem(){
-	$('body').on('click','[data-event="pay"]',function(){
-		var src=$(this).attr('src');
-		layer.open({
-			type:1,
-			title:'感谢您给作者加鸡腿🍗🍗',
-			content:'<img src="'+src+'" style="width:100%" align=center />',
-		});
-	})
+
 }
 </script>

@@ -13,7 +13,7 @@
 				<th>备注信息</th>
 				<th width="60">操作</th>
 			</tr>
-			{empty name="$detail.content"}
+			{empty name="$detail.content_array"}
 			<tr class="service-tr">
 				<td><input type="text" name="service_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入服务名称"></td>
 				<td><input type="text" name="service_date[]" value="" class="layui-input layui-input-readonly tool-time" data-range="到" lay-verify="required" lay-reqText="请选择服务周期" readonly></td>
@@ -24,7 +24,7 @@
 				<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
 			</tr>
 			{else/}
-			{volist name="$detail.content" id="vo"}
+			{volist name="$detail.content_array" id="vo"}
 			<tr class="service-tr">
 				<td><input type="text" name="service_title[]" value="{$vo.service_title|default=''}" class="layui-input" lay-verify="required" lay-reqText="请输入服务名称"></td>
 				<td><input type="text" name="service_date[]" value="{$vo.service_date|default=''}" class="layui-input layui-input-readonly tool-time" data-range="到" lay-verify="required" lay-reqText="请选择服务周期" readonly></td>

@@ -32,7 +32,8 @@ class Care extends Model
 				$item->cate = Db::name('CareCate')->where('id',$item->care_cate)->value('title');
 				$item->user_name = Db::name('Admin')->where('id',$item->uid)->value('name');
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
-				$item->care_time = date('Y-m-d',$item->care_time);
+				$item->care_time = to_date($item->care_time,'Y-m-d');
+				$item->create_time = to_date($item->create_time,'Y-m-d H:i:s');
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -81,6 +82,7 @@ class Care extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		$info['care_time'] = to_date($info['care_time'],'Y-m-d');
 		return $info;
     }
 

@@ -138,6 +138,10 @@
 {block name="script"}
 <script>
 	const moduleInit = ['tool'];
+	function isValidFileName(fileName) {
+		const illegalChars = /[\\\/\*\:"<>|\?]/;
+		return !illegalChars.test(fileName);
+	}
 	function gouguInit() {
 		var table = layui.table, tool = layui.tool ,form = layui.form,laypage = layui.laypage,upload = layui.upload, element=layui.element, dropdown=layui.dropdown;
 		let fileGroup = [{id:0,title:'未分组'}];
@@ -207,35 +211,6 @@
 			}
 		});
 		
-		$('#fileMove').on('click',function(){
-			let that = this;
-			dropdown.render({
-				elem: that,
-				align: 'right',
-				show: true, // 外部事件触发即显示
-				data: fileGroup,
-				click: function(obj){
-					let select_array = [];
-					$('#filesBox').find('li.on').each(function(index,item){
-						select_array.push($(item).data('id'));		
-					})
-					if(select_array.length<1){
-						layer.msg('请先选择文件');
-					}
-					else{				
-						layer.confirm('确定要把选中的文件移动到『'+obj.title+'』分组吗？', { icon: 3, title: '提示' }, function (index) {
-							let callback = function (e) {
-								layer.closeAll();
-								layer.msg(e.msg);
-								$('[lay-filter="webform"]').click();
-							}
-							tool.delete("/home/files/move", {group_id:obj.id,ids:select_array.join(',')}, callback);
-						});
-					}
-				}
-			});
-		})
-					
 		function add_group(id,val){
 			var title = '新增分组';
 			if(id>0){
@@ -302,6 +277,31 @@
 								}
 							});
 						}
+							
+						group.push({id:0,title:'未分组'});
+						dropdown.render({
+							elem: '#fileMove',
+							data: group,
+							click: function(obj){
+								let select_array = [];
+								$('#filesBox').find('li.on').each(function(index,item){
+									select_array.push($(item).data('id'));			
+								})
+								if(select_array.length<1){
+									layer.msg('请先选择文件');
+								}
+								else{				
+									layer.confirm('确定要把选中的文件移动到『'+obj.title+'』分组吗？', { icon: 3, title: '提示' }, function (index) {
+										let callback = function (e) {
+											layer.closeAll();
+											layer.msg(e.msg);
+											$('[lay-filter="webform"]').click();
+										}
+										tool.delete("/home/files/move", {group_id:obj.id,ids:select_array.join(',')}, callback);
+									});
+								}
+							}
+						});
 					}
 				}
 			});
@@ -423,6 +423,10 @@
 					// 获取文本框输入的值
 					var value = layero.find(".layui-layer-input").val();
 					if (value!='') {
+						if(isValidFileName(value)==false){
+							layer.msg('文件名不能包含下列任何字符：\/:*?".<>|');
+							return false;
+						}
 						let callback = function (e) {
 							layer.msg(e.msg);
 							$('[lay-filter="webform"]').click();

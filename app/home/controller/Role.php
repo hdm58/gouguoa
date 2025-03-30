@@ -44,10 +44,10 @@ class Role extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-            $ruleData = isset($param['rule']) ? $param['rule'] : 0;
-            $layoutData = isset($param['layout']) ? $param['layout'] : 0;
-            $menuData = isset($param['mobile_menu']) ? $param['mobile_menu'] : 0;
-            $barData = isset($param['mobile_bar']) ? $param['mobile_bar'] : 0;
+            $ruleData = isset($param['rule']) ? $param['rule'] : '';
+            $layoutData = isset($param['layout']) ? $param['layout'] : '';
+            $menuData = isset($param['mobile_menu']) ? $param['mobile_menu'] : '';
+            $barData = isset($param['mobile_bar']) ? $param['mobile_bar'] : '';
 			if($ruleData==0){
 				return to_assign(1, '权限节点至少选择一个');
 			}
@@ -56,8 +56,18 @@ class Role extends BaseController
 			}
             $param['rules'] = implode(',', $ruleData);
             $param['layouts'] = implode(',', $layoutData);
-            $param['mobile_menu'] = implode(',', $menuData);
-            $param['mobile_bar'] = implode(',', $barData);
+			if(empty($menuData)){
+				$param['mobile_menu'] = '';
+			}
+			else{
+				$param['mobile_menu'] = implode(',', $menuData);
+			}
+			if(empty($barData)){
+				$param['mobile_bar'] = '';
+			}
+			else{
+				$param['mobile_bar'] = implode(',', $barData);
+			}
             if (!empty($param['id']) && $param['id'] > 0) {
                 try {
                     validate(GroupCheck::class)->scene('edit')->check($param);

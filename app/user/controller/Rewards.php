@@ -101,7 +101,7 @@ class Rewards extends BaseController
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 				$detail['user_name'] = Db::name('Admin')->where('id',$detail['uid'])->value('name');
-				$detail['rewards_time'] = date('Y-m-d',$detail['rewards_time']);
+				$detail['rewards_time'] = to_date($detail['rewards_time'],'Y-m-d');
 				View::assign('detail', $detail);
 			}
 			View::assign('id', $id);
@@ -119,7 +119,7 @@ class Rewards extends BaseController
 			$detail['cate'] = Db::name('RewardsCate')->where('id',$detail['rewards_cate'])->value('title');
 			$detail['user_name'] = Db::name('Admin')->where('id',$detail['uid'])->value('name');
 			$detail['admin_name'] = Db::name('Admin')->where('id',$detail['admin_id'])->value('name');
-			$detail['rewards_time'] = date('Y-m-d',$detail['rewards_time']);
+			$detail['rewards_time'] = to_date($detail['rewards_time'],'Y-m-d');
 			View::assign('detail', $detail);
 			return view();
 		}
@@ -131,8 +131,10 @@ class Rewards extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
         $this->model->delById($id);
     }  
 

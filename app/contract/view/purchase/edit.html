@@ -118,7 +118,7 @@
 			<td class="layui-td-gray">
 				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
 			</td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.file_ids"}
@@ -218,7 +218,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/contract/purchase/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/contract/purchase/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

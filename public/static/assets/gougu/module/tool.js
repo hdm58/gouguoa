@@ -256,7 +256,7 @@ layui.define(function (exports) {
 				tool.reload(delay);
 			}
 		},
-		ajax: function (options, callback) {
+		ajax: function (options, callback, clickbtn) {
 			let format = 'json';
 			if (options.hasOwnProperty('data')) {
 				format = options.data.hasOwnProperty('format') ? options.data.format : 'json';
@@ -272,6 +272,18 @@ layui.define(function (exports) {
 					if (callback && typeof callback === 'function') {
 						callback(res);
 					}
+				},
+				beforeSend:function(){
+					if (clickbtn && typeof clickbtn === 'object') {
+						clickbtn.attr('disabled',true).html('提交中 ...');
+					}					
+				},
+				complete: function () {
+					if (clickbtn && typeof clickbtn === 'object') {
+						setTimeout(function(){
+							clickbtn.removeAttr('disabled').html('立即提交');
+						},1000);					
+					}					
 				}
 			}, options);
 			$.ajax(opts);
@@ -279,8 +291,8 @@ layui.define(function (exports) {
 		get: function (url, data, callback) {
 			this.ajax({url: url,type: "GET",data: data}, callback);
 		},
-		post: function (url, data, callback) {
-			this.ajax({url: url,type: "POST",data: data}, callback);
+		post: function (url, data, callback, clickbtn) {
+			this.ajax({url: url,type: "POST",data: data}, callback, clickbtn);
 		},
 		put: function (url, data, callback) {
 			this.ajax({url: url,type: "PUT",data: data}, callback);

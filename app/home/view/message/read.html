@@ -45,17 +45,25 @@
 		<tr>
 			<td class="layui-td-gray">消息内容</td>
 			<td colspan="3">
-			{$detail.content|default=''}{gt name="$detail.template" value="0"}{:get_message_link($detail.template,$detail.action_id)}{/gt}
+				<pre style="font-family:inherit">{$detail.content|default=''}</pre>
+				{gt name="$detail.template" value="0"}
+					{:get_message_link($detail.template,$detail.action_id)}
+				{/gt}
 			{if condition="($detail.msg_id > 0)"}		
 				<table class="layui-table" style="margin-top:10px">
 				<tr>
 					<td class="layui-td-gray-2">引用消息内容</td>
-					<td>{$detail.from_content}{gt name="$detail.from_template" value="0"}{:get_message_link($detail.from_template,$detail.from_action_id)}{/gt}</td>
+					<td>
+						<pre style="font-family:inherit">{$detail.from_content}</pre>
+						{gt name="$detail.from_template" value="0"}
+						{:get_message_link($detail.from_template,$detail.from_action_id)}
+						{/gt}
+					</td>
 				</tr>
 				{notempty name="$detail.from_file_array"}
 				<tr>
 					<td class="layui-td-gray" style="vertical-align:top">引用消息附件</td>
-					<td style="line-height:inherit">
+					<td>
 						<div class="layui-row">
 							{volist name="$detail.from_file_array" id="vo"}
 							<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
@@ -71,7 +79,7 @@
 		{notempty name="$detail.file_ids"}
 		<tr>
 			<td class="layui-td-gray">消息附件</td>
-			<td colspan="3" style="line-height:inherit">
+			<td colspan="3">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4">{:file_card($vo,'view')}</div>

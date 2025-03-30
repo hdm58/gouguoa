@@ -15,7 +15,7 @@ declare (strict_types = 1);
 
 namespace app\home\controller;
 
-use app\api\BaseController;
+use app\base\BaseController;
 use app\home\model\Leaves as LeavesModel;
 use app\home\validate\LeavesValidate;
 use think\exception\ValidateException;
@@ -72,7 +72,8 @@ class Leaves extends BaseController
 			}
             if (!empty($param['id']) && $param['id'] > 0) {
 				$this->model->edit($param);
-            } else {
+            }
+			else {
 				$param['admin_id'] = $this->uid;
 				$param['did'] = $this->did;
                 $this->model->add($param);
@@ -97,14 +98,6 @@ class Leaves extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			$detail['start_span_name'] = '上午';
-			$detail['end_span_name'] = '上午';
-			if($detail['start_span'] == 2){
-				$detail['start_span_name'] = '下午';
-			}
-			if($detail['end_span'] == 2){
-				$detail['end_span_name'] = '下午';
-			}
 			$detail['types_name'] = leaves_types_name($detail['types']);
 			View::assign('create_user', get_admin($detail['admin_id']));
 			View::assign('detail', $detail);
@@ -121,8 +114,10 @@ class Leaves extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
+		$param = get_params();
+		$id = $param['id'];
 		if (request()->isDelete()) {
 			$this->model->delById($id);
 		} else {

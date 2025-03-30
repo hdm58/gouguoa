@@ -24,7 +24,7 @@
 		{notempty name="$detail.file_ids"}
 		<tr>
 			<td class="layui-td-gray">关联附件</td>
-			<td colspan="3" style="line-height:inherit">
+			<td colspan="3">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
@@ -62,7 +62,7 @@
 		{notempty name="$detail.file_ids"}
 		<tr>
 			<td class="layui-td-gray">关联附件</td>
-			<td colspan="3" style="line-height:inherit">
+			<td colspan="3">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
@@ -80,7 +80,7 @@
 		{notempty name="$detail.other_file_ids"}
 		<tr>
 			<td class="layui-td-gray">发票附件</td>
-			<td colspan="3" style="line-height:inherit">
+			<td colspan="3">
 				<div class="layui-row">
 					{volist name="$detail.other_file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>

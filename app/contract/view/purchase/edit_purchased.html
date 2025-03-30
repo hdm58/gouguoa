@@ -14,7 +14,7 @@
 				<th>备注信息</th>
 				<th width="60">操作</th>
 			</tr>
-			{empty name="$detail.content"}
+			{empty name="$detail.content_array"}
 			<tr class="purchased-tr">
 				{eq name="is_purchased" value="1"}
 				<td><input type="text" name="purchased_title[]" value="" class="layui-input purchased-picker" readonly lay-verify="required" lay-reqText="请输入物品名称"><input type="hidden" name="purchased_id[]" value="0"></td>
@@ -30,7 +30,7 @@
 				<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
 			</tr>
 			{else/}
-			{volist name="$detail.content" id="vo"}
+			{volist name="$detail.content_array" id="vo"}
 			<tr class="purchased-tr">
 				{eq name="is_purchased" value="1"}
 				<td><input type="text" name="purchased_title[]" value="{$vo.purchased_title|default=''}" class="layui-input purchased-picker" readonly lay-verify="required" lay-reqText="请输入物品名称"><input type="hidden" name="purchased_id[]" value="{$vo.purchased_id|default=0}"></td>

@@ -6,15 +6,11 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">开始时间</td>
-			<td>
-				{$detail.start_date} {$detail.start_span_name}
-			</td>
+			<td>{$detail.start_date}</td>
 			<td class="layui-td-gray">结束时间</td>
-			<td>
-				{$detail.end_date} {$detail.end_span_name}
-			</td>
+			<td>{$detail.end_date}</td>
 			<td class="layui-td-gray">外出天数</td>
-			<td id="days">共{$detail.duration|default=0}天</td>
+			<td>共{$detail.duration|default=0}天</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">外出事由</td>
@@ -22,8 +18,8 @@
 		</tr>
 		{notempty name="$detail.file_ids"}
 		<tr>
-			<td class="layui-td-gray"><div class="layui-input-inline">附件</div></td>
-			<td colspan="5" style="line-height:inherit">
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4">{:file_card($vo,'view')}</div>

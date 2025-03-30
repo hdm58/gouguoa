@@ -38,6 +38,7 @@ class Ticket extends Model
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
 				$item->supplier_name = Db::name('Supplier')->where(['id' => $item->supplier_id])->value('title');
+				$item->create_time = to_date($item->create_time);
 				$item['check_user'] = '-';
 				if($item['check_status']==1 && !empty($item['check_uids'])){
 					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
@@ -103,6 +104,12 @@ class Ticket extends Model
 		}
 		if($info['project_id']>0){
 			$info['project_name'] = Db::name('Project')->where('id',$info['project_id'])->value('name');
+		}
+		if($info['open_time']>0){
+			$info['open_time'] = date('Y-m-d',$info['open_time']);
+		}
+		else{
+			$info['open_time']='';
 		}
 		$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
 		$info['file_array'] = $file_array;

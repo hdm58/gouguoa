@@ -45,7 +45,7 @@ var layPicker = {
 		var html = layPicker.initBody(data, key);
 		$('body').append(html);
 		// 给绑定元素添加标识
-		data.elem.attr('readonly', true);
+		//data.elem.attr('readonly', true);
 		data.elem.attr('lay-picker-id', key);
 
 		// 不等于自定义html才需要执行这些操作

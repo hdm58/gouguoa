@@ -43,11 +43,11 @@
 			</td>
 			<td class="layui-td-gray">分类名称<font>*</font></td>
 			<td>
-				<input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入分类名称" lay-reqText="请输入分类名称" class="layui-input">
+				<input type="text" name="title" value="{$detail.title}" lay-verify="required" placeholder="请输入分类名称" lay-reqText="请输入分类名称" class="layui-input">
 			</td>
 			<td class="layui-td-gray">排序</td>
 			<td>
-				<input type="text" name="sort" value="{$detail.sort}" placeholder="请输入排序，数字" value="0" autocomplete="off" class="layui-input">
+				<input type="text" name="sort" value="{$detail.sort}" placeholder="请输入排序，数字" value="0" class="layui-input">
 			</td>
 		</tr>
 		<tr>
@@ -81,7 +81,8 @@
 					}, 1000);					
 				}
 			}
-			tool.post("/contract/productcate/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/contract/productcate/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

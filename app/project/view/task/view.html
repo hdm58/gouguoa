@@ -56,7 +56,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">相关附件 <button type="button" class="layui-btn layui-btn-xs" id="uploadBtn">附件上传</button></td>
-			<td colspan="5" style="line-height:inherit">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
 					{notempty name="$file_array"}
@@ -78,7 +78,7 @@
 
 	<div class="layui-tab layui-tab-card" style="margin:0;" lay-filter="docDemoTabBrief">
 		<ul class="layui-tab-title">
-			<li class="layui-this">工作记录({$detail.comments})</li>
+			<li class="layui-this">工作记录({$detail.schedules})</li>
 			<li>员工评论({$detail.comments})</li>
 			<li>操作日志({$detail.logs})</li>
 		</ul>
@@ -181,7 +181,7 @@
 				,{field: 'labor_type_string', title: '工作类型', align:'center',width:80}
 				,{field: 'labor_time', title: '工时', align:'center',width:80}
 				,{field:'create_time', title: '创建时间',width:150,align:'center'}
-				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+				,{width:90,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
 					var html='';
 					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
 					if(d.admin_id !== login_admin){
@@ -189,8 +189,7 @@
 					}
 					else{
 						var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
-						var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
-						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+						html = '<div class="layui-btn-group">'+btn1+btn2+'</div>';
 						return html;
 					}
 				}}
@@ -231,15 +230,6 @@
 		//工作记录相关
 		$('.add-schedule').on('click', function () {
 			work.add(detail_id,{'id':0});	
-		})
-		
-		//任务日志
-		comment.log(detail_id,'task');
-
-		//评论
-		comment.load(detail_id,'task');
-		$('#commentInput').on('click', function () {
-			comment.textarea(0,detail_id,'task','',0,0,'');
 		})
 		//回复
 		$('#comment_task_' + detail_id).on('click', '[data-event="replay"]', function () {

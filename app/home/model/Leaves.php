@@ -77,8 +77,8 @@ class Leaves extends Model
     public function getById($id)
     {
         $info = self::find($id);
-		$info['start_date'] = date('Y-m-d',$info['start_date']);
-		$info['end_date'] = date('Y-m-d',$info['end_date']);
+		$info['start_date'] = date('Y-m-d H:i',$info['start_date']);
+		$info['end_date'] = date('Y-m-d H:i',$info['end_date']);
 		if(!empty($info['file_ids'])){
 			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
 			$info['file_array'] = $file_array;

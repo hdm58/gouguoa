@@ -30,6 +30,7 @@ class News extends Model
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {

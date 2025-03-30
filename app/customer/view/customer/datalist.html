@@ -12,10 +12,8 @@
 		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
 			<ul class="layui-tab-title">
 				<li class="layui-this">全部客户</li>
-				<li>我的客户</li>
-				{gt name="$is_leader" value="0"}
-				<li>下属客户</li>
-				{/gt}
+				<li>我的客户</li>				
+				<li {eq name="$is_leader" value="0"} style="display:none;"{/eq}>下属客户</li>				
 				<li>共享客户</li>
 			</ul>
 		</div>
@@ -86,8 +84,9 @@
 </div>
 
 <script type="text/html" id="toolbarDemo">
-  <div class="layui-btn-container">
+<div class="layui-btn-group">
   	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/customer/customer/add">+ 添加客户</button>
+	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="import"><i class="layui-icon">&#xe66f;</i>批量导入</button>
   </div>
 </script>
 
@@ -98,9 +97,9 @@
 {block name="script"}
 <script>
 	const is_leader = '{$is_leader}';
-	const moduleInit = ['tool','tablePlus','oaPicker','laydatePlus'];
+	const moduleInit = ['tool','tablePlus','oaPicker','uploadPlus','laydatePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool ,form = layui.form, element = layui.element,laydatePlus=layui.laydatePlus;
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form,element = layui.element, oaPicker = layui.oaPicker,uploadPlus=layui.uploadPlus,laydatePlus=layui.laydatePlus;
 		var follow_time = new laydatePlus({'target':'follow_time'});
 		var next_time = new laydatePlus({'target':'next_time'});
 		//tab切换
@@ -119,7 +118,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-152'
+			,height: 'full-154'
 			,cols:[
 				[ //表头
 					{
@@ -211,6 +210,25 @@
 				]
 			]
 		});
+			
+		//表头工具栏事件
+		table.on('toolbar(table_customer)', function(obj){
+			if (obj.event === 'import') {
+				let importUpload = new uploadPlus({
+					"title":'批量导入客户',
+					"use":'import',
+					"url":'/api/import/import_customer/type/my',
+					"import":{
+						"template":'/static/home/file/勾股OA客户导入模板.xlsx',
+						"tips":'如果导入失败，请根据提示注意检查表格数据，客户来源、所属行业、需要是系统中存在的数据，如果不存在的话可能会导入失败。'
+					},
+					callback:function(res){
+						layui.pageTable.reload();
+					}
+				});	
+				return;				
+			}
+		});	
 			
 		table.on('tool(table_customer)',function (obj) {
 			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态

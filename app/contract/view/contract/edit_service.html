@@ -13,7 +13,7 @@
 				<th>备注信息</th>
 				<th width="60">操作</th>
 			</tr>
-			{empty name="$detail.content"}
+			{empty name="$detail.content_array"}
 			<tr class="service-tr">
 				{eq name="is_service" value="1"}
 				<td><input type="text" name="service_title[]" value="" class="layui-input service-picker" readonly lay-verify="required" lay-reqText="请完善服务名称"><input type="hidden" name="service_id[]" value="0"></td>
@@ -28,7 +28,7 @@
 				<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
 			</tr>
 			{else/}
-			{volist name="$detail.content" id="vo"}
+			{volist name="$detail.content_array" id="vo"}
 			<tr class="service-tr">
 				{eq name="is_service" value="1"}
 				<td><input type="text" name="service_title[]" value="{$vo.service_title|default=''}" class="layui-input service-picker" readonly lay-verify="required" lay-reqText="请完善服务名称"><input type="hidden" name="service_id[]" value="{$vo.service_id|default='0'}"></td>

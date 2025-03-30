@@ -148,7 +148,8 @@ class EditLog extends Model
 			$field = self::$COMPILE[$name];
 			foreach ($list as $k => &$v) {
 				$v['action'] = '修改';
-				$v['times'] = time_trans(strtotime($v['create_time']));
+				$v['times'] = time_trans($v['create_time']);
+				$v['create_time'] = to_date($v['create_time']);
 				if($v['field'] == 'new'){
 					continue;
 				}

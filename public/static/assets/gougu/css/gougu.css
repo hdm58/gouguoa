@@ -27,7 +27,7 @@
 .layui-btn-reset:hover{color: #323232;}
 
 .layui-tab-brief>.layui-tab-title .layui-this{color:#1A75FF}
-.layui-tab-brief>.layui-tab-more li.layui-this:after, .layui-tab-brief>.layui-tab-title .layui-this:after{border-color:#1A75FF;z-index:1}
+.layui-tab-brief>.layui-tab-more li.layui-this:after, .layui-tab-brief>.layui-tab-title .layui-this:after{border-color:#1A75FF;}
 .layui-form-radio{padding-right:4px;}
 .layui-form-radio>i{margin-right:4px;}
 .layui-form-label{padding:9px; color:#909399}
@@ -430,10 +430,11 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
     display: flex;
 }
 .file-card .file-icon{font-size:44px; color:#646464; margin-right: 4px;}
-.file-card .file-info {width: calc(100% - 88px); line-height:1.5}
+.file-card .file-info {width: calc(100% - 86px);}
 .file-card .file-title {font-size: 14px; word-break:keep-all; overflow: hidden; text-overflow: ellipsis; display: width: 100%;}
 .file-card .file-ops{font-size:12px; color:#aaa;}
-.file-card .file-tool .iconfont{font-size:30px; font-weight:400; padding:3px; display:inline-block; cursor:pointer;}
+.file-card .file-tool{padding:5px 0;}
+.file-card .file-tool .iconfont{font-size:28px; font-weight:400; padding:6px 0 0 3px; display:inline-block; cursor:pointer;}
 .file-hasdelete{background:url(../images/delete_icon.png) no-repeat 99% 0; background-size: auto 58px; color:#aaa}
 .file-hasdelete .file-icon{color:#aaa;}
 .file-hasdelete .file-tool{display:none}

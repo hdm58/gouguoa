@@ -71,16 +71,16 @@ class User extends BaseController
 				->order('a.id desc')
                 ->each(function ($item, $key) {
 					//遍历次要部门数据
-					$departments = $item->departments->toArray();
+					$departments = $item['departments']->toArray();
 					if(empty($departments)){
-						$item->departments = '-';
+						$item['departments'] = '-';
 					}
 					else{
-						$item->departments = split_array_field($departments,'title');
+						$item['departments'] = split_array_field($departments,'title');
 					}
-                    $item->entry_time = empty($item->entry_time) ? '-' : date('Y-m-d', $item->entry_time);
-                    $item->last_login_time = empty($item->last_login_time) ? '-' : date('Y-m-d H:i', $item->last_login_time);
-                    $item->last_login_ip = empty($item->last_login_ip) ? '-' : $item->last_login_ip;
+                    $item['entry_time'] = to_date($item['entry_time'],'Y-m-d');
+                    $item['last_login_time'] = to_date($item['last_login_time'],'Y-m-d H:i');
+                    $item['last_login_ip'] = empty($item['last_login_ip']) ? '-' : $item['last_login_ip'];
                 });
             return table_assign(0, '', $admin);
         } else {

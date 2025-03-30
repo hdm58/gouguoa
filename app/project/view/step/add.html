@@ -35,7 +35,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/project/step/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/project/step/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

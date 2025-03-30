@@ -51,7 +51,7 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="7" style="line-height:inherit">
+			<td colspan="7">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.file_ids"}
@@ -126,7 +126,8 @@ function gouguInit() {
 				tool.sideClose(1000);				
 			}
 		}
-		tool.post("/contract/purchased/add", data.field, callback);
+		let clickbtn = $(this);
+		tool.post("/contract/purchased/add", data.field, callback,clickbtn);
 		return false;
 	});
 }

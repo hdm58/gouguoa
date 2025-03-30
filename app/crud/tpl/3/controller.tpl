@@ -108,9 +108,11 @@ class <Bcontroller> extends BaseController
    /**
     * 删除
     */
-    public function del($id)
+    public function del()
     {
 		if (request()->isDelete()) {
+			$param = get_params();
+			$id = isset($param['id']) ? $param['id'] : 0;
 			$this->model->delById($id);
 		} else {
             return to_assign(1, "错误的请求");

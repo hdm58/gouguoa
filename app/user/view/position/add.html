@@ -87,18 +87,6 @@
 	const moduleInit = ['tool'];
 	function gouguInit() {
 		var form = layui.form,tool=layui.tool;
-		form.on('submit(webform)', function(data){
-			let callback = function (e) {
-				layer.msg(e.msg);
-				if (e.code == 0) {
-					setTimeout(function () {
-						parent.location.reload();
-					}, 1000);					
-				}
-			}
-			tool.post("/user/position/add", data.field, callback);
-			return false;
-		});
 		//监听提交
 		form.on('submit(webform)', function(data){
 			let callback = function (e) {
@@ -107,7 +95,8 @@
 					tool.sideClose(1000);
 				}
 			}
-			tool.post("/user/position/add", data.field, callback);
+			let clickbtn = $(this);
+			tool.post("/user/position/add", data.field, callback,clickbtn);
 			return false;
 		});
 	}

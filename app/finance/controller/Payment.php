@@ -227,7 +227,7 @@ class Payment extends BaseController
     }
 
     //删除付款记录
-    public function delete()
+    public function del()
     {
         $param = get_params();
         if (request()->isAjax()) {

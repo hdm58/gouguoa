@@ -30,8 +30,13 @@ layui.define(['tool'],function(exports){
 		return size+unitArr[index];
 	}	
 	//是否是对象
-	let isObject = function(obj) {
+	function isObject(obj) {
 		return Object.prototype.toString.call(obj) === '[object Object]';
+	}
+	//名称是否合法
+	function isValidFileName(fileName) {
+		const illegalChars = /[\\\/\*\:"<>|\?]/;
+		return !illegalChars.test(fileName);
 	}
 	const opts={
 		"title":'上传文件',
@@ -126,7 +131,7 @@ layui.define(['tool'],function(exports){
 					else{
 						//虚拟删除
 						boxInput.val(idsArray.join(','));
-						$('#uploadImg' + id).remove();
+						$('#uploadFile' + id).remove();
 					}
 					layer.close(index);
 				});
@@ -149,6 +154,10 @@ layui.define(['tool'],function(exports){
 						// 获取文本框输入的值
 						var value = layero.find(".layui-layer-input").val();
 						if (value!='') {
+							if(isValidFileName(value)==false){
+								layer.msg('文件名不能包含下列任何字符：\/:*?".<>|');
+								return false;
+							}
 							let new_title = value+'.'+fileext;
 							let callback = function (e) {
 								layer.msg(e.msg);
@@ -201,7 +210,7 @@ layui.define(['tool'],function(exports){
 							
 							let view_btn = '<span class="file-ctrl blue" data-ctrl="edit" data-type="'+type+'" data-fileid="'+res.data.id+'" data-ext="'+ext+'" data-filename="'+res.data.name+'" data-href="'+res.data.filepath+'" data-id="'+res.data.id+'" data-uid="'+res.data.uid+'" title="附件操作"><i class="iconfont icon-gengduo1"></i></span>';
 							
-							let temp = `<div class="layui-col-md${attachment.colmd}" id="uploadImg${res.data.id}">
+							let temp = `<div class="layui-col-md${attachment.colmd}" id="uploadFile${res.data.id}">
 									<div class="file-card" id="fileItem${res.data.id}">
 										<i class="file-icon iconfont ${type_icon}"></i>
 										<div class="file-info">
@@ -578,4 +587,4 @@ layui.define(['tool'],function(exports){
 	}
 	//输出接口
 	exports('uploadPlus', uploadPlus);
-});   
+});
