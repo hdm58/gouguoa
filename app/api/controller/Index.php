@@ -305,7 +305,9 @@ class Index extends BaseController
         $param = get_params();
 		$log = new EditLog();
 		$list = $log->datalist($param);
-        return to_assign(0, '', $list);
+		$total = Db::name('EditLog')->where(['name'=>$param['name'],'action_id'=>$param['action_id']])->count();
+		$totalRow['total'] = $total;
+        return to_assign(0, '', $list,$totalRow);
     }
 
 

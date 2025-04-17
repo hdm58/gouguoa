@@ -1,5 +1,5 @@
 layui.define(function(exports) {
-	//tablePlus在原来的table模块的基础上实现了批量数据导出功能，实现defaultToolbar中筛选列记忆功能
+	//tablePlus在原来的table模块的基础上实现了批量数据导出功能，实现defaultToolbar中筛选列记忆功能,实现了外部搜索功能
 	var table = layui.table;	
 	var form = layui.form;	
     var MOD_NAME='tablePlus';	
@@ -58,7 +58,14 @@ layui.define(function(exports) {
 		}
 		if(params.help === undefined){
 			params.help = '无帮助说明';
+		}
+		if(params.order_field === undefined){
+			params.order_field = 'order_field';
 		}		
+		if(params.order_type === undefined){
+			params.order_type = 'order_type';
+		}
+		
 		let defaultToolbar = [
 		  'filter',
 		  {
@@ -175,6 +182,19 @@ layui.define(function(exports) {
 			});
 			return false;
 		});
+		
+		// 触发排序事件
+		let filter = $(params.elem).attr('lay-filter');
+		table.on('sort('+filter+')', function(obj){
+			$('[name="'+params.order_field+'"]').val(obj.field);
+			$('[name="'+params.order_type+'"]').val(obj.type);
+            var searchObject = form.val('barsearchform');
+			layui.pageTable.reload({
+				where:searchObject,
+				page: {curr: 1}
+			});
+		});
+		
 		//重置搜索提交
 		$('body').on('click', '[lay-filter="table-reset"]', function () {
 			let prev = $(this).prev();

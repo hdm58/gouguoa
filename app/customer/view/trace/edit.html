@@ -20,7 +20,7 @@
 			</td>
 			<td class="layui-td-gray">跟进方式<font>*</font></td>
 			<td>
-			  <select name="type" lay-verify="required" lay-reqText="请选择跟进方式">
+			  <select name="types" lay-verify="required" lay-reqText="请选择跟进方式">
 				<option value="">请选择</option>
 				{volist name=":get_base_type_data('basic_customer',3)" id="v"}
 				<option value="{$v.id}" {eq name="v.id" value="$detail.types"} selected{/eq}>{$v.title}</option>

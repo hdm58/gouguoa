@@ -32,6 +32,7 @@ class Comment extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$param['admin_id'] = $this->uid;
 		$where=[];
 		if (!empty($param['module'])) {
 			$where[] = ['module', '=', $param['module']];
@@ -40,9 +41,10 @@ class Comment extends BaseController
 			$where['topic_id'] = $param['topic_id'];
 		}			
 		$where[] = ['delete_time', '=', 0];
-		$param['admin_id'] = $this->uid;
 		$list = $this->model->datalist($param,$where);
-		return table_assign(0, '', $list);
+		$total = Db::name('Comment')->where($where)->count();
+		$totalRow['total'] = $total;
+		return table_assign(0, '', $list,$totalRow);
     }
 	
     //添加修改评论内容

@@ -64,13 +64,15 @@ class Msg extends Model
 			$detail['file_array'] = $file_array;
 			//引用消息附件
 			if($detail['msg_id']>0){
-				$from_msg = self::field('content,file_ids,template,action_id')->where(['id' => $detail['msg_id']])->find();
-				$detail['from_template'] = $from_msg['template'];
-				$detail['from_action_id'] = $from_msg['action_id'];
-				$detail['from_content'] = $from_msg['content'];
-				$detail['from_file_ids'] = $from_msg['file_ids'];				
-				$from_file_array = Db::name('File')->order('create_time desc')->where([['id','in',$detail['from_file_ids']]])->select()->toArray();
-				$detail['from_file_array'] = $from_file_array;
+				$from_msg =  Db::name('Msg')->find($detail['msg_id']);
+				if(!empty($from_msg)){
+					$detail['from_template'] = $from_msg['template'];
+					$detail['from_action_id'] = $from_msg['action_id'];
+					$detail['from_content'] = $from_msg['content'];
+					$detail['from_file_ids'] = $from_msg['file_ids'];				
+					$from_file_array = Db::name('File')->order('create_time desc')->where([['id','in',$detail['from_file_ids']]])->select()->toArray();
+					$detail['from_file_array'] = $from_file_array;
+				}
 			}
 			$detail['create_time'] = to_date($detail['create_time'],'Y-m-d H:i:s');	
 		}

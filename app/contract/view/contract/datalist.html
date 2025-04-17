@@ -12,7 +12,7 @@
 			</ul>
 		</div> 
 	</div> 
-	<form class="layui-form gg-form-bar border-x" id="barsearchform">
+	<form class="layui-form gg-form-bar border-x" id="barsearchform" lay-filter="barsearchform">
 		{gt name="$is_auth" value="0"}
 		<div class="layui-input-inline user-name" style="width:90px;">
 			<input type="text" name="username" placeholder="选择签定人" class="layui-input picker-admin" readonly />
@@ -57,10 +57,12 @@
 			<input type="text" class="layui-input" id="end_time" placeholder="选择合同到期日期" readonly name="end_time">
 		</div>
 		<div class="layui-input-inline" style="width:220px;">
-			<input type="text" name="keywords" placeholder="输入关键字，合同编号/合同名称" class="layui-input" autocomplete="off" />
+			<input type="text" name="keywords" placeholder="输入关键字，合同编号/合同名称" class="layui-input" />
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<input type="hidden" name="tab" value="0" />
+			<input type="hidden" name="order_field" value=''>
+			<input type="hidden" name="order_type" value=''>
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -87,13 +89,14 @@
 	const contract_types = [{"id":1,"title":"普通合同"},{"id":2,"title":"产品合同"},{"id":3,"title":"服务合同"}];
 	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
 	function gouguInit() {
-		var table = layui.tablePlus,dropdown = layui.dropdown,element = layui.element, tool = layui.tool,laydatePlus = layui.laydatePlus;
+		var table = layui.tablePlus,form = layui.form,dropdown = layui.dropdown,element = layui.element, tool = layui.tool,laydatePlus = layui.laydatePlus;
 		
 		//tab切换
 		element.on('tab(tab)', function(data){
 			$('[name="tab"]').val(data.index);
 			$("#barsearchform")[0].reset();
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
 			return false;
 		});
 		
@@ -110,11 +113,13 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,height: 'full-154'
+			,autoSort: false
 			,cols: [[ //表头
 				{
 					field: 'id',
 					title: 'ID号',
 					align: 'center',
+					sort: true,
 					width: 80
 				},{ field: 'check_status', title: '审批状态', align: 'center', width: 110, templet: function (d) {
 					var html = '<span class="check-status-color-' + d.check_status + '">『' + d.status_name + '』</span>';
@@ -145,10 +150,11 @@
 						return html;
 					}
 				},{
-					field: 'interval_time',
+					field: 'end_time',
 					title: '合同有效时间',
 					align: 'center',
 					width: 248,
+					sort: true,
 					templet: function (d) {
 						var html = d.interval_time;
 						if (d.delay > 0 && d.delay < delay_num) {
@@ -178,6 +184,7 @@
 					field: 'sign_time',
 					title: '签订日期',
 					align: 'center',
+					sort: true,
 					width: 100
 				},{
 					field: 'right',

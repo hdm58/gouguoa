@@ -24,7 +24,10 @@ class Purchase extends Model
     public function datalist($param=[], $where=[], $whereOr=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$order = empty($param['order']) ? 'id desc' : $param['order'];
+		$order = 'id desc';
+		if(!empty($param['order_field']) && !empty($param['order_type'])){
+			$order = $param['order_field'].' '.$param['order_type'];
+		}
         try {
             $list = self::where($where)
 			->where(function ($query) use($whereOr) {

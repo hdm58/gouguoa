@@ -435,14 +435,16 @@ layui.define(['tool'], function (exports) {
 			names:names,
 			type:type,
 			callback:function(data){
-				let select_id=[],select_name=[];
+				let select_id=[],select_name=[],select_did=[];
 				for(var a=0; a<data.length;a++){
 					select_id.push(data[a].id);
 					select_name.push(data[a].name);
+					select_did.push(data[a].did);
 				}
 				console.log(select_name);
 				that.val(select_name.join(','));
 				that.next().val(select_id.join(','));
+				that.next().next().val(select_did.join(','));
 			}
 		});
 	});
@@ -463,14 +465,16 @@ layui.define(['tool'], function (exports) {
 			names:names,
 			type:type,
 			callback:function(data){
-				let select_id=[],select_name=[];
+				let select_id=[],select_name=[],select_did=[];
 				for(var a=0; a<data.length;a++){
 					select_id.push(data[a].id);
 					select_name.push(data[a].name);
+					select_did.push(data[a].did);
 				}
 				console.log(select_name);
 				that.val(select_name.join(','));
 				that.next().val(select_id.join(','));
+				that.next().next().val(select_did.join(','));
 			}
 		});
 	});

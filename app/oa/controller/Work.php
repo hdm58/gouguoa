@@ -43,7 +43,7 @@ class Work extends BaseController
 			->order('a.send_time desc')
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key) {
-				$item->send_time = empty($item->send_time) ? '-' : date('Y-m-d H:i:s', $item->send_time);
+				$item->send_time = empty($item->send_time) ? '-' : to_date($item->send_time,'Y-m-d H:i:s');
 				$item->from_name = Db::name('Admin')->where(['id' => $item->from_uid])->value('name');
 				$item->to_name = Db::name('Admin')->where(['id' => $item->to_uid])->value('name');
 				if($item->start_date>0){

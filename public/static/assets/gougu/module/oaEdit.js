@@ -51,6 +51,7 @@ layui.define(['tool','oaPicker','tinymce'],function(exports){
 						itemLog+='<div class="py-3 log-more"><button class="layui-btn layui-btn-normal layui-btn-sm" type="button">查看更多</button></div>';
 					}
 					$("#"+box).html(itemLog);
+					$('#'+box+'Total').html(res.action.total);
 				}
 				else{
 					if(page ==1){

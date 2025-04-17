@@ -3,6 +3,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 	const opts={
 		"box":'commentBox',//容器id
 		"input": 'commentInput',
+		"total": 'commentTotal',
 		"topic_id":0,
 		"module": '',
 		"callback":function(e){
@@ -64,6 +65,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 					itemComment+='<div class="py-3 log-more"><button class="layui-btn layui-btn-normal layui-btn-sm" type="button">查看更多</button></div>';
 				}
 				$('#'+me.sets.box).html(itemComment).data('page',page);
+				$('#'+me.sets.total).html(res.totalRow.total);
 			}
 			else{
 				if(page ==1){

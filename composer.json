@@ -17,7 +17,13 @@
     ],
     "require": {
         "php": ">=8.0",
-        "topthink/framework": "^8.0",
+		"ext-curl": "*",
+        "ext-fileinfo": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-zip": "*",
+        "topthink/framework": "^8.0.3",
+		"topthink/think-orm": "^4.0",
 		"topthink/think-filesystem": "^2.0",
         "topthink/think-multi-app": "^1.0",
         "topthink/think-view": "^2.0",
@@ -26,7 +32,8 @@
         "overtrue/pinyin": "^5.2",
         "phpmailer/phpmailer": "^6.8",
         "firebase/php-jwt": "^6.8",
-        "phpoffice/phpspreadsheet": "^1.2"
+        "phpoffice/phpspreadsheet": "^1.2",
+        "phpoffice/phpword": "^1.2"
     },
     "require-dev": {
         "symfony/var-dumper": "^6.0",
@@ -48,5 +55,11 @@
             "@php think service:discover",
             "@php think vendor:publish"
         ]
+    },
+	"repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.tencent.com/composer/"
+        }
     }
 }

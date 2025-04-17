@@ -64,8 +64,8 @@
 		<tr>
 			<td class="layui-td-gray">使用人员</td>
 			<td>
-				<input type="text" name="users_name" value="{$detail.users_name|default=''}"  readonly placeholder="请选择使用人员" class="layui-input picker-admin">
-				<input type="hidden" name="users" value="{$detail.user_ids}">
+				<input type="text" name="users_name" value="{$detail.users_name|default=''}"  readonly placeholder="请选择使用人员" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="user_ids" value="{$detail.user_ids}">
 			</td>
 			<td class="layui-td-gray">使用部门</td>
 			<td><select id="user_dids" name="user_dids" xm-selected="{$detail.user_dids}" xm-select="select1" xm-select-skin="default"></select></td>

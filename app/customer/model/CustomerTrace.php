@@ -132,7 +132,12 @@ class CustomerTrace extends Model
 		}
 		$follow_time = self::order('follow_time', 'desc')->where(['delete_time'=>0,'cid'=>$cid])->value('follow_time');
 		$next_time = self::order('next_time', 'desc')->where(['delete_time'=>0,'cid'=>$cid])->value('next_time');
-		Db::name('Customer')->strict(false)->field(true)->update(['id'=>$cid,'follow_time'=>$follow_time,'next_time'=>$next_time]);
+		if(!empty($follow_time)){
+			Db::name('Customer')->strict(false)->field(true)->update(['id'=>$cid,'follow_time'=>$follow_time,'next_time'=>$next_time]);
+		}
+		else{
+			Db::name('Customer')->strict(false)->field(true)->update(['id'=>$cid,'follow_time'=>0,'next_time'=>0]);
+		}
 		return to_assign();
     }
 }

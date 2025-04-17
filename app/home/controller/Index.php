@@ -368,7 +368,7 @@ class Index extends BaseController
 						$item->mobile = hidetel($item->mobile);
 						$item->email = hidetel($item->email);
 					}
-                    $item->entry_time = empty($item->entry_time) ? '-' : date('Y-m-d', $item->entry_time);
+                    $item->entry_time = empty($item->entry_time) ? '-' : to_date($item->entry_time,'Y-m-d',);
                 });
             return table_assign(0, '', $admin);
         } else {

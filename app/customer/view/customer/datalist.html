@@ -76,6 +76,8 @@
 		</div>
 		<div class="layui-input-inline" style="width:148px">
 			<input type="hidden" name="tab" value="0" />
+			<input type="hidden" name="order_field" value=''>
+			<input type="hidden" name="order_type" value=''>
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -107,7 +109,8 @@
 			$('[name="tab"]').val(data.index);
 			$("#barsearchform")[0].reset();
 			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
 			return false;
 		});
 		layui.pageTable = table.render({
@@ -119,10 +122,11 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,height: 'full-154'
+			,autoSort: false
 			,cols:[
 				[ //表头
 					{
-						field: 'id',title: 'ID号',align: 'center',width: 80
+						field: 'id',title: 'ID号',align: 'center',sort: true,width: 80
 					},{
 						field: 'name',
 						title: '客户名称',
