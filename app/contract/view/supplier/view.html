@@ -28,7 +28,7 @@
 			<td colspan="3">
 				<div class="layui-row" id="uploadBox">
 					{volist name="$detail.file_array" id="vo"}
-						<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+						<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
 					{/volist}
 				</div>
 			</td>

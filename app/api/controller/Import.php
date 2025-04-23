@@ -247,7 +247,7 @@ class Import extends BaseController
 				if(empty($name)){
 					continue;
 				}
-				$count_name = Db::name('Customer')->where('name',$name)->count();
+				$count_name = Db::name('Customer')->where(['name'=>$name,'delete_time'=>0])->count();
 				if($count_name>0){
 					return to_assign(1, '第'.($j - 2).'行的客户名称已经存在');
 				}

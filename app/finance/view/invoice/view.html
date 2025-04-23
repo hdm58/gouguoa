@@ -65,7 +65,7 @@
 			<td colspan="5">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
 					{/volist}
 				</div>
 			</td>
@@ -96,7 +96,7 @@
 					<input type="hidden" data-type="file" name="other_file_ids" value="{$detail.other_file_ids}">
 					{notempty name="$detail.other_file_ids"}
 					{volist name="$detail.other_file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo)}</div>
 					{/volist}
 					{/notempty}
 				</div>

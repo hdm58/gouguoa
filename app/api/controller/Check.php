@@ -481,12 +481,13 @@ class Check extends BaseController
 						event('SendMessage',$msg);
 					}
 				}
-				return to_assign();
+				return to_assign(0,'操作成功',['check_status'=>$param['check_status']]);
 			}
 			else{
 				return to_assign(1,'操作失败');
 			}
 		}
+		//审批拒绝
 		else if($param['check'] == 2){
 			$check_uids = explode(",",strval($detail['check_uids']));
 			if (!in_array($this->uid, $check_uids)){		

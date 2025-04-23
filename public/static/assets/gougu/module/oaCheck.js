@@ -501,7 +501,10 @@ layui.define(['tool','oaPicker'], function (exports) {
 							},
 							success: function (e) {
 								layer.msg(e.msg);
-								if (e.code == 0) {	
+								if (e.code == 0) {
+									if(e.check_status==2 && typeof me.sets.check_ok ==='function'){
+										me.sets.check_ok();
+									}
 									tool.sideClose(1000);
 								}
 							}

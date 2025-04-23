@@ -28,7 +28,7 @@
 		<td class="layui-td-gray">联系地址</td>
 		<td colspan="3">{$detail.address}</td>
 		<td class="layui-td-gray">录入时间</td>
-		<td>{$detail.create_time}</td>
+		<td>{$detail.create_time|date='Y-m-d H:i:s'}</td>
 	  </tr>
 	  {gt name="$detail.belong_uid" value="0"}
 	  <tr>
@@ -46,7 +46,7 @@
 		<td class="layui-td-gray">所属行业</td>
 		<td>{$detail.industry}</td>
 		<td class="layui-td-gray-2">最后更新时间</td>
-		<td>{$detail.update_time}</td>
+		<td>{$detail.update_time|date='Y-m-d H:i:s'}</td>
 	  </tr>
 	  <tr>
 		<td class="layui-td-gray">客户来源</td>

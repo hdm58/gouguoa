@@ -220,12 +220,12 @@ layui.define(['tool'],function(exports){
 										<div class="file-tool">${view_btn}<span class="name-edit green" style="display:none;" data-id="${res.data.id}" data-fileid="${res.data.id}" id="fileEdit${res.data.id}" data-name="${res.data.name}" data-fileext="${res.data.fileext}" title="重命名"></span><span class="file-delete red" style="display:none;" data-id="${res.data.id}" data-fileid="${res.data.id}" id="fileDel${res.data.id}" title="删除"><i class="iconfont icon-shanchu"></i></span></div>
 									</div>
 								</div>`;
-							boxInput.val(idsArray.join(','));	
-							box.append(temp);					
+							boxInput.val(idsArray.join(','));			
 							if (typeof (attachment.ajaxSave) === "function") {
 								attachment.ajaxSave(idsArray.join(','));
 							}
 							else{
+								box.append(temp);	
 								layer.msg(res.msg);
 							}
 						}

@@ -48,12 +48,12 @@ class Expense extends BaseController
 			$where[]=['delete_time','=',0];
 			if($tab == 0){
 				//全部
-				$whereOr[] = ['admin_id', '=', $this->uid];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
 				$auth = isAuthExpense($uid);
 				if($auth == 0){
+					$whereOr[] = ['admin_id', '=', $this->uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
 					$dids_a = get_leader_departments($uid);	
 					$dids_b = get_role_departments($uid);
 					$dids = array_merge($dids_a, $dids_b);

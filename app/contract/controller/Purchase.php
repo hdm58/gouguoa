@@ -133,24 +133,18 @@ class Purchase extends BaseController
 				$end_time =explode('~', $param['end_time']);
 				$where[] = ['end_time', 'between',[strtotime(urldecode($end_time[0])),strtotime(urldecode($end_time[1].' 23:59:59'))]];
             }
-            $whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-			
-			$dids_a = get_leader_departments($uid);
 			//是否是合同管理员
 			$auth = isAuth($uid,'contract_admin','conf_1');
-			if($auth == 1){
+			if($auth == 0){
+				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+				$dids_a = get_leader_departments($uid);
 				$dids_b = get_role_departments($uid);
 				$dids = array_merge($dids_a, $dids_b);
 				if(!empty($dids)){
 					$whereOr[] = ['did','in',$dids];
-				}
-			}
-			else{
-				if(!empty($dids_a)){
-					$whereOr[] = ['did','in',$dids_a];
 				}
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
@@ -188,24 +182,18 @@ class Purchase extends BaseController
 				$end_time =explode('~', $param['end_time']);
 				$where[] = ['end_time', 'between',[strtotime(urldecode($end_time[0])),strtotime(urldecode($end_time[1].' 23:59:59'))]];
             }
-            $whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-			
-			$dids_a = get_leader_departments($uid);
 			//是否是合同管理员
 			$auth = isAuth($uid,'contract_admin','conf_1');
-			if($auth == 1){
+			if($auth == 0){
+				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+				$dids_a = get_leader_departments($uid);
 				$dids_b = get_role_departments($uid);
 				$dids = array_merge($dids_a, $dids_b);
 				if(!empty($dids)){
 					$whereOr[] = ['did','in',$dids];
-				}
-			}
-			else{
-				if(!empty($dids_a)){
-					$whereOr[] = ['did','in',$dids_a];
 				}
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
@@ -242,24 +230,18 @@ class Purchase extends BaseController
 				$end_time =explode('~', $param['end_time']);
 				$where[] = ['end_time', 'between',[strtotime(urldecode($end_time[0])),strtotime(urldecode($end_time[1].' 23:59:59'))]];
             }
-            $whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-			
-			$dids_a = get_leader_departments($uid);
 			//是否是合同管理员
 			$auth = isAuth($uid,'contract_admin','conf_1');
-			if($auth == 1){
+			if($auth == 0){
+				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+				$dids_a = get_leader_departments($uid);
 				$dids_b = get_role_departments($uid);
 				$dids = array_merge($dids_a, $dids_b);
 				if(!empty($dids)){
 					$whereOr[] = ['did','in',$dids];
-				}
-			}
-			else{
-				if(!empty($dids_a)){
-					$whereOr[] = ['did','in',$dids_a];
 				}
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
