@@ -2,9 +2,9 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-1">审批类型</h3>
+	<h3 class="pb-2">审批类型</h3>
 	{eq name="$id" value="0"}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">类型名称<font>*</font></td>
 			<td><input type="text" name="title" value="" lay-verify="required" autocomplete="off" placeholder="请输入审批类型名称" lay-reqText="请输入类型名称" class="layui-input"></td>
@@ -62,6 +62,11 @@
 			</td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray">消息模板</td>
+			<td>
+				<input type="text" name="template_title" value="" readonly autocomplete="off" class="layui-input picker-oa" data-types='template' placeholder="请选择">
+				<input type="hidden" name="template_id" value="0">
+			</td>
 			<td class="layui-td-gray">展示图标<font>*</font></td>
 			<td>
 				<div class="layui-input-inline" style="width:50%;">
@@ -69,24 +74,46 @@
 				</div>			
 				<a href="/static/assets/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
 			</td>
-			<td class="layui-td-gray">排序</td>
-			<td><input type="text" name="sort" value="" autocomplete="off" class="layui-input"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">消息模板</td>
-			<td>
-				<input type="text" name="template_title" value="" readonly autocomplete="off" class="layui-input picker-oa" data-types='template' placeholder="请选择">
-				<input type="hidden" name="template_id" value="0">
-			</td>
-			<td class="layui-td-gray-2">是否列表显示</td>
+			<td class="layui-td-gray-2">在工作台快捷显示</td>
 			<td>
 				<input type="radio" name="is_list" value="1" title="显示" checked>
 				<input type="radio" name="is_list" value="0" title="不显示">
 			</td>
+			<td class="layui-td-gray-2">审批通过后支持通知抄送人</td>
+			<td>
+				<input type="radio" name="is_copy" value="1" title="支持" checked>
+				<input type="radio" name="is_copy" value="0" title="不支持">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">审批过程中支持撤回</td>
+			<td>
+				<input type="radio" name="is_back" value="1" title="支持" checked>
+				<input type="radio" name="is_back" value="0" title="不支持">
+			</td>
+			<td class="layui-td-gray-2">审批时支持上传附件</td>
+			<td>
+				<input type="radio" name="is_file" value="1" title="支持">
+				<input type="radio" name="is_file" value="0" title="不支持" checked>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">审批通过后支持反确认</td>
+			<td>
+				<input type="radio" name="is_reversed" value="1" title="支持">
+				<input type="radio" name="is_reversed" value="0" title="不支持" checked>
+			</td>
+			<td class="layui-td-gray-2">审批通过后支持导出PDF打印</td>
+			<td>
+				<input type="radio" name="is_export" value="1" title="支持">
+				<input type="radio" name="is_export" value="0" title="不支持" checked>
+			</td>
 		</tr>
 	</table>
 	{else/}
-	<table class="layui-table">
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">类型名称<font>*</font></td>
 			<td><input type="text" name="title" value="{$detail.title}" lay-verify="required" autocomplete="off" placeholder="请输入审批类型名称" lay-reqText="请输入类型名称" class="layui-input"></td>
@@ -144,6 +171,11 @@
 			</td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray">消息通知模板</td>
+			<td>
+				<input type="text" name="template_title" value="{$detail.template_title|default=''}" readonly autocomplete="off" class="layui-input picker-oa" data-types='template' placeholder="请选择">
+				<input type="hidden" name="template_id" value="{$detail.template_id}">
+			</td>
 			<td class="layui-td-gray">展示图标<font>*</font></td>
 			<td>
 				<div class="layui-input-inline" style="width:50%;">
@@ -151,24 +183,51 @@
 				</div>			
 				<a href="/static/assets/icon/index.html" target="_blank" style="margin-left:10px; color:#007AFF">[查看图标]</a>
 			</td>
-			<td class="layui-td-gray">排序</td>
-			<td><input type="text" name="sort" value="{$detail.sort}" autocomplete="off" class="layui-input"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">消息模板</td>
-			<td>
-				<input type="text" name="template_title" value="{$detail.template_title|default=''}" readonly autocomplete="off" class="layui-input picker-oa" data-types='template' placeholder="请选择">
-				<input type="hidden" name="template_id" value="{$detail.template_id}">
-			</td>
-			<td class="layui-td-gray-2">是否列表显示</td>
+			<td class="layui-td-gray-2">在工作台快捷显示</td>
 			<td>
 				<input type="radio" name="is_list" value="1" title="显示" {eq name="$detail.is_list" value="1"}checked{/eq}>
 				<input type="radio" name="is_list" value="0" title="不显示" {eq name="$detail.is_list" value="0"}checked{/eq}>
 			</td>
+			<td class="layui-td-gray-2">审批通过后支持通知抄送人</td>
+			<td>
+				<input type="radio" name="is_copy" value="1" title="支持" {eq name="$detail.is_copy" value="1"}checked{/eq}>
+				<input type="radio" name="is_copy" value="0" title="不支持" {eq name="$detail.is_copy" value="0"}checked{/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">审批过程中支持撤回</td>
+			<td>
+				<input type="radio" name="is_back" value="1" title="支持" {eq name="$detail.is_back" value="1"}checked{/eq}>
+				<input type="radio" name="is_back" value="0" title="不支持" {eq name="$detail.is_back" value="0"}checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">审批时支持上传附件</td>
+			<td>
+				<input type="radio" name="is_file" value="1" title="支持" {eq name="$detail.is_file" value="1"}checked{/eq}>
+				<input type="radio" name="is_file" value="0" title="不支持" {eq name="$detail.is_file" value="0"}checked{/eq}>
+			</td>
+		</tr>
+		<tr>	
+			<td class="layui-td-gray-2">审批通过后支持反确认</td>
+			<td>
+				<input type="radio" name="is_reversed" value="1" title="支持" {eq name="$detail.is_reversed" value="1"}checked{/eq}>
+				<input type="radio" name="is_reversed" value="0" title="不支持" {eq name="$detail.is_reversed" value="0"}checked{/eq}>
+			</td>
+			<td class="layui-td-gray-2">审批通过后支持导出PDF打印</td>
+			<td>
+				<input type="radio" name="is_export" value="1" title="支持" {eq name="$detail.is_export" value="1"}checked{/eq}>
+				<input type="radio" name="is_export" value="0" title="不支持" {eq name="$detail.is_export" value="0"}checked{/eq}>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<span class="red" style="font-size:12px;">温馨提示：审批类型的配置，如果有不明白的<a class="blue" href="https://blog.gougucms.com/home/book/detail/bid/3/id/242.html" target="_blank">可以点击这里查看</a></span></td>
+			</td>
 		</tr>
 	</table>
 	{/eq}
-	<div class="py-2">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>

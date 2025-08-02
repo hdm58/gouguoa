@@ -98,6 +98,9 @@ class Ticket extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
+		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
+		$info['subject'] = Db::name('Enterprise')->where(['id' =>$info['invoice_subject']])->value('title');
 		$info['supplier_name'] = Db::name('Supplier')->where(['id' => $info['supplier_id']])->value('title');
 		if($info['purchase_id']>0){
 			$info['purchase_name'] = Db::name('Purchase')->where('id',$info['purchase_id'])->value('name');
@@ -111,8 +114,10 @@ class Ticket extends Model
 		else{
 			$info['open_time']='';
 		}
-		$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
-		$info['file_array'] = $file_array;
+		if(!empty($info['file_ids'])){
+			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
+			$info['file_array'] = $file_array;
+		}
 		return $info;
     }
 

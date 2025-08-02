@@ -115,7 +115,7 @@
 		});
 		layui.pageTable = table.render({
 			elem: "#table_customer"
-			,title: '公海客户列表'
+			,title: '客户列表'
 			,toolbar: "#toolbarDemo"
 			,url: "/customer/customer/datalist"
 			,page: true
@@ -125,9 +125,9 @@
 			,autoSort: false
 			,cols:[
 				[ //表头
+					{type:'checkbox',fixed:'left'},
+					{field: 'id',title: 'ID号',align: 'center',sort: true,width: 80},
 					{
-						field: 'id',title: 'ID号',align: 'center',sort: true,width: 80
-					},{
 						field: 'name',
 						title: '客户名称',
 						minWidth:300,
@@ -217,6 +217,8 @@
 			
 		//表头工具栏事件
 		table.on('toolbar(table_customer)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
 			if (obj.event === 'import') {
 				let importUpload = new uploadPlus({
 					"title":'批量导入客户',
@@ -231,6 +233,29 @@
 					}
 				});	
 				return;				
+			}
+			var idArray=[];
+			for(var i=0;i<data.length;i++){
+				idArray.push(data[i].id);
+			}
+			if (obj.event === 'sea') {
+				if(data.length==0){
+					layer.msg('请选择要操作的客户');
+					return false;
+				}
+				layer.confirm('您确定要把选中的客户移入公海?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/customer/index/to_sea", {id: idArray.join(',')}, callback);
+					layer.close(index);
+				});
 			}
 		});	
 			

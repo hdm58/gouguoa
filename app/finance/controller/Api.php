@@ -14,6 +14,7 @@ declare (strict_types = 1);
 namespace app\finance\controller;
 
 use app\api\BaseController;
+use app\finance\model\Loan;
 use app\finance\model\Expense;
 use app\finance\model\Invoice;
 use app\finance\model\InvoiceIncome;
@@ -24,6 +25,42 @@ use think\facade\View;
 
 class Api extends BaseController
 {
+    //获取获取借支
+    public function get_loan()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['delete_time', '=', 0];
+		$where[] = ['admin_id', '=', $this->uid];		
+		$where[] = ['balance_status', '<', 2];		
+		$where[] = ['pay_status', '=', 1];
+		$where[] = ['check_status', '=', 2];
+		$where[] = ['back_status', '=', 0];
+		/*
+		if(!empty($param['project_id'])){
+			$where[] = ['project_id', '=', $param['project_id']];
+		}
+		else{
+			$where[] = ['project_id', '=', 0];
+		}
+		*/
+		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
+		$list = Db::name('Loan')->where($where)
+			->paginate(['list_rows'=> $rows])
+			->each(function ($item, $key) {
+				$item['create_time'] = to_date($item['create_time'],'Y-m-d');
+				$item['pay_time'] = to_date($item['pay_time'],'Y-m-d');
+				$item['un_balance_cost'] = ($item['cost']*100 - $item['balance_cost']*100)/100;
+				if($item['balance_status']==0){
+					$item['balance_name']='待冲抵';
+				}
+				if($item['balance_status']==1){
+					$item['balance_name']='部分冲抵';
+				}
+				return $item;
+			});
+		return table_assign(0, '', $list);
+    }
     //删除报销项
     public function del_expense_interfix()
     {
@@ -66,6 +103,78 @@ class Api extends BaseController
 						'create_time'=>date('Y-m-d H:i:s'),
 						'action_id'=>$detail['id'],
 						'title' => '报销'
+					]
+				];
+				event('SendMessage',$msg);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+	
+	//借支设置为已打款
+    public function topay2()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthExpense($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有打款权限，请联系管理员或者HR");
+			}
+			//打款，数据操作
+            $param['pay_status'] = 1;
+            $param['pay_admin_id'] = $this->uid;
+            $param['pay_time'] = time();
+            $res = Loan::where('id', $param['id'])->strict(false)->field(true)->update($param);
+            if ($res !== false) {
+				add_log('topay', $param['id'],$param,'借支');
+				//发送消息通知
+				$detail = Loan::where(['id' => $param['id']])->find();
+				$msg=[
+					'from_uid'=>$this->uid,//发送人
+					'to_uids'=>$detail['admin_id'],//接收人
+					'template_id'=>'loan_pay',//消息模板标识
+					'content'=>[ //消息内容
+						'create_time'=>date('Y-m-d H:i:s'),
+						'action_id'=>$detail['id'],
+						'title' => '借支'
+					]
+				];
+				event('SendMessage',$msg);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+
+	//借支设置为已归还
+    public function topay3()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthExpense($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有操作权限，请联系管理员或者HR");
+			}
+			//打款，数据操作
+            $param['back_status'] = 1;
+            $param['back_admin_id'] = $this->uid;
+            $param['back_time'] = time();
+            $res = Loan::where('id', $param['id'])->strict(false)->field(true)->update($param);
+            if ($res !== false) {
+				add_log('toback', $param['id'],$param,'借支');
+				//发送消息通知
+				$detail = Loan::where(['id' => $param['id']])->find();
+				$msg=[
+					'from_uid'=>$this->uid,//发送人
+					'to_uids'=>$detail['admin_id'],//接收人
+					'template_id'=>'loan_back',//消息模板标识
+					'content'=>[ //消息内容
+						'create_time'=>date('Y-m-d H:i:s'),
+						'action_id'=>$detail['id'],
+						'title' => '借支'
 					]
 				];
 				event('SendMessage',$msg);

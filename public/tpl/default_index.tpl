@@ -33,7 +33,7 @@ class Index{$suffix}
 			<div class="info-tips">哎呀！出错啦，请开启debug模式调试，<a href="https://blog.gougucms.com/home/book/detail/bid/3/id/77.html" target="_blank">开启debug</a></div>
 		</div>
 		<div class="footer">
-			Copyright © 2022-2024 勾股OA ，Powered by GouguOPEN
+			Copyright © 2022-2025 勾股OA ，Powered by GouguOPEN
 		</div>
 	</div>
 </body>

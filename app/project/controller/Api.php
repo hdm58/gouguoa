@@ -443,7 +443,7 @@ class Api extends BaseController
         }
     }
 	
-	//关闭项目
+	//开启项目
     public function open()
     {
         if (request()->isPost()) {
@@ -500,12 +500,12 @@ class Api extends BaseController
     {
         $param = get_params();
 		$detail = Db::name('Project')->where(['id' => $param['id']])->find();
-		if($detail['status'] > 2){
-			return to_assign(1, "不支持该操作：项目已完成或者已关闭");
+		if($detail['status'] > 3){
+			return to_assign(1, "不支持该操作：项目已关闭");
 		}
 		//当前审核节点详情
 		$step = Db::name('ProjectStep')->where(['project_id'=>$detail['id'],'is_current' => 1,'delete_time'=>0])->find();
-		if ($this->uid != $step['director_uid']){		
+		if (!empty($step) && $this->uid != $step['director_uid']){		
 			return to_assign(1,'您没权限操作');
 		}
 		//审核通过
@@ -560,7 +560,38 @@ class Api extends BaseController
 			else{
 				return to_assign(1,'已经是第一个阶段了');
 			}
-		}				
+		}
+		//回退审核
+		else if($param['check'] == 3){
+			$auth = isAuth($this->uid,'project_admin','conf_1');
+			if($detail['admin_id'] == $this->uid || $detail['director_uid'] == $this->uid || $auth==1){
+				//获取最后一步的审核信息
+				$prev_step = Db::name('ProjectStep')->where([['project_id','=',$detail['id']],['delete_time','=',0]])->order('sort', 'desc')->find();
+				if(!empty($prev_step)){
+					//最后一步审核
+					Db::name('ProjectStep')->where('id', $prev_step['id'])->strict(false)->field(true)->update(['is_current'=>1]);
+					Db::name('Project')->where('id', $detail['id'])->strict(false)->field(true)->update(['status'=>2]);
+					$checkData=array(
+						'project_id' => $detail['id'],
+						'step_id' => $prev_step['id'],
+						'check_uid' => $this->uid,
+						'check_time' => time(),
+						'status' => $param['check'],
+						'content' => $param['content'],
+						'create_time' => time()
+					);	
+					Db::name('ProjectStepRecord')->strict(false)->field(true)->insertGetId($checkData);
+					add_log('refue', $param['id'], $param,'项目阶段');
+					return to_assign();
+				}
+				else{
+					return to_assign(1,'项目阶段不存在');
+				}
+			}
+			else{
+				return to_assign(1, "只有项目管理员、项目创建人、项目负责人才有权限操作");
+			}
+		}		
     }
 	
 	//获取项目类别
@@ -568,6 +599,20 @@ class Api extends BaseController
     {
 		$list = get_base_data('project_cate');
 		return to_assign(0, '', $list);
+    }
+	
+	public function get_project_step()
+	{
+		$param = get_params();
+		$where = array();
+		if (!empty($param['keywords'])) {
+			$where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
+		}
+		$where[] = ['status', '=', 1];
+		$where[] = ['delete_time', '=', 0];
+		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
+		$list = Db::name('Step')->where($where)->order('id desc')->paginate(['list_rows'=> $rows]);
+		return table_assign(0, '', $list);
     }
 	
 	public function project_edit()

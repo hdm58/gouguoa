@@ -7,7 +7,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-4">
-	<h3 class="pb-3">{$detail.name}员工档案详情</h3>
+	<h3 class="pb-2">{$detail.name}员工档案详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td colspan="8"><strong>基本信息</strong></td>
@@ -20,8 +20,8 @@
 				{eq name="$detail.sex" value="1"}男{/eq}
 				{eq name="$detail.sex" value="2"}女{/eq}
 			</td>
-			<td rowspan="7" class="layui-td-gray-2">头像</td>
-			<td rowspan="7" valign="top" style="width: 180px;">
+			<td rowspan="6" class="layui-td-gray-2">头像</td>
+			<td rowspan="6" valign="top" style="width: 180px;">
 				<div class="layui-upload" style="width: 180px;">
 					<img src="{$detail.thumb}" style="max-width: 100%;" />
 				</div>
@@ -72,6 +72,8 @@
 			<td>{$detail.education}</td>
 			<td class="layui-td-gray">专业</td>
 			<td>{$detail.speciality}</td>
+			<td class="layui-td-gray">参加工作时间</td>
+			<td>{$detail.work_date}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">家庭住址</td>
@@ -119,7 +121,7 @@
 			<td class="layui-td-gray">职级</td>
 			<td>
 				{volist name=":get_base_type_data('basic_user',2)" id="v"}
-				{eq name="$detail.position_rank" value="$v.id"}{$v.title}{/eq}>
+				{eq name="$detail.position_rank" value="$v.id"}{$v.title}{/eq}
 				{/volist}
 			</td>
 		</tr>
@@ -129,19 +131,23 @@
 				{eq name="$detail.type" value="3"}实习{/eq}
 				{eq name="$detail.type" value="2"}试用{/eq}
 				{eq name="$detail.type" value="1"}正式{/eq}
+				，
+				{eq name="$detail.is_staff" value="1"}企业员工{/eq}
+				{eq name="$detail.is_staff" value="2"}劳动派遣{/eq}
+				{eq name="$detail.is_staff" value="3"}兼职人员{/eq}
 			</td>
-			<td class="layui-td-gray">工资卡开户行</td>
+			<td class="layui-td-gray">员工工号</td>
+			<td>{$detail.job_number}</td>
+			<td class="layui-td-gray">社保号</td>
+			<td>{$detail.social_account}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">工资卡开户行</td>
 			<td>{$detail.bank_info}</td>
 			<td class="layui-td-gray">工资卡帐号</td>
 			<td>{$detail.bank_account}</td>
-		</tr>
-		<tr>
 			<td class="layui-td-gray">公积金号</td>
 			<td>{$detail.provident_account}</td>
-			<td class="layui-td-gray">社保卡号</td>
-			<td>{$detail.social_account}</td>
-			<td class="layui-td-gray">参加工作时间</td>
-			<td>{$detail.work_date}</td>
 		</tr>
 		{notempty name="$edu"}
 		<tr>
@@ -295,6 +301,9 @@
 		</tr>
 		{/notempty}
 	</table>
+	<div class="pt-4">
+		<a class="layui-btn" href="/api/export/pdf?types=files&id={$detail.id}" target="_blank">导出PDF档案</a>
+	</div>
 </form>
 {/block}
 <!-- /主体 -->

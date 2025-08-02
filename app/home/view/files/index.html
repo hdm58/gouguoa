@@ -73,13 +73,14 @@
 <div class="container">
 	<div class="file-container">
 		<div class="file-header">
-			<div class="layui-tab layui-tab-brief" lay-filter="tab">
-				<ul class="layui-tab-title">
+			<div class="layui-tabs layui-tab-brief" id="tab">
+					<ul class="layui-tabs-header">
 					<li class="layui-this" data-tab="0">全部</li>
 					<li data-tab="1">图片</li>
 					<li data-tab="2">视频</li>
-					<li data-tab="3">文档</li>
-					<li data-tab="4">压缩包</li>
+					<li data-tab="3">音频</li>
+					<li data-tab="4">文档</li>
+					<li data-tab="5">压缩包</li>
 				</ul>
 			</div>
 		</div>
@@ -143,9 +144,9 @@
 		return !illegalChars.test(fileName);
 	}
 	function gouguInit() {
-		var table = layui.table, tool = layui.tool ,form = layui.form,laypage = layui.laypage,upload = layui.upload, element=layui.element, dropdown=layui.dropdown;
+		var table = layui.table, tool = layui.tool ,form = layui.form,laypage = layui.laypage,upload = layui.upload, tabs = layui.tabs, dropdown=layui.dropdown;
 		let fileGroup = [{id:0,title:'未分组'}];
-		element.on('tab(tab)', function(data){
+		tabs.on('afterChange(tab)', function(data){
 			$('[name="tab"]').val(data.index);
 			$('[lay-filter="webform"]').click();
 			return false;
@@ -167,7 +168,7 @@
 			elem: '#fileUpload'
 			,url: "/api/index/upload"
 			, accept: 'file' //普通文件
-			, exts: 'jpeg|jpg|png|gif|doc|docx|ppt|pptx|xls|xlsx|pdf|zip|rar|7z|txt|mp4|psd|svg' //只允许上传文件
+			, exts: 'jpeg|jpg|png|gif|doc|docx|ppt|pptx|xls|xlsx|pdf|zip|rar|7z|txt|mp4|mp3|wav|psd|svg' //只允许上传文件
 			, before: function (obj) {
 				layer.msg('上传中...', { time: 3600000 });
 			}
@@ -357,7 +358,9 @@
 							for(var a=0;a<item.length;a++){
 								let image = ['jpg','jpeg','png','gif'];
 								let office = ['doc','docx','xls','xlsx','ppt','pptx'];
-								let doc = ['doc','docx','xls','xlsx','ppt','pptx','txt','pdf','zip','rar','7z'];
+								let zip = ['zip','rar','7z','gz','tar'];
+								let video = ['mpg','mp4','mpeg','avi','wmv','mov','flv','m4v'];
+								let audio = ['mp3','wav','wma','flac','midi'];						
 								
 								let type = 0,ext="zip";
 								// 判断元素是否在数组中
@@ -370,14 +373,27 @@
 								if (item[a].fileext == 'pdf'||item[a].fileext == 'txt') {
 									type = 1;
 									ext="pdf";
+									path='/static/home/images/icon/'+item[a].fileext+'.png';
 								}
 								if (office.includes(item[a].fileext)) {
 									type = 1;
 									ext="office";
-								}
-								
-								if (doc.includes(item[a].fileext)){
 									path='/static/home/images/icon/'+item[a].fileext+'.png';
+								}
+								if (video.includes(item[a].fileext)) {
+									type = 1;
+									ext="video";
+									path='/static/home/images/icon/video.png';
+								}
+								if (audio.includes(item[a].fileext)) {
+									type = 1;
+									ext="audio";
+									path='/static/home/images/icon/audio.png';
+								}
+								if (zip.includes(item[a].fileext)) {
+									type = 1;
+									ext="zip";
+									path='/static/home/images/icon/rar.png';
 								}
 								
 								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="edit" data-id="'+item[a].id+'" data-fileid="'+item[a].id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+ext+'" data-type="'+type+'">操作</span>';
@@ -438,12 +454,6 @@
 					}
 				}
 			})
-		})
-		
-		//查看文件
-		$('#filesBox').on('click','.file-image',function(){
-			let href = $(this).attr('src');
-			tool.photoView(href);
 		})
 		
 		//监听搜索提交

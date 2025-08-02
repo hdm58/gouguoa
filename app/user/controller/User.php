@@ -329,6 +329,25 @@ class User extends BaseController
             return to_assign(1, '操作失败');
         }
     }
+	
+    //删除员工
+    public function del()
+    {
+        $id = get_params("id");
+		if($id == 1){
+			return to_assign(1, '该账号是超级管理员，不允许删除');
+		}
+        $data = [
+            'id' => $id,
+            'delete_time' => time(),
+        ];
+        if (Db::name('Admin')->update($data) !== false) {
+            add_log('delete', $id);
+            return to_assign(0, '操作成功');
+        } else {
+            return to_assign(1, '操作失败');
+        }
+    }
 
     //管理员操作日志
     public function log()

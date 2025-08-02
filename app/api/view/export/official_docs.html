@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+		</style>
+	</head>
+	<body>
+	<h2>公文审批单</h2>
+	<table class="pdf-table">
+		<tr>
+			<td class="pdf-td-gray">公文名称</td>
+			<td colspan="3">{$detail.title|default='-'}</td>
+			<td class="pdf-td-gray">公文文号</td>
+			<td>{$detail.code|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">拟稿人</td>
+			<td>{$detail.draft_name}</td>
+			<td class="pdf-td-gray">拟稿部门</td>
+			<td>{$detail.draft_dame|default='-'}</td>
+			<td class="pdf-td-gray">拟稿日期</td>
+			<td>{$detail.draft_time|date='Y-m-d'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">主送人员</td>
+			<td>{$detail.send_names}</td>
+			<td class="pdf-td-gray">抄送人员</td>
+			<td colspan="3">{$detail.copy_names|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">共享可查阅人</td>
+			<td>{$detail.share_names|default='-'}</td>
+			<td class="pdf-td-gray">密级程度</td>
+			<td>
+				{eq name="$detail.secrets" value="1"}公开{/eq}
+				{eq name="$detail.secrets" value="2"}秘密{/eq}
+				{eq name="$detail.secrets" value="3"}机密{/eq}
+			</td>
+			<td class="pdf-td-gray">紧急程度</td>
+			<td>
+				{eq name="$detail.urgency" value="1"}普通{/eq}
+				{eq name="$detail.urgency" value="2"}紧急{/eq}
+				{eq name="$detail.urgency" value="3"}加急{/eq}
+			</td>
+		</tr>
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="pdf-td-gray">相关附件</td>
+			<td colspan="5">
+				{volist name="$detail.file_array" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{include file="export/pdf_check" /}
+	</body>
+</html>

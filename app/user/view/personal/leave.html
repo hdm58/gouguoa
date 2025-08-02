@@ -2,11 +2,35 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<form class="layui-form gg-form-bar border-t border-x">
-		<div class="layui-input-inline">
-			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off"/>
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">全部</li>
+				<li>我申请的</li>
+				<li>待我审批</li>
+				<li>我已审批</li>
+				<li>抄送我的</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+		<div class="layui-input-inline search-item" style="width:150px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				{volist name=":get_check_status()" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
 		</div>
 		<div class="layui-input-inline" style="width:150px;">
+			<input type="text" class="layui-input picker-oa" data-types="department" placeholder="选择离职部门" readonly>
+			<input type="text" name="did" style="display:none;">
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="quit_time" placeholder="选择离职日期" readonly name="quit_time">
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0"/>
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -16,7 +40,7 @@
 
 <script type="text/html" id="toolbarDemo">
   <div>
-	<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加离职档案记录</button> <div class="layui-inline" style="font-size:12px; margin-left:20px; color:#FF5722">删除离职档案即可恢复在职状态，已交接的资料无法恢复</div>
+	<button class="layui-btn layui-btn-sm" lay-event="add">+ 添加离职申请</button>
   </div>
 </script>
 {/block}
@@ -25,9 +49,18 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const moduleInit = ['tool','tablePlus'];
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool ,form = layui.form;
+		var table = layui.tablePlus, tool = layui.tool,form = layui.form,element = layui.element,laydatePlus = layui.laydatePlus;
+		//日期范围
+		var quit_time = new laydatePlus({'target':'quit_time'});
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
 		layui.pageTable = table.render({
 			elem: '#test'
 			, toolbar: '#toolbarDemo'
@@ -35,17 +68,22 @@
 			, url: "/user/personal/leave"
 			, page: true //开启分页
 			, limit: 20
-			, height: 'full-114'
+			, height: 'full-154'
 			, cols: [[
 				{ field: 'id', width: 80, title: '序号', align: 'center' }
-				, { field: 'name', width: 110, title: '离职员工', align: 'center','style':'color:#FF5722'}
+				,{field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						return html;
+					}
+				 }
+				, { field: 'name', width: 80, title: '离职员工', align: 'center','style':'color:#FF5722'}
 				, { field: 'position', width: 100, title: '职位', align: 'center'}
 				, { field: 'department', width: 120, title: '所在部门', align: 'center'}
-				, { field: 'lead_admin', width: 90, title: '部门负责人', align: 'center'}
+				, { field: 'lead_admin_name', width: 80, title: '上级领导', align: 'center'}
 				, { field: 'quit_time', width: 100,title: '离职日期', align: 'center'}
-				, { field: 'connect_status', width: 100,title: '资料交接状态', align: 'center',
+				, { field: 'status', width: 80,title: '交接状态', align: 'center',
 					templet: function (d) {
-						if(d.connect_time==0){
+						if(d.status==1){
 							return '<span class="green">未交接</span>';
 						}
 						else{
@@ -55,23 +93,33 @@
 				}
 				, { field: 'connect_name', width: 90, title: '资料接受人', align: 'center'}
 				, { field: 'connect_time_str', width: 90, title: '交接日期', align: 'center'}
-				, { field: 'connect_names', width: 180, title: '参与交接人'}
 				, { field: 'remark', title: '离职原因'}
+				, {field: 'admin_name',title: '申请人',align: 'center',width: 80}
+				, {field: 'create_time',title: '申请时间',align: 'center',width: 150}
+				, {field: 'check_user',title: '当前审核人'}
 				, {
-					width: 150, title: '操作',fixed:'right', align: 'center'
-					, templet: function (d) {
-						let btn1='<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
-						let	btn2='<button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="set">资料交接</button>';
-						let	btn3='<button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button>';
-						
-						if(d.connect_time==0){
-							return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
-						}
-						else{
-							return '<div class="layui-btn-group">'+btn3+'</div>';
+						field: 'right',
+						fixed: 'right',
+						title: '操作',
+						width: 130,
+						align: 'center',
+						templet:function(d){
+							var html='<div class="layui-btn-group">';
+							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+							let	btn4='<button class="layui-btn layui-bg-orange layui-btn-xs" lay-event="set">资料交接</button>';
+							html+=btn1;
+							if((d.check_status==0 || d.check_status==4) && d.admin_id==login_admin){
+								html+=btn2+btn3;
+							}
+							if(d.check_status==2 && d.status==1){
+								html+=btn4;
+							}
+							html+='</div>';
+							return html;
 						}
 					}
-				}
 			]]
 		});
 
@@ -82,6 +130,10 @@
 				tool.side('/user/personal/leave_add?id='+data.id);
 				return;
 			}
+			if(obj.event === 'view'){
+				tool.side('/user/personal/leave_view?id='+data.id);
+				return;
+			}
 			if (obj.event === 'set') {
 				layer.confirm('确定要把【'+data.name+'】相关的项目、合同、客户等资料交接给【'+data.connect_name+'】吗?', { icon: 3, title: '提示' }, function (index) {
 					let callback = function (e) {
@@ -90,12 +142,12 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.delete("/user/personal/leave_check", { id: data.id }, callback);
+					tool.delete("/user/api/leave_check", { id: data.id }, callback);
 					layer.close(index);
 				});
 			}
 			if (obj.event === 'del') {
-				layer.confirm('删除该离职档案【'+data.name+'】即可恢复在职状态，已交接的资料无法恢复，确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
+				layer.confirm('确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
 					let callback = function (e) {
 						layer.msg(e.msg);
 						if (e.code == 0) {
@@ -116,12 +168,6 @@
 				tool.side("/user/personal/leave_add");
 				return;
 			}
-		});
-
-		//监听搜索提交
-		form.on('submit(webform)', function(data){
-			layui.pageTable.reload({where:data.field,page:{curr:1}});			  
-			return false;
 		});
 	}
 </script>

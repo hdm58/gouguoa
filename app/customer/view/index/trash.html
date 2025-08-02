@@ -38,7 +38,10 @@
 	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 <script type="text/html" id="toolbarDemo">
-<h3>废弃客户</h3>
+<div class="layui-btn-group">
+   <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="revert"><i class="layui-icon">&#xe605;</i>批量拉回公海</button>
+   <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del"><i class="layui-icon">&#x1006;</i>批量彻底删除</button>
+</div>
 </script>
 {/block}
 <!-- /主体 -->
@@ -61,11 +64,8 @@
 			height: 'full-114',
 			cols: [
 				[ //表头
-					{
-						field: 'id',title: '编号',align: 'center',width: 80,templet: function (d) {
-							return'C' + d.id;
-						}
-					},{
+					{type:'checkbox',fixed:'left'},
+					{field: 'id',title: '编号',align: 'center',width: 80},{
 						field: 'name',
 						title: '客户名称',
 						minWidth:240,
@@ -124,6 +124,54 @@
 					}
 				]
 			]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
+			var idArray=[];
+			for(var i=0;i<data.length;i++){
+				idArray.push(data[i].id);
+			}
+			if (obj.event === 'revert') {
+				if(data.length==0){
+					layer.msg('请选择要操作的客户');
+					return false;
+				}
+				layer.confirm('您确定要把选中的客户拉回公海?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/customer/index/to_revert", {id: idArray.join(',')}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'del') {
+				if(data.length==0){
+					layer.msg('请选择要操作的客户');
+					return false;
+				}
+				layer.confirm('您确定要把选中的客户彻底删除?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/customer/customer/del", {id: idArray.join(',')}, callback);
+					layer.close(index);
+				});
+			}
 		});
 		
 		//监听行工具事件

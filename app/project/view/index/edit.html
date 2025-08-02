@@ -62,7 +62,12 @@
 					{egt name="$vo.sort" value="$detail.current_step"}
 					<tr class="step-tr">
 						<td class="step-key">第 <strong>{$k}</strong> 阶段</td>
-						<td><input type="text" name="step_title[]" value="{$vo.title}" class="layui-input" lay-verify="required" lay-reqText="请输入阶段名称"></td>
+						<td>
+							<div class="layui-input-group">
+								<input type="text" name="step_title[]" value="{$vo.title}" class="layui-input" lay-verify="required" lay-reqText="请输入阶段名称">
+								<div class="layui-input-split layui-input-suffix picker-diy" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i></div>
+							</div>							
+						</td>
 						<td>
 							<input type="text" value="{$vo.director_name}" class="layui-input layui-input-readonly picker-admin" lay-verify="required" lay-reqText="请选择阶段负责人" readonly>
 							<input type="hidden" name="step_director_uid[]" value="{$vo.director_uid}" readonly>
@@ -151,7 +156,12 @@
 			var html = '';
 			html += '<tr class="step-tr">\
 						<td class="step-key">第 <strong>0</strong> 阶段</td>\
-						<td><input type="text" name="step_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入阶段名称"></td>\
+						<td>\
+							<div class="layui-input-group">\
+								<input type="text" name="step_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入阶段名称">\
+								<div class="layui-input-split layui-input-suffix picker-diy" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i></div>\
+							</div>\
+						</td>\
 						<td>\
 							<input type="text" value="" class="layui-input layui-input-readonly picker-admin" lay-verify="required" lay-reqText="请选择阶段负责人" readonly>\
 							<input type="hidden" name="step_director_uid[]" value="0" readonly>\
@@ -248,6 +258,27 @@
 				layer.msg('已经最后一个了');
 			}
 		}
+		
+		$('body').on('click','.picker-diy',function () {
+			let that = $(this),ids = [],titles=[],map = {};
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				that.prev().val(titles.join(','));
+			}
+			let opts={
+					"title":"选择项目阶段",
+					"url": "/project/api/get_project_step",
+					"ids":"",
+					"titles":"",
+					"area": ['600px', '580px'],
+					"cols":[{field: 'id',width: 80,title:'序号',align:'center'},{field:'title',title:'项目阶段'}]
+		   }
+			oaPicker.picker(opts,1,callback,map);//单选
+		});
+		
 		//监听提交
 		form.on('submit(webform)', function (data) {
 			let callback = function (e) {

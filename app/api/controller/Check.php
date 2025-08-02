@@ -234,6 +234,9 @@ class Check extends BaseController
 					}
 				})
 				->select()->toArray();
+			foreach ($flow as $k => &$v) {
+				$v['is_copy'] = $flow_cate['is_copy'];
+			}
 			return to_assign(0, '', $flow);
 		}
 		$check_table = $flow_cate['check_table'];
@@ -251,6 +254,11 @@ class Check extends BaseController
 			$is_checker=1;
 		}
 		$detail['is_checker'] = $is_checker;
+		$detail['is_copy'] = $flow_cate['is_copy'];
+		$detail['is_file'] = $flow_cate['is_file'];
+		$detail['is_export'] = $flow_cate['is_export'];
+		$detail['is_back'] = $flow_cate['is_back'];
+		$detail['is_reversed'] = $flow_cate['is_reversed'];
 		//审批记录
 		$check_record = Db::name('FlowRecord')
 						->field('f.*,a.name')
@@ -271,6 +279,13 @@ class Check extends BaseController
 			}
 			if($vv['check_status'] == 4){
 				$vv['status_str'] = '反确认';
+			}
+			if(!empty($vv['check_files'])){
+				$file_array = Db::name('File')->where('id','in',$vv['check_files'])->select()->toArray();
+				$vv['file_array'] = $file_array;
+			}
+			else{
+				$vv['file_array'] = [];
 			}
 		}
 		$detail['check_record'] = $check_record;
@@ -345,6 +360,7 @@ class Check extends BaseController
     public function flow_check()
     {
         $param = get_params();
+		$param['check_files'] = isset($param['check_files']) ? $param['check_files'] : '';
 		$flow_cate = Db::name('FlowCate')->where(['name' => $param['check_name']])->find();
 		$subject = $flow_cate['title'];
 		$action_id = $param['action_id'];
@@ -442,6 +458,7 @@ class Check extends BaseController
 					'check_uid' => $this->uid,
 					'flow_id' => $detail['check_flow_id'],
 					'check_time' => time(),
+					'check_files' => $param['check_files'],
 					'check_status' => $param['check'],
 					'content' => $param['content'],
 					'create_time' => time()
@@ -455,7 +472,7 @@ class Check extends BaseController
 							'from_uid'=>$detail['admin_id'],//发送人
 							'to_uids'=>$param['check_uids'],//接收人
 							'template_id'=>$flow_cate['template_id'],//消息模板ID
-							'template_field'=>'0',//消息模板字段
+							'template_field'=>'0',//消息模板字段，审批中
 							'content'=>[ //消息内容
 								'create_time'=>date('Y-m-d H:i:s',$detail['create_time']),
 								'action_id'=>$action_id,
@@ -471,7 +488,7 @@ class Check extends BaseController
 							'from_uid'=>$this->uid,//发送人
 							'to_uids'=>$detail['admin_id'],//接收人
 							'template_id'=>$flow_cate['template_id'],//消息模板ID
-							'template_field'=>'1',//消息模板字段
+							'template_field'=>'1',//消息模板字段,审核通过
 							'content'=>[ //消息内容
 								'create_time'=>date('Y-m-d H:i:s',$detail['create_time']),
 								'action_id'=>$action_id,
@@ -479,6 +496,21 @@ class Check extends BaseController
 							]
 						];
 						event('SendMessage',$msg);
+						
+						if(!empty($detail['check_copy_uids'])){
+							$msgs=[
+								'from_uid'=>$detail['admin_id'],//发送人
+								'to_uids'=>$detail['check_copy_uids'],//接收人
+								'template_id'=>$flow_cate['template_id'],//消息模板ID
+								'template_field'=>'3',//消息模板字段，审核通过抄送人接收
+								'content'=>[ //消息内容
+									'create_time'=>date('Y-m-d H:i:s',$detail['create_time']),
+									'action_id'=>$action_id,
+									'title' => $subject
+								]
+							];
+							event('SendMessage',$msgs);
+						}
 					}
 				}
 				return to_assign(0,'操作成功',['check_status'=>$param['check_status']]);
@@ -530,6 +562,7 @@ class Check extends BaseController
 					'flow_id' => $detail['check_flow_id'],
 					'check_time' => time(),
 					'check_status' => $param['check'],
+					'check_files' => $param['check_files'],
 					'content' => $param['content'],
 					'create_time' => time()
 				);	
@@ -541,7 +574,7 @@ class Check extends BaseController
 						'from_uid'=>$this->uid,//发送人
 						'to_uids'=>$detail['admin_id'],//接收人
 						'template_id'=>$flow_cate['template_id'],//消息模板ID
-						'template_field'=>'2',//消息模板字段
+						'template_field'=>'2',//消息模板字段，审核拒绝
 						'content'=>[ //消息内容
 							'create_time'=>date('Y-m-d H:i:s',$detail['create_time']),
 							'action_id'=>$detail['id'],
@@ -550,7 +583,7 @@ class Check extends BaseController
 					];
 					event('SendMessage',$msg);
 				}
-				return to_assign();
+				return to_assign(0,'操作成功',['check_status'=>$param['check_status']]);
 			}
 			else{
 				return to_assign(1,'操作失败');
@@ -581,7 +614,7 @@ class Check extends BaseController
 				);
 				$aid = Db::name('FlowRecord')->strict(false)->field(true)->insertGetId($checkData);
 				add_log('back', $action_id, $param,$subject);
-				return to_assign();
+				return to_assign(0,'操作成功',['check_status'=>$param['check_status']]);
 			}else{
 				return to_assign(1,'操作失败');
 			}
@@ -602,13 +635,13 @@ class Check extends BaseController
 					'check_uid' => $this->uid,
 					'flow_id' => $detail['check_flow_id'],
 					'check_time' => time(),
-					'check_status' => $param['check'],
+					'check_status' => 4,
 					'content' => $param['content'],
 					'create_time' => time()
 				);
 				$aid = Db::name('FlowRecord')->strict(false)->field(true)->insertGetId($checkData);
 				add_log('back', $action_id, $param,$subject);
-				return to_assign();
+				return to_assign(0,'操作成功',['check_status'=>0]);
 			}else{
 				return to_assign(1,'操作失败');
 			}

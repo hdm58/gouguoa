@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+			.pdf-min-table{width:100%;border:1px solid #333333; border-collapse: collapse;overflow: wrap}
+			.pdf-min-table td{border:1px solid #333333;border-collapse: collapse; padding:6px; line-height:1.5;}
+		</style>
+	</head>
+	<body>
+	<h2>销售合同审批单</h2>
+	<table class="pdf-table">
+		<tr>
+			<td class="pdf-td-gray">合同名称</td>
+			<td colspan="3">{$detail.name}</td>
+			<td class="pdf-td-gray">合同编号</td>
+			<td>{$detail.code}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">签约主体<br>(乙方)</td>
+			<td colspan="3">{$detail.subject_title}</td>
+			<td class="pdf-td-gray-2">合同始止日期</td>
+			<td>{$detail.start_time} 至 {$detail.end_time}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">客户名称<br>(甲方)</td>
+			<td colspan="3">{$detail.customer}</td>
+			<td class="pdf-td-gray">签约客户代表</td>
+			<td>{$detail.contact_name}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray-2">客户联系地址</td>
+			<td colspan="3">{$detail.contact_address|default='-'}</td>
+			<td class="pdf-td-gray">客户联系电话</td>
+			<td>{$detail.contact_mobile|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">合同金额</td>
+			<td>{$detail.cost} 元</td>
+			<td class="pdf-td-gray">合同性质</td>
+			<td>{$detail.types_name}</td>
+			<td class="pdf-td-gray">合同类别</td>
+			<td>{$detail.cate_title}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">合同签订人</td>
+			<td>{$detail.sign_name}</td>
+			<td class="pdf-td-gray">合同所属部门</td>
+			<td>{$detail.sign_department}</td>
+			<td class="pdf-td-gray">合同签订日期</td>
+			<td>{$detail.sign_time}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">合同制定人</td>
+			<td>{$detail.prepared_name|default='-'}</td>
+			<td class="pdf-td-gray">合同保管人</td>
+			<td>{$detail.keeper_name|default='-'}</td>
+			<td class="pdf-td-gray">合同共享人员</td>
+			<td>{$detail.share_names|default='-'}</td>
+		</tr>
+		{eq name="$detail.types" value="2"}
+		<tr>
+			<td class="pdf-td-gray" colspan="6" style="text-align:center;"><strong>产品信息</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="200" style="text-align:center;">产品名称</td>
+						<td width="60" style="text-align:center;">单位</td>
+						<td width="90" style="text-align:center;">规格</td>
+						<td width="90" style="text-align:center;">销售单价(元)</td>
+						<td width="60" style="text-align:center;">数量</td>
+						<td width="80" style="text-align:center;">小计(元)</td>
+						<td width="200" style="text-align:center;">备注信息</td>
+					</tr>
+					{empty name="$detail.content_array"}
+					<tr>
+						<td colspan="7" style="padding:6px; text-align:center; color:#999">暂无产品信息</td>
+					</tr>
+					{else/}
+					{volist name="$detail.content_array" id="vo"}
+					<tr>
+						<td style="text-align:left;">{$vo.product_title|default=''}</td>
+						<td style="text-align:center;">{$vo.product_unit|default=''}</td>
+						<td style="text-align:center;">{$vo.product_specs|default=''}</td>
+						<td style="text-align:center;">{$vo.product_price|default='0.00'}</td>
+						<td style="text-align:center;">{$vo.product_num|default='1'}</td>
+						<td style="text-align:center;">{$vo.product_subtotal|default='0.00'}</td>
+						<td style="text-align:left;">{$vo.product_remark|default=''}</td>
+					</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		{/eq}		
+		{eq name="$detail.types" value="3"}
+		<tr>
+			<td class="pdf-td-gray" colspan="6" style="text-align:center;"><strong>服务信息</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="110" style="text-align:center;">服务名称</td>
+						<td width="160" style="text-align:center;">服务周期</td>
+						<td width="90" style="text-align:center;">服务单价(元)</td>
+						<td width="70" style="text-align:center;">服务次数</td>
+						<td width="80" style="text-align:center;">小计(元)</td>
+						<td width="100" style="text-align:center;">备注信息</td>
+					</tr>
+					{empty name="$detail.content_array"}
+					<tr>
+						<td colspan="6" style="padding:6px text-align:center; color:#999">暂无服务信息</td>
+					</tr>
+					{else/}
+					{volist name="$detail.content_array" id="vo"}
+					<tr>
+						<td style="text-align:left;">{$vo.service_title|default=''}</td>
+						<td style="text-align:center;">{$vo.service_date|default=''}</td>
+						<td style="text-align:center;">{$vo.service_price|default='0.00'}</td>
+						<td style="text-align:center;">{$vo.service_num|default='1'}</td>
+						<td style="text-align:center;">{$vo.service_subtotal|default='0.00'}</td>
+						<td style="text-align:left;">{$vo.service_remark|default=''}</td>
+					</tr>
+					{/volist}
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		{/eq}	
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="pdf-td-gray">备注信息</td>
+			<td colspan="5">{$detail.remark|default='-'}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="pdf-td-gray">相关附件</td>
+			<td colspan="5">
+				{volist name="$detail.file_array" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{include file="export/pdf_check" /}
+	</body>
+</html>

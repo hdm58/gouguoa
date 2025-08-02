@@ -64,3 +64,16 @@ function isAuthPayment($uid)
     $count = Db::name('DataAuth')->where($map)->count();
     return $count;
 }
+
+//是否是借支打款管理员,count>1即有权限
+function isAuthLoan($uid)
+{
+	if($uid == 1){
+		return 1;
+	}
+	$map = [];
+	$map[] = ['name', '=', 'finance_admin'];
+	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_5)")];
+    $count = Db::name('DataAuth')->where($map)->count();
+    return $count;
+}

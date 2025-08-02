@@ -61,12 +61,9 @@ class Product extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			if (isset($param['buy_time'])) {
-                $param['buy_time'] = strtotime($param['buy_time']);
-            }
-			if (isset($param['quality_time'])) {
-                $param['quality_time'] = strtotime($param['quality_time']);
-            }
+			$param['sale_price'] = empty($param['sale_price'])?0:$param['sale_price'];
+			$param['base_price'] = empty($param['base_price'])?0:$param['base_price'];
+			$param['purchase_price'] = empty($param['purchase_price'])?0:$param['purchase_price'];
             if (!empty($param['id']) && $param['id'] > 0) {
                 try {
                     validate(ProductValidate::class)->scene('edit')->check($param);
@@ -74,8 +71,6 @@ class Product extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
-                $param['update_time'] = time();
-				$param['update_id'] = $this->uid;
                 $this->model->edit($param);
             } else {
                 try {
@@ -84,8 +79,7 @@ class Product extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
-                $param['create_time'] = time();
-                $param['contractin_id'] = $this->uid;
+                $param['admin_id'] = $this->uid;
                 $this->model->add($param);
             }
         } else {

@@ -148,6 +148,23 @@ class Expense extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				if(!empty($param['loan_id'])){
+					$loan = Db::name('Loan')->where('id',$param['loan_id'])->find();
+					$balance_cost = Db::name('Expense')->where([['delete_time','=',0],['loan_id','=',$param['loan_id']],['id','<>',$param['id']]])->sum('balance_cost');
+					$un_balance_cost = ($loan['cost']*100 - $balance_cost*100)/100;
+					if($un_balance_cost<0){
+						return to_assign(1,'所选借支已经冲抵完毕，不支持冲抵');
+					}
+					$balance_cost = $un_balance_cost*100 - $cost*100;
+					if($balance_cost>=0){
+						$param['balance_cost'] = $cost;
+						$param['pay_amount'] = 0;
+					}
+					else{
+						$param['balance_cost'] = $un_balance_cost;
+						$param['pay_amount'] = ($cost *100 - $un_balance_cost*100)/100;
+					}
+				}
 				$this->model->edit($param);
             } else {
                 try {
@@ -156,6 +173,22 @@ class Expense extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				if(!empty($param['loan_id'])){
+					$loan = Db::name('Loan')->where('id',$param['loan_id'])->find();
+					$un_balance_cost = ($loan['cost']*100 - $loan['balance_cost']*100)/100;
+					if($un_balance_cost<0){
+						return to_assign(1,'所选借支已经冲抵完毕，不支持冲抵');
+					}
+					$balance_cost = $un_balance_cost*100 - $cost*100;
+					if($balance_cost>=0){
+						$param['balance_cost'] = $cost;
+						$param['pay_amount'] = 0;
+					}
+					else{
+						$param['balance_cost'] = $un_balance_cost;
+						$param['pay_amount'] = ($cost *100 - $un_balance_cost*100)/100;
+					}
+				}
                 $this->model->add($param);
             }	 
         }else{
@@ -191,8 +224,6 @@ class Expense extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-			$detail['file_array'] = $file_array;
 			View::assign('detail', $detail);
 			View::assign('create_user', get_admin($detail['admin_id']));
 			if(is_mobile()){

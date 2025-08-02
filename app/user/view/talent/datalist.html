@@ -1,0 +1,221 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.dropdpwn-demo .layui-btn+.layui-btn{margin-left:3px;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">全部</li>
+				<li>我申请的</li>
+				<li>待我审批</li>
+				<li>我已审批</li>
+				<li>抄送我的</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+		<div class="layui-input-inline search-item" style="width:120px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				{volist name=":get_check_status()" id="vo"}
+				<option value="{$key}">{$vo}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:150px;">
+			<input type="text" class="layui-input picker-oa" data-types="department" placeholder="选择入职部门" readonly>
+			<input type="text" name="did" style="display:none;">
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="entry_time" placeholder="选择入职日期" readonly name="entry_time">
+		</div>
+		<div class="layui-input-inline" style="width:240px">
+			<input type="text" name="keywords" placeholder="关键字，姓名/手机号码" class="layui-input" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0"/>
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_talent" lay-filter="table_talent"></table>
+</div>
+
+<script type="text/html" id="thumb">
+	<img src="{{d.thumb}}" width="30" height="30" />
+</script>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/user/talent/add">+ 添加入职申请</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const is_auth = {$is_auth};
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool,form = layui.form,element = layui.element,laydatePlus = layui.laydatePlus;
+		//日期范围
+		var entry_time = new laydatePlus({'target':'entry_time'});
+		//tab切换
+		element.on('tab(tab)', function(data){
+			$('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			return false;
+		});
+		layui.pageTable = table.render({
+			elem: "#table_talent"
+			,title: '入职申请列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/user/talent/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 60
+			,height: 'full-154'
+			,cols: [[
+				{
+					field: 'id',
+					title: 'ID号',
+					align: 'center',
+					fixed:'left',
+					width: 80
+				},{field:'check_status',title: '审核状态',width:110, align:'center',templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						return html;
+					}
+				},{
+					field: 'name',
+					title: '姓名',
+					width: 150
+				},{
+					field: 'thumb',
+					title: '照片头像',
+					toolbar: '#thumb',
+					align: 'center',
+					width: 80
+				},{
+					field: 'sex',
+					title: '性别',
+					align: 'center',
+					width: 50,
+					templet: function (d) {
+						var html = '未知';
+						if(d.sex == 1){
+							html = '男'
+						}
+						else if(d.sex == 2){
+							html = '女'
+						}
+						return html;
+					}
+				},{
+					field: 'mobile',
+					title: '手机号码',
+					align: 'center',
+					width: 110
+				},{
+					field: 'department',
+					title: '入职部门',
+					align: 'center',
+					width: 100
+				},{
+					field: 'position',
+					title: '入职岗位',
+					align: 'center',
+					width: 100
+				},{
+					field:'admin_name',
+					title: '申请人',
+					width:90,
+					align:'center'
+				},{
+					field:'create_time',
+					title: '申请时间',
+					width:150,
+					align:'center'
+				},{
+					field:'check_users',
+					title: '当前审批人'
+				},{
+					field: 'status',
+					title: '入职状态',
+					align: 'center',
+					width: 80,
+					templet: function (d) {
+						var html = '';
+						if(d.status == 1){
+							html = '<span class="red">未入职</span>'
+						}
+						else if(d.status == 2){
+							html = '<span class="green">已入职</span>'
+						}
+						return html;
+					}
+				},{
+					field: 'entry_time',
+					title: '入职日期',
+					align: 'center',
+					width: 90
+				},{width:168,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					var btn4='<a class="layui-btn layui-btn-xs" lay-event="user">转入职</a>';
+					var html = '<div class="layui-btn-group">'+btn1+'</div>';
+					if((d.check_status==0 || d.check_status==4) && d.admin_id == login_admin){
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					}
+					if(d.check_status==2 && d.status==1 && (d.admin_id == login_admin || is_auth==1)){
+						html = '<div class="layui-btn-group">'+btn1+btn4+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_talent)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/user/talent/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/user/talent/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'user') {
+				tool.side("/user/talent/set?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该记录吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/user/talent/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+		</style>
+	</head>
+	<body>
+	<h2>会议纪要</h2>
+	<table class="pdf-table">
+		<tr>
+			<td class="pdf-td-gray">会议时间</td>
+			<td>{$detail.meeting_date|date='Y-m-d H:i'}</td>
+			<td class="pdf-td-gray">主办部门</td>
+			<td>{$detail.did_name}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">主持人</td>
+			<td>{$detail.anchor_name}</td>
+			<td class="pdf-td-gray">记录人</td>
+			<td>{$detail.recorder_name}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">会议室</td>
+			<td colspan="3">{$detail.room}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">参会人员</td>
+			<td colspan="3">{$detail.join_names}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">会议主题</td>
+			<td colspan="3">{$detail.title}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">会议内容</td>
+			<td colspan="3">{:nl2br($detail.content)}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">下一步<br>工作计划</td>
+			<td colspan="3">{:nl2br($detail.plans)}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">参会人员签字</td>
+			<td colspan="3">{$detail.sign_names}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">备注信息</td>
+			<td colspan="3">{:nl2br($detail.remarks)}</td>
+		</tr>
+	</table>
+	<table width="100%">
+		<tr> 
+			<td width="50%" style="text-align:left; font-size:11px;">导出人员：{$detail.pdf_admin}</td> 
+			<td width="50%" style="text-align:right; font-size:11px;">导出时间：{$detail.pdf_time}</td> 
+		</tr>
+	</table>
+	</body>
+</html>

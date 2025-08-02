@@ -1636,7 +1636,7 @@ input[type="file"] {display: block;}
 
 .mbui-picker-selector .letters {display: flex; flex-direction: column; align-items: center; position: fixed; top: 50%; right: 0; z-index:999; width:36px; text-align:center; transform: translateY(-50%);}
 .mbui-picker-selector .letters a { margin: 2px; text-decoration: none; font-size:12px; color: var(--color-gray-900);}
-.mbui-picker-selector .contacts{ padding: 0; margin:0; height:100vh; overflow-y:auto;}
+.mbui-picker-selector .contacts{ padding: 0 0 48px; margin:0; height:100vh; overflow-y:auto;}
 .mbui-picker-selector .contacts .mbui-contacts-title{padding:8px 16px; background-color:var(--color-gray-50); font-size:12px; color:var(--color-gray-400);}
 .mbui-picker-selector .lists{padding: 0; margin:0; height:calc(100vh - 46px); overflow-y:auto;}
 /*picker-radio*/
@@ -1783,7 +1783,7 @@ ul.dropdown-month,.dropdown-month li,ul.dropdown-year, .dropdown-year li {list-s
 .check-item-status{color:var(--color-gray-400); font-size:12px; margin-left:3px;}
 
 /*fixed-bar*/
-.mbui-fixed-bar {position: fixed; bottom:160px; height:44px; left:8px;z-index: 8;}
+.mbui-fixed-bar {position: fixed; bottom:160px; height:44px; left:8px;z-index: 8; display:none;}
 .fixed-bar-box {padding:4px;z-index: 8;border-radius:50%; position: relative; background-color:var(--color-blue-500);}
 
 .fixed-bar-btn {position: relative; border: none; background: var(--color-white); width: 36px; height: 36px; border-radius: 50%; line-height: 36px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; z-index: 9;}

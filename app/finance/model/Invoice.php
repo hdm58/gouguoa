@@ -105,14 +105,19 @@ class Invoice extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
+		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
+		$info['subject'] = Db::name('Enterprise')->where(['id' =>$info['invoice_subject']])->value('title');
 		if($info['contract_id']>0){
 			$info['contract_name'] = Db::name('Contract')->where('id',$info['contract_id'])->value('name');
 		}
 		if($info['project_id']>0){
 			$info['project_name'] = Db::name('Project')->where('id',$info['project_id'])->value('name');
 		}
-		$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
-		$info['file_array'] = $file_array;
+		if(!empty($info['file_ids'])){
+			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
+			$info['file_array'] = $file_array;
+		}
 		return $info;
     }
 

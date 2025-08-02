@@ -411,6 +411,34 @@ class Contract extends BaseController
 			if($detail['void_uid'] > 0){
 				$detail['void_name'] = Db::name('Admin')->where(['id' => $detail['void_uid']])->value('name');
 			}
+			
+			//开票和回款信息
+			if($detail['check_status'] == 2){
+				$detail['invoice'] = Db::name('Invoice')->field('i.*,a.name as admin')
+					->alias('i')
+					->join('Admin a', 'a.id = i.admin_id', 'LEFT')
+					->where([['i.contract_id','=',$id],['i.open_status','<',2],['i.invoice_type','>',0],['i.delete_time','=',0]])
+					->order('i.create_time desc')
+					->select();
+					
+				$has_invoice = Db::name('invoice')->where([['contract_id','=',$id],['open_status','<',2],['invoice_type','>',0],['delete_time','=',0]])->sum('amount');
+				$detail['has_invoice'] = sprintf("%.2f",$has_invoice);
+				$detail['no_invoice'] = sprintf("%.2f",($detail['cost']*100 - $has_invoice*100)/100);	
+					
+					
+				$invoice_ids = 	Db::name('Invoice')->where([['contract_id','=',$id],['open_status','<',2],['delete_time','=',0]])->column('id');
+				$detail['income'] = Db::name('InvoiceIncome')->field('i.*,a.name as admin')
+					->alias('i')
+					->join('Admin a', 'a.id = i.admin_id', 'LEFT')
+					->where([['i.invoice_id','in',$invoice_ids],['i.status','=',1]])
+					->order('i.enter_time desc')
+					->select();
+					
+				$has_income = Db::name('InvoiceIncome')->where([['invoice_id','in',$invoice_ids],['status','=',1]])->sum('amount');
+				$detail['has_income'] = sprintf("%.2f",$has_income);
+				$detail['no_income'] = sprintf("%.2f",($detail['cost']*100 - $has_income*100)/100);
+			}
+			
 			$auth = isAuth($this->uid,'contract_admin','conf_1');
 			View::assign('detail', $detail);
 			View::assign('auth', $auth);

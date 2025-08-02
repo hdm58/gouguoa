@@ -23,7 +23,7 @@
         "ext-pdo": "*",
         "ext-zip": "*",
         "topthink/framework": "^8.0.3",
-		"topthink/think-orm": "^4.0",
+		"topthink/think-orm": "4.0.8",
 		"topthink/think-filesystem": "^2.0",
         "topthink/think-multi-app": "^1.0",
         "topthink/think-view": "^2.0",
@@ -33,7 +33,8 @@
         "phpmailer/phpmailer": "^6.8",
         "firebase/php-jwt": "^6.8",
         "phpoffice/phpspreadsheet": "^1.2",
-        "phpoffice/phpword": "^1.2"
+        "phpoffice/phpword": "^1.2",
+		"mpdf/mpdf": "^8.1"
     },
     "require-dev": {
         "symfony/var-dumper": "^6.0",

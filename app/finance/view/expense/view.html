@@ -5,7 +5,7 @@
 	<h3 class="pb-3">报销详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">凭证编号</td>
+			<td class="layui-td-gray-2">凭证编号</td>
 			<td>{$detail.code}</td>
 			<td class="layui-td-gray">入账月份</td>
 			<td>{$detail.income_month}</td>
@@ -29,6 +29,17 @@
 			<td>{$detail.department}</td>
 			<td class="layui-td-gray">报销总费用(元)</td>
 			<td><span style="color:#1E9FFF">{$detail.cost}</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">冲抵借支</td>
+			<td colspan="3">
+			<span style="color:#16b777">{$detail.balance_cost}</span>
+			{if condition="$detail.loan_id > 0"}
+			[<a data-href="/finance/loan/view?id={$detail.loan_id}" class="side-a">冲抵借支详情</a>]
+			{/if}
+			</td>
+			<td class="layui-td-gray">需打款费用(元)</td>
+			<td><span style="color:#ff5722">{$detail.pay_amount}</span></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">报销选项</td>

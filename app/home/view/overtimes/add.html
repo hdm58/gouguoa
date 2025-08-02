@@ -2,10 +2,10 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page" lay-filter="form-overtimes">
-	<h3 class="pb-3">加班</h3>
+	<h3 class="pb-2">加班</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">开始时间<font>*</font></td>
+			<td class="layui-td-gray-2">开始时间<font>*</font></td>
 			<td><input name="start_date" class="layui-input tool-time" value="{$detail.start_date|default=''}" readonly lay-verify="required" placeholder="请选择开始时间" lay-reqText="请选择开始时间" data-type="datetime"></td>
 			<td class="layui-td-gray">结束时间<font>*</font></td>
 			<td><input name="end_date" class="layui-input tool-time" value="{$detail.end_date|default=''}" readonly lay-verify="required" placeholder="请选择结束时间" lay-reqText="请选择结束时间" data-type="datetime"></td>
@@ -33,7 +33,7 @@
 		</tr>
 	</table>
 	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
-	<div class="pt-3">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$detail.id|default=0}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>

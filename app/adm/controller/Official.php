@@ -127,10 +127,6 @@ class Official extends BaseController
 			}
 			if ($id>0) {
 				$detail = $this->model->getById($id);
-				if(!empty($detail['file_ids'])){
-					$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-					$detail['file_array'] = $file_array;
-				}
                 View::assign('detail', $detail);
 				return view('edit');
 			}
@@ -145,10 +141,6 @@ class Official extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			if(!empty($detail['file_ids'])){
-				$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-				$detail['file_array'] = $file_array;
-			}
 			View::assign('detail', $detail);
 			View::assign('auth_office', isAuth($this->uid,'office_admin','conf_1'));			
 			if(is_mobile()){

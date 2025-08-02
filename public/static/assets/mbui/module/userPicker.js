@@ -106,8 +106,8 @@ mbui.define(['layer'], function (exports) {
 					let selected_item = $(selected[m]).parent();
 					ids.push(selected_item.data('id'));
 					names.push(selected_item.data('name'));
-					dids.push(selected_item.data('dids'));
-					departments.push(selected_item.data('departments'));
+					dids.push(selected_item.data('did'));
+					departments.push(selected_item.data('department'));
 				}
 				that.config.callback(ids,names,dids,departments);
 				$container.fadeOut(function () {
@@ -121,18 +121,36 @@ mbui.define(['layer'], function (exports) {
 	$('body').on('click','.picker-admin',function () {
 		let that = $(this);
 		let type = that.data('type');
+		let sub = that.data('sub');
 		if (typeof(type) == "undefined" || type == '') {
 			type = 1;
 		}
+		if (typeof(sub) == "undefined" || sub == '') {
+			sub = 0;
+		}
 		let ids=that.next().val()+'',names = that.val()+'';
 		let picker = new userSelector();
-		picker.init({
-			type:type,
-			callback:function(ids,names,dids,departments){
-				that.val(names.join(','));
-				that.next().val(ids.join(','));
-			}
-		});
+		if(sub ==1){
+			picker.init({
+				type:type,
+				url:'/api/index/get_employee_sub',
+				callback:function(ids,names,dids,departments){
+					that.val(names.join(','));
+					that.next().val(ids.join(','));
+					that.next().next().val(dids.join(','));
+				}
+			});	
+		}
+		else{
+			picker.init({
+				type:type,
+				callback:function(ids,names,dids,departments){
+					that.val(names.join(','));
+					that.next().val(ids.join(','));
+					that.next().next().val(dids.join(','));
+				}
+			});
+		}
 	});
 	// 导出userPicker模块
 	exports('userPicker', function (options) {

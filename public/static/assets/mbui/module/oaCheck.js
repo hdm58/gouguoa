@@ -1,14 +1,25 @@
-mbui.define(['form','layer','userPicker'], function (exports) {
+mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 	const layer = mbui.layer;
 	const form = mbui.form;
 	const tool = mbui.tool;
+	const fileupload = mbui.fileupload;
 	const opts={
 		"checkBox":"checkBox",//审核容器id
-		"check_copy": 1,//是否需要抄送人
 		"check_name": "",//审核类型标识
 		"check_btn":1,//是否显示提交审核按钮
-		"check_back":0,//是否支持反确认审核操作
-		"checking_btn":''//待审核状态下添加的按钮
+		"checking_btn":'',//待审核状态下添加的按钮
+		"check_ok":function(){
+			//审核通过的执行函数
+		},
+		"check_no":function(){
+			//审核拒绝的执行函数
+		},
+		"check_back":function(){
+			//撤回的执行函数
+		},
+		"check_reversed":function(){
+			//反确认的执行函数
+		}
 	};
 	const obj = {
 		loading:false,
@@ -32,7 +43,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			let tem =`
 				<div class="mbui-form-line">
 					<label class="mbui-form-label">审批人</label>
-					<input type="text" name="check_uames" value="" placeholder="请选择审批人" data-verify="required" data-errortips="请选择审批人" class="mbui-form-input picker-admin" readonly><input type="text" name="check_uids" value="" readonly style="display:none;">
+					<input type="text" name="check_uames" value="" placeholder="请选择审批人" data-verify="required" data-errortips="请选择审批人" class="mbui-form-input" readonly><input type="text" name="check_uids" value="" readonly style="display:none;">
 				</div>
 			`;
 			return tem;
@@ -56,20 +67,16 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 			`;
 			return tem;
 		},
-		copyTemplate: function () {
+		copyTemplate: function (detail) {
 			let me = this;
 			let tem =`
-				<div class="mbui-form-line">
+				<div class="mbui-form-line" style="${detail.is_copy==0?'display:none':''}">
 					<label class="mbui-form-label">抄 送 人</label>
-					<input class="mbui-form-input picker-admin" name="check_copy_unames" value="" readonly placeholder="请选择" placeholder="请选择审批通过后的抄送人" data-type="2">
+					<input class="mbui-form-input" name="check_copy_unames" value="" readonly placeholder="请选择" placeholder="请选择审批通过后的抄送人" data-type="2">
 					<input type="text" name="check_copy_uids" value="" readonly style="display:none;">
 				</div>
 			`;
-			if(me.sets.check_copy == 1){
-				return tem;
-			}else{
-				return '';
-			}			
+			return tem;		
 		},
 		btnTemplate: function () {
 			let me = this;
@@ -94,7 +101,17 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 				tem+='<div class="padding-12-b"><span class="f16 mbui-text-gray">审批记录</span></div>';
 				tem+='<div class="mbui-steps">';
 						for(let l=0;l<record.length;l++){
-						tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="text-black">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="text-black">'+record[l].content+'。</span></small></div>';
+							tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="text-black">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="text-black">'+record[l].content+'。</span></small>';
+						
+							let file_array= record[l].file_array;	
+							if(file_array.length>0){
+								tem+='<div style="padding:4px 0; color:#666666">审批附件</div><div class="bg-white"><div class="mbui-file-list" style="padding-bottom:0;">';
+								for(let f=0;f<file_array.length;f++){
+									tem+=tool.file_item(file_array[f],1);
+								}
+								tem+='</div></div>';
+							}
+							tem+='</div>';
 						}
 					tem+='</div>';
 				tem+='</div>';
@@ -109,7 +126,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 					<div class="bg-white">
 						${me.flowTemplate(flow)}
 						<div id="checkTR">${me.uidsTemplate()}</div>
-						${me.copyTemplate()}
+						${me.copyTemplate(flow[0])}
 					</div>
 				</form>
 			`;
@@ -126,7 +143,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
 						<div id="checkTR">${me.uidsTemplate()}</div>
-						${me.copyTemplate()}
+						${me.copyTemplate(detail)}
 					</div>
 					${me.btnTemplate()}
 				</form>
@@ -223,7 +240,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 				flowHtml+= '<div class="flow-flexbox check-item flow-flex-row '+sortClass+'" id="flow'+f+'">'+iconStatus+'<div class="check-item-name">'+check_types+checkUser+'</div>'+strStatus+iconRight+'</div>';
 			}			
 			
-			let checkCopy=`<div class="mbui-list">
+			let checkCopy=`<div class="mbui-list" style="${detail.is_copy==0?'display:none':''}">
 								<div class="mbui-list-bd">抄 送 人</div>
 								<div class="mbui-list-ft">
 									${detail.copy_unames}
@@ -250,7 +267,17 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 								<div class="mbui-form-line">
 									<label class="mbui-form-label">审批意见</label>
 									<textarea rows="3" name="content" class="mbui-form-input" placeholder="请输入审批意见" data-verify="required" data-errortips="请完善审批意见"></textarea>
-								</div>`;
+								</div>
+								<div class="mbui-form-line" ${detail.is_file==0?'style="display:none;"':''}>
+									<label class="mbui-form-label">审批附件</label>
+									<div class="mbui-form-uploader">
+										<div class="mbui-uploader-btn-border" id="uploadBtnCheck"><i class="iconfont icon-shangchuan"></i></div>
+									</div>
+									<div id="uploadBoxCheck" class="mbui-file-list" style="padding:0 12px 2px;">
+										<input data-type="file" name="check_files" type="hidden" value="">
+									</div>
+								</div>
+								`;
 				
 			let btnCheck='<span class="mbui-btn mbui-btn-normal btn-check" data-status="1"><i class="mbui-icon mbui-icon-ok"></i> 通过</span><span class="mbui-btn mbui-btn-danger btn-check" data-status="2"><i class="mbui-icon mbui-icon-close"></i> 拒绝</span>';
 			
@@ -276,7 +303,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 							${detail.check_unames}
 						</div>
 					</div>
-					${(me.sets.check_copy == 1&&detail.check_copy_uids!='') ? checkCopy : ""}					
+					${checkCopy}					
 					<div class="bg-white">
 						<div class="padding-12 border-top">
 							<span class="f16 mbui-text-gray">审批流</span>
@@ -299,8 +326,8 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 					<div class="padding-16 center">
 						<input type="hidden" name="check_role" value="${detail.step.check_role}">
 						${detail.is_checker==1?btnCheck:''}
-						${detail.is_creater==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
-						${me.sets.check_back == 1 && detail.check_status==2?btnCheckBack:''}						
+						${detail.is_creater==1 && detail.is_back==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
+						${detail.is_reversed == 1 && typeof me.sets.check_reversed ==='function' && detail.check_status==2?btnCheckBack:''}	
 					</div>
 				</form>
 			`;
@@ -321,7 +348,7 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
 						<div id="checkTR">${me.uidsTemplate()}</div>
-						${me.copyTemplate()}
+						${me.copyTemplate(detail)}
 					</div>
 					${me.btnTemplate()}
 				</form>
@@ -363,9 +390,16 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 				success: function (e) {
 					if (e.code == 0) {
 						if(check_status==0){
-							if(action_id==0){
-								checkBox.append(me.createTemplate(e.data));
-							}
+							if(e.data.length>0){
+									checkBox.append(me.createTemplate(e.data));
+								}
+								else{
+									let none = '<div class="mbui-group-title">审批操作</div><div class="mbui-form-line">\
+										<label class="mbui-form-label">审批流程</label>\
+										<input type="text" name="flow_id" value="" placeholder="未设置审批流程，请联系管理员设置" data-verify="required" data-errortips="未设置审批流程，请联系管理员设置" class="mbui-form-input" readonly>\
+									</div>';
+									checkBox.append(none);
+								}
 							else{
 								checkBox.append(me.initTemplate(e.data));
 							}
@@ -375,6 +409,11 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 						}
 						else{
 							checkBox.append(me.checkTemplate(e.data));
+							//附件上传
+							fileupload({
+								uploadBtn: "uploadBtnCheck",
+								uploadBox: "uploadBoxCheck"
+							});							
 						}
 						//提交审批
 						form({
@@ -417,6 +456,8 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 				}
 				if(check_type == 1){
 					$('#checkTR').html(me.uidsTemplate());
+					checkBox.find('[name="check_uames"]').addClass('picker-admin');
+					checkBox.find('[name="check_copy_unames"]').addClass('picker-admin');
 				}
 				$.ajax({
 					url: "/api/check/get_flow_users",
@@ -426,7 +467,8 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 						if (e.code == 0) {
 							var flow_li='',flow_idx=0;
 							var flow_data = e.data.flow_data;
-							if(e.data.copy_uids && e.data.copy_uids !='' && me.sets.check_copy==1){
+							checkBox.find('[name="check_copy_unames"]').addClass('picker-admin');
+							if(e.data.copy_uids && e.data.copy_uids !=''){
 								checkBox.find('[name="check_copy_unames"]').val(e.data.copy_unames);
 								checkBox.find('[name="check_copy_uids"]').val(e.data.copy_uids.split(','));
 							}
@@ -464,7 +506,10 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 										}
 										flow_li+='<div class="mbui-steps-item">第'+flow_idx+'级审批『'+check_role+'』'+check_types+'<small>'+user_li+'</small></div>';
 									}
-								}							
+								}
+								if(flow_li==''){
+									flow_li='<span style="color:#999;">审批流程错误，请联系管理员设置</span>';
+								}
 								formHtml = '<div class="mbui-form-line">\
 												<label class="mbui-form-label">审批流</label>\
 												<ul id="flowList" class="mbui-form-input mbui-steps">'+flow_li+'</ul>\
@@ -482,10 +527,11 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 				let check_status=$(this).data('status');
 				let check_role = checkBox.find('input[name="check_role"]').val();
 				
-				let check_node=0,check_uids='';
+				let check_node=0,check_uids='',check_files='';
 				if(check_role == 0 && check_status==1){
 					check_node = checkBox.find('input[name="check_node"]:checked').val();
 					check_uids = checkBox.find('input[name="check_uids"]').val();
+					check_files = checkBox.find('input[name="check_files"]').val();
 					if(!check_node){
 						layer.msg('请选择下一审批节点');
 						return false;
@@ -515,11 +561,18 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 								check_node:check_node,
 								check_uids:check_uids,
 								check:check_status,
+								check_files:check_files,
 								content:content
 							},
 							success: function (e) {
 								layer.msg(e.msg);
-								if (e.code == 0) {	
+								if (e.code == 0) {
+									if(e.data.check_status==2 && typeof me.sets.check_ok ==='function'){
+										me.sets.check_ok(e);
+									}
+									if(e.data.check_status==3 && typeof me.sets.check_no ==='function'){
+										me.sets.check_no(e);
+									}
 									tool.reload(1000);
 								}
 							}
@@ -545,7 +598,10 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 							},
 							success: function (e) {
 								layer.msg(e.msg);
-								if (e.code == 0) {	
+								if (e.code == 0) {
+									if(e.data.check_status==4 && typeof me.sets.check_back ==='function'){
+										me.sets.check_back(e);
+									}
 									tool.reload(1000);
 								}
 							}
@@ -571,7 +627,10 @@ mbui.define(['form','layer','userPicker'], function (exports) {
 							},
 							success: function (e) {
 								layer.msg(e.msg);
-								if (e.code == 0) {	
+								if (e.code == 0) {
+									if(e.data.check_status==0 && typeof me.sets.check_reversed ==='function'){
+										me.sets.check_reversed(e);
+									}									
 									tool.reload(1000);
 								}
 							}

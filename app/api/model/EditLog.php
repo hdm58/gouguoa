@@ -160,7 +160,7 @@ class EditLog extends Model
 						$v['action'] = $item['action'];
 					}
 					if(!empty($item['table']) && !empty($item['table_field'])){
-						if(!empty($item['table_more'])){
+						if(empty($item['table_more'])){
 							$v['old_content'] = Db::name($item['table'])->where('id',$v['old_content'])->value($item['table_field']);
 							$v['new_content'] = Db::name($item['table'])->where('id',$v['new_content'])->value($item['table_field']);
 						}else{

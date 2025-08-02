@@ -3,25 +3,37 @@
 <style>
     ::-webkit-scrollbar { display: none; width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #e1e1e1;}
-	.disk-left{width:120px; float:left; height:calc(100vh - 86px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px;}
+	.disk-left{width:180px; position: relative;  float:left; height:calc(100vh - 86px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px 0; user-select: none;}
 	.disk-left::-webkit-scrollbar {width: 0;}
 	.disk-left h3{font-size:18px; height:30px; padding-left:10px; font-weight:800}
-	.disk-types{padding:12px 0;}
-	.disk-types li{padding:8px; border-radius:3px; cursor:pointer;}
-	.disk-types li strong{margin-right:12px; font-size:18px;}
-	.disk-types li:hover{background-color:#F3F4F5;}
-	.disk-types li.on-this{background-color:#F2FAFF; color:#1E9FFF}
-	.disk-line{border-bottom:1px solid #eee; margin:6px 0;}
 	
 	.disk-table{margin-left:120px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
 	.layui-btn.tool-add{padding:0 12px;}
 	
-	.disk-path{height:48px;padding:0 4px 0 12px;}
-	.disk-breadcrumb{float:left; padding:11px 0}
+	.disk-path{height:40px;padding:0 4px 0 12px;}
+	.disk-breadcrumb{float:left; padding:7px 0}
 	.disk-breadcrumb span{color:#666; margin:0 8px; font-size:10px;}
 	.layui-tab{margin:0;}
-    .file-item {height:calc(100vh - 216px); overflow-y: auto;}
+    .file-item {height:calc(100vh - 206px); overflow-y: auto;}
 	.disk-path .layui-form-checkbox[lay-skin=primary]>div{padding-right:4px}
+	.layui-tabs-header li{padding:0 12px;}
+
+    /** 共享空间 **/
+    .disk-group {display: flex; flex-direction: column; width: 180px; border-right: 1px solid #f6f6f6; padding-top:12px;}
+    .disk-group ul::-webkit-scrollbar { display: block; }
+    .disk-group ul { flex: 1; overflow: hidden; overflow-y: auto;}
+    .disk-group ul li {display: flex; align-items: center; justify-content: space-between; cursor:pointer; padding-left:12px; padding-right:4px; height: 42px; color: #666666; }
+    .disk-group ul li i.layui-icon-component{ margin-right:4px; font-size:20px;font-weight:800;}
+    .disk-group ul li i.layui-icon-more-vertical{font-size:20px; padding-right：12px;}
+    .disk-group ul li > span { display: flex; flex: 1; overflow: hidden; margin-right: 0.5rem; text-overflow: ellipsis; white-space: nowrap; }
+    .disk-group ul li.active { background: #F2FAFF; color:#1e9fff;}
+    .disk-group ul li:hover { background: #f5f7fa; color:#1e9fff;}
+    .disk-group ul li .dropdown:hover dl { display: block; }
+    .disk-group ul li .dropdown dl { position: absolute; top: 36px; right: -15px; z-index: 10000; display: none; padding: 5px 0; width: 88px; border-radius: 2px; text-align: center; background-color: #ffffff; box-shadow: #cccccc 0 0 10px; }
+    .disk-group ul li .dropdown dl dd { height: 32px; line-height: 32px; }
+    .disk-group ul li .dropdown dl dd:hover { color: #4a5dff; background-color: #edefff; }
+    .disk-group ul li .dropdown dl::before { position: absolute; top: -16px; left: 44px; z-index: 12; display: block; padding: 0; width: 0; height: 0; border-top: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid #ffffff; border-left: 8px solid transparent; content: ""; box-sizing: content-box; }
+    .group-footer { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; position:absolute;bottom:0; border-top: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; }
 	
     /** 文件 **/
     .file-item .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
@@ -40,7 +52,6 @@
 	.file-item .file-subject ul li .layui-btn-ctrl{position:absolute; top:0; right:0; display:none;}
 	.file-item .file-subject ul li:hover .layui-btn-ctrl{display:block}
 	.file-folder,.file-image,.file-pdf,.file-video,.file-audio{cursor:pointer;}
-    .file-item .file-subject ul li .has-share{position: absolute; width:20px; height:20px; right: 2px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#1E9FFF; border:1px solid #fff; padding:2px;}	
 	.file-item .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 32px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
 	
 	.file-item .file-subject ul li .file-info{position: absolute; width:100%; height:23px; left: 0; top: 0; text-align:center; font-size: 12px; line-height: 23px; background-color:rgba(0,0,0,.12);border-radius:2px 2px 0 0;}	
@@ -57,37 +68,57 @@
 {block name="body"}
 <div class="p-page">
 	<div class="disk-left">
-		<h3>共享文件</h3>
-		<div id="diskTypes" class="disk-types">
-			<ul>
-				<li class="on-this" data-tab=""><strong class="iconfont icon-dingdanguanli"></strong>全部</li>
-				<li data-tab="image"><strong class="iconfont icon-sucaiguanli"></strong>图片</li>
-				<li data-tab="video"><strong class="iconfont icon-wodekecheng"></strong>视频</li>
-				<li data-tab="audio"><strong class="iconfont icon-tuiguang"></strong>音频</li>
-				<li data-tab="office"><strong class="iconfont icon-chengjiliebiao"></strong>Office文件</li>
-				<li data-tab="pdf"><strong class="iconfont icon-lunwenguanli"></strong>在线文档</li>
-				<li data-tab="zip"><strong class="iconfont icon-xiaoshoupin"></strong>压缩文件</li>
+		<h3>共享空间</h3>
+		<div class="disk-group">
+			<ul id="group">					
+				<li data-id="1" class="active"><i class="layui-icon layui-icon-component"></i><span>公司共享</span></li>					
 			</ul>
+		</div>
+		<div class="group-footer">
+			<span class="layui-btn layui-btn-primary layui-btn-sm add-new">创建共享空间</span>
 		</div>
 	</div>
 	<div class="disk-table">
 		<form class="layui-form gg-form-bar border-b" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:312px">
+				<div class="layui-btn-group">
+					<span class="layui-btn tool-add" id="uploadBtn"><strong class="iconfont icon-shangchuan"></strong> 上传文件</span>
+					<span class="layui-btn layui-btn-normal tool-add" id="addArticle"><strong class="iconfont icon-lunwenguanli"></strong> 新建文档</span>
+					<span class="layui-btn layui-btn-warm tool-add" id="addFolder"><strong class="iconfont icon-xiangmuguanli"></strong> 新建目录</span>
+				 </div>
+			</div>
 			<div class="layui-input-inline" style="width:300px">
 				<input type="text" name="keywords" placeholder="输入关键字，文件名称/目录名称" class="layui-input" autocomplete="off" />
 			</div>
 			<div class="layui-input-inline" style="width:150px">
 				<input type="hidden" name="pid" value="0" />
 				<input type="hidden" name="ext" value="" />
-				<input type="hidden" name="limit" value="48" />
+				<input type="hidden" name="group_id" value="1" />
+				<input type="hidden" name="group_name" value="公司共享" />
+				<input type="hidden" name="limit" value="30" />
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 				<button type="reset" class="layui-btn layui-btn-reset">清空</button>
 			</div>
 		</form>
 		<div class="disk-path layui-form border-b">
-			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-component"></i> <a href="javascript:void(0);" data-id="0">共享文件</a></div>
-		</div>
-		<!-- 主体 -->
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="1">公司共享</a></div>
+			<div class="layui-input-inline" style="width:450px; float:right;">
+				<div class="layui-tabs layui-tab-brief" id="tab">
+					<ul class="layui-tabs-header">
+						<li class="layui-this" lay-id="">全部</li>
+						<li lay-id="image">图片</li>
+						<li lay-id="video">视频</li>
+						<li lay-id="audio">音频</li>
+						<li lay-id="office">Office文件</li>
+						<li lay-id="pdf">在线文档</li>
+						<li lay-id="zip">压缩包</li>
+					</ul>
+				</div>
+			</div>
+		</div>	
+		
 		<div class="file-item">
+			<!-- 主体 -->
 			<div class="file-subject">
 				<ul id="filesBox"></ul>
 			</div>
@@ -97,13 +128,13 @@
 			<div id="laypage"></div>
 		</div>
     </div>
-</div>
+</div>						
 {/block}
 <!-- /主体 -->
-
 <!-- 脚本 -->
 {block name="script"}
-<script>
+<script>	
+	const typeExt=['','image','video','audio','office','pdf','zip'];
 	const fileExt={
 		image:['jpg','jpeg','png','gif'],
 		office:['doc','docx','xls','xlsx','ppt','pptx'],
@@ -112,9 +143,57 @@
 		video:['mpg','mp4','mpeg','avi','wmv','mov','flv','m4v'],
 		audio:['mp3','wav','wma','flac','midi']
 	};
+	
+	function isValidFileName(fileName) {
+		const illegalChars = /[\\\/\*\:"<>|\?]/;
+		return !illegalChars.test(fileName);
+	}
+	
 	const moduleInit = ['tool','uploadPlus'];
 	function gouguInit() {
-		var tool = layui.tool,uploadPlus = layui.uploadPlus,form = layui.form,laypage = layui.laypage;
+		var tool = layui.tool,uploadPlus = layui.uploadPlus,form = layui.form,laypage = layui.laypage,tabs = layui.tabs,dropdown = layui.dropdown;
+		
+		let fileGroup = [{id:0,title:'公司共享'}];
+		tabs.on('afterChange(tab)', function(data){
+			if(data.index==0){
+				$('[name="ext"]').val('');
+			}
+			else{
+				let ext = typeExt[data.index];
+				$('[name="ext"]').val(fileExt[ext]);
+			}
+			$('[lay-filter="webform"]').click();
+			return false;
+		});	
+		//上传文件
+        var attachment = new uploadPlus({
+            "title":'上传文件',
+            "target":'uploadBtn',
+            "attachment":{
+                "type":1,//0ajax多文件模式，1ajax单文件单记录模式
+                "ajaxSave":function(res){
+                    $.ajax({
+                        url: "/disk/index/add_upload",
+                        type:'post',
+                        data:{
+							'pid':$('[name="pid"]').val(),
+							'group_id':$('[name="group_id"]').val(),
+                            'action_id':res.data.id,
+                            'name':res.data.name,
+                            'id':0,
+                            'file_size':res.data.filesize,
+                            'file_ext':res.data.fileext
+                        },
+                        success: function (e) {
+                            layer.msg(e.msg);
+                            if (e.code == 0) {
+                                $('[lay-filter="webform"]').click();                            
+                            }
+                        }
+                    })
+                }
+            }
+        })
 		
 		let ctrl_callback = function (e) {
 			if(e.code == 0){
@@ -127,28 +206,42 @@
 			}
 		}
 		
-		//左侧操作
-		$('#diskTypes').on('click','li',function(){
-			$(this).addClass('on-this').siblings().removeClass('on-this');
-			let tab = $(this).data('tab');
-			$('[name="pid"]').val(0);
-			$('[name="keywords"]').val('');
-			if(tab==''){
-				$('[name="ext"]').val('');
-			}
-			else{
-				$('[name="ext"]').val(fileExt[tab]);
-			}
-			let data = form.val('barsearchform');
-			get_files(data);
-		})
-		
 		//顶部目录操作
 		$('#diskPath').on('click','a',function(){
 			let id=$(this).data('id');
 			$('[name="pid"]').val(id);
 			let data = form.val('barsearchform');
 			get_files(data);
+		})
+		
+		//新增在线文档
+		$('#addArticle').on('click',function(){
+			tool.side('/disk/index/add_article?pid='+$('[name="pid"]').val()+'&group_id='+$('[name="group_id"]').val());
+		})
+		
+		//新增目录
+		$('#addFolder').on('click',function(){
+			layer.prompt({title: '请输入目录名称'}, function(val, index, elem){
+				if(val==''){
+					layer.msg('目录名称不能为空');
+					return false;
+				}
+				if(isValidFileName(val)==false){
+					layer.msg('目录名称不能包含下列任何字符：\/:*?".<>|');
+					return false;
+				}
+				$.ajax({
+					url: "/disk/index/add_folder",
+					type:'post',
+					data:{
+						'id':0,
+						'pid':$('[name="pid"]').val(),
+						'group_id':$('[name="group_id"]').val(),
+						'name':val
+					},
+					success: ctrl_callback
+				})
+			});
 		})
 		
 		//查看文件
@@ -181,9 +274,170 @@
 			}
 		})
 		
+		//重命名文件
+		$('#filesBox').on('click','.name-edit',function(){
+			let id = $(this).parent().parent().data('id');
+			let title = $(this).parent().parent().data('title');
+			let ext = $(this).parent().parent().data('ext');
+			let types = $(this).parent().parent().data('types');
+			title = title.toString().replace(/\.[^.]+$/, "");
+			layer.prompt({title: '重命名',value:title}, function(val, index, elem){
+				if(val==''){
+					layer.msg('文件名不能为空');
+					return false;
+				}
+				if(isValidFileName(val)==false){
+					layer.msg('文件名不能包含下列任何字符：\/:*?".<>|');
+					return false;
+				}
+				if(types == 0){
+					val =  val+'.'+ext;
+				}
+				tool.post("/disk/index/rename", {id:id,name:val,group_id:$('[name="group_id"]').val(),pid:$('[name="pid"]').val()}, ctrl_callback);
+			});
+		})		
+		
+		//单文件删除
+		$('#filesBox').on('click','.file-delete',function(){
+			let id = $(this).parent().parent().data('id');
+			layer.confirm('确定要删除该文件吗？请慎重', { icon: 3, title: '提示' }, function (index) {
+				tool.delete("/disk/index/del", {ids:id}, ctrl_callback);
+			});
+		})
+		
+		//单文件移动
+		$('#filesBox').on('click','.file-move',function(){
+			let ids = $(this).parent().parent().data('id');
+			layer.open({
+				type: 2,
+				title: '移动到',
+				area: ['720px', '480px'],
+				content: '/disk/index/move?group_id='+$('[name="group_id"]').val(),
+				maxmin: true,
+				btn: ['移动到此', '取消'],
+				btnAlign: 'c',
+				yes: function(index, layero){
+					// 获取 iframe 的窗口对象
+					let iframeWin =  window[layero.find('iframe')[0]['name']];
+					let pid = iframeWin.$('#folder').val();
+					let group_id = iframeWin.$('#group_id').val();
+					tool.post("/disk/index/move", {ids:ids,pid:pid,group_id:group_id}, ctrl_callback);
+				}
+			});
+		})
+		
+		
+		$('body').on('click','.add-new',function(){
+			add_group(0,'');	
+		});
+		
+		$('#group').on('click','li span',function(){
+			let li=$(this).parent();
+			li.addClass('active').siblings().removeClass('active');
+			let id=li.data('id');
+			let name=li.text();
+			$('[name="pid"]').val(0);
+			$('[name="group_id"]').val(id);
+			$('[name="group_name"]').val(name);
+			$('#tab').find('li').eq(0).click();
+			//$('[lay-filter="webform"]').click();
+		});
+			
+		function add_group(id,val){
+			var title = '创建共享空间';
+			if(id>0){
+				title = '重命名共享空间';
+			}
+			layer.prompt({
+				title: title,
+				value: val,
+				yes: function(index, layero) {
+					// 获取文本框输入的值
+					var value = layero.find(".layui-layer-input").val();
+					if (value!='') {
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if(e.code==0){
+								location.reload();
+							}
+						}
+						tool.post("/disk/index/add_group", {id: id,title: value}, callback);
+						layer.close(index);
+					} else {
+						layer.msg('请填写共享空间名称');
+					}
+				}
+			})
+		}
+		
+		function del_group(id) {
+			layer.confirm('确定要删除该共享空间吗？请慎重', { icon: 3, title: '提示' }, function (index) {
+				let callback = function (e) {
+					layer.closeAll();
+					layer.msg(e.msg);
+					if(e.code==0){
+						location.reload();
+					}
+				}
+				tool.delete("/disk/index/del_group", {id:id}, callback);
+			});
+		}
+		
+		function get_group(){
+			$.ajax({
+				url:"/disk/api/get_group",
+				success:function(res){
+					if(res.code==0){
+						var group=res.data,item='';
+						if(group.length>0){
+							for(var a=0;a<group.length;a++){
+								item+='<li data-id="'+group[a].id+'" data-title="'+group[a].title+'"><i class="layui-icon layui-icon-component"></i><span>'+group[a].title+'</span><i class="layui-icon layui-icon-more-vertical dropdown-on"></i></li>';
+							}
+							$('#group').append(item);
+							fileGroup = fileGroup.concat(group);
+							// 自定义事件
+							dropdown.render({
+								elem: '.dropdown-on',
+								trigger: 'hover',
+								align: 'right',
+								data: [{
+								  title: '重命名共享空间',
+								  id: 100
+								},{
+								  title: '删除该共享空间',
+								  id: 101
+								},{
+								  title: '设置空间成员',
+								  id: 102
+								},{
+								  title: '设置空间管理员',
+								  id: 103
+								}],
+								click: function(data, othis){
+									let id = $(this.elem).parent().data('id');
+									let title = $(this.elem).parent().data('title');
+									if(data.id==100){
+										add_group(id,title);
+									}else if(data.id==101){
+										del_group(id);
+									}else if(data.id==102){
+										tool.side('/disk/api/memberlist?id='+id);
+									}else if(data.id==103){
+										tool.side('/disk/api/adminlist?id='+id);
+									}														
+								}
+							});
+						}
+					}
+				}
+			});
+		}
+		
 		//加载数据
 		var data = form.val('barsearchform');
 		get_files(data);
+		get_group();
+		
 		form.on('submit(webform)', function (data) {
 			get_files(data.field);
 			return false;
@@ -200,9 +454,7 @@
 				url:"/disk/index/sharelist",
 				data:param,
 				complete:function(){
-					setTimeout(function(){
-						layer.close(loadIndex)
-					}, 200);
+					layer.close(loadIndex)
 				},
 				success:function(res){
 					$('[name="select_all"]').prop('checked', false);
@@ -226,7 +478,7 @@
 						});
 
 						let folder = res.totalRow;
-						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">共享文件</a>';
+						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">'+$('[name="group_name"]').val()+'</a>';
 						if(folder.length>0){
 							for(var f=0;f<folder.length;f++){
 								folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
@@ -242,54 +494,52 @@
 								let path='/static/home/images/icon/file.png';
 								if (fileExt.image.includes(item[a].file_ext)) {
 									path=item[a].filepath;
-									type = '0,1';
+									type = '0,1,3,4,5';
 									ext="image";
 								}
 								if (fileExt.office.includes(item[a].file_ext)) {
-									type = '0,1';
+									type = '0,1,3,4,5';
 									ext="office";
 									path='/static/home/images/icon/'+item[a].file_ext+'.png';
 								}
 								if (item[a].file_ext == 'pdf' || item[a].file_ext == 'txt') {
-									type = '0,1';
+									type = '0,1,3,4,5';
 									ext="pdf";
 									path='/static/home/images/icon/'+item[a].file_ext+'.png';
 								}								
 								if (fileExt.video.includes(item[a].file_ext)) {
-									type = '0,1';
+									type = '0,1,3,4,5';
 									ext="video";
 									path='/static/home/images/icon/video.png';
 								}
 								if (fileExt.audio.includes(item[a].file_ext)) {
-									type = '0,1';
+									type = '0,1,3,4,5';
 									ext="audio";
 									path='/static/home/images/icon/audio.png';
 								}
 								if (fileExt.zip.includes(item[a].file_ext)) {
-									type = '0';
+									type = '0,1,3,4,5';
 									ext="zip";
 									path='/static/home/images/icon/rar.png';
 								}
 								if(item[a].types==1){
-									type = '1';
+									type = '1,2,3,4,5';
 									ext="article";
 									path='/static/home/images/icon/article.png';
 								}
-								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+ext+'" data-type="'+type+'">操作</span>';
-								
 								if(item[a].types==2){
+									type = '3,4,5';
 									ext="folder";
 									path='/static/home/images/icon/folder.png';
-									ctrl='';
-								}								
-								let is_share='';
-								if(item[a].is_share==1){
-									is_share='<div class="has-share" title="已分享"><i class="iconfont icon-fenxiang"></i></div>';
 								}
+								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+ext+'" data-type="'+type+'">操作</span>';
 								
 								li+='<li data-id="'+item[a].id+'" data-title="'+item[a].name+'" data-ext="'+item[a].file_ext+'" data-types="'+item[a].types+'"><img src="'+path+'" alt="'+item[a].name+'" style="object-fit: contain;" class="file-item file-'+ext+'" data-href="'+item[a].filepath+'" data-ext="'+ext+'"><p title="'+item[a].name+'">'+item[a].name+'</p>\
 									<div class="layui-btn-ctrl">'+ctrl+'\
-									</div>'+is_share+'</li>';
+									<span class="name-edit" style="display:none;" id="fileEdit'+item[a].id+'" title="重命名"></span>\
+									<span class="file-delete" style="display:none;" id="fileDel'+item[a].id+'" title="删除"></span>\
+									<span class="file-move" style="display:none;" id="fileMove'+item[a].id+'" title="移动"></span>\
+									</div></li>';
 							}
 							$('#filesBox').html(li);
 							$('#laypage').show();

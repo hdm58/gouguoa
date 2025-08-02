@@ -406,6 +406,34 @@ class Purchase extends BaseController
 			if($detail['void_uid'] > 0){
 				$detail['void_name'] = Db::name('Admin')->where(['id' => $detail['void_uid']])->value('name');
 			}
+			
+			//收票和付款信息
+			if($detail['check_status'] == 2){
+				$detail['ticket'] = Db::name('Ticket')->field('t.*,a.name as admin')
+					->alias('t')
+					->join('Admin a', 'a.id = t.admin_id', 'LEFT')
+					->where([['t.purchase_id','=',$id],['t.open_status','<',2],['t.invoice_type','>',0],['t.delete_time','=',0]])
+					->order('t.create_time desc')
+					->select();
+					
+				$has_ticket = Db::name('Ticket')->where([['purchase_id','=',$id],['open_status','<',2],['invoice_type','>',0],['delete_time','=',0]])->sum('amount');
+				$detail['has_ticket'] = sprintf("%.2f",$has_ticket);
+				$detail['no_ticket'] = sprintf("%.2f",($detail['cost']*100 - $has_ticket*100)/100);	
+					
+					
+				$ticket_ids = 	Db::name('Ticket')->where([['purchase_id','=',$id],['open_status','<',2],['delete_time','=',0]])->column('id');
+				$detail['payment'] = Db::name('TicketPayment')->field('t.*,a.name as admin')
+					->alias('t')
+					->join('Admin a', 'a.id = t.admin_id', 'LEFT')
+					->where([['t.ticket_id','in',$ticket_ids],['t.status','=',1]])
+					->order('t.pay_time desc')
+					->select();
+					
+				$has_payment = Db::name('TicketPayment')->where([['ticket_id','in',$ticket_ids],['status','=',1]])->sum('amount');
+				$detail['has_payment'] = sprintf("%.2f",$has_payment);
+				$detail['no_payment'] = sprintf("%.2f",($detail['cost']*100 - $has_payment*100)/100);
+			}
+			
 			$auth = isAuth($this->uid,'contract_admin','conf_1');
 			View::assign('detail', $detail);
 			View::assign('auth', $auth);

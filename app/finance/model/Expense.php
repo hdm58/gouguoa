@@ -60,6 +60,22 @@ class Expense extends Model
         }
     }
 
+	//更新冲帐
+	public function update_loan($id)
+	{
+		$balance_cost = Db::name('Expense')->where(['delete_time'=>0,'loan_id'=>$id])->sum('balance_cost');
+		$loan = Db::name('Loan')->where('id',$id)->find();
+		if($balance_cost*100 == $loan['cost']*100){
+			Db::name('Loan')->where('id',$id)->update(['balance_cost'=>$balance_cost,'balance_status'=>2,'back_status'=>2]);
+		}
+		if($balance_cost*100 < $loan['cost']*100 && $balance_cost*100>0){
+			Db::name('Loan')->where('id',$id)->update(['balance_cost'=>$balance_cost,'balance_status'=>1,'back_status'=>0]);
+		}
+		if($balance_cost == 0){
+			Db::name('Loan')->where('id',$id)->update(['balance_cost'=>$balance_cost,'balance_status'=>0,'back_status'=>0]);
+		}
+	}
+
     /**
     * 添加数据
     * @param $param
@@ -96,6 +112,9 @@ class Expense extends Model
 					}
 				}
 			}
+			if(!empty($param['loan_id'])){
+				$this->update_loan($param['loan_id']);
+			}
 			add_log('add', $insertId, $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -111,6 +130,7 @@ class Expense extends Model
     {
         try {
             $param['update_time'] = time();
+			$old_loan_id = self::where('id', $param['id'])->value('loan_id');
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
 			//相报销选项多个数组;
 			$amountData = isset($param['amount']) ? $param['amount'] : '';
@@ -137,6 +157,12 @@ class Expense extends Model
 						$eid = Db::name('ExpenseInterfix')->strict(false)->field(true)->insertGetId($data);
 					}
 				}
+			}
+			if(!empty($param['loan_id'])){
+				$this->update_loan($param['loan_id']);
+			}
+			if(!empty($old_loan_id)){
+				$this->update_loan($old_loan_id);
 			}
 			add_log('edit', $param['id'], $param);
         } catch(\Exception $e) {
@@ -178,8 +204,10 @@ class Expense extends Model
 			->join('ExpenseCate c', 'a.cate_id = c.id','LEFT')
 			->where(['a.exid' => $info['id']])
 			->select();
-		$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
-		$info['file_array'] = $file_array;	
+		if(!empty($info['file_ids'])){
+			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
+			$info['file_array'] = $file_array;
+		}
 		return $info;
     }
 
@@ -197,6 +225,10 @@ class Expense extends Model
 			try {
 				$param['delete_time'] = time();
 				self::where('id', $id)->update(['delete_time'=>time()]);
+				$loan_id = self::where('id', $id)->value('loan_id');
+				if($loan_id>0){
+					update_loan($loan_id);
+				}
 				add_log('delete', $id);
 			} catch(\Exception $e) {
 				return to_assign(1, '操作失败，原因：'.$e->getMessage());

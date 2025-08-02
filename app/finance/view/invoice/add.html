@@ -2,13 +2,11 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">新增开票申请</h3>
+	<h3 class="pb-2">新增开票申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">开票金额<font>*</font></td>
-			<td>
-				<input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入开票金额" lay-reqText="请输入开票金额" value="">	
-			</td>
+			<td class="layui-td-gray-2">开票金额<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入开票金额" lay-reqText="请输入开票金额" value=""></td>
 			<td class="layui-td-gray">开票类型<font>*</font></td>
 			<td>
 			<select name="invoice_type" lay-verify="required" lay-reqText="请选择开票类型">

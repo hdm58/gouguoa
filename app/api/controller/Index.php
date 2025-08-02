@@ -413,6 +413,7 @@ class Index extends BaseController
 		}		
 		$where[] = ['a.id', '>', 1];
 		$where[] = ['a.status', '=', 1];
+		$where[] = ['a.delete_time', '=', 0];
 		$employee = Db::name('admin')
 			->field('a.id,a.did,a.position_id,a.mobile,a.name,a.nickname,a.sex,a.status,a.thumb,a.username,d.title as department')
             ->alias('a')
@@ -453,6 +454,7 @@ class Index extends BaseController
 		}
 		$where[] = ['a.id', '>', 1];
 		$where[] = ['a.status', '=', 1];
+		$where[] = ['a.delete_time', '=', 0];
 		$employee = Db::name('admin')
 			->field('a.id,a.did,a.position_id,a.mobile,a.name,a.nickname,a.sex,a.status,a.thumb,a.username,d.title as department')
             ->alias('a')
@@ -476,6 +478,7 @@ class Index extends BaseController
 		$param = get_params();
 		$where[] = ['a.status', '=', 1];
 		$where[] = ['a.id', '>', 1];
+		$where[] = ['a.delete_time', '=', 0];
 		if (!empty($param['keywords'])) {
 			$where[] = ['a.name', 'like', '%' . $param['keywords'] . '%'];
 		}
@@ -503,7 +506,7 @@ class Index extends BaseController
 			$selected = explode(",",$keyword);
 		}
 		if($did == 0){
-			$employee = Db::name('admin')->field('id as value,name')->where(['status' => 1])->select()->toArray();		
+			$employee = Db::name('admin')->field('id as value,name')->where(['status' => 1,'delete_time'=>0])->select()->toArray();		
 		}
 		else{
 			$employee = get_department_employee($did);

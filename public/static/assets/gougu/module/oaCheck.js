@@ -1,14 +1,25 @@
-layui.define(['tool','oaPicker'], function (exports) {
+layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 	const layer = layui.layer;
 	const form = layui.form;
 	const tool = layui.tool;
+	const uploadPlus = layui.uploadPlus;
 	const opts={
 		"checkBox":"checkBox",//审核容器id
-		"check_copy": 1,//是否需要操送人
+		"checking_btn":"",//待审核状态下自定义添加的按钮
 		"check_name": "",//审核类型标识
 		"check_btn":1,//是否显示提交审核按钮
-		"check_back":0,//是否支持反确认审核操作
-		"checking_btn":''//待审核状态下添加的按钮
+		"check_ok":function(){
+			//审核通过的执行函数
+		},
+		"check_no":function(){
+			//审核拒绝的执行函数
+		},
+		"check_back":function(){
+			//撤回的执行函数
+		},
+		"check_reversed":function(){
+			//反确认的执行函数
+		}
 	};
 	const obj = {
 		loading:false,
@@ -20,7 +31,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 			let me = this;
 			let tem =`
 				<tr>
-					<td class="layui-td-gray">审批状态</td>
+					<td class="layui-td-gray-2">审批状态</td>
 					<td>${me.checkStatus(status)}</td>
 				</tr>
 			`;
@@ -28,7 +39,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 		},
 		uidsTemplate: function () {
 			let tem =`
-				<td class="layui-td-gray">审批人<font>*</font></td>
+				<td class="layui-td-gray-2">审批人<font>*</font></td>
 				<td>
 					<input type="text" name="check_uames" value="" autocomplete="off" placeholder="请选择审批人" lay-verify="required" lay-reqText="请选择审批人" class="layui-input picker-admin" readonly><input type="text" name="check_uids" value="" readonly style="display:none;">
 				</td>
@@ -44,7 +55,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 			}
 			let tem =`
 				<tr>
-					<td class="layui-td-gray">审批流程<font>*</font></td>
+					<td class="layui-td-gray-2">审批流程<font>*</font></td>
 					<td>
 						<select name="flow_id" lay-verify="required" lay-filter="flowtype" lay-reqText="请选择审批流程">
 						${flowtype}
@@ -54,21 +65,17 @@ layui.define(['tool','oaPicker'], function (exports) {
 			`;
 			return tem;
 		},
-		copyTemplate: function () {
+		copyTemplate: function (detail) {
 			let me = this;
 			let tem =`
-			<tr>
-				<td class="layui-td-gray">抄送人</td>
+			<tr style="${detail.is_copy==0?'display:none':''}">
+				<td class="layui-td-gray-2">抄送人</td>
 				<td>
 					<input type="text" name="check_copy_unames" value="" readonly autocomplete="off" placeholder="请选择审批通过后的抄送人" class="layui-input picker-admin" data-type="2"><input type="text" name="check_copy_uids" value="" readonly style="display:none;">
 				</td>
 			</tr>
 			`;
-			if(me.sets.check_copy == 1){
-				return tem;
-			}else{
-				return '';
-			}			
+			return tem;		
 		},
 		btnTemplate: function () {
 			let me = this;
@@ -89,12 +96,20 @@ layui.define(['tool','oaPicker'], function (exports) {
 			let me = this;
 			let tem ='';
 			if(record.length>0){
-				tem+='<tr><td class="layui-td-gray">审批记录</td><td colspan="5"><ul class="layui-timeline flow-record pt-2">';
+				tem+='<tr><td class="layui-td-gray-2">审批记录</td><td colspan="5"><ul class="layui-timeline flow-record pt-2">';
 				for(let l=0;l<record.length;l++){
 					tem+='<li class="layui-timeline-item delete-'+record[l].delete_time+'">\
 								<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
-								<p style="padding-left:24px">'+record[l].check_time_str+'<span class="black ml-2">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="green">'+record[l].content+'。</span></p>\
-							</li>';
+								<p style="padding-left:24px">'+record[l].check_time_str+'<span class="black ml-2">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="green">'+record[l].content+'。</span></p>';
+					let file_array= record[l].file_array;	
+					if(file_array.length>0){
+						tem+='<p style="padding:4px 24px 0;">审批附件：</p><div class="layui-row" style="padding:2px 16px;">';
+						for(let f=0;f<file_array.length;f++){
+							tem+='<div class="layui-col-md4">'+tool.fileCard(file_array[f],1)+'</div>';
+						}
+						tem+='</div>';
+					}
+					tem+='</li>';
 				}		
 				tem+='</ul></td></tr>';	
 			}
@@ -108,7 +123,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 					<table class="layui-table layui-table-form">
 						${me.flowTemplate(flow)}
 						<tr id="checkTR">${me.uidsTemplate()}</tr>
-						${me.copyTemplate()}
+						${me.copyTemplate(flow[0])}
 					</table>
 				</form>
 			`;
@@ -125,7 +140,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
 						<tr id="checkTR">${me.uidsTemplate()}</tr>
-						${me.copyTemplate()}
+						${me.copyTemplate(detail)}
 					</table>
 					${me.btnTemplate()}
 				</form>
@@ -222,10 +237,10 @@ layui.define(['tool','oaPicker'], function (exports) {
 				flowHtml+= '<div class="flow-flexbox check-item flow-flex-row '+sortClass+'" id="flow'+f+'">'+iconStatus+'<div class="check-item-name">'+check_types+checkUser+'</div>'+strStatus+iconRight+'</div>';
 			}			
 			
-			let checkCopy='<tr><td class="layui-td-gray">抄送人</td><td colspan="3">'+detail.copy_unames+'</td></tr>';
+			let checkCopy=`<tr style="${detail.is_copy==0?'display:none':''}"><td class="layui-td-gray-2">抄送人</td><td colspan="3">${detail.copy_unames}</td></tr>`;
 			
 			let checkNode = `<tr>
-					<td class="layui-td-gray">审批节点 <font>*</font></td>
+					<td class="layui-td-gray-2">审批节点 <font>*</font></td>
 					<td colspan="3">
 						<input type="radio" name="check_node" lay-filter="check_node" value="1" title="审批结束">
 						<input type="radio" name="check_node" lay-filter="check_node" value="2" title="下一审批人">
@@ -236,8 +251,14 @@ layui.define(['tool','oaPicker'], function (exports) {
 				</tr>
 				`;
 				
-			let checkContent = `<tr>
-							<td class="layui-td-gray">审批意见 <font>*</font></td>
+			let checkContent = `<tr style="${detail.is_file==0?'display:none':''}">
+									<td class="layui-td-gray-2">审批附件 <button type="button" class="layui-btn layui-btn-xs" id="uploadBtnCheck"><i class="layui-icon"></i></button></td>
+									<td colspan="3">
+										<div class="layui-row" id="uploadBoxCheck"><input data-type="file" type="hidden" name="check_files" value=""></div>
+									</td>
+								</tr>
+							<tr>
+							<td class="layui-td-gray-2">审批意见 <font>*</font></td>
 							<td colspan="3">
 								<textarea name="content" placeholder="请输入审批意见" class="layui-textarea"></textarea>
 							</td>
@@ -251,20 +272,21 @@ layui.define(['tool','oaPicker'], function (exports) {
 			
 			let btnBack='<span class="layui-btn layui-btn-primary btn-check" data-status="3"><i class="layui-icon layui-icon-reduce-circle"></i> 撤回</span>';
 			let btnCheckBack='<span class="layui-btn layui-btn-danger btn-check" data-event="check" data-status="4">反确认审核</span>';
+			let btnExport='<a href="/api/export/pdf?types='+me.sets.check_name+'&id='+detail.id+'" class="layui-btn" target="_blank"><i class="layui-icon layui-icon-print"></i>审批单导出打印</a>';
 			
 			let checkHtml = `
 				<form class="layui-form">
 				<h3 class="pb-2">审批操作</h3>
 					<table class="layui-table layui-table-form">
 						<tr>
-							<td class="layui-td-gray">审批状态</td>
+							<td class="layui-td-gray-2">审批状态</td>
 							<td>${me.checkStatus(detail.check_status)}</td>
 							<td class="layui-td-gray-2">当前审批人</td>
 							<td>${detail.check_unames}</td>
 						</tr>
-						${me.sets.check_copy == 1 ? checkCopy : ""}
+						${checkCopy}
 						<tr>
-							<td class="layui-td-gray">审批流</td>
+							<td class="layui-td-gray-2">审批流</td>
 							<td colspan="3">
 								<div class="flow-flexbox check-items flow-flex-row" id="flowList">
 									<div class="flow-flexbox check-item flow-flex-row">
@@ -284,8 +306,9 @@ layui.define(['tool','oaPicker'], function (exports) {
 					<div class="pt-3">
 						<input type="hidden" name="check_role" value="${detail.step.check_role}">
 						${detail.is_checker==1?btnCheck:''}
-						${detail.is_creater==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
-						${me.sets.check_back == 1 && detail.check_status==2?btnCheckBack:''}						
+						${detail.is_creater==1 && detail.is_back==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
+						${detail.is_reversed == 1 && typeof me.sets.check_reversed ==='function' && detail.check_status==2?btnCheckBack:''}	
+						${detail.is_export == 1 && detail.check_status==2?btnExport:''}					
 					</div>
 				</form>
 			`;
@@ -306,7 +329,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
 						<tr id="checkTR">${me.uidsTemplate()}</tr>
-						${me.copyTemplate()}
+						${me.copyTemplate(detail)}
 					</table>
 					${me.btnTemplate()}
 				</form>
@@ -320,7 +343,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 					</table>
 				</form>
 			`;
-			if(detail.is_creater==1){
+			if(detail.is_creater==1 && detail.is_back==1){
 				return checkHtml;
 			}
 			else{
@@ -349,7 +372,19 @@ layui.define(['tool','oaPicker'], function (exports) {
 					if (e.code == 0) {
 						if(check_status==0){
 							if(action_id==0){
-								checkBox.append(me.createTemplate(e.data));
+								if(e.data.length>0){
+									checkBox.append(me.createTemplate(e.data));
+								}
+								else{
+									let none = '<h3 class="pb-2">审批操作</h3>\
+												<table class="layui-table layui-table-form">\
+												<tr>\
+												<td class="layui-td-gray-2">审批流程<font>*</font></td>\
+												<td><input type="text" name="flow_id" value="" autocomplete="off" placeholder="未设置审批流程，请联系管理员设置" lay-verify="required" lay-reqtext="未设置审批流程，请联系管理员设置" class="layui-input" readonly></td>\
+												</tr>\
+												</table>';
+									checkBox.append(none);
+								}
 							}
 							else{
 								checkBox.append(me.initTemplate(e.data));
@@ -360,6 +395,10 @@ layui.define(['tool','oaPicker'], function (exports) {
 						}
 						else{
 							checkBox.append(me.checkTemplate(e.data));
+							var fileUp = new uploadPlus({
+								"target":'uploadBtnCheck',
+								"targetBox":'uploadBoxCheck',
+							});
 						}
 						form.render();
 					}
@@ -388,7 +427,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 						if (e.code == 0) {
 							var flow_li='',flow_idx=0;
 							var flow_data = e.data.flow_data;
-							if(e.data.copy_uids && e.data.copy_uids !='' && me.sets.check_copy==1){
+							if(e.data.copy_uids && e.data.copy_uids !=''){
 								checkBox.find('[name="check_copy_unames"]').val(e.data.copy_unames);
 								checkBox.find('[name="check_copy_uids"]').val(e.data.copy_uids.split(','));
 							}
@@ -432,8 +471,11 @@ layui.define(['tool','oaPicker'], function (exports) {
 											</div>\
 										</li>';
 									}
-								}							
-								formHtml = '<td class="layui-td-gray">审批流</td>\
+								}
+								if(flow_li==''){
+									flow_li='<span style="color:#999;">审批流程错误，请联系管理员设置</span>';
+								}								
+								formHtml = '<td class="layui-td-gray-2">审批流</td>\
 											<td>\
 												<ul id="flowList" class="layui-timeline">'+flow_li+'</ul>\
 											</td>';
@@ -454,7 +496,20 @@ layui.define(['tool','oaPicker'], function (exports) {
 						tool.sideClose(1000);				
 					}
 				}
-				tool.post("/api/check/submit_check", data.field, callback);
+				if(typeof me.sets.post_form ==='string' && typeof me.sets.post_url ==='string'){
+					let postData = form.val(me.sets.post_form);
+					tool.post(me.sets.post_url, postData, function(res){
+						if (res.code == 0) {
+							tool.post("/api/check/submit_check", data.field, callback);				
+						}
+						else{
+							layer.msg(res.msg);
+						}
+					});
+				}
+				else{
+					tool.post("/api/check/submit_check", data.field, callback);
+				}
 				return false;
 			});
 			
@@ -482,37 +537,81 @@ layui.define(['tool','oaPicker'], function (exports) {
 						layer.msg('请输入审批意见');
 						return false;
 					}
+					let check_files = checkBox.find('input[name="check_files"]').val();
 					let confirmTips='确定通过该审批？';
 					if(check_status==2){
 						confirmTips='确定拒绝该审批？';
 					}				
 					tool.ask(confirmTips, function(index){
-						$.ajax({
-							url: "/api/check/flow_check",
-							type:'post',
-							data:{
-								action_id:action_id,
-								check_name:me.sets.check_name,
-								check_flow_id:check_flow_id,
-								check_node:check_node,
-								check_uids:check_uids,
-								check:check_status,
-								content:content
-							},
-							success: function (e) {
-								layer.msg(e.msg);
-								if (e.code == 0) {
-									if(e.check_status==2 && typeof me.sets.check_ok ==='function'){
-										me.sets.check_ok();
-									}
-									tool.sideClose(1000);
+						if(typeof me.sets.post_form ==='string' && typeof me.sets.post_url ==='string'){
+							let postData = form.val(me.sets.post_form);
+							tool.post(me.sets.post_url, postData, function(res){
+								if (res.code == 0) {
+									$.ajax({
+										url: "/api/check/flow_check",
+										type:'post',
+										data:{
+											action_id:action_id,
+											check_name:me.sets.check_name,
+											check_flow_id:check_flow_id,
+											check_node:check_node,
+											check_uids:check_uids,
+											check:check_status,
+											check_files:check_files,
+											content:content
+										},
+										success: function (e) {
+											layer.msg(e.msg);
+											if (e.code == 0) {
+												if(e.data.check_status==2 && typeof me.sets.check_ok ==='function'){
+													me.sets.check_ok(e);
+												}
+												if(e.data.check_status==3 && typeof me.sets.check_no ==='function'){
+													me.sets.check_no(e);
+												}
+												tool.sideClose(1000);
+											}
+										}
+									})			
 								}
-							}
-						})
+								else{
+									layer.msg(res.msg);
+								}
+							});
+						}
+						else{
+							$.ajax({
+								url: "/api/check/flow_check",
+								type:'post',
+								data:{
+									action_id:action_id,
+									check_name:me.sets.check_name,
+									check_flow_id:check_flow_id,
+									check_node:check_node,
+									check_uids:check_uids,
+									check:check_status,
+									check_files:check_files,
+									content:content
+								},
+								success: function (e) {
+									layer.msg(e.msg);
+									if (e.code == 0) {
+										if(e.data.check_status==2 && typeof me.sets.check_ok ==='function'){
+											me.sets.check_ok(e);
+										}
+										if(e.data.check_status==3 && typeof me.sets.check_no ==='function'){
+											me.sets.check_no(e);
+										}
+										tool.sideClose(1000);
+									}
+								}
+							})
+						}
 						layer.close(index);
 					});   
 				}
-				else if(check_status ==3){			
+				else if(check_status ==3){
+					$(parent.$('.express-close')).addClass('parent-colse');
 					layer.prompt({
 						formType: 2,
 						title: '请输入撤回理由',
@@ -534,15 +633,20 @@ layui.define(['tool','oaPicker'], function (exports) {
 							},
 							success: function (e) {
 								layer.msg(e.msg);
-								if (e.code == 0) {	
+								if (e.code == 0) {
+									if(e.data.check_status==4 && typeof me.sets.check_back ==='function'){
+										me.sets.check_back(e);
+									}
 									tool.sideClose(1000);
 								}
 							}
 						})
+						$(parent.$('.express-close')).removeClass('parent-colse');
 						layer.close(index);
 					});
 				}
-				else if(check_status ==4){			
+				else if(check_status ==4){
+					$(parent.$('.express-close')).addClass('parent-colse');
 					layer.prompt({
 						formType: 2,
 						title: '请输入反确认理由',
@@ -564,11 +668,15 @@ layui.define(['tool','oaPicker'], function (exports) {
 							},
 							success: function (e) {
 								layer.msg(e.msg);
-								if (e.code == 0) {	
+								if (e.code == 0) {
+									if(e.data.check_status==0 && typeof me.sets.check_reversed ==='function'){
+										me.sets.check_reversed(e);
+									}
 									tool.sideClose(1000);
 								}
 							}
 						})
+						$(parent.$('.express-close')).removeClass('parent-colse');
 						layer.close(index);
 					});
 				}

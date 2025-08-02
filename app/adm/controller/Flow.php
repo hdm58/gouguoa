@@ -333,7 +333,7 @@ class Flow extends BaseController
     }
 	
     //审批类型设置
-    public function item_check()
+    public function cate_check()
     {
 		$param = get_params();
         $res = Db::name('FlowCate')->strict(false)->field('id,status')->update($param);

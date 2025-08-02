@@ -1,10 +1,4 @@
-<?php
-/**
- * @copyright Copyright (c) 2021 勾股工作室
- * @license https://opensource.org/licenses/GPL-3.0
- * @link https://www.gougucms.com
- */
- 
+<?php 
 // [ 应用入口文件 ]
 namespace think;
 
@@ -15,13 +9,13 @@ if (empty(file_exists(__DIR__ . '/../vendor/autoload.php'))) {
 require __DIR__ . '/../vendor/autoload.php';
 
 // 定义当前版本号
-define('CMS_VERSION','5.7.5');
+define('CMS_VERSION','5.9');
 
 // 定义手机端当前版本号
 define('MB_VERSION','1.0');
 
 // 定义Layui版本号
-define('LAYUI_VERSION','2.11');
+define('LAYUI_VERSION','2.11.5');
 
 // 定义项目目录
 define('CMS_ROOT', __DIR__ . '/../');

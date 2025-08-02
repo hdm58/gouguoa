@@ -97,6 +97,12 @@ layui.define(['tool'], function (exports) {
 			url:'/project/api/get_task',
 			area: ['800px', '568px'],
 			cols:[{field:'id',width:90,title:'序号',align:'center'},{ field:'title',title:'任务主题'},{field:'project',width:240,title:'关联项目'}]
+		},
+		'loan':{
+			title:'选择借支冲抵',
+			url:'/finance/api/get_loan',
+			area: ['800px', '568px'],
+			cols:[{field: 'id',width: 80,title:'序号',align:'center'},{field:'cost',title:'借款金额(元)',width: 100},{field:'un_balance_cost',title:'未冲账金额(元)',width: 110},{field:'balance_cost',title:'已冲账金额(元)',width: 110},{field:'title',title:'借支主题',minWidth:200}]
 		}
 	}
 
@@ -380,6 +386,18 @@ layui.define(['tool'], function (exports) {
 						height: '407',
 						cols: [cols]
 					});
+					//请求分类
+					if(settings.cate_url){
+						tool.get(settings.cate_url,{},function(res){
+							let cate='';
+							for(let b=0; b<res.data.length;b++){
+								cate+='<option value="'+res.data[b].id+'">'+res.data[b].title+'</option>';
+							}
+							$('#pickerBox'+pickerIndex).find('.table_cate_id').append(cate);
+							form.render('select');
+						})
+					}
+					form.render();
 					//搜索提交
 					form.on('submit(picker)', function (data) {
 						let maps = $.extend({}, settings.where, data.field);
@@ -496,7 +514,8 @@ layui.define(['tool'], function (exports) {
 			map = {};
 		}
 		else{
-			map = JSON.parse(where);
+			const jsonStr = where.replace(/(\w+):/g, '"$1":').replace(/'/g, '"'); 
+			map = JSON.parse(jsonStr);
 		}
 		let callback = function(data){
 			for ( var i = 0; i <data.length; i++){

@@ -1,0 +1,121 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">编辑借支申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">借支主题<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" value="{$detail.title|default=''}" lay-verify="required" placeholder="请输入借支主题" lay-reqText="请填写借支主题" class="layui-input"></td>
+			<td class="layui-td-gray">借支企业主体</td>
+			<td>
+				<select name="subject_id" lay-verify="required" lay-reqText="请选择借支企业主体">
+					<option value="">请选择借支企业主体</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$detail.subject_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">借支金额<font>*</font></td>
+			<td><input type="text" name="cost" value="{$detail.cost|default=''}" lay-verify="required|number" placeholder="请输入借支金额" lay-reqText="请填写借支金额" class="layui-input"></td>
+			<td class="layui-td-gray">借支员工</td>
+			<td>{$detail.admin_name} ({$detail.department|default=''})</td>
+			<td class="layui-td-gray">借支编号<font>*</font></td>
+			<td><input type="text" name="code" value="{$detail.code|default=''}" lay-verify="required" readonly placeholder="请输入借支编号" lay-reqText="请填写借支编号" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">借支类型<font>*</font></td>
+			<td colspan="3">
+				<input type="radio" name="types" value="1" title="日常备用金" lay-filter="types" lay-filter="types" {eq name="$detail.types" value="1"} checked{/eq}>
+				<input type="radio" name="types" value="2" title="项目预支款" lay-filter="types" lay-filter="types" {eq name="$detail.types" value="2"} checked{/eq}>	
+			</td>
+			<td class="layui-td-gray-2">预计归还日期<font>*</font></td>
+			<td><input type="text" name="plan_time" value="{$detail.plan_time|date='Y-m-d'}" readonly lay-verify="required" placeholder="请完善预计归还日期" lay-reqText="请完善预计归还日期" class="layui-input tool-time"></td>
+		</tr>
+		<tr id="project" style="{$detail.types==1?'display:none;':''}">
+			<td class="layui-td-gray">关联项目<font>*</font></td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="project" name="ptname" data-where="{apply:'1'}" placeholder="请选择需要关联的项目" readonly value="{$detail.ptname|default=''}">		
+				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id|default=0}">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">借支理由<font>*</font></td>
+			<td colspan="5"><textarea name="content" placeholder="请输入借支理由" class="layui-textarea" lay-verify="required" lay-reqText="请输入借支理由">{$detail.content|default=''}</textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div>
+			</td>
+			<td colspan="5">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" name="file_ids" data-type="file" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+	<div class="pt-4">
+		<input name="id" id="id" type="hidden" value="{$detail.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">保存并提交审核</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','uploadPlus','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus = layui.uploadPlus,oaCheck = layui.oaCheck;	
+		//相关附件上传
+		var attachment = new uploadPlus();
+		//审批相关
+		oaCheck.init({
+			check_name:'loan',
+			check_btn:0
+		});
+
+		//监听提交
+		form.on('submit(webform)', function(data){
+			if(data.field.types==2 && data.field.ptname==''){
+				layer.msg('请完善关联的项目');
+				return false;
+			}
+			if(data.field.types==1){
+				data.field.project_id=0;
+			}
+			tool.ask('审核期间不能编辑修改，确定借支数据无误？', function(index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						let checkCallback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								tool.sideClose(1000);				
+							}
+						}
+						data.field.check_name = 'loan';
+						data.field.action_id = e.data.return_id;
+						oaCheck.submit(data.field,checkCallback);
+					}
+				}
+				tool.post("/finance/loan/add", data.field, callback);
+				layer.close(index);
+			});
+			return false;
+		});
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

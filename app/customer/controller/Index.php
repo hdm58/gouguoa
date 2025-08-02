@@ -119,16 +119,22 @@ class Index extends BaseController
     {
 		if (request()->isAjax()) {
 			$id = get_params("id");
-			$data['id'] = $id;
-			$data['belong_uid'] = 0;
-			$data['belong_did'] = 0;
-			$data['belong_time'] = 0;
-			if (Db::name('Customer')->update($data) !== false) {
-				add_log('tosea', $id);
-				return to_assign(0, "操作成功");
-			} else {
-				return to_assign(1, "操作失败");
+			$idArray = explode(',', strval($id));
+			$list = [];
+			foreach ($idArray as $key => $val) {
+				$list[] = [
+					'id' => $val,
+					'belong_uid' => 0,
+					'belong_did' => 0,
+					'belong_time' => 0
+				];
 			}
+			foreach ($list as $key => $v) {
+				if (Db::name('Customer')->update($v) !== false) {
+					add_log('tosea', $v['id']);
+				}
+			}
+			return to_assign(0, '操作成功');
 		} else {
             return to_assign(1, "错误的请求");
         }
@@ -164,16 +170,22 @@ class Index extends BaseController
     public function to_trash()
     {
 		if (request()->isAjax()) {
-			$params = get_params();			
-			$data['id'] = $params['id'];
-			$data['delete_time'] = time();
-			$log_data['action'] = 'totrash';
-			if (Db::name('Customer')->update($data) !== false) {
-				add_log('totrash', $params['id']);
-				return to_assign();
-			} else {
-				return to_assign(1, "操作失败");
+			$params = get_params();	
+			$id = get_params("id");			
+			$idArray = explode(',', strval($id));
+			$list = [];
+			foreach ($idArray as $key => $val) {
+				$list[] = [
+					'id' => $val,
+					'delete_time' => time()
+				];
 			}
+			foreach ($list as $key => $v) {
+				if (Db::name('Customer')->update($v) !== false) {
+					add_log('totrash', $params['id']);
+				}
+			}
+			return to_assign(0, '操作成功');
 		} else {
             return to_assign(1, "错误的请求");
         }
@@ -184,14 +196,21 @@ class Index extends BaseController
     {
 		if (request()->isAjax()) {
 			$params = get_params();		
-			$data['id'] = $params['id'];
-			$data['delete_time'] = 0;
-			if (Db::name('Customer')->update($data) !== false) {
-				add_log('recovery', $params['id']);
-				return to_assign();
-			} else {
-				return to_assign(1, "操作失败");
+			$id = get_params("id");			
+			$idArray = explode(',', strval($id));
+			$list = [];
+			foreach ($idArray as $key => $val) {
+				$list[] = [
+					'id' => $val,
+					'delete_time' => 0
+				];
 			}
+			foreach ($list as $key => $v) {
+				if (Db::name('Customer')->update($v) !== false) {
+					add_log('recovery', $params['id']);
+				}
+			}
+			return to_assign(0, '操作成功');
 		} else {
             return to_assign(1, "错误的请求");
         }

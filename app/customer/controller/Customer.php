@@ -212,9 +212,22 @@ class Customer extends BaseController
     public function del()
     {
 		$param = get_params();
-		$id = isset($param['id']) ? $param['id'] : 0;
 		if (request()->isDelete()) {
-			$this->model->delById($id);
+			$id = get_params("id");			
+			$idArray = explode(',', strval($id));
+			$list = [];
+			foreach ($idArray as $key => $val) {
+				$list[] = [
+					'id' => $val,
+					'discard_time' => time()
+				];
+			}
+			foreach ($list as $key => $v) {
+				if (Db::name('Customer')->update($v) !== false) {
+					add_log('delete', $param['id']);
+				}
+			}
+			return to_assign(0, '操作成功');
 		} else {
             return to_assign(1, "错误的请求");
         }

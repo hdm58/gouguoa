@@ -18,7 +18,6 @@ namespace app\user\controller;
 use app\base\BaseController;
 use app\user\model\DepartmentChange as DepartmentChange;
 use app\user\model\PersonalQuit as PersonalQuit;
-use app\user\model\Department as DepartmentModel;
 use think\exception\ValidateException;
 use think\facade\Db;
 use think\facade\View;
@@ -30,26 +29,56 @@ class Personal extends BaseController
     {
         if (request()->isAjax()) {
             $param = get_params();
-			$where = [];
-            if (!empty($param['keywords'])) {
-                $where[] = ['u.name|p.remark|a.title|b.title','like', '%' . $param['keywords'] . '%'];
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
+			$uid = $this->uid;
+			$where=[];
+			$whereOr=[];
+			$where[]=['delete_time','=',0];
+            if($tab == 0){
+				//全部
+				$auth = isAuth($uid,'office_admin','conf_1');
+				if($auth == 0){
+					$whereOr[] = ['admin_id', '=', $uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+					$dids_a = get_leader_departments($uid);	
+					$dids_b = get_role_departments($uid);
+					$dids = array_merge($dids_a, $dids_b);
+					if(!empty($dids)){
+						$whereOr[] = ['did','in',$dids];
+					}
+				}
+			}
+			if($tab == 1){
+				//我创建的
+				$where[] = ['admin_id', '=', $this->uid];
+			}
+			if($tab == 2){
+				//待我审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+			}
+			if($tab == 3){
+				//我已审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+			}
+			if($tab == 4){
+				//抄送给我的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+			}
+			if (isset($param['check_status']) && $param['check_status'] != "") {
+                $where[] = ['check_status', '=', $param['check_status']];
             }
-            $where[] = ['p.status','=', 1];
-            $rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-            $list = DepartmentChange::where($where)
-                ->field('p.*,u.name as name,ad.name as admin')
-                ->alias('p')
-                ->join('admin u', 'p.uid = u.id', 'LEFT')
-                ->join('admin ad', 'p.admin_id = ad.id', 'LEFT')              
-                ->order('p.id desc')
-				->paginate(['list_rows'=> $rows])
-                ->each(function ($item, $key) {
-                    $item->move_time = to_date($item->move_time,'Y-m-d');
-					$adepartment = Db::name('Department')->whereIn('id',$item->from_did)->column('title');
-					$item->adepartment = implode(',', $adepartment);
-					$bdepartment = Db::name('Department')->whereIn('id',$item->to_did)->column('title');
-					$item->bdepartment = implode(',', $bdepartment);
-                });
+			if (!empty($param['did'])) {
+				$where[] = ['did', '=',$param['did']];
+            }
+			//按时间检索
+			if (!empty($param['move_time'])) {
+				$move_time =explode('~', $param['move_time']);
+				$where[] = ['move_time', 'between', [strtotime(urldecode($move_time[0])),strtotime(urldecode($move_time[1]))]];
+			}
+			$model = new DepartmentChange();
+            $list = $model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         } else {
             return view();
@@ -61,43 +90,31 @@ class Personal extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
+			$param['move_time'] = isset($param['move_time']) ? strtotime($param['move_time']) : 0;
+			$model = new DepartmentChange();
             if ($param['id'] > 0) {
-                $param['update_time'] = time();
-                $res = Db::name('DepartmentChange')->strict(false)->field(true)->update($param);
-                add_log('edit', $param['id'], $param);
+                $model->edit($param);
             } else {
 				$uid = $param['uid'];
 				$map = [];
 				$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',leader_ids)")];
 				$count = Db::name('Department')->where($map)->count();
 				if($count>0){
-					return to_assign(1,'请先撤销该员工的部门负责人头衔再调部门');
+					return to_assign(1,'请先撤销该员工的部门负责人头衔再申请');
 				}
-				$param['move_time'] = isset($param['move_time']) ? strtotime($param['move_time']) : 0;
-                $param['create_time'] = time();
+				$has = Db::name('DepartmentChange')->where(['uid'=>$param['uid'],'status'=>1,'delete_time'=>0])->count();
+				if($has>0){
+					return to_assign(1, "该员工有调动记录未完成，不能重复申请");
+				}
                 $param['admin_id'] = $this->uid;
-                $res = Db::name('DepartmentChange')->strict(false)->field(true)->insertGetId($param);
-				if ($res!==false) {
-					add_log('add', $res, $param);
-					Db::name('Admin')->where('id', $param['uid'])->update(['did' => $param['to_did']]);
-					Db::name('DepartmentAdmin')->where(['admin_id'=>$param['uid'],'department_id'=>$param['to_did']])->delete();
-					
-					$info = Db::name('Admin')->where('id', $param['uid'])->find();
-					$model = new DepartmentModel();
-					$auth_dids = $model->get_auth_departments($info);
-					$son_dids = $model->get_son_departments($info);
-					Db::name('Admin')->where('id',$param['uid'])->update(['auth_dids'=>$auth_dids,'son_dids'=>$son_dids]);
-				}
+                $model->add($param);
             }
-            return to_assign();
         } else {
             $id = isset($param['id']) ? $param['id'] : 0;
             $department = set_recursion(get_department());
             if ($id > 0) {
-                $detail = Db::name('DepartmentChange')->where(['id' => $id])->find();
-                $detail['name'] = Db::name('Admin')->where(['id' => $detail['uid']])->value('name');
-                $detail['from_department'] = Db::name('Department')->where(['id' => $detail['from_did']])->value('title');
-                $detail['move_time'] = date('Y-m-d', $detail['move_time']);
+                $model = new DepartmentChange();
+				$detail = $model->getById($id);
                 View::assign('detail', $detail);
             }
             View::assign('department', $department);
@@ -105,131 +122,143 @@ class Personal extends BaseController
             return view();
         }
     }
+	
+    //查看调部门申请
+    public function change_view()
+    {
+        $param = get_params();
+        $model = new DepartmentChange();
+		$detail = $model->getById($param['id']);
+		View::assign('detail', $detail);
+       return view();
+    }
+	
+    //删除调部门申请
+    public function change_delete()
+    {
+		$param = get_params();
+		$id = $param['id'];
+		if (request()->isDelete()) {
+			$model = new DepartmentChange();
+			$model->delById($id);
+		} else {
+            return to_assign(1, "错误的请求");
+        }
+    }
+	
 
     //离职
     public function leave()
     {
+ 		$param = get_params();
         if (request()->isAjax()) {
-            $param = get_params();
-            $where = array();
-            if (!empty($param['keywords'])) {
-                $where['u.name|p.remark'] = ['like', '%' . $param['keywords'] . '%'];
-            }
-            $where['p.status'] = array('eq', 1);
-            $rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-            $list = PersonalQuit::where($where)
-                ->field('p.*,u.name as name,ps.title as position')
-                ->alias('p')
-                ->join('admin u', 'p.uid = u.id', 'LEFT')
-                ->join('position ps', 'u.position_id = ps.id', 'LEFT')
-                ->order('p.id desc')
-                ->paginate(['list_rows'=> $rows])
-                ->each(function ($item, $key) {
-                    $item->quit_time = to_date($item->quit_time,'Y-m-d');
-					$item->connect_time_str='-';
-					if($item->connect_time>0){
-						$item->connect_time_str = to_date($item->connect_time,'Y-m-d');
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
+			$uid = $this->uid;
+			$where=[];
+			$whereOr=[];
+			$where[]=['delete_time','=',0];
+            if($tab == 0){
+				//全部
+				$auth = isAuth($uid,'office_admin','conf_1');
+				if($auth == 0){
+					$whereOr[] = ['admin_id', '=', $this->uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+					$dids_a = get_leader_departments($uid);	
+					$dids_b = get_role_departments($uid);
+					$dids = array_merge($dids_a, $dids_b);
+					if(!empty($dids)){
+						$whereOr[] = ['did','in',$dids];
 					}
-                    $item->lead_admin = Db::name('admin')->where(['id' => $item->lead_admin_id])->value('name');
-                    $item->connect_name = Db::name('admin')->where(['id' => $item->connect_id])->value('name');
-                    $this_uids_name = Db::name('admin')->where([['id','in', $item->connect_uids]])->column('name');
-                    $item->connect_names = implode(',', $this_uids_name);
-					
-					$did =  Db::name('Admin')->where('id',$item->uid)->value('did');
-					$item->department = Db::name('Department')->where('id',$did)->value('title');
-                });
+				}
+			}
+			if($tab == 1){
+				//我创建的
+				$where[] = ['admin_id', '=', $uid];
+			}
+			if($tab == 2){
+				//待我审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+			}
+			if($tab == 3){
+				//我已审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+			}
+			if($tab == 4){
+				//抄送给我的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+			}
+			if (isset($param['check_status']) && $param['check_status'] != "") {
+                $where[] = ['check_status', '=', $param['check_status']];
+            }
+			if (!empty($param['did'])) {
+				$where[] = ['did', '=',$param['did']];
+            }
+			//按时间检索
+			if (!empty($param['quit_time'])) {
+				$quit_time =explode('~', $param['quit_time']);
+				$where[] = ['quit_time', 'between', [strtotime(urldecode($quit_time[0])),strtotime(urldecode($quit_time[1]))]];
+			}
+			$model = new PersonalQuit();
+            $list = $model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
-        } else {
+        }
+        else{
             return view();
         }
     }
 
-    //添加离职档案
+    //添加离职申请
     public function leave_add()
     {
         $param = get_params();
         if (request()->isAjax()) {
             $param['quit_time'] = isset($param['quit_time']) ? strtotime($param['quit_time']) : 0;
+            $model = new PersonalQuit();
             if ($param['id'] > 0) {
-                $param['update_time'] = time();
-                $res = Db::name('PersonalQuit')->strict(false)->field(true)->update($param);
-                add_log('edit', $param['id'], $param);
+				$detail = $model->edit($param);
             } else {
-                $param['create_time'] = time();
+				$has = Db::name('PersonalQuit')->where(['uid'=>$param['uid'],'delete_time'=>0])->count();
+				if($has>0){
+					return to_assign(1, "该员工已申请有离职记录，不能重复申请");
+				}
                 $param['admin_id'] = $this->uid;
-                $res = Db::name('PersonalQuit')->strict(false)->field(true)->insertGetId($param);
-                add_log('add', $res, $param);
+                $detail = $model->add($param);
             }
-            if ($res!==false) {
-                Db::name('Admin')->where('id', $param['uid'])->update(['status' => 2]);
-            }
-            return to_assign();
         } else {
             $id = isset($param['id']) ? $param['id'] : 0;
             $where = array();
             if ($id>0) {
-                $where['p.id'] = array('eq', $id);
-                $detail = Db::name('PersonalQuit')
-                    ->field('p.*,u.name as name,l.name as lead_admin_name')
-                    ->alias('p')
-                    ->join('admin u', 'p.uid = u.id', 'LEFT')
-                    ->join('admin l', 'p.lead_admin_id = l.id', 'LEFT')
-                    ->where($where)
-                    ->find();
-                $this_uids_name = Db::name('Admin')->where([['id','in', $detail['connect_uids']]])->column('name');
-                $detail['connect_names'] = implode(',', $this_uids_name);
-                $detail['quit_time'] = date('Y-m-d', $detail['quit_time']);
-				$detail['connect_name'] = Db::name('admin')->where(['id' => $detail['connect_id']])->value('name');
-				
-				$did =  Db::name('Admin')->where('id',$detail['uid'])->value('did');
-				$detail['department'] = Db::name('Department')->where('id',$did)->value('title');
+                $model = new PersonalQuit();
+				$detail = $model->getById($id);
                 View::assign('detail', $detail);
             }
             View::assign('id', $id);
             return view();
         }
     }
+	
+    //查看离职申请
+    public function leave_view()
+    {
+        $param = get_params();
+        $model = new PersonalQuit();
+		$detail = $model->getById($param['id']);
+		View::assign('detail', $detail);
+       return view();
+    }
 
-    //删除离职档案
+    //删除离职申请
     public function leave_delete()
     {
-        $id = get_params("id");
-        $data['status'] = '-1';
-        $data['id'] = $id;
-        $data['update_time'] = time();
-        if (Db::name('PersonalQuit')->update($data) !== false) {
-            $uid = Db::name('PersonalQuit')->where('id', $id)->value('uid');
-            Db::name('Admin')->where('id', $uid)->update(['status' => 1]);
-            add_log('delete', $id);
-            return to_assign(0, "删除成功");
-        } else {
-            return to_assign(1, "删除失败");
-        }
-    }
-	
-	//一键交接资料
-    public function leave_check()
-    {
-        $id = get_params("id");
-        $data['id'] = $id;
-        $data['connect_time'] = time();
-		$detail = Db::name('PersonalQuit')->where('id', $id)->find();
-        $uid =  $detail['uid'];
-        $connect_uid = $detail['connect_id'];
-        if (Db::name('PersonalQuit')->update($data) !== false) {
-			//项目负责人
-            Db::name('Project')->where([['director_uid','=',$uid],['status','<',3]])->update(['director_uid' => $connect_uid]);
-			//任务负责人
-            Db::name('ProjectTask')->where([['director_uid','=',$uid],['status','<',3]])->update(['director_uid' => $connect_uid]);			
-			//客户所属人
-			$did = Db::name('Admin')->where('id', $connect_uid)->value('did');
-            Db::name('Customer')->where([['belong_uid','=',$uid]])->update(['belong_uid' => $connect_uid,'belong_did'=>$did]);
-			//合同
-            Db::name('Contract')->where([['admin_id','=',$uid],['check_status','<',3]])->update(['admin_id' => $connect_uid]);
-            add_log('hand', $id);
-            return to_assign(0, "交接成功");
-        } else {
-            return to_assign(1, "交接失败");
+		$param = get_params();
+		$id = $param['id'];
+		if (request()->isDelete()) {
+			$model = new PersonalQuit();
+			$model->delById($id);
+		} else {
+            return to_assign(1, "错误的请求");
         }
     }
 }

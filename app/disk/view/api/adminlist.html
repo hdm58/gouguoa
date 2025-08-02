@@ -1,0 +1,120 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">	
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbaruser">
+	<button class="layui-btn layui-btn-sm" lay-event="add">+ 新增空间管理员</button>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+	<script>
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	const id = {$detail.id};
+	const director_uids = "{$detail.director_uids|default=''}";
+	
+	function removeDuplicateNumbers(str) {
+		// 1. 按逗号分割字符串为数组
+		const numbers = str.split(',');	  
+		// 2. 使用Set记录唯一值 + filter保留首次出现的顺序
+		const seen = new Set();
+		const uniqueNumbers = numbers.filter(num => {
+			if (seen.has(num)) return false;
+			seen.add(num);
+			return true;
+		});	  
+		// 3. 重新拼接为字符串
+		return uniqueNumbers.join(',');
+	}
+	
+	function removeSpecificNumber(str, target) {
+		// 1. 将字符串按逗号分割成数组
+		const numbers = str.split(',');	  
+	    // 2. 过滤掉所有指定的数字
+	    const filteredNumbers = numbers.filter(num => num !== target.toString());	  
+	    // 3. 重新拼接为字符串
+	    return filteredNumbers.join(',');
+	}
+	
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form, oaPicker = layui.oaPicker;
+		layui.userTable = table.render({
+			elem: '#test',
+			title: '共享空间管理员列表',
+			cellMinWidth: 80,
+			toolbar: '#toolbaruser',
+			url: "/disk/api/adminlist", //数据接口
+			where: { 'id': id },
+			page: false, //开启分页
+			limit: 9999,
+			cols: [[ //表头
+				 {field: 'id', title: '编号', width: 80, align: 'center' }
+				,{field: 'name', title: '管理员姓名', width: 100, align: 'center' }
+				,{field: 'position', title: '职位', align: 'center', width: 200}
+				,{field: 'department', title: '所在部门'}		
+				,{title: '操作',fixed: 'right', align: 'center', width: 80,templet: function (d) {
+						let html = '<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove">移除</span>';
+						return html;
+					}
+				}
+			]]
+		});
+		
+		//触发事件
+		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id);
+			switch(obj.event){
+				case 'add':
+				  oaPicker.employeeInit({
+					type: 2,
+					callback: function (data) {
+						let callback = function (e) {
+							layer.msg(e.msg);
+							if(e.code == 0){
+								layui.userTable.reload();
+							}						
+						}
+						let select_id=[];
+						for(var a=0; a<data.length;a++){
+							select_id.push(data[a].id);
+						}
+						let ids = select_id.join(',');
+						if(ids=='' || ids==0){
+							return false;
+						}
+						if(director_uids!=''){
+							ids = director_uids+','+ids;
+						}
+						ids = removeDuplicateNumbers(ids);
+						tool.post("/disk/api/adminset", {director_uids: ids,id: id}, callback);
+					}
+				})			
+				break;
+			};
+		});
+
+		//监听行工具事件
+		table.on('tool(test)', function (obj) {
+			let callback = function (e) {
+				layer.closeAll();
+				layer.msg(e.msg);
+				if(e.code == 0){
+					layui.userTable.reload();
+				}
+			}
+			if (obj.event === 'remove') {
+				tool.ask('确定要移除该管理员吗?', function (index) {
+					let ids = removeSpecificNumber(director_uids, obj.data.id);
+					tool.post("/disk/api/adminset", {director_uids: ids,id: id}, callback);
+				});
+			}
+			return;
+		});
+	}
+	</script>
+{/block}
+<!-- /脚本 -->

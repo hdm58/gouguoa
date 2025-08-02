@@ -40,7 +40,8 @@ mbui.define(['layer'], function (exports) {
 					}
 				},
 				identity: function (value) {
-					var EXP = /(^\d{15}$)|(^\d{17}(x|X|\d)$)/;
+					//var EXP = /(^\d{15}$)|(^\d{17}(x|X|\d)$)/;
+					var EXP = /^[1-9]\d{5}(18|19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}(\d|X|x)$/;
 					if (value && !EXP.test(value)) {
 						return '身份证号格式不正确';
 					}
@@ -102,7 +103,7 @@ mbui.define(['layer'], function (exports) {
 				}
 				var $this = $(this),errMsg = '至少要有一个单选按钮被选中';
 				if ($this.find('[type="radio"]').is(':checked')) {
-					console.log('至少有一个单选按钮被选中');
+					console.log(errMsg);
 				} else {
 					errMsg = $this.data('errortips') || errMsg;
 					isValid = false;
@@ -117,7 +118,7 @@ mbui.define(['layer'], function (exports) {
 				}
 				var $this = $(this),errMsg = '至少要有一个多选按钮被选中';
 				if ($this.find('[type="checkbox"]').is(':checked')) {
-					console.log('至少要有一个多选按钮被选中');
+					console.log(errMsg);
 				} else {
 					errMsg = $this.data('errortips') || errMsg;
 					isValid = false;
@@ -140,8 +141,7 @@ mbui.define(['layer'], function (exports) {
 			, fieldElem = $(itemForm).find('input,select,textarea') // 获取所有表单域
 
 		$.each(fieldElem, function (_, item) {
-			var othis = $(this)
-				, init_name; // 初始 name
+			var othis = $(this), init_name; // 初始 name
 
 			item.name = (item.name || '').replace(/^\s*|\s*&/, '');
 			if (!item.name) return;

@@ -5,49 +5,57 @@ mbui.define(['layer'], function (exports) {
 		const i = Math.floor(Math.log(bytes) / Math.log(1024));
 		return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
 	}
+	function generateUniqueID(length) {
+	  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	  let id = '';
+	  while (id.length < length) {
+		id += chars.charAt(Math.floor(Math.random() * chars.length));
+	  }
+	  return id;
+	}
 	var layer = mbui.layer;
-	var fileUpload = function () {
-		this.config = {
-			uploadBtn: "#uploadBtn",
-			uploadBox: "#uploadBox",
-			url: "/api/index/upload",
-			accept: "application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,.csv,image/*,text/plain,video/*,audio/*,application/x-zip-compressed",
-			onlyImage: false,
-			template:function(data){
-				let exts = ['jpg', 'png', 'gif', 'jpeg'];
-				let filesize = bytesToSize(data.filesize);
-				let fileshow='<div class="mbui-file-icon"><i class="iconfont icon-weizhigeshi"></i></div>';
-				if(exts.includes(data.fileext)){
-					fileshow='<div class="mbui-file-icon file-img"><img src="'+data.filepath+'" alt="'+data.name+'"></div>';
-				}
-				return `<div class="mbui-file-div" data-id="${data.id}">
-							${fileshow}
-							<div class="mbui-file-info">
-								<div class="mbui-file-name line-limit-1">${data.name}</div>
-								<div class="mbui-file-size">${filesize}，刚刚</div>
-							</div>
-							<div class="mbui-file-del"><i class="iconfont icon-cuowukongxin"></i></div>
-						</div>`;
-			},
-			ajaxUpload:null
-		};
-		this.loaded = 0;
+	var config = {
+		uploadBtn: "uploadBtn",
+		uploadBox: "uploadBox",
+		url: "/api/index/upload",
+		accept: "application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,.csv,image/*,text/plain,video/*,audio/*,application/x-zip-compressed",
+		onlyImage: false,
+		more:true,
+		template:function(data){
+			let exts = ['jpg', 'png', 'gif', 'jpeg'];
+			let filesize = bytesToSize(data.filesize);
+			let fileshow='<div class="mbui-file-icon"><i class="iconfont icon-weizhigeshi"></i></div>';
+			if(exts.includes(data.fileext)){
+				fileshow='<div class="mbui-file-icon file-img"><img src="'+data.filepath+'" alt="'+data.name+'"></div>';
+			}
+			return `<div class="mbui-file-div" data-id="${data.id}">
+						${fileshow}
+						<div class="mbui-file-info">
+							<div class="mbui-file-name line-limit-1">${data.name}</div>
+							<div class="mbui-file-size">${filesize}，刚刚</div>
+						</div>
+						<div class="mbui-file-del"><i class="iconfont icon-cuowukongxin"></i></div>
+					</div>`;
+		},
+		ajaxUpload:null,
+		loaded:0
 	};
 	// 初始化
-	fileUpload.prototype.init = function (options) {
-		var that = this,timestamp = Date.now();
-		$.extend(true, that.config, options);
-		if(that.config.onlyImage){
-			that.config.accept = "image/jpeg,image/png,image/bmp";
+	var fileUpload = function (options) {
+		var timestamp = generateUniqueID(10);
+		var settings = $.extend({}, config, options);
+		//$.extend(true, that.config, options);
+		if(settings.onlyImage){
+			settings.accept = "image/jpeg,image/png,image/bmp";
 		}
-		var uploadBtn = $(that.config.uploadBtn),uploadBox = $(that.config.uploadBox),fileInput = 'fileInput_'+timestamp;		
-		uploadBox.append('<input id="'+fileInput+'" type="file" multiple="" accept="'+that.config.accept+'" style="display:none;">');
+		var uploadBtn = $('#'+settings.uploadBtn),uploadBox = $('#'+settings.uploadBox),fileInput = 'fileInput_'+timestamp;		
+		uploadBox.append('<input id="'+fileInput+'" type="file" multiple="" accept="'+settings.accept+'" style="display:none;">');
 		
 		//点击上传
 		uploadBtn.click(function() {
 			let newtimestamp = Date.now();
-			$('#'+fileInput).replaceWith($('<input type="file" id="'+fileInput+'" style="display:none;" multiple accept="'+that.config.accept+'">'));
-			if(that.loaded == 0){
+			$('#'+fileInput).replaceWith($('<input type="file" id="'+fileInput+'" style="display:none;" multiple="" accept="'+settings.accept+'">'));
+			if(settings.loaded == 0){
 				$('#'+fileInput).click();
 			}			
 		});
@@ -71,45 +79,60 @@ mbui.define(['layer'], function (exports) {
 		//附件上传
 		uploadBox.on('change','#'+fileInput,function() {
 			var fileInput = $(this)[0];
-			var file = fileInput.files[0];
-			if (file) {
-			  var formData = new FormData();
-			  formData.append('file', file);      
-			  // 发送文件到服务器
-			  $.ajax({
-				url: that.config.url,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				beforeSend: function () {
-				// 显示加载按钮
-					that.loaded = 1;
-					layer.loading('文件上传中...');
-				},
-				complete:function(){
-					that.loaded = 0;
-					setTimeout(function(){
+			var files = fileInput.files;
+			console.log(files);
+			//return false;
+			if (files) {
+				// 将文件列表转为数组
+				const filesArray = Array.from(files); 
+				// 使用递归方式逐个上传到服务器
+				function uploadNextFile(index) {
+					if (index >= filesArray.length) {
+						settings.loaded = 0;
 						layer.closeAll();
-					},500)					
-				},
-				success: function(res) {
-					if(res.code==0){
-						if(typeof(that.config.ajaxUpload) == "undefined" || that.config.ajaxUpload==null){
-							var listItem = that.config.template(res.data);
-							uploadBox.append(listItem);
-						}
-						else{
-							 that.config.ajaxUpload(res);
-						}
-						fileValue();
+						return;
 					}
-				},
-				error: function(xhr, status, error) {
-				  console.log('文件上传失败');
-				  console.log('错误信息：', error);
+					const file = filesArray[index];
+					const formData = new FormData();
+					formData.append('file', file);
+					$.ajax({
+						url: settings.url,
+						type: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						beforeSend: function () {
+						// 显示加载按钮
+							settings.loaded = 1;
+							layer.loading('文件上传中...');
+						},
+						complete:function(){
+							uploadNextFile(index + 1); // 成功后上传下一个
+						},
+						success: function(res) {
+							if(res.code==0){
+								if(typeof(settings.ajaxUpload) == "undefined" || settings.ajaxUpload==null){
+									var listItem = settings.template(res.data);
+									console.log(index);
+									if(settings.more==false){
+										uploadBox.find('.mbui-file-div').remove();
+									}
+									uploadBox.append(listItem);
+								}
+								else{
+									 settings.ajaxUpload(res);
+								}
+								fileValue();
+							}
+						},
+						error: function(xhr, status, error) {
+							console.log('文件上传失败');
+							console.log('错误信息：', error);
+						}
+					});
 				}
-			  });
+				// 开始上传第一个文件
+				uploadNextFile(0);
 			} else {
 			  console.log('请选择要上传的文件');
 			}
@@ -128,9 +151,8 @@ mbui.define(['layer'], function (exports) {
 			layer.msg('企业微信不支持下载文件附件<br>请到PC端下载查看');
 		}
 	});
-	// 导出loadData模块
+	// 导出fileUpload模块
 	exports('fileupload', function (options) {
-		var fileupload = new fileUpload();
-		fileupload.init(options);
+		return new fileUpload(options);
 	});
 });

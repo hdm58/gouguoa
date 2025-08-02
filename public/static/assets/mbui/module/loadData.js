@@ -74,10 +74,16 @@ mbui.define(['tool'], function (exports) {
 				elem.find('.load-data-end').hide();
 			},
 			success: function (res) {
-				that.count=res.count;
-				that.total+=res.data.length;
+				if(res.count === 'undefined'){
+					that.count=res.data.length;
+					that.total=res.data.length;
+				}
+				else{
+					that.count=res.count;
+					that.total+=res.data.length;
+				}
 				elem.find('.load-data-none').addClass('load-data-'+that.count);
-				if (res.count > 0) {
+				if (res.data.length > 0) {
 					that.page++;
 					$.each(res.data, function (index, item) {
 						// 转义JSON对象中的字符串值,防止XSS

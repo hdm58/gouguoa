@@ -30,7 +30,8 @@ class AdminCheck extends Validate
         if (!is_null($idValue)) {
             $map[] = [$idField, '<>', $idValue];
         }
-        $map[] = ['status', '>=', 0];
+        $map[] = ['status', 'in', [0,1]];
+        $map[] = ['delete_time', '=', 0];
         return !Db::name($table)->where($map)->count();
     }
 	
@@ -46,7 +47,6 @@ class AdminCheck extends Validate
         'entry_time' => 'require',
         'id' => 'require',
         'pwd' => 'require|min:6|confirm',
-        'status' => 'require|checkStatus:-1,1',
         'old_pwd' => 'require|different:pwd',
     ];
 

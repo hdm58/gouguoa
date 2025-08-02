@@ -79,6 +79,8 @@ class Leaves extends Model
         $info = self::find($id);
 		$info['start_date'] = date('Y-m-d H:i',$info['start_date']);
 		$info['end_date'] = date('Y-m-d H:i',$info['end_date']);
+		$info['admin_name'] = Db::name('Admin')->where('id','=',$info['admin_id'])->value('name');
+		$info['department'] = Db::name('Department')->where('id','=',$info['did'])->value('title');
 		if(!empty($info['file_ids'])){
 			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
 			$info['file_array'] = $file_array;

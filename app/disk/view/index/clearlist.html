@@ -16,8 +16,8 @@
 	.disk-table{margin-left:120px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
 	.layui-btn.tool-add{padding:0 12px;}
 	
-	.disk-path{height:48px;padding:0 4px 0 12px;}
-	.disk-breadcrumb{float:left; padding:11px 0}
+	.disk-path{height:42px;padding:0 4px 0 12px;}
+	.disk-breadcrumb{float:left; padding:8px 0}
 	.disk-breadcrumb span{color:#666; margin:0 8px; font-size:10px;}
 	.layui-tab{margin:0;}
     .file-item {height:calc(100vh - 216px); overflow-y: auto;}
@@ -40,7 +40,6 @@
 	.file-item .file-subject ul li .layui-btn-ctrl{position:absolute; top:0; right:0; display:none;}
 	.file-item .file-subject ul li:hover .layui-btn-ctrl{display:block}
 	.file-folder,.file-image,.file-pdf,.file-video,.file-audio{cursor:pointer;}
-    .file-item .file-subject ul li .has-share{position: absolute; width:20px; height:20px; right: 2px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#1E9FFF; border:1px solid #fff; padding:2px;}	
 	.file-item .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 32px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
 	
 	.file-item .file-subject ul li .file-info{position: absolute; width:100%; height:23px; left: 0; top: 0; text-align:center; font-size: 12px; line-height: 23px; background-color:rgba(0,0,0,.12);border-radius:2px 2px 0 0;}	
@@ -84,7 +83,7 @@
 			</div>
 		</form>
 		<div class="disk-path layui-form border-b">
-			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-component"></i> <a href="javascript:void(0);" data-id="0">回收站文件</a></div>
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">回收站文件</a></div>
 		</div>
 		<!-- 主体 -->
 		<div class="file-item">
@@ -216,9 +215,7 @@
 				url:"/disk/index/clearlist",
 				data:param,
 				complete:function(){
-					setTimeout(function(){
-						layer.close(loadIndex)
-					}, 200);
+					layer.close(loadIndex)
 				},
 				success:function(res){
 					$('[name="select_all"]').prop('checked', false);
@@ -258,56 +255,52 @@
 								let path='/static/home/images/icon/file.png';
 								if (fileExt.image.includes(item[a].file_ext)) {
 									path=item[a].filepath;
-									type = '0,1,10,11';
+									type = '0,1,8,9';
 									ext="image";
 								}
 								if (fileExt.office.includes(item[a].file_ext)) {
-									type = '0,1,10,11';
+									type = '0,1,8,9';
 									ext="office";
 									path='/static/home/images/icon/'+item[a].file_ext+'.png';
 								}
 								if (item[a].file_ext == 'pdf' || item[a].file_ext == 'txt') {
-									type = '0,1,10,11';
+									type = '0,1,8,9';
 									ext="pdf";
 									path='/static/home/images/icon/'+item[a].file_ext+'.png';
 								}								
 								if (fileExt.video.includes(item[a].file_ext)) {
-									type = '0,1,10,11';
+									type = '0,1,8,9';
 									ext="video";
 									path='/static/home/images/icon/video.png';
 								}
 								if (fileExt.audio.includes(item[a].file_ext)) {
-									type = '0,10,11';
+									type = '0,8,9';
 									ext="audio";
 									path='/static/home/images/icon/audio.png';
 								}
 								if (fileExt.zip.includes(item[a].file_ext)) {
-									type = '0,10,11';
+									type = '0,8,9';
 									ext="zip";
 									path='/static/home/images/icon/rar.png';
 								}
 								if(item[a].types==1){
-									type = '1,10,11';
+									type = '1,8,9';
 									ext="article";
 									path='/static/home/images/icon/article.png';
-								}
-								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+ext+'" data-type="'+type+'">操作</span>';
-								
+								}								
 								if(item[a].types==2){
+									type = '8,9';
 									ext="folder";
 									path='/static/home/images/icon/folder.png';
-									ctrl='';
-								}								
-								let is_share='';
-								if(item[a].is_share==1){
-									is_share='<div class="has-share" title="已分享"><i class="iconfont icon-fenxiang"></i></div>';
-								}
+								}	
+								
+								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+ext+'" data-type="'+type+'">操作</span>';								
 								
 								li+='<li data-id="'+item[a].id+'" data-title="'+item[a].name+'" data-ext="'+item[a].file_ext+'" data-types="'+item[a].types+'"><img src="'+path+'" alt="'+item[a].name+'" style="object-fit: contain;" class="file-item file-'+ext+'" data-href="'+item[a].filepath+'" data-ext="'+ext+'"><p title="'+item[a].name+'">'+item[a].name+'</p>\
 									<div class="layui-btn-ctrl">'+ctrl+'\
 									<span class="file-back" style="display:none;" id="fileBack'+item[a].id+'" title="还原"></span>\
 									<span class="file-clear" style="display:none;" id="fileClear'+item[a].id+'" title="清除"></span>\
-									</div>'+is_share+'</li>';
+									</div></li>';
 							}
 							$('#filesBox').html(li);
 							$('#laypage').show();

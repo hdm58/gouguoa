@@ -55,13 +55,13 @@
 			{/eq}
 		{/gt}
 	</h2>
-	<div>
+	<div class="pb-2">
 		<span class="layui-badge layui-bg-gray">#T{$detail.id}</span>
 		<span class="mx-2">{$detail.admin_name}</span>
 		<span class="gray">创建于{$detail.create_time}<span>{gt name="$detail.update_time" value="0"}，最近更新于 {$detail.update_time}{/gt}</span></span>
 	</div>
-	<div class="body-table layui-tab layui-tab-brief" lay-filter="project" id="projectTab">
-		<ul class="layui-tab-title border-t border-x bg-white" style="border-bottom:0;">
+	<div class="layui-tabs layui-tab-brief" id="projectTab">
+		<ul class="layui-tabs-header border-t border-x bg-white">
 			<li class="layui-this" data-load="true">项目概览</li>
 			<li data-load="">项目任务</li>
 			<li data-load="">工作记录</li>
@@ -70,32 +70,32 @@
 			<li data-load="">项目动态</li>
 			<li data-load="">项目评论</li>
 		</ul>
-		<div class="layui-tab-content" style="padding:0">
-			<div class="layui-tab-item layui-show">
+		<div class="layui-tabs-body" style="padding:0">
+			<div class="layui-tabs-item layui-show">
 				{include file="/index/view_overview" /}
 			</div>
 			
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/index/view_task" /}				
 			</div>
 			
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/index/view_schedule" /}				
 			</div>
 			
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/index/view_document" /}				
 			</div>
 			
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/index/view_user" /}		
 			</div>
 			
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/index/view_log" /}
 			</div>
 			
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/index/view_comment" /}
 			</div>
 		</div>
@@ -489,7 +489,7 @@
 	const moduleInit = ['tool','oaPicker','uploadPlus','tablePlus','oaComment','oaSchedule','oaEdit'];
 
 	function gouguInit() {
-		var tool = layui.tool,element = layui.element,comment = layui.oaComment;
+		var tool = layui.tool,tabs = layui.tabs,comment = layui.oaComment;
 		
 		comment.init({
 			"box":'commentBox',//容器id
@@ -528,7 +528,7 @@
 		})
 		
 		overview();		
-		element.on('tab(project)', function(data){
+		tabs.on('afterChange(projectTab)', function(data){
 			let index = data.index;
 			if(index == 1){
 				project_task();	

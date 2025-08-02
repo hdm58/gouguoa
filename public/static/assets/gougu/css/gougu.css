@@ -5,6 +5,7 @@
 .layui-card-header {position: relative; padding:0 12px;}
 .layui-card-header .layui-icon,.layui-card-header .pull-right{line-height: initial; position: absolute;right: 12px;top: 50%; margin-top: -9px}
 .layui-card-title {font-size: 18px;font-weight: 600;padding: 12px;}
+
 .layui-table td, .layui-table th{padding:8px;}
 .gougu-picker .layui-layer-btn1{background-color:#f5f5f5}
 .gougu-picker .layui-layer-btn2{background-color:#EAFAFF}
@@ -26,8 +27,14 @@
 .layui-btn-reset {height: 36px;background-color: #fff; line-height: 36px; border: 1px solid transparent;padding: 0 8px; white-space: nowrap; color: #767a82;font-size: 14px;cursor: pointer;vertical-align: middle;}
 .layui-btn-reset:hover{color: #323232;}
 
-.layui-tab-brief>.layui-tab-title .layui-this{color:#1A75FF}
-.layui-tab-brief>.layui-tab-more li.layui-this:after, .layui-tab-brief>.layui-tab-title .layui-this:after{border-color:#1A75FF;}
+.layui-tab-brief>.layui-tab-title .layui-this,
+.layui-tabs-header .layui-this,
+.layui-tabs-header li:hover{color:#1A75FF}
+
+.layui-tab-brief>.layui-tab-more li.layui-this:after,
+.layui-tabs-brief>.layui-tab-title .layui-this:after,
+.layui-tabs-header .layui-this:after{border-color:#1A75FF;}
+
 .layui-form-radio{padding-right:4px;}
 .layui-form-radio>i{margin-right:4px;}
 .layui-form-label{padding:9px; color:#909399}
@@ -42,8 +49,8 @@
 .layui-table-form tbody tr:hover{background-color: #fff;}
 .layui-td-gray,.layui-td-gray-2,.layui-td-gray-3,.layui-td-gray-4{color:#909399; width:68px; text-align:right; background-color:#fafafa;}
 .layui-td-gray-2{width:96px;}
-.layui-td-gray-3{width:126px;}
-.layui-td-gray-4{width:152px;}
+.layui-td-gray-3{width:124px;}
+.layui-td-gray-4{width:150px;}
 .layui-td-gray font,.layui-td-gray-2 font,.layui-td-gray-3 font,.layui-td-gray-4 font{color:#FF6347; margin-left: 2px;}
 .layui-table-min th{font-size:13px; text-align:center; background-color:#f8f8f8;}
 .layui-table-min td{font-size:13px; padding:6px;text-align:center;}
@@ -77,7 +84,7 @@
 .click-edit:hover::after {opacity: 1;}
 
 html {background-color: #F9F9F9;}
-html,body{height:100%;scrollbar-width: thin; color:#323232}
+html,body{height:100%;scrollbar-width: thin; color:#323232;}
 .p-page{padding:15px 12px 0;box-sizing: border-box; width:100%; position:relative;}
 .copyright{padding:10px 0; text-align:center; font-size:12px; color: #989898; text-shadow: 2px 2px 0px #fff}
 .copyright a{margin-left:12px; color: #989898;text-shadow: 2px 2px 0px #fff}
@@ -363,7 +370,9 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 
 .flow-record{padding:4px 4px 0;}
 .flow-record .layui-timeline-item{text-decoration:line-through; color:#acacac; padding-bottom:10px;}
+.flow-record .layui-timeline-item .file-card{text-decoration:line-through; color:#acacac;}
 .flow-record .layui-timeline-item.delete-0{text-decoration:none; color:#323232;}
+.flow-record .layui-timeline-item.delete-0 .file-card{text-decoration:none; color:#323232;}
 .layui-timeline-content ul{font-size:12px;}
 .check-status{color:#999; margin-left:5px;}
 .check-remark{padding:6px; margin-top:6px; margin-bottom:10px; border-radius:4px; background-color:#f5f5f5;}
@@ -398,7 +407,7 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 
 
 /*uploadPlus*/
-.gougu-upload-files{background-color: #ffffff; border:1px solid #e4e7ed;color: #c0c4cc; min-width:240px; cursor: not-allowed; padding:0 12px; box-sizing: border-box; display: inline-block; font-size: inherit; height: 38px; line-height: 35px; margin-right:8px; border-radius:2px;}
+.gougu-upload-files{background-color: #ffffff; border:1px solid #e4e7ed;color: #c0c4cc; min-width:400px; cursor: not-allowed; padding:0 12px; box-sizing: border-box; display: inline-block; font-size: inherit; height: 38px; line-height: 35px; margin-right:8px; border-radius:2px;}
 .gougu-upload-box{background-color:#f8f8f8; border:1px solid #eee; border-radius:6px; width:888px; height:440px; padding:5px; overflow-y:auto; margin:0 auto; position:relative;-webkit-user-select:none;-moz-user-select:none-ms-user-select:none;}
 .select .gougu-upload-btn{width:100%; height:100%; position:absolute;top:0;left:0; line-height:440px;}
 .select .gougu-upload-btn-box{width:100%; height:100%; box-sizing: border-box; padding-top:160px; line-height:1.2;text-align:center; cursor:pointer; color:#49bc85;font-size:22px;}\
@@ -421,7 +430,7 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 .layui-import .layui-form-item{margin-bottom:8px;}
 .layui-import .layui-input-block{min-height:24px;}
 /*附件*/
-.file-card {background: #fff;border: 1px solid #f1f1f1; border-radius: 2px; padding:0; margin:4px 6px;
+.file-card {background: #fff;border: 1px solid #f1f1f1; border-radius: 2px; padding:0; margin:4px 6px;line-height:1;
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
@@ -429,12 +438,12 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
     display: -ms-flexbox;
     display: flex;
 }
-.file-card .file-icon{font-size:44px; color:#646464; margin-right: 4px;}
-.file-card .file-info {width: calc(100% - 86px);}
+.file-card .file-icon{font-size:48px; color:#646464; margin-right: 4px;}
+.file-card .file-info {width: calc(100% - 86px); line-height:1.6;}
 .file-card .file-title {font-size: 14px; word-break:keep-all; overflow: hidden; text-overflow: ellipsis; display: width: 100%;}
 .file-card .file-ops{font-size:12px; color:#aaa;}
 .file-card .file-tool{padding:5px 0;}
-.file-card .file-tool .iconfont{font-size:28px; font-weight:400; padding:6px 0 0 3px; display:inline-block; cursor:pointer;}
+.file-card .file-tool .iconfont{font-size:28px; font-weight:400; padding:3px 0; display:inline-block; cursor:pointer;}
 .file-hasdelete{background:url(../images/delete_icon.png) no-repeat 99% 0; background-size: auto 58px; color:#aaa}
 .file-hasdelete .file-icon{color:#aaa;}
 .file-hasdelete .file-tool{display:none}

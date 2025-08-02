@@ -2,8 +2,8 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-1">添加用章审批</h3>
-	<table class="layui-table">
+	<h3 class="pb-2">用章审批</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">审批主题</td>
 			<td colspan="3">{$detail.title}</td>
@@ -55,7 +55,7 @@
 		</tr>
 		{/notempty}
 	</table>
-	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
 </form>
 {/block}
 <!-- /主体 -->

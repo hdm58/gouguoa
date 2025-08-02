@@ -106,9 +106,6 @@ class Files extends BaseController
         $param = get_params();
 		$id = isset($param['id'])?$param['id']:0;
         if (request()->isAjax()) {
-            $param['birthday'] = empty($param['birthday']) ? '0':strtotime($param['birthday']);
-            $param['graduate_day'] = empty($param['graduate_day']) ? '0':strtotime($param['graduate_day']);
-            $param['work_date'] = empty($param['work_date']) ? '0':strtotime($param['work_date']);
 			if($id == 1){
 				return to_assign(1, '超级管理员信息不支持编辑');
 			}
@@ -297,24 +294,6 @@ class Files extends BaseController
 			$department_ids = Db::name('DepartmentAdmin')->where('admin_id',$id)->column('department_id');
 			$department_names = Db::name('Department')->whereIn('id',$department_ids)->column('title');
 			$detail['department_names'] = implode(',',$department_names);
-			if($detail['birthday']>0){
-				$detail['birthday'] = date('Y-m-d',$detail['birthday']);
-			}
-			else{
-				$detail['birthday'] = '';
-			}
-			if($detail['graduate_day']>0){
-				$detail['graduate_day'] = date('Y-m-d',$detail['graduate_day']);
-			}
-			else{
-				$detail['graduate_day'] = '';
-			}
-			if($detail['work_date']>0){
-				$detail['work_date'] = date('Y-m-d',$detail['work_date']);
-			}
-			else{
-				$detail['work_date'] = '';
-			}
 			
 			if($detail['file_ids'] !=''){
 				$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
@@ -349,24 +328,6 @@ class Files extends BaseController
 		$department_ids = Db::name('DepartmentAdmin')->where('admin_id',$id)->column('department_id');
 		$department_names = Db::name('Department')->whereIn('id',$department_ids)->column('title');
 		$detail['department_names'] = implode(',',$department_names);
-		if($detail['birthday']>0){
-			$detail['birthday'] = date('Y-m-d',$detail['birthday']);
-		}
-		else{
-			$detail['birthday'] = '';
-		}
-		if($detail['graduate_day']>0){
-			$detail['graduate_day'] = date('Y-m-d',$detail['graduate_day']);
-		}
-		else{
-			$detail['graduate_day'] = '';
-		}
-		if($detail['work_date']>0){
-			$detail['work_date'] = date('Y-m-d',$detail['work_date']);
-		}
-		else{
-			$detail['work_date'] = '';
-		}
 		if($detail['file_ids'] !=''){
 			$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
 			$detail['file_array'] = $file_array;

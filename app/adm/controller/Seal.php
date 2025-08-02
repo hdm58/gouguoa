@@ -121,10 +121,6 @@ class Seal extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
 			if ($id>0) {
 				$detail = $this->model->getById($id);
-				if(!empty($detail['file_ids'])){
-					$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-					$detail['file_array'] = $file_array;
-				}
 				if($detail['check_status']==0 || $detail['check_status']==4){
 					View::assign('detail', $detail);
 					if(is_mobile()){
@@ -148,10 +144,6 @@ class Seal extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			if(!empty($detail['file_ids'])){
-				$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-				$detail['file_array'] = $file_array;
-			}
 			View::assign('detail', $detail);
 			View::assign('create_user', get_admin($detail['admin_id']));
 			if(is_mobile()){

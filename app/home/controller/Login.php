@@ -46,9 +46,9 @@ class Login
             return to_assign(1, $e->getError());
         }
 
-        $admin = Db::name('Admin')->where(['username' => $param['username']])->find();
+        $admin = Db::name('Admin')->where(['username' => $param['username'],'delete_time' => 0])->find();
         if (empty($admin)) {
-            $admin = Db::name('Admin')->where(['mobile' => $param['username']])->find();
+            $admin = Db::name('Admin')->where(['mobile' => $param['username'],'delete_time' => 0])->find();
             if (empty($admin)) {
                 return to_assign(1, '用户名或手机号码错误');
             }

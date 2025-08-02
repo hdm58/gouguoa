@@ -5,7 +5,7 @@
 	<h3 class="pb-3">添加报销申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">报销员工</td>
+			<td class="layui-td-gray-2">报销员工</td>
 			<td>{$user.name}</td>
 			<td class="layui-td-gray">报销部门</td>
 			<td>{$user.department}</td>
@@ -33,6 +33,13 @@
 			<td colspan="5">
 				<input type="text" class="layui-input picker-oa" data-types="project" name="ptname" placeholder="请选择需要关联的项目" readonly value="">		
 				<input type="hidden" class="layui-input" name="project_id" value="0">		
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">冲抵借支</td>
+			<td colspan="5">
+				<input type="text" class="layui-input  picker-oa" data-types="loan" name="loan" placeholder="请选择需要冲抵借支记录" readonly value="">		
+				<input type="hidden" class="layui-input" name="loan_id" value="0">
 			</td>
 		</tr>
 		<tr>

@@ -313,7 +313,12 @@ layui.define(function (exports) {
 						return parent.parent.parent.layui.admin;
 					}
 					else{
-						return false;
+						if(parent.parent.parent.parent.layui.admin){
+							return parent.parent.parent.parent.layui.admin;
+						}
+						else{
+							return false;
+						}
 					}
 				}
 			}
@@ -410,6 +415,66 @@ layui.define(function (exports) {
 			if (content != '') {
 				layer.msg('复制成功');
 			}
+		},
+		//格式化文件大小
+		renderSize:function(val){
+			if(null==val||val==''){
+				 return "0 Bytes";
+			}
+			var unitArr = new Array("Bytes","KB","MB","GB","TB","PB","EB","ZB","YB");
+			var index=0;
+			var srcsize = parseFloat(val);
+			index=Math.floor(Math.log(srcsize)/Math.log(1024));
+			var size =srcsize/Math.pow(1024,index);
+			size=size.toFixed(2);//保留的小数位数
+			return size+unitArr[index];
+		},
+		//格式化附件展示
+		fileCard:function(file,view){
+			if(!file.hasOwnProperty('file_id')){
+				file['file_id'] = file['id'];
+			}		
+			let image=['jpg','jpeg','png','gif'];
+			let office=['doc','docx','xls','xlsx','ppt','pptx'];
+			let type_icon = 'icon-xiangmuguanli';
+			let type = 0;//0下载+重命名+删除，1下载+查看+重命名+删除，2下载+查看+编辑+重命名+删除
+			let ext = 'zip';
+			let view_btn = '<a class="blue" href="'+file['filepath']+'" download="'+file['name']+'" target="_blank" title="下载"><i class="iconfont icon-xiazai"></i></a>';
+			
+			if(file['fileext'] == 'pdf'){
+				type_icon = 'icon-kejian';
+				ext = 'pdf';
+				type = 1;
+			}
+			if(image.includes(file['fileext'])){
+				type_icon = 'icon-sucaiguanli';
+				ext = 'image';
+				type = 1;
+			}
+			if(office.includes(file['fileext'])){
+				type_icon = 'icon-shenbao';
+				ext = 'office';
+				type = 1;
+			}		
+			if(view == ''){
+				view_btn = '<span class="file-ctrl blue" data-ctrl="edit" data-type="'+type+'" data-fileid="'+file['file_id']+'" data-ext="'+ext+'" data-filename="'+file['name']+'" data-href="'+file['filepath']+'" data-id="'+file['id']+'" data-uid="'+file['admin_id']+'" title="附件操作"><i class="iconfont icon-gengduo1"></i></span><span class="name-edit green" style="display:none;" data-id="'+file['id']+'" data-fileid="'+file['file_id']+'" id="fileEdit'+file['file_id']+'" data-name="'+file['name']+'" data-fileext="'+file['fileext']+'" title="重命名"></span><span class="file-delete red" style="display:none;" data-uid="'+file['admin_id']+'" data-id="'+file['id']+'" data-fileid="'+file['file_id']+'" id="fileDel'+file['file_id']+'" title="删除"></span>';
+			}
+			else{
+				view_btn = '<span class="file-ctrl blue" data-ctrl="view" data-type="'+type+'" data-fileid="'+file['file_id']+'" data-ext="'+ext+'" data-filename="'+file['name']+'" data-href="'+file['filepath']+'" title="附件操作"><i class="iconfont icon-gengduo1"></i></span>';
+			}		
+			let file_del='';
+			if(file['delete_time'] > 0){
+				file_del = 'file-hasdelete';
+			}
+			let item = '<div class="file-card '+file_del+'" id="fileItem'+file['file_id']+'">\
+				<i class="file-icon iconfont '+type_icon+'"></i>\
+				<div class="file-info">\
+					<div class="file-title" title="'+file['name']+'">'+file['name']+'</div>\
+					<div class="file-ops">'+this.renderSize(file['filesize'])+'，'+layui.util.toDateString(file['create_time']*1000, 'yyyy-MM-dd hh:mm:ss')+'</div>\
+				</div>\
+				<div class="file-tool">'+view_btn+'</div>\
+			</div>';
+			return item;
 		}
 	};
 	//时间选择快捷操作
@@ -460,8 +525,8 @@ layui.define(function (exports) {
 
 	//附件操作	
 	const ctrlBtn=function(ctrl){
-			//操作按钮'0下载','1查看','2编辑','3重命名','4删除','5移动','6分享','7取消分享','8标星','9取消标星','10还原','11清除'
-		let ctrl_types = ['下载','查看','编辑','重命名','删除','移动','分享','取消分享','标星','取消标星','还原','清除'];
+			//操作按钮'0下载','1查看','2编辑','3重命名','4删除','5移动','6标星','7取消标星','8还原','9清除'
+		let ctrl_types = ['下载','查看','编辑','重命名','删除','移动','标星','取消标星','还原','清除'];
 		let	ctrls=[];
 		for(let i=0;i<ctrl.length;i++){
 			ctrls.push({"id":ctrl[i]+'',"title":ctrl_types[ctrl[i]]});
@@ -562,22 +627,16 @@ layui.define(function (exports) {
 				  case '5'://移动
 					$('#fileMove'+fileid).click();
 					break;
-				  case '6'://分享
-					$('#fileShare'+fileid).click();
-					break;
-				  case '7'://取消分享
-					$('#fileShareno'+fileid).click();
-					break;
-				 case '8'://标星
+				 case '6'://标星
 					$('#fileStar'+fileid).click();
 					break;
-				  case '9'://取消标星
+				  case '7'://取消标星
 					$('#fileStarno'+fileid).click();
 					break;
-				  case '10'://还原
+				  case '8'://还原
 					$('#fileBack'+fileid).click();
 					break;
-				  case '11'://清除
+				  case '9'://清除
 					$('#fileClear'+fileid).click();
 					break;
 				  default:

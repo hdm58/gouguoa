@@ -97,9 +97,9 @@ class Import extends BaseController
             }
 			$sex_array=['未知','男','女'];
 			$type_array=['未知','正式','试用','实习'];
-			$mobile_array = Db::name('Admin')->where([['status','>=',0]])->column('mobile');
-			$email_array = Db::name('Admin')->where([['status','>=',0]])->column('email');
-			$username_array = Db::name('Admin')->where([['status','>=',0]])->column('username');
+			$mobile_array = Db::name('Admin')->where([['status','>=',0],['delete_time','=',0]])->column('mobile');
+			$email_array = Db::name('Admin')->where([['status','>=',0],['delete_time','=',0]])->column('email');
+			$username_array = Db::name('Admin')->where([['status','>=',0],['delete_time','=',0]])->column('username');
 			$department_array = Db::name('Department')->where(['status' => 1])->column('title', 'id');
 			$position_array = Db::name('Position')->where(['status' => 1])->column('title', 'id');
             //循环读取excel表格，整合成数组。如果是不指定key的二维，就用$data[i][j]表示。

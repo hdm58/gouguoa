@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">新增文档</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">新增文档</h3>
     <table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">文档标题<font>*</font></td>
@@ -26,7 +26,8 @@
 			<td><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0"></textarea></td>
 		</tr>
     </table>
-    <div class="pt-3">
+    <div class="pt-4">
+		<input type="hidden" name="group_id" value="{$group_id}">
 		<input type="hidden" name="pid" value="{$pid}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>

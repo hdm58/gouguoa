@@ -166,7 +166,6 @@ class Invoice extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			$detail['subject'] = Db::name('Enterprise')->where(['id' =>$detail['invoice_subject']])->value('title');
 			$other_file_array = Db::name('File')->where('id','in',$detail['other_file_ids'])->select();
 			$detail['other_file_array'] = $other_file_array;
 			if($detail['open_status']>0){

@@ -7,7 +7,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">消息模板</h3>
+	<h3 class="pb-2">消息模板</h3>
 	<table class="layui-table layui-table-form layui-table-{$detail.types|default=2}">
 		<tr>
 			<td class="layui-td-gray-2">模板名称<font>*</font></td>
@@ -58,6 +58,14 @@
 		<tr class="tr_2">
 			<td class="layui-td-gray">审批拒绝的<br>消息模板内容<font>*</font></td>
 			<td colspan="3"><textarea name="msg_content_2" placeholder="请输入审批拒绝的消息模板内容" class="layui-textarea">{$detail.msg_content_2|default=''}</textarea></td>
+		</tr>
+		<tr class="tr_2">
+			<td class="layui-td-gray">通过抄送人的<br>消息模板标题<font>*</font></td>
+			<td colspan="3"><input type="text" name="msg_title_3" placeholder="请输入审批通过抄送人的的消息模板标题" class="layui-input" value="{$detail.msg_title_3|default=''}"></td>			
+		</tr>
+		<tr class="tr_2">
+			<td class="layui-td-gray">通过抄送人的<br>消息模板内容<font>*</font></td>
+			<td colspan="3"><textarea name="msg_content_3" placeholder="请输入审批通过抄送人的的消息模板内容" class="layui-textarea">{$detail.msg_content_3|default=''}</textarea></td>
 		</tr>
 	</table>
 	<div class="pt-4">

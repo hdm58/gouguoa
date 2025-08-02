@@ -1,12 +1,12 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">会议纪要</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">会议纪要</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">会议时间</td>
-			<td>{$detail.meeting_date|date='Y-m-d H:i:s'}</td>
+			<td>{$detail.meeting_date|date='Y-m-d H:i'}</td>
 			<td class="layui-td-gray">主持人</td>
 			<td>{$detail.anchor_name}</td>
 			<td class="layui-td-gray">记录人</td>
@@ -47,6 +47,9 @@
 			<td colspan="5">{$detail.remarks|default=''}</td>
 		</tr>
 	</table>
+	<div class="pt-4">
+		<a href="/api/export/pdf?types=meeting&id={$detail.id}" class="layui-btn" target="_blank"><i class="layui-icon layui-icon-print"></i>导出打印</a>
+	</div>
 </form>
 {/block}
 <!-- /主体 -->

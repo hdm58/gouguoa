@@ -1,10 +1,10 @@
 ## 📐 勾股OA5.0
 
-![勾股OA](https://oa.gougucms.com/storage/image/slogo.jpg)
+![勾股OA](https://oss.gouguoa.com/oss/slogo.jpg)
 
 ### ✅ 相关链接
 - 系统地址：https://www.gougucms.com/home/pages/detail/s/gouguoa.html
-- 文档地址：[https://blog.gougucms.com/home/book/detail/bid/3.html](https://blog.gougucms.com/home/book/detail/bid/3.html)
+- 文档地址：https://blog.gouguoa.com/home/book/detail/bid/3.html
 - 项目会不定时进行更新，建议⭐star⭐和👁️watch👁️一份。
 
 ### ⭕ 同系列开源项目
@@ -54,7 +54,7 @@ BOSS角色：suhaizhen     123456
 
 系统后台集成了主流的通用功能，如：登录验证、系统配置、操作日志管理、角色权限、职位职称、数据权限、功能菜单、模块管理、关键字管理、文件上传、数据备份/还原、基础数据、审批流程、员工管理、消息通知、企业公告、知识文章、办公审批、日常办公、财务管理、客户管理、合同管理、项目管理、任务管理等。更多的个性化功能可以基于当前系统便捷做二次开发。
 
-![输入图片说明](https://oa.gougucms.com/storage/image/gouguoa2.0.png)
+![输入图片说明](https://oss.gouguoa.com/oss/gouguoa2.0.png)
 
 
 ### 📚 安装教程
@@ -63,9 +63,9 @@ BOSS角色：suhaizhen     123456
 
 服务器最低配置：
 ~~~
-    1核CPU (建议2核+)
-    2G内存 (建议4G+)
-    1M带宽 (建议3M+)
+    2核CPU (建议4核+)
+    4G内存 (建议8G+)
+    3M带宽 (建议5M+)
 ~~~
 服务器运行环境要求：
 ~~~
@@ -162,7 +162,7 @@ composer config -g repos.packagist composer https://mirrors.aliyun.com/composer/
 
     比如：伪静态配置，网站的访问入口是否绑定`public`目录，放配置文件的目录是否有可写权限，放缓存的目录是否有可写权限，数据库连接确认无误等。
 
-    开启`debug`的方式请查看链接：https://blog.gougucms.com/home/book/detail/bid/3/id/77.html
+    开启`debug`的方式请查看链接：https://blog.gouguoa.com/home/book/detail/bid/3/id/77.html
 
     开启`debug`后，看具体的报错信息，然后沿着这些思路去一个个排查基本解决90%的问题。
 
@@ -172,18 +172,20 @@ composer config -g repos.packagist composer https://mirrors.aliyun.com/composer/
 
 9.  如果安装成功后，无法显示图形验证码的，请看是否已安装（开启）了PHP的`GD`库。
 
-10.  如果安装成功后，无法上传文件的，请看是否已安装（开启）了PHP的`fileinfo`扩展。
+10. 如果安装成功后，无法上传文件的，请看是否已安装（开启）了PHP的`fileinfo`扩展。
 
-11.  遇到解决不了的问题请到QQ群反馈：24641076（群一满），46924914（群二名额不多） 。
+11. 遇到解决不了的问题请到QQ群反馈：24641076（群一），46924914（群二），295256660（群三） 。
 
-12. **最后，如果实在安装不成功，确实需要提供安装服务的，请搜索微信号：hdm588，或者QQ号：327725426，添加好友，注意备注[安装勾股系统]。开源不易，该服务需友情赞赏💰99元。**
+12. 更多问题请查看链接解决：https://blog.gougucms.com/home/book/detail/bid/3/id/100.html
+
+**最后，如果实在安装不成功，确实需要提供安装服务的，请搜索微信号：hdm588，或者QQ号：327725426，添加好友，注意备注[安装勾股系统]。开源不易，该服务需友情赞赏💰99元。**
 
 ### 🖼️ 截图预览
 
 |页面截图      |    部分截图|
 | :--------: | :--------:|
-| ![功能导图](https://oa.gougucms.com/storage/image/oa4.png "功能导图")|![功能导图](https://oa.gougucms.com/storage/image/oa1.png "功能导图")|
-|![功能导图](https://oa.gougucms.com/storage/image/oa2.png "功能导图")|![功能导图](https://oa.gougucms.com/storage/image/oa3.png "功能导图")|
+| ![功能导图](https://oss.gouguoa.com/oss/oa4.png "功能导图")|![功能导图](https://oss.gouguoa.com/oss/oa1.png "功能导图")|
+|![功能导图](https://oss.gouguoa.com/oss/oa2.png "功能导图")|![功能导图](https://oss.gouguoa.com/oss/oa3.png "功能导图")|
 
 ### ⭐ 开源助力
 
@@ -194,11 +196,6 @@ composer config -g repos.packagist composer https://mirrors.aliyun.com/composer/
 - 鼓励支持：如果觉得勾股OA不错，不要吝啬您的赞许和鼓励，请给我们⭐ STAR ⭐吧！
 
 ### 👍 支持我们
-
+- 商务合作、定制服务，请搜索微信号：hdm588，添加微信咨询了解🤝。
 - If the project is very helpful to you, you can buy the author a cup of coffee☕.
-- 如果这个项目对您有帮助，可以请作者喝杯咖啡哟☕
-
-|支付宝      |    微信|
-| :--------: | :--------:|
-| <img src="https://www.gougucms.com/static/home/images/zfb.png" width="300"  align=center />|<img src="https://www.gougucms.com/static/home/images/wx.png" width="300"  align=center />|
-
+- 如果这个项目对您有帮助，可以请作者喝杯咖啡哟☕（👇👇👇点击下面的捐赠支持我们👇👇👇）

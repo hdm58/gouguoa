@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+		</style>
+	</head>
+	<body>
+	<h2>入职审批单</h2>
+	<table class="pdf-table">
+		<tr>
+			<td colspan="6"><strong>基本信息</strong></td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">员工姓名</td>
+			<td>{$detail.name|default='-'}</td>
+			<td class="pdf-td-gray">性别</td>
+			<td colspan="2">
+				{eq name="$detail.sex" value="1"}男{/eq}
+				{eq name="$detail.sex" value="2"}女{/eq}
+			</td>
+			<td rowspan="5" valign="top" style="width:112px;">
+				<img src="{{:get_file($detail.thumb)}" width="110" height="156" />
+			</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">手机号码</td>
+			<td>{$detail.mobile|default=''}</td>
+			<td class="pdf-td-gray">电子邮箱</td>
+			<td colspan="2">{$detail.email|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">出生日期</td>
+			<td>{$detail.birthday|default='-'}</td>
+			<td class="pdf-td-gray">身份证号码</td>
+			<td colspan="2">{$detail.idcard|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">民族</td>
+			<td>{$detail.nation|default='-'}</td>
+			<td class="pdf-td-gray">籍贯</td>
+			<td colspan="2">{$detail.native_place|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">政治面貌</td>
+			<td>
+				{eq name="$detail.political" value="0"}无{/eq}
+				{eq name="$detail.political" value="1"}中共党员{/eq}
+				{eq name="$detail.political" value="2"}共青团员{/eq}
+			</td>
+			<td class="pdf-td-gray">婚姻状况</td>
+			<td colspan="2">
+				{eq name="$detail.marital_status" value="1"}未婚{/eq}
+				{eq name="$detail.marital_status" value="2"}已婚{/eq}
+			</td>
+		</tr>
+		<tr>		
+			<td class="pdf-td-gray">户口性质</td>
+			<td>
+				{eq name="$detail.resident_type" value="1"}农村户口{/eq}
+				{eq name="$detail.resident_type" value="2"}城镇户口{/eq}
+			</td>
+			<td class="pdf-td-gray">户口所在地</td>
+			<td colspan="3">{$detail.resident_place|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">家庭住址</td>
+			<td colspan="3">{$detail.home_address|default='-'}</td>
+			<td class="pdf-td-gray">紧急联系人</td>
+			<td>{$detail.contact|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">现住地址</td>
+			<td colspan="3">{$detail.current_address|default='-'}</td>
+			<td class="pdf-td-gray">紧急联系电话</td>
+			<td>{$detail.contact_mobile|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">个人简介</td>
+			<td colspan="5">{$detail.desc|default='-'}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>教育信息</strong></td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">毕业院校</td>
+			<td colspan="3">{$detail.graduate_school|default='-'}</td>
+			<td class="pdf-td-gray">毕业日期</td>
+			<td>{$detail.graduate_day|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">专业</td>
+			<td colspan="3">{$detail.speciality|default='-'}</td>
+			<td class="pdf-td-gray">最高学位</td>
+			<td>{$detail.education|default='-'}</td>
+		</tr>		
+		<tr>
+			<td colspan="6"><strong>入职信息</strong></td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">入职部门</td>
+			<td>{$detail.department|default='-'}</td>
+			<td class="pdf-td-gray">上级主管</td>
+			<td>{$detail.pname|default='-'}</td>
+			<td class="pdf-td-gray">入职时间</td>
+			<td>{$detail.entry_time|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">岗位职称</td>
+			<td>{$detail.position|default='-'}</td>
+			<td class="pdf-td-gray">职务</td>
+			<td>{$detail.position_name_str|default='-'}</td>
+			<td class="pdf-td-gray">职级</td>
+			<td>{$detail.position_rank_str|default='-'}</td>
+		</tr>
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="pdf-td-gray">相关附件</td>
+			<td colspan="3">
+				{volist name="$detail.file_array" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{include file="export/pdf_check" /}
+	</body>
+</html>

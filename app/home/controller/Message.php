@@ -352,7 +352,7 @@ class Message extends BaseController
         $ids = empty($param['ids']) ? 0 : $param['ids'];
         $idArray = explode(',', $ids);
         foreach ($idArray as $key => $val) {
-			MessageList::update(['id' => $val,'delete_time' => time()]);
+			MessageList::where(['id' => $val])->update(['delete_time' => time()]);
 			add_log('delete', $val,[],'消息');
         }
         return to_assign(0, '操作成功');
@@ -495,27 +495,27 @@ class Message extends BaseController
         $idArray = explode(',', $ids);
         foreach ($idArray as $key => $val) {
             if ($type==1) { //设置信息为已读
-				MsgList::update(['id' => $val,'read_time' => time()]);
+				MsgList::where(['id' => $val])->update(['read_time' => time()]);
 				add_log('view', $val,[],'消息');
             }
             else if ($type==2) {  //信息进入垃圾箱
-				MsgList::update(['id' => $val,'delete_time' => time()]);
+				MsgList::where(['id' => $val])->update(['delete_time' => time()]);
 				add_log('delete', $val,[],'消息');
             }
             else if ($type==3) {  //信息从垃圾箱恢复
-				MsgList::update(['id' => $val,'delete_time' => 0]);
+				MsgList::where(['id' => $val])->update(['delete_time' => 0]);
 				add_log('recovery', $val,[],'消息');
             }
             else if ($type==4) {  //信息彻底删除
-				MsgList::update(['id' => $val,'clear_time' => time()]);
+				MsgList::where(['id' => $val])->update(['clear_time' => 0]);
 				add_log('clear', $val,[],'消息');
             }
 			else if ($type==5) {  //星标信息
-				MsgList::update(['id' => $val,'is_star' => 1]);
+				MsgList::where(['id' => $val])->update(['is_star' => 1]);
 				add_log('star', $val,[],'消息');
             }
 			else if ($type==6) {  //取消星标信息
-				MsgList::update(['id' => $val,'is_star' => 0]);
+				MsgList::where(['id' => $val])->update(['is_star' => 0]);
 				add_log('unstar', $val,[],'消息');
             }
         }

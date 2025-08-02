@@ -52,6 +52,13 @@ class MobileMenu extends Model
         try {
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
+			//自动为系统超级管理员角色组分配新增的节点
+			$group = Db::name('AdminGroup')->find(1);
+			if (!empty($group)) {
+				$newGroup['id'] = 1;
+				$newGroup['mobile_menu'] = $group['mobile_menu'] . ',' . $insertId;
+				Db::name('AdminGroup')->strict(false)->field(true)->update($newGroup);
+			}
 			add_log('add', $insertId, $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());

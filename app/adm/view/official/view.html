@@ -2,8 +2,8 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-1">公文详情</h3>
-	<table class="layui-table">
+	<h3 class="pb-2">公文详情</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">公文名称</td>
 			<td colspan="3">{$detail.title}</td>
@@ -62,7 +62,7 @@
 		</tr>
 	</table>
 	
-	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
 </div>
 {/block}
 <!-- /主体 -->

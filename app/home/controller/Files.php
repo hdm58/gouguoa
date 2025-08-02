@@ -28,7 +28,7 @@ class Files extends BaseController
         if (request()->isAjax()) {
             $param = get_params();
             $where = array();
-			$fileext = ['','jpg,jpeg,png,gif','mp4','doc,docx,xls,xlsx,ppt,pptx,txt,pdf','zip,rar,7z'];
+			$fileext = ['','jpg,jpeg,png,gif','mpg,mp4,mpeg,avi,wmv,mov,flv,m4v','mp3,wav,wma,flac,midi','doc,docx,xls,xlsx,ppt,pptx,txt,pdf','zip,rar,7z,gz,tar'];
             if (!empty($param['keywords'])) {
                 $where[] = ['f.name|g.title', 'like', '%' . $param['keywords'] . '%'];
             }

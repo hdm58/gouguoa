@@ -26,9 +26,9 @@
 <div class="disk-table">
 	<div class="disk-path layui-form border-b">
 		<div class="disk-breadcrumb" id="diskPath">
-		<i class="layui-icon layui-icon-windows"></i> <a href="/disk/index/move?pid=0">全部文件</a>
+		<i class="layui-icon layui-icon-windows"></i> <a href="/disk/index/move?pid=0&group_id={$group_id}">根目录</a>
 		{volist name="$path" id="vo"}
-		<span> 〉</span><a href="/disk/index/move?pid={$vo.id}">{$vo.name}</a>
+		<span> 〉</span><a href="/disk/index/move?pid={$vo.id}&group_id={$group_id}">{$vo.name}</a>
 		{/volist}
 		</div>
 	</div>
@@ -38,11 +38,12 @@
 		{/empty}
 		<ul>
 			{volist name="$folder" id="vo"}
-			<li><a href="/disk/index/move?pid={$vo.id}"><img src="/static/home/images/icon/folder.png" width="24" height="24" /> {$vo.name}</a></li>
+			<li><a href="/disk/index/move?pid={$vo.id}&group_id={$group_id}"><img src="/static/home/images/icon/folder.png" width="24" height="24" /> {$vo.name}</a></li>
 			{/volist}
 		</ul>
 	</div>
 	<input type="hidden" name="folder" id="folder" value="{$pid}">
+	<input type="hidden" name="group_id" id="group_id" value="{$group_id}">
 </div>
 {/block}
 <!-- /主体 -->

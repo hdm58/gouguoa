@@ -65,3 +65,66 @@ function get_article_cate()
     $cate = \think\facade\Db::name('ArticleCate')->order('create_time asc')->select()->toArray();
     return $cate;
 }
+//假期类型
+function get_leaves_types($id=0)
+{
+	$types_array = ['未设置','事假','年假','调休假','病假','婚假','丧假','产假','陪产假','其他'];
+	if($id==0){
+		return $types_array;
+	}
+	else{
+		$news_array=[];
+		foreach($types_array as $key => $value){
+			if($key>0){
+				$news_array[]=array(
+					'id'=>$key,
+					'title'=>$value,
+				);
+			}
+		}
+		return $news_array;
+	}
+}
+
+//根据假期类型读取名称
+function leaves_types_name($types=0)
+{
+	$types_array = get_leaves_types();
+	return $types_array[$types];
+}
+
+//销售合同性质
+function get_contract_types($check_status=0)
+{
+	$contract_types_array = [
+		["id"=>1,"title"=>"普通合同"],
+		["id"=>2,"title"=>"产品合同"],
+		["id"=>3,"title"=>"服务合同"]
+	];
+	return $contract_types_array;
+}
+
+//根据销售合同性质读取销售合同性质名称
+function contract_types_name($types=1)
+{
+	$contract_types_array = get_contract_types();
+	return $contract_types_array[$types-1];
+}
+
+//采购合同性质
+function get_purchase_types($check_status=0)
+{
+	$purchase_types_array = [
+		["id"=>1,"title"=>"普通采购"],
+		["id"=>2,"title"=>"物品采购"],
+		["id"=>3,"title"=>"服务采购"]
+	];
+	return $purchase_types_array;
+}
+
+//根据采购合同性质读取采购合同性质名称
+function purchase_types_name($types=1)
+{
+	$purchase_types_array = get_purchase_types();
+	return $purchase_types_array[$types-1];
+}

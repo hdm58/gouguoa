@@ -2,11 +2,11 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="layui-form p-page">
-	<h3 class="pb-3">发票详情</h3>
+	<h3 class="pb-2">发票详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">开票金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray-2">开票金额</td>
+			<td class="blue">{$detail.amount} 元</td>
 			<td class="layui-td-gray">开票类型</td>
 			<td>
 				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}

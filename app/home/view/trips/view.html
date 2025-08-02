@@ -2,10 +2,10 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-3">出差详情</h3>
+	<h3 class="pb-2">出差详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">开始时间</td>
+			<td class="layui-td-gray-2">开始时间</td>
 			<td>{$detail.start_date}</td>
 			<td class="layui-td-gray">结束时间</td>
 			<td>{$detail.end_date}</td>
@@ -18,7 +18,7 @@
 		</tr>
 		{notempty name="$detail.file_ids"}
 		<tr>
-			<td class="layui-td-gray"><div class="layui-input-inline">附件</div></td>
+			<td class="layui-td-gray"><div class="layui-input-inline">相关附件</div></td>
 			<td colspan="5">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}

@@ -114,6 +114,10 @@ class Seal extends Model
 			$status_str = '已归还';
 		}
 		$info['status_str'] = $status_str;
+		if(!empty($info['file_ids'])){
+			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
+			$info['file_array'] = $file_array;
+		}
 		return $info;
     }
 

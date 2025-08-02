@@ -201,7 +201,10 @@ layui.define(function(exports) {
 			if (typeof(prev) != "undefined" ) {
 				setTimeout(function () {
 					prev.click();
-				}, 10)
+				}, 20)
+			}
+			if(typeof params.searchreset === "function"){
+				params.searchreset();
 			}
 		});		
 		return init;

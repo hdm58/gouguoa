@@ -104,6 +104,11 @@ class OfficialDocs extends Model
 		$share_names = Db::name('Admin')->where([['id','in',$info['share_uids']]])->column('name');
 		$info['share_names'] =implode(',' ,$share_names);
 		
+		if(!empty($info['file_ids'])){
+			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
+			$info['file_array'] = $file_array;
+		}
+		
 		return $info;
     }
 

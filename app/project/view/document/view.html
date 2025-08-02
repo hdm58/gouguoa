@@ -21,6 +21,8 @@
 .text-detial-content table th {font-weight: 800;}
 .text-detial-content li {list-style: initial;margin-left: 20px;}
 :not(pre)>code[class*=language-], pre[class*=language-]{background:#fff!important;border:1px solid #e8e8e8!important; border-radius:3px;}
+.upload-file{padding:12px; background-color:#fff; border:1px solid #eee; margin-bottom:12px;}
+.upload-file h3{margin-bottom:12px;}
 </style>
 {/block}
 <!-- 主体 -->
@@ -33,10 +35,24 @@
 	<div class="text-detial-content">
 	{$detail.content|raw}
 	</div>
+	{notempty name="$detail.file_ids"}
+	<div class="upload-file layui-row">
+		<h3>相关附件</h3>
+		{volist name="$detail.file_array" id="vo"}
+			<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+		{/volist}
+	</div>
+	{/notempty}
 </div>
 {/block}
 <!-- 脚本 -->
 {block name="script"}
 <script src="{__GOUGU__}/third_party/prism/prism.js"></script>
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;	
+	}
+</script>
 {/block}
 <!-- /脚本 -->

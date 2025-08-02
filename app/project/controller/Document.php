@@ -96,7 +96,12 @@ class Document extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
 			$project_id = isset($param['project_id']) ? $param['project_id'] : 0;
 			if($id>0){
-				View::assign('detail', $this->model->detail($param['id']));
+				$detail = $this->model->detail($id);
+				if($detail['file_ids'] !=''){
+					$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
+					$detail['file_array'] = $file_array;
+				}
+				View::assign('detail', $detail);
 			}
 			if($project_id>0){
 				$project_name =  Db::name('Project')->where(['id' => $project_id])->value('name');
@@ -121,6 +126,10 @@ class Document extends BaseController
         } else {
             $project_ids = Db::name('ProjectUser')->where(['uid' => $this->uid, 'delete_time' => 0])->column('project_id');
             if (in_array($detail['project_id'], $project_ids) || ($this->uid = $detail['admin_id'])) {
+				if($detail['file_ids'] !=''){
+					$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
+					$detail['file_array'] = $file_array;
+				}
                 View::assign('detail', $detail);
                 if(is_mobile()){
 					return view('qiye@/project/document_view');

@@ -1,0 +1,207 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-4">
+	<h3 class="pb-3">转入职</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td colspan="6"><strong>基本信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.name|default=''}</td>
+			<td class="layui-td-gray-2">性别</td>
+			<td>
+				{eq name="$detail.sex" value="1"}男{/eq}
+				{eq name="$detail.sex" value="2"}女{/eq}
+			</td>
+			<td rowspan="4" class="layui-td-gray-2">照片头像</td>
+			<td rowspan="4" valign="top" style="width: 180px;">
+				<div class="layui-upload" style="width: 180px;">
+					<div class="layui-upload-list" id="uploadThumb" style="width: 100%; height:150px; overflow: hidden;">
+						<img src="{:get_file($detail.thumb)}" height="150" style="max-width: 100%;" />
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">手机号码<font>*</font></td>
+			<td><input type="text" name="mobile" value="{$detail.mobile|default=''}" lay-verify="required|phone" lay-reqText="请输入正确的手机号码" placeholder="可使用手机号码登录" class="layui-input"></td>
+			<td class="layui-td-gray">电子邮箱</td>
+			<td><input type="text" name="email" value="{$detail.email|default=''}" lay-verify="email" placeholder="请输入电子邮箱" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">出生日期</td>
+			<td>{$detail.birthday|default='-'}</td>
+			<td class="layui-td-gray">身份证号码</td>
+			<td>{$detail.idcard|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">民族</td>
+			<td>{$detail.nation|default='-'}</td>
+			<td class="layui-td-gray">籍贯</td>
+			<td>{$detail.native_place|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">政治面貌</td>
+			<td>
+				{eq name="$detail.political" value="0"}无{/eq}
+				{eq name="$detail.political" value="1"}中共党员{/eq}
+				{eq name="$detail.political" value="2"}共青团员{/eq}
+			</td>
+			<td class="layui-td-gray">婚姻状况</td>
+			<td>
+				{eq name="$detail.marital_status" value="1"}未婚{/eq}
+				{eq name="$detail.marital_status" value="2"}已婚{/eq}
+			</td>
+			<td class="layui-td-gray">参加工作时间</td>
+			<td>{$detail.work_date|default='-'}</td>
+		</tr>
+		<tr>		
+			<td class="layui-td-gray">户口性质</td>
+			<td>
+				{eq name="$detail.resident_type" value="1"}农村户口{/eq}
+				{eq name="$detail.resident_type" value="2"}城镇户口{/eq}
+			</td>
+			<td class="layui-td-gray">户口所在地</td>
+			<td colspan="3">{$detail.resident_place|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">家庭住址</td>
+			<td colspan="3">{$detail.home_address|default='-'}</td>
+			<td class="layui-td-gray">紧急联系人</td>
+			<td>{$detail.contact|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">现住地址</td>
+			<td colspan="3">{$detail.current_address|default='-'}</td>
+			<td class="layui-td-gray">紧急联系电话</td>
+			<td>{$detail.contact_mobile|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">个人简介</td>
+			<td colspan="5">{$detail.desc|default='-'}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>教育信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">毕业院校</td>
+			<td colspan="3">{$detail.graduate_school|default='-'}</td>
+			<td class="layui-td-gray">毕业日期</td>
+			<td>{$detail.graduate_day|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">专业</td>
+			<td colspan="3">{$detail.speciality|default='-'}</td>
+			<td class="layui-td-gray">最高学位</td>
+			<td>{$detail.education|default='-'}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>入职信息</strong></td>
+		</tr>
+		<tr>
+			<tr>
+				<td class="layui-td-gray">入职部门<font>*</font></td>
+				<td><select id="to_did" name="to_did" xm-selected="{$detail.to_did|default=''}" xm-select="select1" xm-select-skin="default" xm-select-radio="true" lay-verify="required" lay-reqText="请选择入职部门"></select></td>
+				<td class="layui-td-gray">上级主管</td>
+				<td>
+					<input type="text" name="pname" readonly placeholder="请选择" class="layui-input picker-admin" value="{$detail.pname|default=''}">
+					<input type="hidden" name="pid" value="{$detail.pid|default=''}">
+				</td>
+				<td class="layui-td-gray">入职时间<font>*</font></td>
+				<td><input type="text" name="entry_time" value="{$detail.entry_time|default=''}" readonly placeholder="请选择" class="layui-input tool-time"></td>
+			</tr>
+			<td class="layui-td-gray">岗位职称<font>*</font></td>
+			<td>
+				<select name="position_id" lay-verify="required" lay-reqText="请选择岗位职称">
+					<option value="">请选择岗位职称</option>
+					{volist name="$position" id="v"}
+						<option value="{$v.id}" {eq name="$v.id" value="$detail.position_id"}selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>	
+			</td>
+			<td class="layui-td-gray">职务<font>*</font></td>
+			<td>
+				<select name="position_name" lay-verify="required" lay-reqText="请选择职务">
+					<option value="">请选择职务</option>
+					{volist name=":get_base_type_data('basic_user',1)" id="v"}
+					<option value="{$v.id}" {eq name="$detail.position_name" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">职级<font>*</font></td>
+			<td>
+				<select name="position_rank" lay-verify="required" lay-reqText="请选择职级">
+					<option value="">请选择职级</option>
+					{volist name=":get_base_type_data('basic_user',2)" id="v"}
+					<option value="{$v.id}" {eq name="$detail.position_rank" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">员工类型<font>*</font></td>
+			<td>
+				<input type="radio" name="type" value="1" title="正式" {eq name="$detail.type" value="1"} checked{/eq}>
+				<input type="radio" name="type" value="2" title="试用" {eq name="$detail.type" value="2"} checked{/eq}>
+				<input type="radio" name="type" value="3" title="实习" {eq name="$detail.type" value="3"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray">身份类型<font>*</font></td>
+			<td>
+				<input type="radio" name="is_staff" value="1" title="企业员工" {eq name="$detail.is_staff" value="1"} checked{/eq}>
+				<input type="radio" name="is_staff" value="2" title="劳动派遣" {eq name="$detail.is_staff" value="2"} checked{/eq}>
+				<input type="radio" name="is_staff" value="3" title="兼职人员" {eq name="$detail.is_staff" value="3"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray">工号</td>
+			<td><input type="text" name="job_number" value="{$detail.job_number|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">入职评语</td>
+			<td colspan="5">
+				<textarea name="remark" placeholder="请输入职评语" class="layui-textarea">{$detail.remark|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	{eq name="$detail.status" value="1"}
+	<div class="pt-4">
+		<input type="hidden" value="{$detail.id|default=0}" name="id">
+		<input type="hidden" value="{$detail.to_did|default=0}" name="to_did">
+		<input type="hidden" name="reg_pwd" value="{$reg_pwd}" lay-verify="required">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+	{/eq}
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','formSelects','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,formSelects=layui.formSelects;
+		//选择所属部门
+		var selected_a = $('#to_did').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selected_a
+		});
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					//tool.sideClose(1000);
+					parent.location.reload();
+				}
+			}
+			tool.post("/user/talent/set", data.field, callback);
+			return false;
+		});
+	}
+
+</script>
+{/block}
+<!-- /脚本 -->

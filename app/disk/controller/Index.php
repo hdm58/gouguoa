@@ -17,7 +17,7 @@ namespace app\disk\controller;
 
 use app\base\BaseController;
 use app\disk\model\Disk as DiskModel;
-use app\disk\validate\IndexValidate;
+use app\disk\validate\DiskValidate;
 use think\exception\ValidateException;
 use think\facade\Db;
 use think\facade\View;
@@ -45,36 +45,25 @@ class Index extends BaseController
 			$where=[];
 			$where[]=['admin_id','=',$this->uid];
 			$where[]=['delete_time','=',0];
+			$where[]=['group_id','=',0];
             if (!empty($param['keywords'])) {
                 $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
-            }
-			if (!empty($param['is_share'])) {
-				if($pid>0){
-					$where[]=['pid','=',$pid];
-				}
-				else{
-					$where[]=['is_share','=',1];
-				}                
-            }
+            }            
 			if (!empty($param['is_star'])) {
-				if($pid>0){
-					$where[]=['pid','=',$pid];
-				}
-				else{
-					$where[]=['is_star','=',1];
-				}
+				$where[]=['types','<',2];
+				$where[]=['is_star','=',1];
             }
 			if (!empty($param['ext'])) {
                 $where[] = ['file_ext', 'in',$param['ext']];
             }
-			if (!empty($param['is_share']) || !empty($param['is_star']) || !empty($param['ext'])) {
+			if (!empty($param['is_star']) || !empty($param['ext'])) {
 
             }
 			else{
 				$where[]=['pid','=',$pid];
 			}
             $list = $this->model->datalist($param,$where);
-			$folder = get_pfolder($param['pid']);
+			$folder = get_pfolder($pid);
             return table_assign(0, '', $list,$folder);
         }
         else{
@@ -90,20 +79,30 @@ class Index extends BaseController
 		$param = get_params();
         if (request()->isAjax()) {
 			$pid = isset($param['pid']) ? $param['pid'] : 0;
+			$group_id = isset($param['group_id']) ? $param['group_id'] : 0;
 			$where=[];
-			if($pid>0){
-				$where[]=['pid','=',$pid];
-			}
-			else{
-				$where[]=['is_share','=',1];
-			}
+			$where[]=['delete_time','=',0];
+			$where[]=['group_id','=',$group_id];
+            if (!empty($param['keywords'])) {
+                $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
+            }            
+			if (!empty($param['is_star'])) {
+				if($pid>0){
+					$where[]=['pid','=',$pid];
+				}
+				else{
+					$where[]=['is_star','=',1];
+				}
+            }
 			if (!empty($param['ext'])) {
                 $where[] = ['file_ext', 'in',$param['ext']];
             }
-			$where[]=['delete_time','=',0];
-            if (!empty($param['keywords'])) {
-                $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
+			if (!empty($param['is_star']) || !empty($param['ext'])) {
+
             }
+			else{
+				$where[]=['pid','=',$pid];
+			}
             $list = $this->model->datalist($param,$where);
 			$folder = get_pfolder($param['pid']);
             return table_assign(0, '', $list,$folder);
@@ -144,59 +143,74 @@ class Index extends BaseController
         }
     }
 	
-    /**
-    * 全部文件列表
-    */
-    public function alllist()
+    //添加&编辑
+    public function add_group()
     {
-		$param = get_params();
-		$uid = $this->uid;
-		$auth = isAuth($uid,'disk_admin','conf_1');
         if (request()->isAjax()) {
-			$pid = isset($param['pid']) ? $param['pid'] : 0;
-			$where=[];
-			$whereOr=[];
-			$where[]=['delete_time','=',0];
-			$where[]=['clear_time','=',0];
-			if (!empty($param['ext'])) {
-                $where[] = ['file_ext', 'in',$param['ext']];
-            }
-            if (!empty($param['keywords'])) {
-                $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
-            }
-			if (!empty($param['ext'])) {
-                $where[] = ['file_ext', 'in',$param['ext']];
-            }
-			else{
-				$where[]=['pid','=',$pid];
+			$param = get_params();
+			if($param['title'] == '全部' || $param['title']=='未共享空间'){
+				return to_assign(1, '该共享空间名称已经存在');
 			}
-			if($auth == 0){
-				if (!empty($param['admin_id'])) {
-					$where[] = ['admin_id', '=', $param['admin_id']];
-				}
-				else{
-					$whereOr[] = ['admin_id', '=', $uid];
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
+            if (!empty($param['id']) && $param['id'] > 0) {				
+				$uid=$this->uid;
+				$detail = Db::name('DiskGroup')->where('id',$param['id'])->find();
+				if($uid==1 || $detail['admin_id'] == $uid){
+					$count = Db::name('DiskGroup')->where([['id','<>',$param['id']],['delete_time','=',0],['title','=',$param['title']]])->count();
+					if ($count > 0) {
+						return to_assign(1, '该共享空间名称已经被其他员工占用');
 					}
+					$param['update_time'] = time();
+					$res = Db::name('DiskGroup')->where(['id' => $param['id']])->strict(false)->field(true)->update($param);
+					if($res!=false){
+						add_log('edit', $param['id'], $param);
+						return to_assign(0,'编辑成功',$param['id']);
+					}else{
+						return to_assign(1,'操作失败');
+					}
+				}else{
+					return to_assign(1,'只要超级管理员和创建人才有权限操作');
 				}
-			}
-			else{
-				if (!empty($param['admin_id'])) {
-					$where[] = ['admin_id', '=', $param['admin_id']];
-				}
-			}
-            $list = $this->model->datalist($param,$where,$whereOr);
-			$folder = get_pfolder($param['pid']);
-            return table_assign(0, '', $list,$folder);
+            } else {
+				$param['admin_id'] = $this->uid;
+				$param['create_time'] = time();
+                $count = Db::name('DiskGroup')->where([['delete_time','=',0],['title','=',$param['title']]])->count();
+                if ($count > 0) {
+                    return to_assign(1, '该共享空间名称已经被其他员工占用');
+                }
+                $gid = Db::name('DiskGroup')->strict(false)->field(true)->insertGetId($param);
+				if($gid!=false){
+					add_log('add', $gid, $param);
+					return to_assign(0,'添加成功',$gid);
+				}else{
+					return to_assign(1,'操作失败');
+				}                
+            }
         }
-        else{
-			View::assign('auth', $auth);
-			View::assign('is_leader', isLeader($this->uid));
-            return view();
+    }
+
+    //删除
+    public function del_group()
+    {
+        if (request()->isDelete()) {
+            $id = get_params("id");
+			$uid=$this->uid;
+			$detail = Db::name('DiskGroup')->where('id',$id)->find();
+			if($uid==1 || $detail['admin_id'] == $uid){
+				$count = Db::name('Disk')->where(["group_id" => $id,'delete_time'=>0])->count();
+				if ($count > 0) {
+					return to_assign(1, "该共享空间还存在文件，请去除文件或者转移文件后再删除");
+				}
+				if (Db::name('DiskGroup')->delete($id) !== false) {
+					add_log('delete', $id, []);
+					return to_assign(0, "删除成功");
+				} else {
+					return to_assign(1, "删除失败");
+				}
+			}else{
+				return to_assign(1,'只要超级管理员和创建人才有权限操作');
+			}
+        } else {
+            return to_assign(1, "错误的请求");
         }
     }
 	
@@ -208,7 +222,7 @@ class Index extends BaseController
 		$param = get_params();	
         if (request()->isAjax()) {
 			try {
-				validate(IndexValidate::class)->scene('add')->check($param);
+				validate(DiskValidate::class)->scene('add')->check($param);
 			} catch (ValidateException $e) {
 				// 验证失败 输出错误信息
 				return to_assign(1, $e->getError());
@@ -227,7 +241,7 @@ class Index extends BaseController
 		$param = get_params();	
         if (request()->isAjax()) {		
 			try {
-				validate(IndexValidate::class)->scene('add')->check($param);
+				validate(DiskValidate::class)->scene('add')->check($param);
 			} catch (ValidateException $e) {
 				// 验证失败 输出错误信息
 				return to_assign(1, $e->getError());
@@ -274,6 +288,7 @@ class Index extends BaseController
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
 			$pid = isset($param['pid']) ? $param['pid'] : 0;
+			$group_id = isset($param['group_id']) ? $param['group_id'] : 0;
 			if ($id>0) {
 				$file = $this->model->getById($id);
 				$detail = Db::name('Article')->find($file['action_id']);
@@ -286,6 +301,7 @@ class Index extends BaseController
 				return view('edit_article');
 			}
 			View::assign('pid', $pid);
+			View::assign('group_id', $group_id);
 			return view();
 		}
     }
@@ -313,16 +329,20 @@ class Index extends BaseController
     public function rename()
     {
 		$param = get_params();	
-        if (request()->isAjax()) {		
-            if (!empty($param['id']) && $param['id'] > 0) {
-                try {
-                    validate(IndexValidate::class)->scene('edit')->check($param);
-                } catch (ValidateException $e) {
-                    // 验证失败 输出错误信息
-                    return to_assign(1, $e->getError());
-                }
+        if (request()->isAjax()) {
+			$uid=$this->uid;
+			$detail = Db::name('Disk')->where('id',$param['id'])->find();
+			if($uid==1 || $detail['admin_id'] == $uid){
+				try {
+					validate(DiskValidate::class)->scene('edit')->check($param);
+				} catch (ValidateException $e) {
+					// 验证失败 输出错误信息
+					return to_assign(1, $e->getError());
+				}
 				$this->model->edit($param);
-            } 
+			}else{
+				return to_assign(1,'只要超级管理员和创建人才有权限操作');
+			}			
         }
     }
     /**
@@ -352,7 +372,7 @@ class Index extends BaseController
 			$list = [];
 			foreach ($idArray as $key => $val) {
 				$file = Db::name('Disk')->find($val);
-				if($file['admin_id'] != $this->uid){
+				if($file['admin_id'] != $this->uid && $this->uid>1){
 					return to_assign(1, "删除失败,【".$file['name']."】不是你上传的文件");
 					break;
 				}
@@ -508,8 +528,9 @@ class Index extends BaseController
 			}
         }else{
 			$pid = isset($param['pid']) ? $param['pid']: 0 ;
+			$group_id = isset($param['group_id']) ? $param['group_id']: 0 ;
 			$path = get_pfolder($pid);
-			$folder = Db::name('Disk')->where(['pid'=>$pid,'types'=>2,'delete_time'=>0])->order('id desc')->select()->toArray();
+			$folder = Db::name('Disk')->where(['pid'=>$pid,'group_id'=>$group_id,'types'=>2,'delete_time'=>0])->order('id desc')->select()->toArray();
 			$pfolder = '全部文件';
 			if($pid>0){
 				$pfolder = Db::name('Disk')->where(['id'=>$pid])->value('name');
@@ -518,68 +539,9 @@ class Index extends BaseController
 			View::assign('pfolder', $pfolder);
 			View::assign('path', $path);
 			View::assign('folder', $folder);
+			View::assign('group_id', $group_id);
 			return view();
 		}
-	}
-	
-	/**
-    * 分享
-    */
-    public function share()
-    {
-		$param = get_params();
-        if (request()->isAjax()) {
-            $ids = $param["ids"];
-			$idArray = explode(',', strval($ids));
-			$list = [];
-			foreach ($idArray as $key => $val) {
-				$list[] = [
-					'id' => $val,
-					'is_share' => 1,
-					'update_time' => time()
-				];
-			}
-			if(!empty($list)){
-				$model = new DiskModel();
-				foreach ($list as $item) {
-					$model->update($item);
-				}
-				return to_assign();
-			}
-			else{
-				return to_assign(1, "操作失败");
-			}
-        }
-	}
-	
-	/**
-    * 取消分享
-    */
-    public function unshare()
-    {
-		$param = get_params();
-        if (request()->isAjax()) {
-            $ids = $param["ids"];
-			$idArray = explode(',', strval($ids));
-			$list = [];
-			foreach ($idArray as $key => $val) {
-				$list[] = [
-					'id' => $val,
-					'is_share' => 0,
-					'update_time' => time()
-				];
-			}
-			if(!empty($list)){
-				$model = new DiskModel();
-				foreach ($list as $item) {
-					$model->update($item);
-				}
-				return to_assign();
-			}
-			else{
-				return to_assign(1, "操作失败");
-			}
-        }
 	}
 	
 	/**

@@ -2,11 +2,11 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="layui-form p-page">
-	<h3 class="pb-3">收票详情</h3>
+	<h3 class="pb-2">收票详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray-2">发票金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray-2">发票金额</td>
+			<td class="blue">{$detail.amount} 元</td>
 			<td class="layui-td-gray">发票类型</td>
 			<td>
 				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
@@ -20,6 +20,14 @@
 			<td class="layui-td-gray-3">开票主体(供应商)</td>
 			<td>{$detail.supplier_name}</td>
 		</tr>
+		{if ( $detail.open_status gt 0)}
+		<tr>
+			<td class="layui-td-gray">发票号码</td>
+			<td>{$detail.code}{eq name="$detail.open_status" value="2"}<span class="yellow">『已作废』</span>{/eq}</td>
+			<td class="layui-td-gray">发票日期</td>
+			<td>{$detail.open_time}</td>
+		</tr>
+		{/if}
 		{if condition="$detail.purchase_id > 0"}
 		<tr>
 		<td class="layui-td-gray">关联采购合同</td>
@@ -30,14 +38,6 @@
 		<tr>
 		<td class="layui-td-gray">关联的项目</td>
 			<td colspan="3">{$detail.project_name|default=''}</td>
-		</tr>
-		{/if}
-		{if ( $detail.open_status gt 0)}
-		<tr>
-			<td class="layui-td-gray">发票号码</td>
-			<td>{$detail.code}{eq name="$detail.open_status" value="2"}<span class="yellow">『已作废』</span>{/eq}</td>
-			<td class="layui-td-gray">发票日期</td>
-			<td>{$detail.open_time}</td>
 		</tr>
 		{/if}
 		{notempty name="$detail.remark"}

@@ -56,6 +56,45 @@ mbui.define([], function (exports) {
 				window.location.replace(url);
 			}
 		},
+		//格式化文件大小
+		renderSize:function(val){
+			if(null==val||val==''){
+				 return "0 Bytes";
+			}
+			var unitArr = new Array("Bytes","KB","MB","GB","TB","PB","EB","ZB","YB");
+			var index=0;
+			var srcsize = parseFloat(val);
+			index=Math.floor(Math.log(srcsize)/Math.log(1024));
+			var size =srcsize/Math.pow(1024,index);
+			size=size.toFixed(2);//保留的小数位数
+			return size+unitArr[index];
+		},
+		// 格式化文件
+		file_item:function(file,view=''){
+			let image=['jpg','jpeg','png','gif'];
+			let fileshow='<div class="mbui-file-icon"><i class="iconfont icon-weizhigeshi"></i></div>';
+			if(file['fileext'] == 'pdf'){
+
+			}
+			if(image.includes(file['fileext'])){
+				fileshow='<div class="mbui-file-icon file-img"><img src="'+file['filepath']+'" alt="'+file['name']+'"></div>';
+			}
+			let file_del='';
+			if(view == ''){
+				file_del = '<div class="mbui-file-del"><i class="iconfont icon-cuowukongxin"></i></div>';
+			}
+			let filesize = this.renderSize(file['filesize']);
+			let filedate = this.formatDate(file['create_time']);
+			let item = '<div class="mbui-file-div"data-id="'+file['id']+'">\
+						'+fileshow+'\
+						<div class="mbui-file-info">\
+							<div class="mbui-file-name line-limit-1">'+file['name']+'</div>\
+							<div class="mbui-file-size">'+filesize+'，'+filedate+'</div>\
+						</div>\
+						'+file_del+'\
+					</div>';
+			return item;
+		},
 		// 倒计时
 		countdown: function (options) {
 			var that = this;
@@ -153,62 +192,34 @@ mbui.define([], function (exports) {
 				return '刚刚';
 			}
 		},
-		// 转化为日期格式字符
-		toDateString: function (time, format, options) {
-			// 若 null 或空字符，则返回空字符
-			if (time === null || time === '') return '';
-			var REGEX_FORMAT = /\[([^\]]+)]|y{1,4}|M{1,2}|d{1,2}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|SSS/g;
-			var that = this;
-			var date = new Date(function () {
-				if (!time) return;
-				return isNaN(time) ? time : (typeof time === 'string' ? parseInt(time) : time)
-			}() || new Date());
-			if (!date.getDate()) return console.log('Invalid millisecond for "tool.toDateString(millisecond)"');
-			var years = date.getFullYear();
-			var month = date.getMonth();
-			var days = date.getDate();
-			var hours = date.getHours();
-			var minutes = date.getMinutes();
-			var seconds = date.getSeconds();
-			var milliseconds = date.getMilliseconds();
-			var defaultMeridiem = function (hours, minutes) {
-				var hm = hours * 100 + minutes;
-				if (hm < 600) {
-					return '凌晨';
-				} else if (hm < 900) {
-					return '早上';
-				} else if (hm < 1100) {
-					return '上午';
-				} else if (hm < 1300) {
-					return '中午';
-				} else if (hm < 1800) {
-					return '下午';
-				}
-				return '晚上';
-			};
-			var meridiem = (options && options.customMeridiem) || defaultMeridiem;
-			var matches = {
-				yy: function () { return String(years).slice(-2); },
-				yyyy: function () { return that.digit(years, 4); },
-				M: function () { return String(month + 1); },
-				MM: function () { return that.digit(month + 1); },
-				d: function () { return String(days); },
-				dd: function () { return that.digit(days); },
-				H: function () { return String(hours); },
-				HH: function () { return that.digit(hours); },
-				h: function () { return String(hours % 12 || 12); },
-				hh: function () { return that.digit(hours % 12 || 12); },
-				A: function () { return meridiem(hours, minutes); },
-				m: function () { return String(minutes); },
-				mm: function () { return that.digit(minutes); },
-				s: function () { return String(seconds); },
-				ss: function () { return that.digit(seconds); },
-				SSS: function () { return that.digit(milliseconds, 3); }
-			};
-			format = format || 'yyyy-MM-dd HH:mm:ss';
-			return format.replace(REGEX_FORMAT, function (match, $1) {
-				return $1 || (matches[match] && matches[match]()) || match;
-			});
+		/**
+		 * 格式化时间戳为指定格式
+		 * @param {number} timestamp - 时间戳（毫秒或秒）
+		 * @param {string} formatStr - 格式字符串，例如 'YYYY-MM-DD HH:mm:ss'
+		 * @returns {string}
+		 */
+		formatDate:function(timestamp, formatStr = 'YYYY-MM-DD HH:mm:ss') {
+		  const date = new Date(timestamp);
+
+		  // 如果是秒级时间戳，转为毫秒
+		  if (timestamp.toString().length === 10) {
+			date.setTime(timestamp * 1000);
+		  }
+
+		  const padZero = (num) => String(num).padStart(2, '0');
+
+		  const replacements = {
+			YYYY: date.getFullYear(),
+			MM: padZero(date.getMonth() + 1),   // 月份从 0 开始
+			DD: padZero(date.getDate()),
+			HH: padZero(date.getHours()),
+			mm: padZero(date.getMinutes()),
+			ss: padZero(date.getSeconds())
+		  };
+
+		  return Object.entries(replacements).reduce((str, [key, value]) => {
+			return str.replace(key, value);
+		  }, formatStr);
 		},
 		//返回10位时间戳
 		time: function () {

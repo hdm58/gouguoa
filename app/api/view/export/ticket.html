@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+		</style>
+	</head>
+	<body>
+	<h2>收票审批单</h2>
+	<table class="pdf-table">
+		<tr>
+			<td class="pdf-td-gray">发票金额</td>
+			<td>{$detail.amount} 元</td>
+			<td class="pdf-td-gray">发票类型</td>
+			<td>
+				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
+				{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
+				{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
+			</td>
+		</tr>
+		<tr>
+		<td class="pdf-td-gray">发票抬头</td>
+			<td>{$detail.subject}</td>
+			<td class="pdf-td-gray">开票主体</td>
+			<td>{$detail.supplier_name}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">发票号码</td>
+			<td>{$detail.code}</td>
+			<td class="pdf-td-gray">发票日期</td>
+			<td>{$detail.open_time}</td>
+		</tr>
+		{notempty name="$detail.purchase_id"}
+		<tr>
+			<td class="pdf-td-gray">关联合同</td>
+			<td colspan="3">{$detail.purchase_name|default='-'}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.project_id"}
+		<tr>
+			<td class="pdf-td-gray">关联项目</td>
+			<td colspan="3">{$detail.project_name|default='-'}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="pdf-td-gray">备注信息</td>
+			<td colspan="3">{$detail.remark|default='-'}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="pdf-td-gray">相关附件</td>
+			<td colspan="3">
+				{volist name="$detail.file_array" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{include file="export/pdf_check" /}
+	</body>
+</html>

@@ -207,40 +207,9 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-const moduleInit = ['tool','oaTool'];
+const moduleInit = ['tool'];
 function gouguInit() {
-	var form = layui.form,tool=layui.tool, oaTool = layui.oaTool;
-
-	oaTool.addFile({
-		isSave:true,
-		uidDelete:true,
-		ajaxSave:function(val){
-			$.ajax({
-				url: "/finance/api/upload",
-				type:'post',
-				data:{
-					id:$('[name="id"]').val(),
-					other_file_ids:val
-				},
-				success: function (e) {
-					location.reload();
-				}
-			})
-		},
-		ajaxDelete:function(val){
-			$.ajax({
-				url: "/finance/api/upload",
-				type:'post',
-				data:{
-					id:$('[name="id"]').val(),
-					other_file_ids:val
-				},
-				success: function (e) {
-					location.reload();
-				}
-			})
-		}
-	})
+	var form = layui.form,tool=layui.tool;
 }
 </script>
 {/block}

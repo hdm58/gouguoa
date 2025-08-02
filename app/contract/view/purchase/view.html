@@ -9,7 +9,7 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-3">采购合同详情</h3>
+	<h3 class="pb-2">采购合同详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">合同名称</td>
@@ -86,6 +86,83 @@
 			<td colspan="6">{$detail.remark}</td>
 		</tr>
 		{/notempty}
+		
+		{notempty name="$detail.ticket"}
+		<tr>
+			<td colspan="6"><strong>申请开票记录</strong>『 已申请收票金额：<strong class="green">{$detail.has_ticket}</strong> 元，未申请收票金额：<strong class="red">{$detail.no_ticket}</strong> 元 』</td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="layui-table layui-table-min" style="margin:0;">
+					<tr>
+						<th style="width:60px;">序号</th>
+						<th style="width:150px;">发票金额(元)</th>
+						<th style="width:150px;">发票状态</th>
+						<th style="width:200px;">发票号码</th>
+						<th style="width:150px;">发票日期</th>
+						<th style="width:100px;">付款状态</th>
+						<th style="width:100px;">申请人</th>
+						<th style="width:150px;">申请时间</th>
+						<th style="width:60px;">操作</th>
+					</tr>
+					{volist name="$detail.ticket" id="vo"}
+					<tr>
+						<td>{$vo.id}</td>
+						<td><span class="green">{$vo.amount}</span></td>
+						{eq name="$vo.open_status" value="1"}
+						<td><span class="green">已开具</span></td>
+						<td>{$vo.code}</td>
+						<td>{$vo.open_time|date='Y-m-d'}</td>
+						{else/}
+						<td><span class="red">未开具</span></td>
+						<td>-</td>
+						<td>-</td>								
+						{/eq}
+						<td>
+							{eq name="$vo.pay_status" value="0"}<span class="red">未付款</span>{/eq}
+							{eq name="$vo.pay_status" value="1"}<span class="blue">部分付款</span>{/eq}
+							{eq name="$vo.pay_status" value="2"}<span class="green">全部付款</span>{/eq}
+						</td>
+						<td>{$vo.admin}</td>
+						<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						<td><span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/finance/ticket/view?id={$vo.id}">详情</span></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		
+		{notempty name="$detail.payment"}
+		<tr>
+			<td colspan="6"><strong>付款记录</strong>『 已付款金额：<strong class="green">{$detail.has_payment}</strong> 元，未付款金额：<strong class="red">{$detail.no_payment}</strong> 元 』</</td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="layui-table layui-table-min" style="margin:0;">
+					<tr>
+						<th style="width:60px;">序号</th>
+						<th style="width:150px;">付款金额(元)</th>
+						<th style="width:200px;">付款日期</th>
+						<th style="width:100px;">付款操作人</th>
+						<th style="width:150px;">操作时间</th>
+						<th style="width:60px;">操作</th>
+					</tr>
+					{volist name="$detail.payment" id="vo"}
+					<tr>
+						<td>{$vo.id}</td>
+						<td><span class="green">{$vo.amount}</span></td>
+						<td>{$vo.pay_time | date='Y-m-d'}</td>
+						<td>{$vo.admin}</td>
+						<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						<td><span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/finance/payment/view?id={$vo.ticket_id}">详情</span></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		
 		
 		<tr>
 			<td colspan="6"><strong>合同情况</strong></td>
@@ -187,9 +264,10 @@
 		
 		oaCheck.init({
 			check_name:'purchase',
-			check_copy:0,
-			check_back:archive==0?auth:0,
-			checking_btn:checking_btn
+			checking_btn:checking_btn,
+			check_reversed :function(){
+			
+			}
 		});
 
 		let eventCallback = function (e) {

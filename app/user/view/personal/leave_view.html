@@ -1,0 +1,66 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">离职申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">离职员工</td>
+			<td>{$detail.name}</td>
+			<td class="layui-td-gray">所在部门</td>
+			<td>{$detail.department}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">离职日期</td>
+			<td>{$detail.quit_time}</td>
+			<td class="layui-td-gray-2">上级领导</td>
+			<td>{$detail.lead_admin_name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">资料接受人</td>
+			<td>{$detail.connect_name}</td>
+			<td class="layui-td-gray-2">参与交接人员</td>
+			<td>{$detail.connect_names}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">离职原因</td>
+			<td colspan="3">{$detail.remark}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">交接状态</td>
+			<td>{$detail.status_str}</td>
+			<td class="layui-td-gray-2">交接时间</td>
+			<td>{$detail.connect_time_str}</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="3">
+				<div class="layui-row" id="uploadBox">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo)}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+</form>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck;
+		oaCheck.init({
+			check_name:'personal_quit',
+			check_btn:0
+		});
+	}
+
+</script>
+{/block}
+<!-- /脚本 -->

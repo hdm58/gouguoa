@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+			.pdf-min-table{width:100%;border:1px solid #333333; border-collapse: collapse;overflow: wrap}
+			.pdf-min-table td{border:1px solid #333333;border-collapse: collapse; padding:6px; line-height:1.5;}
+		</style>
+	</head>
+	<body>
+	<h2>{$detail.name}档案信息</h2>
+	<table class="pdf-table">
+		<tr>
+			<td colspan="8"><strong>基本信息</strong></td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">员工姓名</td>
+			<td style="width:170px;">{$detail.name}</td>
+			<td class="pdf-td-gray">员工性别</td>
+			<td colspan="2" style="width:180px;">
+				{eq name="$detail.sex" value="1"}男{/eq}
+				{eq name="$detail.sex" value="2"}女{/eq}
+			</td>
+			<td rowspan="5" valign="top" style="width:112px;">
+				<img src="{$detail.thumb}" width="110" height="156" />
+			</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">手机号码</td>
+			<td>{$detail.mobile}</td>
+			<td class="pdf-td-gray">电子邮箱</td>
+			<td colspan="2" >{$detail.email}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">出生日期</td>
+			<td>{$detail.birthday}</td>
+			<td class="pdf-td-gray">身份证号码</td>
+			<td colspan="2" >{$detail.idcard}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">政治面貌</td>
+			<td>
+				{eq name="$detail.political" value="0"}无{/eq}
+				{eq name="$detail.political" value="1"}中共党员{/eq}
+				{eq name="$detail.political" value="2"}团员{/eq}
+			</td>
+			<td class="pdf-td-gray">婚姻状况</td>
+			<td colspan="2">
+				{eq name="$detail.marital_status" value="1"}未婚{/eq}
+				{eq name="$detail.marital_status" value="2"}已婚{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">民族</td>
+			<td>{$detail.nation}</td>
+			<td class="pdf-td-gray">籍贯</td>
+			<td colspan="2">{$detail.native_place}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">最高学位</td>
+			<td>{$detail.education}</td>
+			<td class="pdf-td-gray">毕业院校</td>
+			<td colspan="3">{$detail.graduate_school}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">专业</td>
+			<td>{$detail.speciality}</td>
+			<td class="pdf-td-gray">毕业日期</td>
+			<td style="width:120px;">{$detail.graduate_day}</td>
+			<td class="pdf-td-gray">参加工作时间</td>
+			<td>{$detail.work_date}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">户口性质</td>
+			<td>
+				{eq name="$detail.resident_type" value="1"}农村户口{/eq}
+				{eq name="$detail.resident_type" value="2"}城镇户口{/eq}
+			</td>
+			<td class="pdf-td-gray">户口所在地</td>
+			<td colspan="3">{$detail.resident_place}</td>
+		</tr>
+		<tr>		
+
+			<td class="pdf-td-gray">家庭住址</td>
+			<td colspan="3">{$detail.home_address}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">紧急联系人</td>
+			<td>{$detail.contact}，{$detail.contact_mobile}</td>
+			<td class="pdf-td-gray">现住地址</td>
+			<td colspan="3">{$detail.current_address}</td>
+		</tr>
+
+		<tr>
+			<td class="pdf-td-gray">员工简介</td>
+			<td colspan="7">
+				{$detail.desc|default=''}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="8"><strong>入职信息</strong></td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">所在部门</td>
+			<td>{$detail.department}</td>
+			<td class="pdf-td-gray">上级主管</td>
+			<td>{$detail.pname|default='无'}</td>
+			<td class="pdf-td-gray">岗位</td>
+			<td>{$detail.position}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">入职日期</td>
+			<td>{$detail.entry_time|date='Y-m-d'}</td>
+			<td class="pdf-td-gray">职级</td>
+			<td>
+				{volist name=":get_base_type_data('basic_user',2)" id="v"}
+				{eq name="$detail.position_rank" value="$v.id"}{$v.title}{/eq}
+				{/volist}
+			</td>
+			<td class="pdf-td-gray">职级</td>
+			<td>
+				{volist name=":get_base_type_data('basic_user',2)" id="v"}
+				{eq name="$detail.position_rank" value="$v.id"}{$v.title}{/eq}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">员工类型</td>
+			<td>
+				{eq name="$detail.type" value="3"}实习{/eq}
+				{eq name="$detail.type" value="2"}试用{/eq}
+				{eq name="$detail.type" value="1"}正式{/eq}
+				，
+				{eq name="$detail.is_staff" value="1"}企业员工{/eq}
+				{eq name="$detail.is_staff" value="2"}劳动派遣{/eq}
+				{eq name="$detail.is_staff" value="3"}兼职人员{/eq}
+			</td>
+			<td class="pdf-td-gray">员工工号</td>
+			<td>{$detail.job_number}</td>
+			<td class="pdf-td-gray">社保号</td>
+			<td>{$detail.social_account}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">工资卡开户行</td>
+			<td>{$detail.bank_info}</td>
+			<td class="pdf-td-gray">工资卡帐号</td>
+			<td>{$detail.bank_account}</td>
+			<td class="pdf-td-gray">公积金号</td>
+			<td>{$detail.provident_account}</td>
+		</tr>
+		{notempty name="$edu"}
+		<tr>
+			<td colspan="6"><strong>教育经历</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="80" style="text-align:center;">开始时间</td>
+						<td width="80" style="text-align:center;">结束时间</td>
+						<td width="100" style="text-align:center;">就读院校</td>
+						<td width="100" style="text-align:center;">学习专业</td>
+						<td width="70" style="text-align:center;">所获学历</td>
+						<td width="160" style="text-align:center;">备注说明</td>
+					</tr>
+					{volist name="$edu" id="v"}
+						<tr class="edu_interfix">
+							<td style="text-align:center;">{$v.start_time}</td>
+							<td style="text-align:center;">{$v.end_time}</td>
+							<td>{$v.title}</td>
+							<td>{$v.speciality}</td>
+							<td style="text-align:center;">{$v.education}</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$work"}
+		<tr>
+			<td colspan="6"><strong>工作经历</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="80" style="text-align:center;">开始时间</td>
+						<td width="80" style="text-align:center;">结束时间</td>
+						<td width="160" style="text-align:center;">公司名称</td>
+						<td width="80" style="text-align:center;">职位</td>
+						<td width="200" style="text-align:center;">备注说明</td>
+					</tr>
+					{volist name="$work" id="v"}
+						<tr class="work_interfix">
+							<td style="text-align:center;">{$v.start_time}</td>
+							<td style="text-align:center;">{$v.end_time|default='至今'}</td>
+							<td>{$v.title}</td>
+							<td style="text-align:center;">{$v.position}</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$certificate"}
+		<tr>
+			<td colspan="6"><strong>相关证书</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="120" style="text-align:center;">证书名称</td>
+						<td width="80" style="text-align:center;">获得时间</td>
+						<td width="120" style="text-align:center;">颁发机构</td>
+						<td width="200" style="text-align:center;">备注说明</td>
+					</tr>
+					{volist name="$certificate" id="v"}
+						<tr class="certificate_interfix">
+							<td>{$v.title}</td>
+							<td style="text-align:center;">{$v.start_time}</td>
+							<td>{$v.authority}</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$certificate"}
+		<tr>
+			<td colspan="6"><strong>计算机技能</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="160" style="text-align:center;">技能名称</td>
+						<td width="80" style="text-align:center;">熟悉程度</td>
+						<td width="200" style="text-align:center;">备注说明</td>
+					</tr>
+					{volist name="$skills" id="v"}
+					<tr class="skills_interfix">
+						<td>{$v.title}</td>
+						<td style="text-align:center;">
+							{eq name="$v.know" value="1"}熟练{/eq}
+							{eq name="$v.know" value="2"}良好{/eq}
+							{eq name="$v.know" value="3"}一般{/eq}
+							{eq name="$v.know" value="4"}较差{/eq}
+						</td>
+						<td style="text-align:left;">{$v.remark}</td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$language"}
+		<tr>
+			<td colspan="6"><strong>语言能力</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="pdf-min-table" style="margin:0">
+					<tr>
+						<td width="160" style="text-align:center;">语言名称</td>
+						<td width="80" style="text-align:center;">熟悉程度</td>
+						<td width="200" style="text-align:center;">备注说明</td>
+					</tr>
+					{volist name="$language" id="v"}
+						<tr class="skills_interfix">
+							<td>{$v.title}</td>
+							<td style="text-align:center;">
+								{eq name="$v.know" value="1"}熟练{/eq}
+								{eq name="$v.know" value="2"}良好{/eq}
+								{eq name="$v.know" value="3"}一般{/eq}
+								{eq name="$v.know" value="4"}较差{/eq}
+							</td>
+							<td style="text-align:left;">{$v.remark}</td>
+						</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="pdf-td-gray">相关附件</td>
+			<td colspan="5">
+				{volist name="$detail.file_array" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	<table width="100%">
+	<tr> 
+		<td width="50%" style="text-align:left; font-size:11px;">导出人员：{$detail.pdf_admin}</td> 
+		<td width="50%" style="text-align:right; font-size:11px;">导出时间：{$detail.pdf_time}</td> 
+	</tr>
+</table>
+	</body>
+</html>

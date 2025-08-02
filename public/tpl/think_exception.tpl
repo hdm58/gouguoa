@@ -394,7 +394,7 @@ if (!function_exists('echo_value')) {
     <?php } ?>
 
     <div class="copyright">
-        <a title="勾股OA" href="http://www.gougucms.com">勾股OA</a>
+        <a title="勾股OA" href="http://blog.gougucms.com">勾股OA</a>
         <span>—— 信息化、数字化办公系统的优秀解决方案</span>
     </div>
     <?php if (\think\facade\App::isDebug()) { ?>

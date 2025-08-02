@@ -104,7 +104,7 @@ class Index extends BaseController
         $handle[] = array(
             'name' => '待审公文',
             'num' =>  Db::name('OfficialDocs')->where($whereHandle)->count(),
-            'id' => 169,
+            'id' => 182,
             'url' => '/adm/official/datalist',
         );
         $handle[] = array(
@@ -134,13 +134,13 @@ class Index extends BaseController
 		$handle[] = array(
             'name' => '待审发票',
             'num' => Db::name('Invoice')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
-            'id' => 222,
+            'id' => 238,
             'url' => '/finance/invoice/datalist',
         );
 		$handle[] = array(
             'name' => '待审收票',
             'num' => Db::name('ticket')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
-            'id' => 226,
+            'id' => 242,
             'url' => '/finance/ticket/datalist',
         );
 		$handle[] = array(

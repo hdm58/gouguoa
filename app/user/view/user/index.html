@@ -4,6 +4,7 @@
 	.tree-left{width:200px; float:left; height:calc(100vh - 81px); overflow-y: auto; border:1px solid #eeeeee; border-right:0; background-color:#fbfbfb; padding:12px 12px 12px 5px;}
 	.tree-left::-webkit-scrollbar {width: 0;}
 	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
+	.btn-group-2 .layui-btn-warm,.btn-group-0 .layui-btn-danger,.btn-group-2 .layui-btn-danger{display:none;}
   </style>
 {/block}
 <!-- 主体 -->
@@ -16,15 +17,14 @@
 	<div class="body-table" style="margin-left:200px; overflow:hidden;">
 		<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
 			<div class="layui-input-inline" style="width:136px">
-				<select name="status">
-					<option value="">选择员工状态</option>
-					<option value="1">正常状态</option>
+				<select name="status" lay-filter="status">
+					<option value="1" selected>正常状态</option>
 					<option value="2">离职状态</option>
 					<option value="0">禁止登录</option>
 				</select>
 			</div>
 			<div class="layui-input-inline" style="width:136px">
-				<select name="type">
+				<select name="type" lay-filter="types">
 					<option value="">选择员工类型</option>
 					<option value="1">正式员工</option>
 					<option value="2">试用员工</option>
@@ -35,19 +35,17 @@
 				<input type="text" name="keywords" placeholder="关键字，如：ID号/姓名/登录账号/手机号码/电子邮箱" class="layui-input" autocomplete="off" />
 			</div>
 			<div class="layui-input-inline" style="width:150px;">
+				<input type="text" name="did" style="display:none;" value="0" />
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
-				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">重置</button>
 			</div>
 		</form>
 		<table class="layui-hide" id="test" lay-filter="test"></table>
 	</div>
 </div>
 
-<script type="text/html" id="thumb">
-	<img src="{{d.thumb}}" width="30" height="30" />
-</script>
 <script type="text/html" id="toolbara">
-	<div class="layui-btn-group">
+	<div id="btnGroup" class="layui-btn-group btn-group-1">
 		<button class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>添加员工</button>
 		<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="disable"><i class="layui-icon">&#x1006;</i>禁止登录</button>
 		<button class="layui-btn layui-btn-warm layui-btn-sm" lay-event="recovery"><i class="layui-icon">&#xe605;</i>恢复正常</button>
@@ -77,94 +75,73 @@
 						//layer.msg(JSON.stringify(obj.data));
 						$('#depament').find('.layui-tree-main').removeClass('on');
 						$(obj.elem).find('.layui-tree-main').eq(0).addClass('on');
-						layui.pageTable.reload({
-						   where:{did: obj.data.id},
-						   page:{curr:1}
-						});
-						$('[name="keywords"]').val('');
-						$('[name="status"]').val('');
-						$('[name="type"]').val('');
+						$('[name="did"]').val(obj.data.id);
 						layui.form.render('select');
+						$('[lay-filter="table-search"]').click();
 					}
 				});	
 			}
+		});
+		
+		form.on('select(status)', function(data){
+			$('[lay-filter="table-search"]').click();
+			$("#btnGroup").attr("class",'layui-btn-group btn-group-'+data.value);
+		});
+		form.on('select(types)', function(data){
+			$('[lay-filter="table-search"]').click();
 		});
 		
 		layui.pageTable = table.render({
 			elem: '#test',
 			title: '员工列表',
 			toolbar: '#toolbara',
+			searchreset:function(){
+				$('#depament').find('.layui-tree-main').removeClass('on');
+			},
 			url: "/user/user/index", //数据接口	
 			height: 'full-114',
+			size:'lg',
 			cols: [
 				[
 					{type:'checkbox',fixed:'left'},
-					{
-						field: 'id',
-						title: 'ID号',
-						align: 'center',
-						width: 80
-					}, {
-						field: 'status',
-						title: '状态',
-						align: 'center',
-						width: 60,
-						templet: function (d) {
-							var html = '<span class="layui-badge layui-bg-green">正常</span>';
+					{field: 'id',title: 'ID号',align: 'center',width: 80},
+					{field: 'status',title: '状态',align: 'center',width: 60,templet: function (d) {
+							var html = '';
+							if(d.status == 1){
+								html = '<span class="layui-badge layui-bg-green">正常</span>'
+							}
 							if(d.status == 2){
 								html = '<span class="layui-badge layui-bg-orange">已离职</span>'
 							}
-							else if(d.status == 0){
+							if(d.status == 0){
 								html = '<span class="layui-badge">被禁用</span>'
 							}
 							return html;
 						}
-					},{
-						field: 'type',
-						title: '员工类型',
-						align: 'center',
-						width: 80,
-						templet: function (d) {
-							var html = '<span style="color:#393D49">正式员工</span>';
+					},
+					{field: 'type',title: '员工类型',align: 'center',width: 80,templet: function (d) {
+							var html = '';
+							if(d.type == 1){
+								html = '<span style="color:#16b777">正式员工</span>'
+							}
 							if(d.type == 2){
 								html = '<span style="color:#01AAED">试用员工</span>'
 							}
-							else if(d.type == 3){
-								html = '<span style="color:#5FB878">实 习 生</span>'
+							if(d.type == 3){
+								html = '<span style="color:#ffb800">实 习 生</span>'
 							}
 							return html;
 						}
-					}, {
-						field: 'username',
-						title: '登录账号',
-						width: 132
-					}, {
-						field: 'thumb',
-						title: '头像',
-						toolbar: '#thumb',
-						align: 'center',
-						width: 50
-					}, {
-						field: 'name',
-						title: '员工姓名',
-						align: 'center',
-						width: 80
-					},{
-						field: 'mobile',
-						title: '手机号码',
-						align: 'center',
-						width: 120
-					},{
-						field: 'email',
-						title: '电子邮箱',
-						width: 200
-					},{
-						field: 'sex',
-						title: '性别',
-						align: 'center',
-						width: 50,
-						templet: function (d) {
-							var html = '未知';
+					},
+					{field: 'username',title: '登录账号',width: 130},
+					{field: 'name',title: '员工姓名',width: 130,templet:function(d){
+							return '<div><div style="float:left; width:36px; height:36px; margin-right:5px;"><img src="'+d.thumb+'" style="width:100%; height:100%; vertical-align:top;object-fit: cover; border-radius:3px;" /></div><span>'+d.name+'</span></div>';
+						}
+					},
+					{field: 'mobile',title: '手机号码',align: 'center',width: 110},
+					{field: 'email',title: '电子邮箱',width: 200},
+					{field: 'sex',title: '性别',align: 'center',width: 50,templet: function (d) {
+							var html = '';
 							if(d.sex == 1){
 								html = '男'
 							}
@@ -173,52 +150,30 @@
 							}
 							return html;
 						}
-					},{
-						field: 'department',
-						title: '所在主部门',
-						width: 100
-					}, {
-						field: 'departments',
-						title: '所在次部门',
-						width: 160
-					}, {
-						field: 'position',
-						title: '岗位职称',
-						align: 'center',
-						width: 100
-					}, {
-						field: 'entry_time',
-						title: '入职日期',
-						align: 'center',
-						width: 100
-					}, {
-						field: 'login_num',
-						title: '累计登录',
-						align: 'center',
-						width: 80
-					}, {
-						field: 'last_login_time',
-						title: '最后登录时间',
-						align: 'center',
-						minWidth: 136
-					},{
-						field: 'right',
-						fixed:'right',
-						title: '操作',
-						width: 150,
-						align: 'center',
-						ignoreExport:true,
-						templet: function (d) {
+					},
+					{field: 'department',title: '所在主部门',width: 100},
+					{field: 'departments',title: '所在次部门',width: 160},
+					{field: 'position',title: '岗位职称',align: 'center',width: 100},
+					{field: 'entry_time',title: '入职日期',align: 'center',width: 100},
+					{field: 'login_num',title: '累计登录',align: 'center',width: 80},
+					{field: 'last_login_time',title: '最后登录时间',align: 'center',minWidth: 136},
+					{field: 'right',fixed:'right',title: '操作',width: 150,align: 'center',ignoreExport:true,templet: function (d) {
 							var html = '';
 							var btn1 = '<span class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</span>';
 							var btn2 = '<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
 							var btn3 = '<span class="layui-btn layui-btn-xs layui-btn-warm" lay-event="copy">复制密码</span>';
 							var btn4 = '<span class="layui-btn layui-btn-xs layui-btn-danger" lay-event="psw">重置密码</span>';
-							if(d.reg_pwd == ''){
-								html = '<div class="layui-btn-group">'+btn1+btn2+btn4+'</div>';
+							var btn5 = '<span class="layui-btn layui-bg-orange layui-btn-xs" lay-event="del">删除员工</span>';
+							if(d.status==2){
+								html = '<div class="layui-btn-group">'+btn1+btn5+'</div>';
 							}
 							else{
-								html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+								if(d.reg_pwd == ''){
+									html = '<div class="layui-btn-group">'+btn1+btn2+btn4+'</div>';
+								}
+								else{
+									html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+								}
 							}
 							return html;
 						}						

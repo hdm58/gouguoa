@@ -1,0 +1,299 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">入职申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td colspan="6"><strong>基本信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">员工姓名<font>*</font></td>
+			<td><input type="text" name="name" value="{$detail.name|default=''}" placeholder="请输入" lay-verify="required" lay-reqText="请输入姓名" class="layui-input"></td>
+			<td class="layui-td-gray-2">性别<font>*</font></td>
+			<td>
+				{empty name="$detail"}
+				<input type="radio" name="sex" value="1" title="男">
+				<input type="radio" name="sex" value="2" title="女">
+				{else/}
+				<input type="radio" name="sex" value="1" title="男" {eq name="$detail.sex" value="1"} checked{/eq}>
+				<input type="radio" name="sex" value="2" title="女" {eq name="$detail.sex" value="2"} checked{/eq}>
+				{/empty}
+			</td>
+			<td rowspan="4" class="layui-td-gray-2">头像照片<font>*</font></td>
+			<td rowspan="4" valign="top" style="width: 180px;">
+				<div class="layui-upload" style="width: 180px;">
+					<div class="layui-upload-list" id="uploadThumb" style="width: 100%; height:150px; overflow: hidden;">
+						{empty name="$detail"}
+						<img src="" height="180" style="max-width: 100%;" />
+						{else/}
+						<img src="{:get_file($detail.thumb)}" height="150" style="max-width: 100%;" />
+						{/empty}
+						<input type="hidden" name="thumb" value="{$detail.thumb|default=''}" lay-verify="required" lay-reqText="请上传头像照片">
+					</div>
+					<button type="button" class="layui-btn layui-btn-normal" style="width: 100%;" id="uploadImg">上传头像照片</button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">手机号码<font>*</font></td>
+			<td><input type="text" name="mobile" value="{$detail.mobile|default=''}" lay-verify="required|phone" lay-reqText="请输入正确的手机号码" placeholder="可使用手机号码登录" class="layui-input"></td>
+			<td class="layui-td-gray">电子邮箱</td>
+			<td><input type="text" name="email" value="{$detail.email|default=''}" lay-verify="email" placeholder="请输入电子邮箱" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">出生日期</td>
+			<td><input type="text" name="birthday" value="{$detail.birthday|default=''}" readonly autocomplete="off" placeholder="请选择" class="layui-input tool-time"></td>
+			<td class="layui-td-gray">身份证号码</td>
+			<td><input type="text" name="idcard" value="{$detail.idcard|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">民族</td>
+			<td><input type="text" name="nation" value="{$detail.nation|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">籍贯</td>
+			<td><input type="text" name="native_place" value="{$detail.native_place|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		{empty name="$detail"}
+		<tr>
+			<td class="layui-td-gray">政治面貌</td>
+			<td>
+				<select name="political">
+					<option value="0">无</option>
+					<option value="1">中共党员</option>
+					<option value="2">团员</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">婚姻状况</td>
+			<td>
+				<input type="radio" name="marital_status" value="1" title="未婚" checked>
+				<input type="radio" name="marital_status" value="2" title="已婚">
+			</td>
+			<td class="layui-td-gray">参加工作时间</td>
+			<td><input type="text" name="work_date" value="{$detail.work_date|default=''}" readonly autocomplete="off" placeholder="请输入" class="layui-input tool-time"></td>
+		</tr>
+		{else/}
+		<tr>
+			<td class="layui-td-gray">政治面貌</td>
+			<td>
+				<select name="political">
+					<option value="0" {eq name="$detail.political" value="0"} selected{/eq}>无</option>
+					<option value="1" {eq name="$detail.political" value="1"} selected{/eq}>中共党员</option>
+					<option value="2" {eq name="$detail.political" value="2"} selected{/eq}>团员</option>
+				</select>
+			</td>
+			<td class="layui-td-gray">婚姻状况</td>
+			<td>
+				<input type="radio" name="marital_status" value="1" title="未婚" {eq name="$detail.marital_status" value="1"} checked{/eq}>
+				<input type="radio" name="marital_status" value="2" title="已婚" {eq name="$detail.marital_status" value="2"} checked{/eq}>
+			</td>
+			<td class="layui-td-gray">参加工作时间</td>
+			<td><input type="text" name="work_date" value="{$detail.work_date|default=''}" readonly autocomplete="off" placeholder="请输入" class="layui-input tool-time"></td>
+		</tr>
+		{/empty}
+		<tr>		
+			{empty name="$detail"}
+			<td class="layui-td-gray">户口性质</td>
+			<td>
+				<input type="radio" name="resident_type" value="1" title="农村户口">
+				<input type="radio" name="resident_type" value="2" title="城镇户口">
+			</td>
+			{else/}
+			<td class="layui-td-gray">户口性质</td>
+			<td>
+				<input type="radio" name="resident_type" value="1" title="农村户口" {eq name="$detail.resident_type" value="1"} checked{/eq}>
+				<input type="radio" name="resident_type" value="2" title="城镇户口" {eq name="$detail.resident_type" value="2"} checked{/eq}>
+			</td>
+			{/empty}
+			<td class="layui-td-gray">户口所在地</td>
+			<td colspan="3"><input type="text" name="resident_place" value="{$detail.resident_place|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">家庭住址</td>
+			<td colspan="3"><input type="text" name="home_address" value="{$detail.home_address|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">紧急联系人</td>
+			<td><input type="text" name="contact" value="{$detail.contact|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">现住地址</td>
+			<td colspan="3"><input type="text" name="current_address" value="{$detail.current_address|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">紧急联系电话</td>
+			<td><input type="text" name="contact_mobile" value="{$detail.contact_mobile|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">个人简介</td>
+			<td colspan="5">
+				<textarea name="desc" placeholder="请输入个人简介" class="layui-textarea">{$detail.desc|default=''}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>教育信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">毕业院校</td>
+			<td colspan="3"><input type="text" name="graduate_school" value="{$detail.graduate_school|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">毕业日期</td>
+			<td><input type="text" name="graduate_day" value="{$detail.graduate_day|default=''}" readonly autocomplete="off" placeholder="请选择" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">专业</td>
+			<td colspan="3"><input type="text" name="speciality" value="{$detail.speciality|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td class="layui-td-gray">最高学位</td>
+			<td><input type="text" name="education" value="{$detail.education|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+		</tr>		
+		<tr>
+			<td colspan="6"><strong>入职信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">入职部门<font>*</font></td>
+			<td><select id="to_did" name="to_did" xm-selected="{$detail.to_did|default=''}" xm-select="select1" xm-select-skin="default" xm-select-radio="true" lay-verify="required" lay-reqText="请选择入职部门"></select></td>
+			<td class="layui-td-gray">上级主管</td>
+			<td>
+				<input type="text" name="pname" readonly placeholder="请选择" class="layui-input picker-admin" value="{$detail.pname|default=''}">
+				<input type="hidden" name="pid" value="{$detail.pid|default=''}">
+			</td>
+			<td class="layui-td-gray">入职时间<font>*</font></td>
+			<td><input type="text" name="entry_time" value="{$detail.entry_time|default=''}" readonly placeholder="请选择" class="layui-input tool-time"></td>
+		</tr>	
+		{empty name="$detail"}
+		<tr>
+			<td class="layui-td-gray">岗位职称<font>*</font></td>
+			<td>
+				<select name="position_id" lay-verify="required" lay-reqText="请选择岗位职称">
+					<option value="">请选择岗位职称</option>
+					{volist name="$position" id="v"}
+						<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>	
+			</td>
+			<td class="layui-td-gray">职务</td>
+			<td>
+				<select name="position_name" lay-verify="required" lay-reqText="请选择职务">
+					<option value="">请选择职务</option>
+					{volist name=":get_base_type_data('basic_user',1)" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">职级</td>
+			<td>
+				<select name="position_rank" lay-verify="required" lay-reqText="请选择职级">
+					<option value="">请选择职级</option>
+					{volist name=":get_base_type_data('basic_user',2)" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		{else/}
+		<tr>
+			<td class="layui-td-gray">岗位职称<font>*</font></td>
+			<td>
+				<select name="position_id" lay-verify="required" lay-reqText="请选择岗位职称">
+					<option value="">请选择岗位职称</option>
+					{volist name="$position" id="v"}
+						<option value="{$v.id}" {eq name="$v.id" value="$detail.position_id"}selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>	
+			</td>
+			<td class="layui-td-gray">职务<font>*</font></td>
+			<td>
+				<select name="position_name" lay-verify="required" lay-reqText="请选择职务">
+					<option value="">请选择职务</option>
+					{volist name=":get_base_type_data('basic_user',1)" id="v"}
+					<option value="{$v.id}" {eq name="$detail.position_name" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">职级<font>*</font></td>
+			<td>
+				<select name="position_rank" lay-verify="required" lay-reqText="请选择职级">
+					<option value="">请选择职级</option>
+					{volist name=":get_base_type_data('basic_user',2)" id="v"}
+					<option value="{$v.id}" {eq name="$detail.position_rank" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		{/empty}
+	</table>
+
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+
+	<div class="pt-4">
+		<input type="hidden" value="{$detail.id|default=0}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','uploadPlus','oaPicker','formSelects','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,uploadPlus=layui.uploadPlus,formSelects=layui.formSelects,oaCheck=layui.oaCheck;	
+		//选择所属部门
+		var selected_a = $('#to_did').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selected_a
+		});
+		
+		//头像上传
+		var photoUpload = new uploadPlus({
+			'use':'single',
+			'target':'uploadImg',
+			'callback':function(res){
+				layer.msg(res.msg);
+				if (res.code == 0) {
+					//上传成功
+					$('#uploadThumb input').attr('value', res.data.id);
+					$('#uploadThumb img').attr('src', res.data.filepath);
+				}
+			}
+		});		
+		
+		oaCheck.init({
+			check_name:'talent',
+			check_btn:0
+		});	
+
+		//监听提交
+		form.on('submit(webform)', function(data){
+			if(!data.field.sex){
+				layer.msg('请选择入职人员性别');
+				return false;
+			}
+			if(!data.field.type){
+				layer.msg('请选择员工类型');
+				return false;
+			}
+			if(!data.field.is_staff){
+				layer.msg('请选择身份类型');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'talent';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/user/talent/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+
+</script>
+{/block}
+<!-- /脚本 -->

@@ -2,11 +2,11 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">人事调动</h3>
+	<h3 class="pb-2">人事调动</h3>
 	{if condition="$id eq 0"}
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">调动员工<font>*</font></td>
+			<td class="layui-td-gray-2">调动员工<font>*</font></td>
 			<td>				
 				<input type="text" name="name" placeholder="请选择需要调动的员工" lay-reqText="请选择需要调动的员工" lay-verify="required" autocomplete="off" class="layui-input" readonly>
 				<input type="hidden" name="uid" value="0" autocomplete="off">
@@ -19,59 +19,75 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">调动日期<font>*</font></td>
-			<td><input type="text" name="move_time" lay-verify="required" autocomplete="off" placeholder="请选择调动日期" lay-reqText="请选择调动日期" readonly class="layui-input tool-time">
-			</td>
+			<td><input type="text" name="move_time" lay-verify="required" autocomplete="off" placeholder="请选择调动日期" lay-reqText="请选择调动日期" readonly class="layui-input tool-time"></td>
 			<td class="layui-td-gray">调入部门<font>*</font></td>
 			<td>
-			<select name="to_did" lay-verify="required" lay-reqText="请选择调入部门">
-				<option value="">请选择调入部门</option>
-				{volist name="$department" id="v"}
-				<option value="{$v.id}">{$v.title}</option>
-				{/volist}
-			</select>
+				<select name="to_did" lay-verify="required" lay-reqText="请选择调入部门">
+					<option value="">请选择调入部门</option>
+					{volist name="$department" id="v"}
+					<option value="{$v.id}">{$v.title}</option>
+					{/volist}
+				</select>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">调动原因</td>
+			<td class="layui-td-gray">调动原因<font>*</font></td>
 			<td colspan="3">				
-				<textarea name="remark" placeholder="请输入调动原因" class="layui-textarea"></textarea>
+				<textarea name="remark" placeholder="请输入调动原因" class="layui-textarea" lay-verify="required" lay-reqText="请输入调动原因"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">附件 <button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></td>
+			<td colspan="3">
+				<div class="layui-row" id="uploadBox">
+					<input data-type="file" type="hidden" name="file_ids" value="">
+				</div>
 			</td>
 		</tr>
 	</table>
 	{else/}
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">调动员工<font>*</font></td>
-			<td>				
-				{$detail.name}
-			</td>
-			<td class="layui-td-gray">调出部门<font>*</font></td>
-			<td>				
-				{$detail.from_department}
-			</td>
+			<td class="layui-td-gray-2">调动员工</td>
+			<td>{$detail.name}</td>
+			<td class="layui-td-gray">调出部门</td>
+			<td>{$detail.from_department}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">调动日期<font>*</font></td>
-			<td>{$detail.move_time}
-			</td>
+			<td><input type="text" name="move_time" value="{$detail.move_time|default=''}" lay-verify="required" autocomplete="off" placeholder="请选择调动日期" lay-reqText="请选择调动日期" readonly class="layui-input tool-time"></td>
 			<td class="layui-td-gray">调入部门<font>*</font></td>
 			<td>
-			<select name="to_did" lay-verify="required" disabled lay-reqText="请选择调入部门">
-				<option value="">请选择调入部门</option>
-				{volist name="$department" id="v"}
-				<option value="{$v.id}" {eq name="$detail.to_did" value="$v.id"} selected{/eq}>{$v.title}</option>
-				{/volist}
-			</select>
+				<select name="to_did" lay-verify="required" lay-reqText="请选择调入部门">
+					<option value="">请选择调入部门</option>
+					{volist name="$department" id="v"}
+					<option value="{$v.id}" {eq name="$detail.to_did" value="$v.id"} selected{/eq}>{$v.title}</option>
+					{/volist}
+				</select>
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">调动原因</td>
+			<td class="layui-td-gray">调动原因<font>*</font></td>
 			<td colspan="3">				
-				<textarea name="remark" placeholder="请输入调动原因" class="layui-textarea">{$detail.remark}</textarea>
+				<textarea name="remark" placeholder="请输入调动原因" class="layui-textarea" lay-verify="required" lay-reqText="请输入调动原因">{$detail.remark|default=''}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">附件 <button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></td>
+			<td colspan="3">
+				<div class="layui-row" id="uploadBox">
+					<input data-type="file" type="hidden" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
 			</td>
 		</tr>
 	</table>
 	{/if}
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
 	<div class="pt-4">
 		<input type="hidden" name="id" value="{$id}" />
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
@@ -83,9 +99,14 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const moduleInit = ['tool','oaPicker'];
+	const moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
 	function gouguInit() {
-		var form = layui.form,tool=layui.tool,oaPicker = layui.oaPicker;
+		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck,oaPicker=layui.oaPicker,uploadPlus=layui.uploadPlus;
+		oaCheck.init({
+			check_name:'department_change',
+			check_btn:0
+		});	
+		var fileUp = new uploadPlus();
 		
 		$('body').on('click','[name="from_department"]',function(){
 			var val=$(this).val();
@@ -139,7 +160,15 @@
 			let callback = function (e) {
 				layer.msg(e.msg);
 				if (e.code == 0) {
-					tool.sideClose(1000);
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'department_change';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
 				}
 			}
 			let clickbtn = $(this);

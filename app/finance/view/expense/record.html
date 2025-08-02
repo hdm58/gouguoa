@@ -60,21 +60,31 @@
 						align: 'center',
 						width: 80,
 						totalRowText: '<div style="text-align:right">合计</div>'
-					}, {
+					},{
 						field: 'cost',
 						title: '报销总金额(元)',
 						align: 'right',
-						width: 120,
+						width: 110,
+						totalRow: function (d) {return d.TOTAL_ROW.cost}
+					},{
+						field: 'pay_amount',
+						title: '需打款金额(元)',
+						align: 'right',
+						width: 110,
 						totalRow: function (d) {return d.TOTAL_ROW.cost}
 					},{
 						field: 'pay_status',
-						title: '打款状态',
+						title: '打款/确认状态',
 						align: 'center',
-						width: 90,
+						width: 110,
 						templet:function(d){
-							var html='<span class="red">『未打款』</span>';
+							var status = '打款';
+							if(d.pay_amount==0){
+								status = '确认';
+							}
+							var html='<span class="red">『未'+status+'』</span>';
 							if(d.pay_status==1){
-								html='<span class="yellow">『已打款』</span>';
+								html='<span class="yellow">『已'+status+'』</span>';
 							}
 							return html;
 						}
@@ -109,12 +119,12 @@
 						width: 150
 					},{
 						field: 'pay_name',
-						title: '打款人',
+						title: '打款/确认人',
 						align: 'center',
-						width: 90
+						width: 110
 					},{
 						field: 'pay_time',
-						title: '打款确认时间',
+						title: '打款/确认时间',
 						align: 'center',
 						width: 150
 					}, {
@@ -124,9 +134,13 @@
 						width: 136,
 						align: 'center',
 						templet:function(d){
+							var status = '打款';
+							if(d.pay_amount==0){
+								status = '确认';
+							}
 							var html='<div class="layui-btn-group">';
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
-							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为已打款</span>';
+							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为已'+status+'</span>';
 							html+=btn1;
 							if(d.pay_status==0 && auth==1){
 								html+=btn2;
@@ -147,7 +161,11 @@
 				return;
 			}
 			if(obj.event === 'open'){
-				layer.confirm('确定标记为已打款？', {
+				let tips = '确定标记为已打款？';
+				if(data.pay_amount==0){
+					tips = '确定标记为已确认？';
+				}
+				layer.confirm(tips, {
 					icon: 3,
 					title: '提示'
 				}, function(index) {

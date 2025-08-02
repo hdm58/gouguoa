@@ -1,0 +1,146 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	<h3 class="pb-2">借支详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">借支主题</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray-2">借支企业主体</td>
+			<td>{$detail.subject_name|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">借支金额</td>
+			<td><span style="color:#1E9FFF">{$detail.cost} 元</span></td>
+			<td class="layui-td-gray">借支员工</td>
+			<td>{$detail.admin_name} ({$detail.department})</td>
+			<td class="layui-td-gray">借支编号</td>
+			<td>{$detail.code|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">借支类型</td>
+			<td colspan="3">
+				{eq name="$detail.types" value="1"}日常备用金{/eq}
+				{eq name="$detail.types" value="2"}项目预支款{/eq}
+			</td>
+			<td class="layui-td-gray-2">预计归还日期</td>
+			<td>{$detail.plan_time|date='Y-m-d'}</td>
+		</tr>
+		{notempty name="$detail.project_id"}
+		<tr>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="5">{$detail.ptname|default=''}</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">借支理由</td>
+			<td colspan="5">{$detail.content}</td>
+		</tr>
+		{if ( $detail.check_status eq 2)}
+			{if ( $detail.pay_status eq 1)}
+				<tr>
+					<td class="layui-td-gray">打款状态</td>
+					<td><span class="yellow">已打款</span></td>
+					<td class="layui-td-gray">打款人</td>
+					<td>{$detail.pay_admin}</td>
+					<td class="layui-td-gray">打款时间</td>
+					<td>{$detail.pay_time}</td>
+				</tr>
+				<tr>
+					<td class="layui-td-gray">冲抵状态</td>
+					<td>
+						{eq name="$detail.balance_status" value="0"}<span class="green">未冲抵</span>{/eq}
+						{eq name="$detail.balance_status" value="1"}<span class="blue">部分冲抵</span>{/eq}
+						{eq name="$detail.balance_status" value="2"}<span class="red">已冲抵</span>{/eq}
+					</td>
+					<td class="layui-td-gray-2">已冲抵金额</td>
+					<td colspan="3">{$detail.balance_cost}</td>
+				</tr>
+				<tr>
+					<td class="layui-td-gray">归还状态</td>
+					<td>
+						{eq name="$detail.back_status" value="0"}<span class="red">未还款</span>{/eq}
+						{eq name="$detail.back_status" value="1"}<span class="green">已还款</span>{/eq}
+						{eq name="$detail.back_status" value="2"}<span class="blue">无需还款</span>{/eq}
+					</td>
+					{eq name="$detail.back_status" value="1"}
+						<td class="layui-td-gray">归还经手人</td>
+						<td>{$detail.back_admin}</td>
+						<td class="layui-td-gray">归还时间</td>
+						<td>{$detail.back_time}</td>
+					{/eq}
+				</tr>
+			{else/}
+				<tr>
+					<td class="layui-td-gray">打款状态</td>
+					<td><span class="red">未打款</span></td>
+					<td class="layui-td-gray">打款人</td>
+					<td>-</td>
+					<td class="layui-td-gray">打款时间</td>
+					<td>-</td>
+				</tr>
+			{/if}
+		{/if}
+		{notempty name="$detail.expense"}
+		<tr>
+			<td class="layui-td-gray">冲抵记录</td>
+			<td colspan="5">	
+				<table class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th>报销总金额(元)</th>
+						<th>冲抵金额(元)</th>
+						<th>需打款金额(元)</th>
+						<th>报销凭证编号</th>
+						<th>原始单据日期</th>
+						<th>入账月份</th>
+						<th>操作</th>
+					</tr>
+					{volist name="$detail.expense" id="vo"}
+					<tr>
+						<td class="blue">{$vo.cost}</td>
+						<td class="green">{$vo.balance_cost}</td>
+						<td class="red">{$vo.pay_amount}</td>
+						<td>{$vo.code}</td>
+						<td>{$vo.expense_time|date='Y-m-d'}</td>
+						<td>{$vo.income_month|date='Y-m'}</td>
+						<td><a data-href="/finance/expense/view?id={$vo.id}" class="side-a">详情</a></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>	
+
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaCheck'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck;	
+	oaCheck.init({
+		check_name:'loan',
+		check_reversed:null
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

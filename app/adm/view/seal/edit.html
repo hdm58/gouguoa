@@ -2,8 +2,8 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-1">添加用章申请</h3>
-	<table class="layui-table">
+	<h3 class="pb-2">编辑用章申请</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">申请主题<font>*</font></td>
 			<td colspan="3"><input type="text" name="title" value="{$detail.title}" autocomplete="off" placeholder="请输入用章申请主题" lay-verify="required" lay-reqText="请输入用申请主题" class="layui-input"></td>
@@ -63,8 +63,8 @@
 			</td>
 		</tr>
 	</table>
-	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
-	<div class="pt-3">
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$detail.id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>

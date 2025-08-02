@@ -5,8 +5,8 @@
 	<h3 class="pb-3">无发票回款详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">预回款金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray-2">预回款金额</td>
+			<td class="blue">{$detail.amount} 元</td>
 			<td class="layui-td-gray">收款主体</td>
 			<td colspan="3">{$detail.subject}</td>
 		</tr>
@@ -18,22 +18,8 @@
 			</td>
 			<td class="layui-td-gray-2">付款方名称</td>
 			<td>{$detail.invoice_title}</td>
-			<td class="layui-td-gray">电话号码</td>
-			<td>{$detail.invoice_phone}</td>
-		</tr>
-		<tr class="invoice-type" {eq name="$detail.types" value="1"}style="display:none"{/eq}>
-			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td class="layui-td-gray">纳税人识别号</td>
 			<td>{$detail.invoice_tax}</td>
-			<td class="layui-td-gray">开户行</td>
-			<td>{$detail.invoice_bank}</td>
-			<td class="layui-td-gray">银行账号</td>
-			<td>{$detail.invoice_account}</td>
-		</tr>
-		<tr class="invoice-type" {eq name="$detail.types" value="1"}style="display:none"{/eq}>
-			<td class="layui-td-gray-2">银行营业网点</td>
-			<td>{$detail.invoice_banking}</td>
-			<td class="layui-td-gray">地址</td>
-			<td colspan="3">{$detail.invoice_address}</td>
 		</tr>
 		{if condition="$detail.contract_id > 0"}
 		<tr>

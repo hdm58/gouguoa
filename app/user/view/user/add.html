@@ -1,15 +1,13 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
+<form class="layui-form p-page">
 	{if condition="$id eq 0"}
-	<h3 class="pb-3">添加员工信息</h3>
+	<h3 class="pb-2">添加员工信息</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">员工姓名<font>*</font></td>
-			<td>
-				<input type="text" name="name" lay-verify="required" placeholder="请输入员工姓名" lay-reqText="请输入员工姓名" class="layui-input">
-			</td>
+			<td><input type="text" name="name" lay-verify="required" placeholder="请输入员工姓名" lay-reqText="请输入员工姓名" class="layui-input"></td>
 			<td class="layui-td-gray">员工性别<font>*</font></td>
 			<td>
 				<input type="radio" name="sex" value="1" title="男">
@@ -23,21 +21,17 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">手机号码<font>*</font></td>
-			<td>
-				<input type="text" name="mobile" lay-verify="required|phone" lay-reqText="请输入正确的手机号码" placeholder="可使用手机号码登录" class="layui-input">
-			</td>
+			<td><input type="text" name="mobile" lay-verify="required|phone" lay-reqText="请输入正确的手机号码" placeholder="可使用手机号码登录" class="layui-input"></td>
 			<td class="layui-td-gray">电子邮箱<font>*</font></td>
-			<td>
-				<input type="text" name="email" lay-verify="required|email" lay-reqText="请输入正确的电子邮箱" placeholder="请输入电子邮箱" class="layui-input">
-			</td>
-			<td rowspan="3" class="layui-td-gray">头像<br /><span style="font-size: 12px;">(如若不上传<br />系统将自动生成)</span></td>
+			<td><input type="text" name="email" lay-verify="required|email" lay-reqText="请输入正确的电子邮箱" placeholder="请输入电子邮箱" class="layui-input"></td>
+			<td rowspan="3" class="layui-td-gray">照片头像<br /><span style="font-size: 12px;">(如若不上传<br />系统将自动生成)</span></td>
 			<td rowspan="3" valign="top" style="width: 120px;">
 				<div class="layui-upload" style="width: 120px;">
 					<div class="layui-upload-list" id="uploadBox" style="width: 100%; height:120px; overflow: hidden;">
 						<img src="/static/home/images/nonepic600x600.jpg" height="120" style="max-width: 100%; width: 100%;" />
 						<input type="hidden" name="thumb" value="">
 					</div>
-					<button type="button" class="layui-btn layui-btn-normal layui-btn-sm" style="width: 100%;" id="uploadBtn">上传头像</button>
+					<button type="button" class="layui-btn layui-btn-normal layui-btn-sm" style="width: 100%;" id="uploadBtn">上传照片头像</button>
 				</div>
 			</td>
 		</tr>

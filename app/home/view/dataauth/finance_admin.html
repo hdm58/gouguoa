@@ -55,6 +55,24 @@
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_4</td>
 		</tr>
+		<tr>
+			<td class="layui-td-gray-2">借支管理员</td>
+			<td>
+				<input type="text" name="conf_5_str" value="{$detail.conf_5_str|default=''}" readonly placeholder="请选择借支管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="conf_5" value="{$detail.conf_5}">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_5</td>
+		</tr>
+		<tr>		
+			<td class="layui-td-gray-3">借支编号自动生成</td>
+			<td>
+				<input type="radio" name="conf_9" value="1" title="开启" {eq name="$detail.conf_9" value="1"}checked{/eq}>
+				<input type="radio" name="conf_9" value="0" title="不开启" {eq name="$detail.conf_9" value="0"}checked{/eq}>
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_9</td>
+		</tr>
 		<tr>		
 			<td class="layui-td-gray-3">报销编号自动生成</td>
 			<td>

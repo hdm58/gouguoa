@@ -1,0 +1,46 @@
+<table class="pdf-table">
+	<tr>
+		<td class="pdf-td-gray" colspan="6" style="text-align:center;"><strong>审批信息</strong></td>
+	</tr>
+	<tr>
+		<td class="pdf-td-gray">申请人</td>
+		<td>{$detail.admin_name} ({$detail.department})</td>
+		<td class="pdf-td-gray">申请时间</td>
+		<td colspan="3">{$detail.create_time|date='Y-m-d H:i:s'}</td>
+	</tr>
+	<tr>
+		<td class="pdf-td-gray">审核状态</td>
+		<td>{$detail.check_status_str}</td>
+		<td class="pdf-td-gray">抄送人</td>
+		<td colspan="3">{$detail.check_copy_names|default='-'}</td>
+	</tr>
+	<tr>
+		<td class="pdf-td-gray" colspan="6" style="text-align:center;"><strong>审批记录</strong></td>
+	</tr>
+	<tr>
+		<td class="pdf-td-gray" style="text-align:center;">审批节点</td>
+		<td class="pdf-td-gray" style="text-align:center;width:162px;">审批时间</td>
+		<td class="pdf-td-gray" style="text-align:center;">处理人</td>
+		<td class="pdf-td-gray" style="text-align:center;" colspan="3">审批意见</td>
+	</tr>
+	{notempty name="$detail.check_record_array"}
+	{volist name="$detail.check_record_array" id="vo"}
+	<tr>
+		<td style="text-align:center;">{$vo.status_str}</td>
+		<td style="text-align:center;">{$vo.check_time_str}</td>
+		<td style="text-align:center;">{$vo.name}</td>
+		<td style="text-align:left;" colspan="3">{$vo.content}</td>
+	</tr>
+	{/volist}
+	{else/}
+	<tr>
+		<td colspan="6" style="text-align:center;">暂无审批记录</td>
+	</tr>
+	{/notempty}
+</table>
+<table width="100%">
+	<tr> 
+		<td width="50%" style="text-align:left; font-size:11px;">导出人员：{$detail.pdf_admin}</td> 
+		<td width="50%" style="text-align:right; font-size:11px;">导出时间：{$detail.pdf_time}</td> 
+	</tr>
+</table>

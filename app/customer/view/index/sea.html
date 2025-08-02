@@ -53,6 +53,7 @@
 <div class="layui-btn-group">
    <button class="layui-btn layui-btn-sm" title="添加公海客户" lay-event="add">+ 添加公海客户</button>
    <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="import"><i class="layui-icon">&#xe66f;</i>批量导入</button>
+   <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del"><i class="layui-icon">&#xe609;</i>批量转入废弃池</button>
 </div>
 </script>
 {/block}
@@ -77,9 +78,8 @@
 			height: 'full-114',
 			cols: [
 				[ //表头
-					{
-						field: 'id',title: '编号',align: 'center',width: 80
-					},{
+					{type:'checkbox',fixed:'left'},
+					{field: 'id',title: '编号',align: 'center',width: 80},{
 						field: 'name',
 						title: '客户名称',
 						minWidth:240,
@@ -144,6 +144,8 @@
 		
 		//表头工具栏事件
 		table.on('toolbar(test)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
 			if (obj.event === 'add') {
 				tool.side("/customer/customer/add?sea=1");
 				return;
@@ -162,6 +164,29 @@
 					}
 				});	
 				return;				
+			}
+			var idArray=[];
+			for(var i=0;i<data.length;i++){
+				idArray.push(data[i].id);
+			}
+			if (obj.event === 'del') {
+				if(data.length==0){
+					layer.msg('请选择要操作的客户');
+					return false;
+				}
+				layer.confirm('您确定要把选中的客户转入废弃池?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/customer/index/to_trash", {id: idArray.join(',')}, callback);
+					layer.close(index);
+				});
 			}
 		});
 		

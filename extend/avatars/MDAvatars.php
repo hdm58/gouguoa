@@ -34,8 +34,8 @@ class MDAvatars
         $this->AvatarSize      = $AvatarSize;
         $this->Shape           = $Shape;
         $this->Padding         = 30 * ($this->AvatarSize / 256);
-        $this->LetterFont      = dirname(__FILE__) . '/fonts/SourceCodePro-Light.ttf';
-        $this->AsianFont       = dirname(__FILE__) . '/fonts/SourceHanSansCN-Normal.ttf';
+	    $this->LetterFont      = './static/font/MiSans-Regular.ttf';
+        $this->AsianFont       = './static/font/MiSans-Regular.ttf';
         $this->EnableAsianChar = is_file($this->AsianFont);
         $path='./storage/avatars/';
         if(!is_dir($path)){
