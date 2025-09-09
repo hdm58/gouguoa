@@ -23,7 +23,7 @@
 			<td class="layui-td-gray">借支员工</td>
 			<td>{$detail.admin_name} ({$detail.department|default=''})</td>
 			<td class="layui-td-gray">借支编号<font>*</font></td>
-			<td><input type="text" name="code" value="{$detail.code|default=''}" lay-verify="required" readonly placeholder="请输入借支编号" lay-reqText="请填写借支编号" class="layui-input"></td>
+			<td><input type="text" name="code" value="{$detail.code|default=''}"  {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" readonly placeholder="请输入借支编号" lay-reqText="请填写借支编号" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">借支类型<font>*</font></td>

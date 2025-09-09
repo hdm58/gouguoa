@@ -35,7 +35,7 @@ class Files extends BaseController
                 $where[] = ['a.status', '=', $param['status']];
             }
 			else{
-				$where[] = ['a.status', '<', 2];
+				$where[] = ['a.status', '=', 1];
 			}
             if (!empty($param['political'])) {
                 $where[] = ['a.political', '=', $param['political']];

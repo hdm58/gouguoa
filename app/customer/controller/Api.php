@@ -158,6 +158,9 @@ class Api extends BaseController
 		$where = array();
 		$where[] = ['delete_time', '=', 0];
 		$where[] = ['cid', '=', $param['cid']];
+		if (!empty($param['keywords'])) {
+			$where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+		}
 		$model = new CustomerChance();
 		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);

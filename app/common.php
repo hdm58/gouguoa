@@ -472,6 +472,10 @@ function get_leader_departments($uid = 0)
 //获取某员工所能看的部门数据(dids)
 function get_role_departments($uid = 0)
 {
+	if($uid==1){
+		$dids = Db::name('Department')->where([['status','=',1]])->column('id');
+		return $dids;
+	}
 	$dids = Db::name('Admin')->where('id',$uid)->value('auth_dids');
 	if(empty($dids)){
 		return [];
@@ -872,8 +876,16 @@ function count_days($a=0, $b = 0)
 	}
 	$date_1 = $a;
 	$date_2 = $b;
-	$d1 = strtotime($date_1);
-	$d2 = strtotime($date_2);
+	if(is_numeric($date_1)){
+		$d1 = $date_1;
+	}else{
+		$d1 = strtotime($date_1);
+	}
+	if(is_numeric($date_2)){
+		$d2 = $date_2;
+	}else{
+		$d2 = strtotime($date_2);
+	}
 	$days = round(($d2 - $d1) / 3600 / 24);
 	if ($days > 0) {
 		return $days;
@@ -909,7 +921,7 @@ function to_size($file_size){
 	return $show_filesize;
 }
 
-//格式化附件展示
+//PC端格式化附件展示
 function file_card($file,$view=''){
 	if(empty($file['file_id'])){
 		$file['file_id'] = $file['id'];
@@ -959,10 +971,10 @@ function file_card($file,$view=''){
 	return $item;
 }
 
-//格式化附件展示
+//手机端格式化附件展示
 function file_item($file,$view=''){
 	$image=['jpg','jpeg','png','gif'];
-    $fileshow='<div class="mbui-file-icon"><i class="iconfont icon-weizhigeshi"></i></div>';
+    $fileshow='<div class="mbui-file-icon" data-url="'.$file['filepath'].'" data-name="'.$file['name'].'"><i class="iconfont icon-weizhigeshi"></i></div>';
 	if($file['fileext'] == 'pdf'){
 
 	}

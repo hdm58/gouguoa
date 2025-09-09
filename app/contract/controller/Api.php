@@ -150,6 +150,23 @@ class Api extends BaseController
         table_assign(0, '', $list);
     }
 	
+	//更新合同电子文件
+	public function contract_seal_ids()
+    {
+        if (request()->isPost()) {
+			$param = get_params();
+			if (Db::name('Contract')->strict(false)->update($param) !== false) {
+				return to_assign();
+			} else {
+				return to_assign(1, "操作失败");
+			}
+        } else {
+            return to_assign(1, "错误的请求");
+        }
+    }
+	
+	
+	
 	/*
 	-------------------------------------------------分割线---------------------------------------------------------
 	*/
@@ -339,6 +356,21 @@ class Api extends BaseController
 			}
         } else {
            return to_assign(1, '参数错误');
+        }
+    }
+	
+	//更新合同电子文件
+	public function purchase_seal_ids()
+    {
+        if (request()->isPost()) {
+			$param = get_params();
+			if (Db::name('Purchase')->strict(false)->update($param) !== false) {
+				return to_assign();
+			} else {
+				return to_assign(1, "操作失败");
+			}
+        } else {
+            return to_assign(1, "错误的请求");
         }
     }
 }

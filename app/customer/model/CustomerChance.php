@@ -34,6 +34,7 @@ class CustomerChance extends Model
 				$item->stage_name = Db::name('BasicCustomer')->where(['id' => $item->stage])->value('title');
 				$item->expected_time = date('Y-m-d', $item->expected_time);
 				$item->discovery_time = date('Y-m-d', $item->discovery_time);
+				$item->is_contract = Db::name('Contract')->where(['chance_id'=>$item->id,'delete_time'=>0])->count();
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -85,6 +86,11 @@ class CustomerChance extends Model
 		$info['belong_name'] = Db::name('Admin')->where(['id' => $info['belong_uid']])->value('name');			
 		$assist_names = Db::name('Admin')->where([['id','in',$info['assist_ids']]])->column('name');
 		$info['assist_names'] = implode(',',$assist_names);
+		$contract = Db::name('Contract')->where(['chance_id'=>$info['id'],'delete_time'=>0])->find();
+		if(!empty($contract)){
+			$info['contract'] = $contract['name'];
+			$info['contract_id'] = $contract['id'];
+		}
 		return $info;
     }
 

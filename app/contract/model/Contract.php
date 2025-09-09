@@ -138,6 +138,12 @@ class Contract extends Model
 		$info['sign_department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
 		$info['sign_name'] = Db::name('Admin')->where(['id' => $info['sign_uid']])->value('name');
 		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
+		if($info['chance_id']>0){
+			$info['chance'] = Db::name('CustomerChance')->where(['id' => $info['chance_id']])->value('title');
+		}
+		else{
+			$info['chance']='';
+		}
 		if($info['prepared_uid']>0){
 			$info['prepared_name'] = Db::name('Admin')->where(['id' => $info['prepared_uid']])->value('name');
 		}

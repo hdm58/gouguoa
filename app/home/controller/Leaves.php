@@ -98,6 +98,7 @@ class Leaves extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
+			View::assign('create_user', get_admin($detail['admin_id']));
 			$detail['types_name'] = leaves_types_name($detail['types']);
 			View::assign('detail', $detail);
 			if(is_mobile()){

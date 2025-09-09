@@ -34,6 +34,12 @@
 			<td class="layui-td-gray">协助人员</td>
 			<td colspan="3">{$detail.assist_names}</td>
 		</tr>
+		{notempty name="$detail.contract"}
+		<tr>
+			<td class="layui-td-gray">签单合同</td>
+			<td colspan="5">{$detail.contract} <span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/contract/contract/view?id={$detail.contract_id}">详情</span></td>
+		</tr>
+		{/notempty}
     </table>
 </form>
 {/block}
@@ -42,7 +48,10 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-
+	var moduleInit = ['tool'];
+	function gouguInit() {
+	
+	}
 </script>
 {/block}
 <!-- /脚本 -->

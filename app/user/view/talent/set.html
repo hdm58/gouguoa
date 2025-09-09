@@ -143,15 +143,15 @@
 		<tr>
 			<td class="layui-td-gray">员工类型<font>*</font></td>
 			<td>
-				<input type="radio" name="type" value="1" title="正式" {eq name="$detail.type" value="1"} checked{/eq}>
-				<input type="radio" name="type" value="2" title="试用" {eq name="$detail.type" value="2"} checked{/eq}>
-				<input type="radio" name="type" value="3" title="实习" {eq name="$detail.type" value="3"} checked{/eq}>
+				<input type="radio" name="type" value="1" title="正式">
+				<input type="radio" name="type" value="2" title="试用" checked>
+				<input type="radio" name="type" value="3" title="实习">
 			</td>
 			<td class="layui-td-gray">身份类型<font>*</font></td>
 			<td>
-				<input type="radio" name="is_staff" value="1" title="企业员工" {eq name="$detail.is_staff" value="1"} checked{/eq}>
-				<input type="radio" name="is_staff" value="2" title="劳动派遣" {eq name="$detail.is_staff" value="2"} checked{/eq}>
-				<input type="radio" name="is_staff" value="3" title="兼职人员" {eq name="$detail.is_staff" value="3"} checked{/eq}>
+				<input type="radio" name="is_staff" value="1" title="企业员工" checked>
+				<input type="radio" name="is_staff" value="2" title="劳动派遣">
+				<input type="radio" name="is_staff" value="3" title="兼职人员">
 			</td>
 			<td class="layui-td-gray">工号</td>
 			<td><input type="text" name="job_number" value="{$detail.job_number|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>

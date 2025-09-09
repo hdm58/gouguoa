@@ -8,7 +8,7 @@
 			<td class="layui-td-gray">姓名<font>*</font></td>
 			<td><input type="text" name="name" class="layui-input" placeholder="请输入姓名" lay-verify="required" lay-reqText="请输入姓名" value="{$detail.name|default=''}"></td>
 			<td class="layui-td-gray-2">手机号码<font>*</font></td>
-			<td><input type="text" name="mobile" placeholder="请输入身份证号码" class="layui-input" lay-verify="required|mobile" lay-reqText="请输入手机号码" value="{$detail.mobile|default=''}"></td>
+			<td><input type="text" name="mobile" placeholder="请输入手机号码" class="layui-input" lay-verify="required|phone" lay-reqText="请输入手机号码" value="{$detail.mobile|default=''}"></td>
 			<td class="layui-td-gray-2">身份证号码</td>
 			<td><input type="text" name="idcard" placeholder="请输入身份证号码" class="layui-input" lay-verify="identity" value="{$detail.idcard|default=''}"></td>
 		</tr>

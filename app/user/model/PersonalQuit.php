@@ -43,7 +43,7 @@ class PersonalQuit extends Model
 				$userinfo = Db::name('Admin')->where('id','=',$item->uid)->find();
 				$item->name = $userinfo['name'];
 				$item->department = Db::name('Department')->where('id',$userinfo['did'])->value('title');
-				$item->position = Db::name('Position')->where('id',$userinfo['did'])->value('title');
+				$item->position = Db::name('Position')->where('id',$userinfo['position_id'])->value('title');
 				
 				$item->admin_name = Db::name('Admin')->where('id','=',$item->admin_id)->value('name');
 				$item->lead_admin_name = Db::name('Admin')->where('id','=',$item->lead_admin_id)->value('name');
@@ -101,15 +101,17 @@ class PersonalQuit extends Model
     public function getById($id)
     {
         $info = self::find($id);
-		$info['name'] = Db::name('Admin')->where('id','=',$info['uid'])->value('name');
+		$userinfo =  Db::name('Admin')->where('id',$info['uid'])->find();
+		$info['name'] = $userinfo['name'];
+		$info['department'] = Db::name('Department')->where('id',$userinfo['did'])->value('title');
+		$info['position'] = Db::name('Position')->where('id',$userinfo['position_id'])->value('title');
+		
 		$info['admin_name'] = Db::name('Admin')->where('id','=',$info['admin_id'])->value('name');
 		$info['lead_admin_name'] = Db::name('Admin')->where('id','=',$info['lead_admin_id'])->value('name');
 		$connect_uids_name = Db::name('Admin')->where([['id','in', $info['connect_uids']]])->column('name');
 		$info['connect_names'] = implode(',', $connect_uids_name);
 		$info['quit_time'] = date('Y-m-d', $info['quit_time']);
 		$info['connect_name'] = Db::name('admin')->where(['id' => $info['connect_id']])->value('name');		
-		$did =  Db::name('Admin')->where('id',$info['uid'])->value('did');
-		$info['department'] = Db::name('Department')->where('id',$did)->value('title');
 		$status_str = '未交接';
 		$connect_time_str = '-';
 		if($info['status'] == 2){

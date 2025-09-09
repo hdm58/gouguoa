@@ -24,7 +24,7 @@ mbui.define(['layer'], function (exports) {
 		template:function(data){
 			let exts = ['jpg', 'png', 'gif', 'jpeg'];
 			let filesize = bytesToSize(data.filesize);
-			let fileshow='<div class="mbui-file-icon"><i class="iconfont icon-weizhigeshi"></i></div>';
+			let fileshow='<div class="mbui-file-icon" data-url="'+data.filepath+'" data-name="'+data.name+'"><i class="iconfont icon-weizhigeshi"></i></div>';
 			if(exts.includes(data.fileext)){
 				fileshow='<div class="mbui-file-icon file-img"><img src="'+data.filepath+'" alt="'+data.name+'"></div>';
 			}
@@ -139,6 +139,31 @@ mbui.define(['layer'], function (exports) {
 		  });
 	};
 
+	function copyCtrl(content) {
+		var save = function(e){
+			e.clipboardData.setData('text/plain', content);
+			e.preventDefault();
+		}
+		document.addEventListener('copy', save);
+		document.execCommand('copy');
+		document.removeEventListener('copy',save);
+		if (content != '') {
+			layer.msg('复制成功');
+		}
+	}
+	
+	function downloadFile(url, fileName) {
+		let link = document.createElement("a");
+		link.href = url;
+		link.download = fileName;
+		link.click();
+		layer.loading('文件下载中...');
+	}
+	
+	function isWeChat() {
+	  return /micromessenger/i.test(navigator.userAgent);
+	}
+
 	//查看图片
 	$('body').on('click','.mbui-file-icon',function(e) {
 		e.preventDefault();
@@ -148,7 +173,23 @@ mbui.define(['layer'], function (exports) {
 			layer.photo(href);
 		}
 		else {
-			layer.msg('企业微信不支持下载文件附件<br>请到PC端下载查看');
+			let url=window.location.origin + $(this).data('url');
+			let name=$(this).data('name');
+			if(isWeChat()){
+				layer.open({
+					type: 1,
+					title: '温馨提示',
+					content: '微信或企业微信不支持下载文件附件<br>请复制链接到手机浏览器下载查看',
+					btn: ['复制链接'],
+					yes:function(index){
+						copyCtrl(url);
+						layer.close(index);
+					}
+				});
+			}
+			else{
+				downloadFile(url,name);
+			}
 		}
 	});
 	// 导出fileUpload模块

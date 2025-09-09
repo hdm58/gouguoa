@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3"><name></h3>
+	<h3 class="pb-2"><name></h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray"><name>名称<font>*</font></td>

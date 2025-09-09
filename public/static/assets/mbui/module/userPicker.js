@@ -71,7 +71,7 @@ mbui.define(['layer'], function (exports) {
 				for (var k = 0; k < userData.length; k++) {
 					item += '<label class="mbui-picker-item" data-id="' + userData[k]['id'] + '" data-did="' + userData[k]['did'] + '" data-name="' + userData[k]['name'] + '" data-department="' + userData[k]['department'] + '">\
 								<input class="mbui-input-'+types+'" name="radio_user[]" type="'+types+'" value="' + userData[k]['id'] + '">\
-								<i class="mbui-picker-avatar"><img src="' + userData[k]['thumb'] + '" width="32" height="32" align="'+userData[k]['name']+'" style="border-radius:6px;"></i>\
+								<i class="mbui-picker-avatar"><img src="' + userData[k]['thumb'] + '" width="32" height="32" align="'+userData[k]['name']+'" style="border-radius:4px;"></i>\
 								<span class="mbui-picker-name">' + userData[k]['name'] + ' <span class="text-gray f14">『' + userData[k]['department'] + '』</span></span>\
 							</label>';
 				}

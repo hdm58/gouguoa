@@ -40,7 +40,7 @@ class User extends BaseController
                 $where[] = ['a.status', '=', $param['status']];
             }
 			else{
-				$where[] = ['a.status', '<', 2];
+				$where[] = ['a.status', '=', 1];
 			}
             if (!empty($param['type'])) {
                 $where[] = ['a.type', '=', $param['type']];

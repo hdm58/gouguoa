@@ -119,6 +119,9 @@ class Personal extends BaseController
             }
             View::assign('department', $department);
             View::assign('id', $id);
+			if(is_mobile()){
+				return view('qiye@/approve/add_change');
+			}
             return view();
         }
     }
@@ -130,6 +133,9 @@ class Personal extends BaseController
         $model = new DepartmentChange();
 		$detail = $model->getById($param['id']);
 		View::assign('detail', $detail);
+		if(is_mobile()){
+			return view('qiye@/approve/view_change');
+		}
        return view();
     }
 	
@@ -217,6 +223,10 @@ class Personal extends BaseController
             $param['quit_time'] = isset($param['quit_time']) ? strtotime($param['quit_time']) : 0;
             $model = new PersonalQuit();
             if ($param['id'] > 0) {
+				$has = Db::name('PersonalQuit')->where([['uid','=',$param['uid']],['delete_time','=',0],['id','<>',$param['id']]])->count();
+				if($has>0){
+					return to_assign(1, "该员工已申请有离职记录，不能重复申请");
+				}
 				$detail = $model->edit($param);
             } else {
 				$has = Db::name('PersonalQuit')->where(['uid'=>$param['uid'],'delete_time'=>0])->count();
@@ -228,13 +238,23 @@ class Personal extends BaseController
             }
         } else {
             $id = isset($param['id']) ? $param['id'] : 0;
-            $where = array();
+			$uid = isset($param['uid']) ? $param['uid'] : 0;
+            $detail=[];
+			if($uid>0){
+				$admin = get_admin($uid);
+				$detail['name'] = $admin['name'];
+				$detail['did'] = $admin['did'];
+				$detail['department'] = $admin['department'];
+			}
             if ($id>0) {
                 $model = new PersonalQuit();
 				$detail = $model->getById($id);
-                View::assign('detail', $detail);
             }
             View::assign('id', $id);
+            View::assign('detail', $detail);
+			if(is_mobile()){
+				return view('qiye@/approve/add_leave');
+			}
             return view();
         }
     }
@@ -246,7 +266,10 @@ class Personal extends BaseController
         $model = new PersonalQuit();
 		$detail = $model->getById($param['id']);
 		View::assign('detail', $detail);
-       return view();
+		if(is_mobile()){
+			return view('qiye@/approve/view_leave');
+		}
+        return view();
     }
 
     //删除离职申请

@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-3"><name>详情</h3>
+	<h3 class="pb-2"><name>详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray"><name>名称</td>

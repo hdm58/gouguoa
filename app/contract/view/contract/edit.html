@@ -51,6 +51,13 @@
 			<td><input type="text" name="contact_mobile" value="{$detail.contact_mobile}" autocomplete="off" placeholder="请输入客户联系电话" class="layui-input"></td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray-2">关联机会线索</td>
+			<td colspan="5">
+				<input type="text" value="{$detail.chance|default=''}" readonly autocomplete="off" placeholder="请选择" class="layui-input chance-picker">
+				<input type="hidden" name="chance_id" value="{$detail.chance_id}">
+			</td>
+		</tr>
+		<tr>
 			<td class="layui-td-gray">合同金额<font>*</font></td>
 			<td>
 				{eq name="$detail.types" value="1"}
@@ -208,6 +215,33 @@
 				$('[name="contact_address"]').val(address.join(','));
 			}
 			oaPicker.picker(types,type,callback,map);
+		});
+		
+		//选择销售机会弹窗        
+		$('body').on('click','.chance-picker',function () {
+			let customer_id = $('[name="customer_id"]').val();
+			if(customer_id==0){
+				layer.msg('请先选择客户');
+				return false;
+			}
+			let that = $(this),ids = [],titles=[],map = {cid:customer_id};
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				that.val(titles.join(','));
+				that.next().val(ids.join(','));
+			}
+			let opts={
+					"title":"选择机会线索",
+					"url": "/customer/api/get_chance",
+					"ids":"",
+					"titles":"",
+					"area": ['720px', '580px'],
+					"cols":[{field: 'id',width: 80,title:'序号',align:'center'},{field:'title',title:'机会主题'},{field:'expected_amount',title:'预计签单金额',width: 100},{field:'expected_time',title:'预计签单日期',width: 100}]
+				}
+			oaPicker.picker(opts,1,callback,map);
 		});
 		
 		//监听提交

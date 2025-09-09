@@ -45,7 +45,7 @@
 			<td class="layui-td-gray">出生日期</td>
 			<td><input type="text" name="birthday" value="{$detail.birthday|default=''}" readonly autocomplete="off" placeholder="请选择" class="layui-input tool-time"></td>
 			<td class="layui-td-gray">身份证号码</td>
-			<td><input type="text" name="idcard" value="{$detail.idcard|default=''}" autocomplete="off" placeholder="请输入" class="layui-input"></td>
+			<td><input type="text" name="idcard" value="{$detail.idcard|default=''}" autocomplete="off" lay-verify="identity" placeholder="请输入" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">民族</td>

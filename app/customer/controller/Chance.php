@@ -75,15 +75,13 @@ class Chance extends BaseController
 					$mapOr[] = ['belong_did','in',$dids_a];
 				}
 			}
-			
 			$cids = Db::name('Customer')
 				->where($map)
 				->where(function ($query) use($mapOr) {
 					if (!empty($mapOr)){
 						$query->whereOr($mapOr);
 					}
-				})->column('id');
-				
+				})->column('id');	
 			$where[] = ['cid', 'in',$cids];
             $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);

@@ -35,6 +35,9 @@ class Database extends BaseController
                 $total += $v['data_length'];
                 $list[$k]['data_size'] = $v['data_length'];
                 $list[$k]['data_length'] = format_bytes($v['data_length']);
+				if(strpos($v['name'],'admin_log')){
+					unset($list[$k]);
+				}
             }
             // 提示信息
             $dataTips = '数据库中共有<strong> ' . count($list) . '</strong> 张表，共计 <strong>' . format_bytes($total) . '</strong>大小。';

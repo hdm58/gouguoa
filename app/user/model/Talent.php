@@ -164,6 +164,10 @@ class Talent extends Model
 		if(!empty($info['admin_id'])){
 			$info['admin_name'] =  Db::name('Admin')->where([['id','=',$info['admin_id']]])->value('name');
 		}
+		if($info['thumb'] !=''){
+			$thumb_array = Db::name('File')->where('id','in',$info['thumb'])->select();
+			$info['thumb_array'] = $thumb_array;
+		}
 		$info['create_time'] = to_date($info['create_time']);
 		return $info;
     }

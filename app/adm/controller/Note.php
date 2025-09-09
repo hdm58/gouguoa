@@ -110,6 +110,9 @@ class Note extends BaseController
 				$detail['file_array'] = $file_array;
 			}
 			View::assign('detail', $detail);
+			if(is_mobile()){
+				return view('qiye@/index/note_view');
+			}
 			return view();
 		}
 		else{

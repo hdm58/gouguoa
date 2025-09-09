@@ -207,7 +207,7 @@ class Talent extends BaseController
 				return to_assign(1, "同样的手机号码已经存在，请检查一下是否被离职或者禁用员工占用");
 			}
             $detail['nickname'] = $detail['name'];
-			$char = mb_substr($detail['name'], 0, 1, 'utf-8');
+			$char = $detail['name'];
 			$username = Pinyin::name($char,'none')->join('');
 			$detail['username'] = $this->create_name($username,0);
 			$detail['did'] = $detail['to_did'];
@@ -228,14 +228,15 @@ class Talent extends BaseController
 			}
 		}
 		else{
-			$department = set_recursion(get_department());
 			$position = Db::name('Position')->where([['status', '>=', 0]])->order('create_time asc')->select();
 			$detail = $this->model->getById($param['id']);
 			View::assign('position', $position);
 			//初始化密码
             View::assign('reg_pwd', set_salt(6));
-			View::assign('department', $department);
 			View::assign('detail', $detail);
+			if(is_mobile()){
+				return view('qiye@/approve/set_talent');
+			}
 			return view();
 		}
     }

@@ -9,10 +9,10 @@ if (empty(file_exists(__DIR__ . '/../vendor/autoload.php'))) {
 require __DIR__ . '/../vendor/autoload.php';
 
 // 定义当前版本号
-define('CMS_VERSION','5.9');
+define('CMS_VERSION','5.9.3');
 
 // 定义手机端当前版本号
-define('MB_VERSION','1.0');
+define('MB_VERSION','1.2');
 
 // 定义Layui版本号
 define('LAYUI_VERSION','2.11.5');

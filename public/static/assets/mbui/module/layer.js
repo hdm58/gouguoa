@@ -283,7 +283,7 @@ mbui.define([], function (exports) {
 			layer.msg(txt, 3, 'error');
 		},
 		loading: function (txt) {
-			let loading = layer.msg(txt, 0, 'loading');
+			let loading = layer.msg(txt, 3, 'loading');
 			return loading;
 		},
 		photo: function (url) {

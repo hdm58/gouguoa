@@ -34,8 +34,8 @@ class Talent extends Validate
     }
 
     protected $rule = [
-		'name' => 'require',
-        'mobile' => 'require|number|length:11|checkUnique:Admin,mobile,id',
+		'name' => 'require|chs',
+        'mobile' => 'require|mobile|checkUnique:Admin,mobile,id',
 		'id' => 'require',
 	];
 
@@ -43,8 +43,7 @@ class Talent extends Validate
 		'name.require' => '员工姓名不能为空',
         'name.chs' => '员工姓名只能是汉字',
 		'mobile.require' => '手机不能为空',
-		'mobile.number' => '手机号码只能填写数字',
-        'mobile.length' => '手机号码只能填写11位数字',
+		'mobile.mobile' => '手机号码格式错误',
 		'mobile.checkUnique' => '同样的手机号码已经存在入职员工内，请与人事核对后再申请',
 		'id.require' => '缺少更新条件',
 	];

@@ -35,6 +35,12 @@
 			<td class="layui-td-gray">客户联系电话</td>
 			<td>{$detail.contact_mobile|default='-'}</td>
 		</tr>
+		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">关联机会线索</td>
+			<td colspan="5">{$detail.chance} <span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/customer/chance/view/?id={$detail.chance_id}">详情</span></td>
+		</tr>
+		{/notempty}
 		<tr>
 			<td class="layui-td-gray">合同金额</td>
 			<td>{$detail.cost}</td>
@@ -161,8 +167,7 @@
 				</table>
 			</td>
 		</tr>
-		{/notempty}
-		
+		{/notempty}		
 		
 		<tr>
 			<td colspan="6"><strong>合同情况</strong></td>
@@ -224,6 +229,21 @@
 			<td colspan="5">{$detail.void_remark|default='-'}</td>
 		</tr>
 		{/gt}
+		
+		<tr>
+			<td class="layui-td-gray">
+				<div>盖章合同文件</div>
+				<div><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn">文件上传</button></div>
+			</td>
+			<td colspan="5">
+				<div class="row" id="uploadBox">
+				<input type="hidden" data-type="file" name="seal_ids" value="{$detail.seal_ids|default=''}">
+				{volist name="$detail.seal_array" id="vo"}
+				<div class="layui-col-md4" id="file_{$vo.id}">{:file_card($vo)}</div>
+				{/volist}
+				</div>
+			</td>
+	   </tr>
 	</table>
 				
 	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="contract" id="contractTab">
@@ -251,10 +271,52 @@
 	var contract_id = {$detail.id};
 	var auth = {$auth};
 	var archive = {$detail.archive_time};
-	var moduleInit = ['tool','oaCheck','oaPicker','oaEdit'];
+	var moduleInit = ['tool','oaCheck','oaPicker','oaEdit','uploadPlus'];
 	let checking_btn='<span class="layui-btn layui-btn-warm" data-event="stop" data-status="1">中止合同</span><span class="layui-btn layui-btn-danger" data-event="void" data-status="1">作废合同</span>';
 	function gouguInit() {
-		var tool = layui.tool,element = layui.element,oaCheck=layui.oaCheck,oaPicker=layui.oaPicker;	
+		var tool = layui.tool,element = layui.element,oaCheck=layui.oaCheck,oaPicker=layui.oaPicker,uploadPlus=layui.uploadPlus;	
+		
+		var attachment = new uploadPlus({
+			"attachment":{
+				"uidDelete":true,//是否开启只有上传人自己才能删除自己的附件
+				"ajaxSave":function(res){
+					$.ajax({
+						url: "/contract/api/contract_seal_ids",
+						type:'post',
+						data:{
+							'id':contract_id,
+							'seal_ids':res,
+						},
+						success: function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								setTimeout(function(){
+									location.reload();
+								},1000)							
+							}
+						}
+					})
+				},
+				"ajaxDelete":function(res){
+					$.ajax({
+						url: "/contract/api/contract_seal_ids",
+						type:'post',
+						data:{
+							'id':contract_id,
+							'seal_ids':res,
+						},
+						success: function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								setTimeout(function(){
+									location.reload();
+								},1000)							
+							}
+						}
+					})
+				}
+			}
+		})
 		
 		element.on('tab(contract)', function(data){
 			let index = data.index;

@@ -21,16 +21,16 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">凭证编号<font>*</font></td>
-			<td><input type="text" name="code" autocomplete="off" lay-verify="required" placeholder="报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value="{$detail.code}"></td>
+			<td><input type="text" name="code" autocomplete="off"  {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" placeholder="报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value="{$detail.code}"></td>
 			<td class="layui-td-gray-2">原始单据日期<font>*</font></td>
-			<td><input type="text" class="layui-input" id="expense_time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="{$detail.expense_time}"></td>
+			<td><input type="text" class="layui-input tool-time" id="expense_time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="{$detail.expense_time}"></td>
 			<td class="layui-td-gray">入账月份<font>*</font></td>
-			<td><input type="text" class="layui-input tool-time" data-type="month" name="income_month" lay-verify="required" placeholder="请选择入账月份" lay-reqText="请选择入账月份" readonly value="{$detail.income_month}"></td>
+			<td><input type="text" class="layui-input tool-time" data-type="month" name="income_month" lay-verify="required" placeholder="请选择入账月份" lay-reqText="请选择入账月份" readonly value="{$detail.income_month_str}"></td>
 		</tr>
 		<tr>
 		<td class="layui-td-gray">关联项目</td>
 			<td colspan="5">
-				<input type="text" class="layui-input picker-oa" name="ptname" placeholder="请选择需要关联的项目" readonly value="{$detail.ptname|default=""}">		
+				<input type="text" class="layui-input picker-oa" name="ptname" data-types="project" placeholder="请选择需要关联的项目" readonly value="{$detail.ptname|default=""}">		
 				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id}">		
 			</td>
 		</tr>

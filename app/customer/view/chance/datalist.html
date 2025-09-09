@@ -60,11 +60,23 @@
 					,{ field: 'expected_time', title: '预计签单时间', width: 110, align: 'center'}
 					,{ field: 'expected_amount', title: '预计签单金额', width: 110, align: 'center'}
 					,{field:'stage_name',title: '当前阶段',width: 80, align: 'center'}
+					,{field:'is_contract',title: '是否签单', align:'center',width: 80,templet: function(d){
+						if(d.is_contract>0){
+							return '<span class="green">已签单</span>';
+						}
+						else{
+							return '<span class="red">未签单</span>';
+						}
+					}}
 					,{fixed:'right',width:130,title: '操作', align:'center',templet: function(d){
 						var html = '<div class="layui-btn-group">';
 						var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
 						var btn2='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
 						var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+						if(d.is_contract>0){
+							btn1='';
+							btn3='';
+						}
 						if(d.admin_id == login_admin){
 							return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
 						}

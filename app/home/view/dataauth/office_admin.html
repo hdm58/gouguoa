@@ -39,6 +39,15 @@
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_2</td>
 		</tr>
+		<tr>
+			<td class="layui-td-gray-3">人事管理员</td>
+			<td>
+				<input type="text" name="conf_3_str" value="{$detail.conf_3_str|default=''}" readonly placeholder="请选择权限人员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="conf_3" value="{$detail.conf_3}">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_3</td>
+		</tr>
 	</table>
 	<div class="pt-4">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>

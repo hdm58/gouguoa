@@ -6,7 +6,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
 	<div class="layui-btn-group">
-		<span class="layui-btn layui-btn-sm layui-btn-normal" lay-event="backup">数据备份</span><span class="layui-btn layui-btn-sm" lay-event="optimize">数据表优化</span><span class="layui-btn layui-btn-danger layui-btn-sm" lay-event="repair">数据表修复</span>
+		<span class="layui-btn layui-btn-sm layui-btn-normal" lay-event="backup">数据备份</span>
   	</div>
 	<span id="dataTips" style="font-size:12px; margin-left:10px"></span>  
 </script>
@@ -118,7 +118,7 @@
 				tables.push(checkData[i].name);
 			}
 			if (obj.event === 'backup') {
-				layer.confirm('确认要备份选中的' + len + '个数据表吗?', {
+				layer.confirm('系统自带的备份功能仅是辅助工具，建议使用第三方专业的工具备份更安全！<br>确认要备份选中的' + len + '个数据表吗？', {
 					icon: 3,
 					title: '提示'
 				}, function (index) {

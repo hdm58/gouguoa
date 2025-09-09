@@ -69,44 +69,51 @@ class Crud extends Command
 	
 	public function make($name,$module,$model,$controller,$types)
     {
-		!defined('DS') && define('DS', DIRECTORY_SEPARATOR);
-		$crud_dir = CMS_ROOT . '\crud\\';
-		if (!is_dir($crud_dir  . 'view')) {
-            mkdir($crud_dir  . 'view', 0755, true);
-        }		
-		if (!is_dir($crud_dir  . 'controller')) {
-            mkdir($crud_dir . 'controller', 0755, true);
-        }		
-		if (!is_dir($crud_dir  . 'model')) {
-            mkdir($crud_dir  . 'model', 0755, true);
-        }		
-		if (!is_dir($crud_dir  . 'validate')) {
-            mkdir($crud_dir  . 'validate', 0755, true);
-        }		
-		$Bmodel = ucfirst(camelize($model));
-		$Bcontroller = ucfirst(camelize($controller));
-		$crud = [
-			['name'=>'add','path'=>'view/'. DS  .$controller,'filename'=>'add.html'],
-			['name'=>'list','path'=>'view'. DS  .$controller,'filename'=>'datalist.html'],
-			['name'=>'view','path'=>'view'. DS  .$controller,'filename'=>'view.html'],
-			['name'=>'controller','path'=>'controller','filename'=>$Bcontroller.'.php'],
-			['name'=>'model','path'=>'model','filename'=>$Bmodel.'.php'],
-			['name'=>'validate','path'=>'validate','filename'=>$Bcontroller.'Validate.php'],
-		];
-		foreach($crud as $k => $v){	
-			$tpl = dirname(__DIR__) . '/tpl/'.$types.'/'.$v['name'].'.tpl';
-			
-			$tplContent = file_get_contents($tpl);			
-			$tplContent = str_replace('<module>', $module, $tplContent);
-			$tplContent = str_replace('<controller>', $controller, $tplContent);
-			$tplContent = str_replace('<Bcontroller>', $Bcontroller, $tplContent);
-			$tplContent = str_replace('<model>', $model, $tplContent);
-			$tplContent = str_replace('<Bmodel>', $Bmodel, $tplContent);
-			$tplContent = str_replace('<name>', $name, $tplContent);
-			if (!is_dir($crud_dir.$v["path"])) {
-				mkdir($crud_dir.$v["path"], 0755, true);
-			}
-			file_put_contents($crud_dir.$v["path"].'\\'.$v["filename"], $tplContent);
-		}
+        !defined('DS') && define('DS', DIRECTORY_SEPARATOR);
+        // 使用DS常量和rtrim确保路径格式正确
+        $crud_dir = rtrim(CMS_ROOT, DS) . DS . 'crud' . DS;
+        
+        // 统一使用DS常量拼接路径
+        $dirs = ['view', 'controller', 'model', 'validate'];
+        foreach($dirs as $dir) {
+            $targetDir = $crud_dir . $dir;
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+        }
+        
+        $Bmodel = ucfirst(camelize($model));
+        $Bcontroller = ucfirst(camelize($controller));
+        
+        // 修正路径定义，统一使用DS分隔符
+        $crud = [
+            ['name'=>'add','path'=>'view' . DS . $controller,'filename'=>'add.html'],
+            ['name'=>'list','path'=>'view' . DS . $controller,'filename'=>'datalist.html'],
+            ['name'=>'view','path'=>'view' . DS . $controller,'filename'=>'view.html'],
+            ['name'=>'controller','path'=>'controller','filename'=>$Bcontroller.'.php'],
+            ['name'=>'model','path'=>'model','filename'=>$Bmodel.'.php'],
+            ['name'=>'validate','path'=>'validate','filename'=>$Bcontroller.'Validate.php'],
+        ];
+        
+        foreach($crud as $k => $v){
+            $tpl = dirname(__DIR__) . DS . 'tpl' . DS . $types . DS . $v['name'] . '.tpl';
+            
+            $tplContent = file_get_contents($tpl);
+            $tplContent = str_replace('<module>', $module, $tplContent);
+            $tplContent = str_replace('<controller>', $controller, $tplContent);
+            $tplContent = str_replace('<Bcontroller>', $Bcontroller, $tplContent);
+            $tplContent = str_replace('<model>', $model, $tplContent);
+            $tplContent = str_replace('<Bmodel>', $Bmodel, $tplContent);
+            $tplContent = str_replace('<name>', $name, $tplContent);
+            
+            $targetPath = $crud_dir . $v['path'];
+            if (!is_dir($targetPath)) {
+                mkdir($targetPath, 0755, true);
+            }
+            
+            // 修正文件保存路径
+            $filePath = $targetPath . DS . $v['filename'];
+            file_put_contents($filePath, $tplContent);
+        }
     }
 }

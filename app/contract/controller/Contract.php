@@ -305,6 +305,8 @@ class Contract extends BaseController
 				if($param['types']==3){			
 					$service_title_data = isset($param['service_title']) ? $param['service_title'] : '';
 					$service_id_data = isset($param['service_id']) ? $param['service_id'] : 0;
+					$service_time_a_data = isset($param['service_time_a']) ? $param['service_time_a'] : '';
+					$service_time_b_data = isset($param['service_time_b']) ? $param['service_time_b'] : '';
 					$service_date_data = isset($param['service_date']) ? $param['service_date'] : '';
 					$service_price_data = isset($param['service_price']) ? $param['service_price'] : '0.00';
 					$service_num_data = isset($param['service_num']) ? $param['service_num'] : 1;
@@ -319,7 +321,12 @@ class Contract extends BaseController
 							$data = [];
 							$data['service_title'] = $service_title_data[$key];
 							$data['service_id'] = $service_id_data[$key];
-							$data['service_date'] = $service_date_data[$key];
+							if(!empty($service_time_a_data)){
+								$data['service_date'] = $service_time_a_data[$key].'到'.$service_time_b_data[$key];
+							}
+							else{
+								$data['service_date'] = $service_date_data[$key];
+							}
 							$data['service_price'] = $service_price_data[$key];
 							$data['service_num'] = $service_num_data[$key];
 							$data['service_subtotal'] = $service_subtotal_data[$key];
@@ -338,6 +345,12 @@ class Contract extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				if(isset($param['chance_id']) && $param['chance_id']>0){
+					$has_chance = Db::name('Contract')->where([['chance_id','=',$param['chance_id']],['delete_time','=',0],['id','<>',$param['id']]])->count();
+					if($has_chance>0){
+						return to_assign(1, '所选的机会线索已关联有销售合同，不支持关联多合同');
+					}
+				}
 				$this->model->edit($param);
             } else {
                 try {
@@ -346,13 +359,16 @@ class Contract extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				if($param['chance_id']>0){
+					$has_chance = Db::name('Contract')->where(['chance_id'=>$param['chance_id'],'delete_time'=>0])->count();
+					if($has_chance>0){
+						return to_assign(1, '所选的机会线索已关联有销售合同，不支持关联多合同');
+					}
+				}
 				$param['admin_id'] = $this->uid;
                 $this->model->add($param);
             }	 
         }else{
-			if(is_mobile()){
-				return view('qiye@/index/405',['msg' => '由于合同太多字段，手机端不方便操作，请到PC端新增合同']);
-			}
 			$id = isset($param['id']) ? $param['id'] : 0;
 			$types = isset($param['types']) ? $param['types'] : 0;
 			$is_customer = Db::name('DataAuth')->where('name','contract_admin')->value('conf_3');
@@ -368,8 +384,25 @@ class Contract extends BaseController
 				if($detail['check_status'] == 1 || $detail['check_status'] == 2 || $detail['check_status'] == 3){
 					return view(EEEOR_REPORTING,['code'=>403,'warning'=>'当前状态不支持编辑']);
 				}
-				$detail['content_array'] = unserialize($detail['content']);
+				if($detail['types'] > 1){
+					$content_array = unserialize($detail['content']);
+					if($detail['types']==3){
+						foreach ($content_array as $key => &$value) {
+							if(!empty($value['service_date'])){
+								$service_date = explode('到', $value['service_date']);
+								$value['service_time_a'] = $service_date[0];
+								$value['service_time_b'] = $service_date[1];
+							}
+						}
+					}
+					$detail['content_array'] = $content_array;
+				}
+				View::assign('types', $detail['types']);
+				View::assign('codeno', $detail['code']);
 				View::assign('detail', $detail);
+				if(is_mobile()){
+					return view('qiye@/contract/contract_add');
+				}
 				return view('edit');
 			}
 			$codeno='';
@@ -381,6 +414,9 @@ class Contract extends BaseController
             View::assign('types', $types);
 			if($types == 0){
 				return view('add_types');
+			}
+			if(is_mobile()){
+				return view('qiye@/contract/contract_add');
 			}
 			return view();
 		}
@@ -394,7 +430,17 @@ class Contract extends BaseController
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
 			if($detail['types'] > 1){
-				$detail['content_array'] = unserialize($detail['content']);
+				$content_array = unserialize($detail['content']);
+				if($detail['types']==3){
+					foreach ($content_array as $key => &$value) {
+						if(!empty($value['service_date'])){
+							$service_date = explode('到', $value['service_date']);
+							$value['service_time_a'] = $service_date[0];
+							$value['service_time_b'] = $service_date[1];
+						}
+					}
+				}
+				$detail['content_array'] = $content_array;
 			}
 			$detail['status_name'] = check_status_name($detail['check_status']);
 			$detail['cate_title'] = Db::name('ContractCate')->where(['id' => $detail['cate_id']])->value('title');
@@ -437,6 +483,14 @@ class Contract extends BaseController
 				$has_income = Db::name('InvoiceIncome')->where([['invoice_id','in',$invoice_ids],['status','=',1]])->sum('amount');
 				$detail['has_income'] = sprintf("%.2f",$has_income);
 				$detail['no_income'] = sprintf("%.2f",($detail['cost']*100 - $has_income*100)/100);
+			}
+			
+			if($detail['seal_ids'] !=''){
+				$file_array = Db::name('File')->where('id','in',$detail['seal_ids'])->select()->toArray();
+				$detail['seal_array'] = $file_array;
+			}
+			else{
+				$detail['seal_array'] = [];
 			}
 			
 			$auth = isAuth($this->uid,'contract_admin','conf_1');

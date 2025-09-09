@@ -109,9 +109,15 @@ class Index extends BaseController
 				$param['start_time'] = strtotime(urldecode(trim($range_time[0])));
 				$param['end_time'] = strtotime(urldecode(trim($range_time[1])));
             }
+			else{
+				$param['start_time'] = strtotime(urldecode(trim($param['start_time'])));
+				$param['end_time'] = strtotime(urldecode(trim($param['end_time'])));
+			}
 			$step_title_data = isset($param['step_title']) ? $param['step_title'] : '';
 			$step_director_uid_data = isset($param['step_director_uid']) ? $param['step_director_uid'] : '';
 			$step_uids_data = isset($param['step_uids']) ? $param['step_uids'] : '';
+			$step_start_time_data = isset($param['step_start_time']) ? $param['step_start_time'] : '';
+			$step_end_time_data = isset($param['step_end_time']) ? $param['step_end_time'] : '';
 			$step_cycle_time_data = isset($param['step_cycle_time']) ? $param['step_cycle_time'] : '';
 			$step_remark_data = isset($param['step_remark']) ? $param['step_remark'] : '';
 			$step_id_data = isset($param['step_id']) ? $param['step_id'] : 0;
@@ -123,10 +129,16 @@ class Index extends BaseController
 				foreach ($step_title_data as $key => $value) {
 					if (!$value) {
 						continue;
-					}				
-					$step_cycle_time = explode('到',$step_cycle_time_data[$key]);
-					$start_time = strtotime(urldecode(trim($step_cycle_time[0])));
-					$end_time = strtotime(urldecode(trim($step_cycle_time[1])));
+					}		
+					if(!empty($step_cycle_time_data)){
+						$step_cycle_time = explode('到',$step_cycle_time_data[$key]);
+						$start_time = strtotime(urldecode(trim($step_cycle_time[0])));
+						$end_time = strtotime(urldecode(trim($step_cycle_time[1])));
+					}
+					else{
+						$start_time = strtotime(urldecode(trim($step_start_time_data[$key])));
+						$end_time = strtotime(urldecode(trim($step_end_time_data[$key])));
+					}
 					if($start_time<$time_1){
 						return to_assign(1, '第'.($key+1).'阶段的开始时间不能小于项目计划周期的开始时间');
 						break;
@@ -174,7 +186,13 @@ class Index extends BaseController
 				$detail = $this->model->getById($id);
 				$detail['current_step'] = Db::name('ProjectStep')->where(['project_id' => $id, 'is_current' => 1,'delete_time'=>0])->value('sort');
 				View::assign('detail', $detail);
+				if(is_mobile()){
+					return view('qiye@/project/project_edit');
+				}
 				return view('edit');
+			}
+			if(is_mobile()){
+				return view('qiye@/project/project_add');
 			}
 			return view();
 		}

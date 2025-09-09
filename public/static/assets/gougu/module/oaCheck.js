@@ -6,6 +6,7 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 	const opts={
 		"checkBox":"checkBox",//审核容器id
 		"checking_btn":"",//待审核状态下自定义添加的按钮
+		"checked_btn":"",//审核通过自定义添加的按钮
 		"check_name": "",//审核类型标识
 		"check_btn":1,//是否显示提交审核按钮
 		"check_ok":function(){
@@ -308,7 +309,8 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 						${detail.is_checker==1?btnCheck:''}
 						${detail.is_creater==1 && detail.is_back==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
 						${detail.is_reversed == 1 && typeof me.sets.check_reversed ==='function' && detail.check_status==2?btnCheckBack:''}	
-						${detail.is_export == 1 && detail.check_status==2?btnExport:''}					
+						${detail.is_export == 1 && detail.check_status==2?btnExport:''}	
+						${detail.check_status==2?me.sets.checked_btn:''}				
 					</div>
 				</form>
 			`;

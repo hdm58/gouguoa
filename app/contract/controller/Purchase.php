@@ -304,6 +304,8 @@ class Purchase extends BaseController
 				}	
 				if($param['types']==3){			
 					$service_title_data = isset($param['service_title']) ? $param['service_title'] : '';
+					$service_time_a_data = isset($param['service_time_a']) ? $param['service_time_a'] : '';
+					$service_time_b_data = isset($param['service_time_b']) ? $param['service_time_b'] : '';
 					$service_date_data = isset($param['service_date']) ? $param['service_date'] : '';
 					$service_price_data = isset($param['service_price']) ? $param['service_price'] : '0.00';
 					$service_num_data = isset($param['service_num']) ? $param['service_num'] : 1;
@@ -317,7 +319,12 @@ class Purchase extends BaseController
 							}
 							$data = [];
 							$data['service_title'] = $service_title_data[$key];
-							$data['service_date'] = $service_date_data[$key];
+							if(!empty($service_time_a_data)){
+								$data['service_date'] = $service_time_a_data[$key].'到'.$service_time_b_data[$key];
+							}
+							else{
+								$data['service_date'] = $service_date_data[$key];
+							}
 							$data['service_price'] = $service_price_data[$key];
 							$data['service_num'] = $service_num_data[$key];
 							$data['service_subtotal'] = $service_subtotal_data[$key];
@@ -347,9 +354,6 @@ class Purchase extends BaseController
                 $this->model->add($param);
             }	 
         }else{
-			if(is_mobile()){
-				return view('qiye@/index/405',['msg' => '由于合同太多字段，手机端不方便操作，请到PC端新增合同']);
-			}
 			$id = isset($param['id']) ? $param['id'] : 0;
 			$types = isset($param['types']) ? $param['types'] : 0;
 			$is_supplier = Db::name('DataAuth')->where('name','contract_admin')->value('conf_6');
@@ -363,8 +367,25 @@ class Purchase extends BaseController
 				if($detail['check_status'] == 1 || $detail['check_status'] == 2 || $detail['check_status'] == 3){
 					return view(EEEOR_REPORTING,['code'=>403,'warning'=>'当前状态不支持编辑']);
 				}
-				$detail['content_array'] = unserialize($detail['content']);
+				if($detail['types'] > 1){
+					$content_array = unserialize($detail['content']);
+					if($detail['types']==3){
+						foreach ($content_array as $key => &$value) {
+							if(!empty($value['service_date'])){
+								$service_date = explode('到', $value['service_date']);
+								$value['service_time_a'] = $service_date[0];
+								$value['service_time_b'] = $service_date[1];
+							}
+						}
+					}
+					$detail['content_array'] = $content_array;
+				}
+				View::assign('types', $detail['types']);
+				View::assign('codeno', $detail['code']);
 				View::assign('detail', $detail);
+				if(is_mobile()){
+					return view('qiye@/contract/purchase_add');
+				}
 				return view('edit');
 			}
 			$codeno='';
@@ -376,6 +397,9 @@ class Purchase extends BaseController
             View::assign('types', $types);
 			if($types == 0){
 				return view('add_types');
+			}
+			if(is_mobile()){
+				return view('qiye@/contract/purchase_add');
 			}
 			return view();
 		}
@@ -389,7 +413,17 @@ class Purchase extends BaseController
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
 			if($detail['types'] > 1){
-				$detail['content_array'] = unserialize($detail['content']);
+				$content_array = unserialize($detail['content']);
+				if($detail['types']==3){
+					foreach ($content_array as $key => &$value) {
+						if(!empty($value['service_date'])){
+							$service_date = explode('到', $value['service_date']);
+							$value['service_time_a'] = $service_date[0];
+							$value['service_time_b'] = $service_date[1];
+						}
+					}
+				}
+				$detail['content_array'] = $content_array;
 			}
 			$detail['status_name'] = check_status_name($detail['check_status']);
 			$detail['cate_title'] = Db::name('ContractCate')->where(['id' => $detail['cate_id']])->value('title');
@@ -433,7 +467,13 @@ class Purchase extends BaseController
 				$detail['has_payment'] = sprintf("%.2f",$has_payment);
 				$detail['no_payment'] = sprintf("%.2f",($detail['cost']*100 - $has_payment*100)/100);
 			}
-			
+			if($detail['seal_ids'] !=''){
+				$file_array = Db::name('File')->where('id','in',$detail['seal_ids'])->select()->toArray();
+				$detail['seal_array'] = $file_array;
+			}
+			else{
+				$detail['seal_array'] = [];
+			}
 			$auth = isAuth($this->uid,'contract_admin','conf_1');
 			View::assign('detail', $detail);
 			View::assign('auth', $auth);

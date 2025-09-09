@@ -35,7 +35,7 @@ class Expense extends Model
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
 				$item->check_status_str = check_status_name($item->check_status);
-				$item->income_month = empty($item->income_month) ? '-' : date('Y-m', $item->income_month);
+				$item->income_month_str = empty($item->income_month) ? '-' : date('Y-m', $item->income_month);
 				$item->expense_time = empty($item->expense_time) ? '-' : date('Y-m-d', $item->expense_time);
 				$item->admin_name = Db::name('Admin')->where(['id' => $item->admin_id])->value('name');
 				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
@@ -178,7 +178,7 @@ class Expense extends Model
     public function getById($id)
     {
         $info = self::find($id);
-		$info['income_month'] = empty($info['income_month']) ? '-' : date('Y-m', $info['income_month']);
+		$info['income_month_str'] = to_date($info['income_month'],'Y-m');
 		$info['expense_time'] = empty($info['expense_time']) ? '-' : date('Y-m-d', $info['expense_time']);
 		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
 		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');

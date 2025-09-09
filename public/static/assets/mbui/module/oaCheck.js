@@ -8,6 +8,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 		"check_name": "",//审核类型标识
 		"check_btn":1,//是否显示提交审核按钮
 		"checking_btn":'',//待审核状态下添加的按钮
+		"checked_btn":'',//审核通过后添加的按钮
 		"check_ok":function(){
 			//审核通过的执行函数
 		},
@@ -42,7 +43,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 		uidsTemplate: function () {
 			let tem =`
 				<div class="mbui-form-line">
-					<label class="mbui-form-label">审批人</label>
+					<label class="mbui-form-label">审 批 人</label>
 					<input type="text" name="check_uames" value="" placeholder="请选择审批人" data-verify="required" data-errortips="请选择审批人" class="mbui-form-input" readonly><input type="text" name="check_uids" value="" readonly style="display:none;">
 				</div>
 			`;
@@ -327,7 +328,8 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 						<input type="hidden" name="check_role" value="${detail.step.check_role}">
 						${detail.is_checker==1?btnCheck:''}
 						${detail.is_creater==1 && detail.is_back==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
-						${detail.is_reversed == 1 && typeof me.sets.check_reversed ==='function' && detail.check_status==2?btnCheckBack:''}	
+						${detail.is_reversed == 1 && typeof me.sets.check_reversed ==='function' && detail.check_status==2?btnCheckBack:''}
+						${detail.check_status==2?me.sets.checked_btn:''}
 					</div>
 				</form>
 			`;
@@ -390,7 +392,8 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 				success: function (e) {
 					if (e.code == 0) {
 						if(check_status==0){
-							if(e.data.length>0){
+							if(action_id==0){
+								if(e.data.length>0){
 									checkBox.append(me.createTemplate(e.data));
 								}
 								else{
@@ -400,9 +403,10 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 									</div>';
 									checkBox.append(none);
 								}
+							}
 							else{
 								checkBox.append(me.initTemplate(e.data));
-							}
+							}							
 						}
 						else if(check_status==4){
 							checkBox.append(me.backTemplate(e.data));
