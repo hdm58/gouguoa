@@ -1,6 +1,6 @@
 ## 📐 勾股OA5.0
 
-![勾股OA](https://oss.gouguoa.com/oss/slogo.jpg)
+![勾股OA](https://admin.gougucms.com/oss/slogo.jpg)
 
 ### ✅ 相关链接
 - 系统地址：https://www.gougucms.com/home/pages/detail/s/gouguoa.html
@@ -54,7 +54,7 @@ BOSS角色：suhaizhen     123456
 
 系统后台集成了主流的通用功能，如：登录验证、系统配置、操作日志管理、角色权限、职位职称、数据权限、功能菜单、模块管理、关键字管理、文件上传、数据备份/还原、基础数据、审批流程、员工管理、消息通知、企业公告、知识文章、办公审批、日常办公、财务管理、客户管理、合同管理、项目管理、任务管理等。更多的个性化功能可以基于当前系统便捷做二次开发。
 
-![输入图片说明](https://oss.gouguoa.com/oss/gouguoa2.0.png)
+![输入图片说明](https://admin.gougucms.com/oss/gouguoa2.0.png)
 
 
 ### 📚 安装教程
@@ -184,8 +184,8 @@ composer config -g repos.packagist composer https://mirrors.aliyun.com/composer/
 
 |页面截图      |    部分截图|
 | :--------: | :--------:|
-| ![功能导图](https://oss.gouguoa.com/oss/oa4.png "功能导图")|![功能导图](https://oss.gouguoa.com/oss/oa1.png "功能导图")|
-|![功能导图](https://oss.gouguoa.com/oss/oa2.png "功能导图")|![功能导图](https://oss.gouguoa.com/oss/oa3.png "功能导图")|
+| ![功能导图](https://admin.gougucms.com/oss/oa4.png "功能导图")|![功能导图](https://admin.gougucms.com/oss/oa1.png "功能导图")|
+|![功能导图](https://admin.gougucms.com/oss/oa2.png "功能导图")|![功能导图](https://admin.gougucms.com/oss/oa3.png "功能导图")|
 
 ### ⭐ 开源助力
 

@@ -1,5 +1,5 @@
-mbui.define(['tool'], function (exports) {
-	const tool = mbui.tool;
+mbui.define(['tool','layer'], function (exports) {
+	const tool = mbui.tool,layer = mbui.layer;
 	
 	const dataTypes = {
 		'property':{
@@ -165,6 +165,8 @@ mbui.define(['tool'], function (exports) {
 			type: "radio",
 			where: {},
 			limit: 20,
+			data:[],
+			selectData:[],
 			template: function (data) {
 				return JSON.parse(data);
 			},
@@ -200,13 +202,15 @@ mbui.define(['tool'], function (exports) {
 				layer.msg('请选择数据');
 				return false;
 			}
-			let ids = [], titles = [];
+			that.config.selectData.length=0;
+			let ids=[];
 			for (var m = 0; m < selected.length; m++) {
 				let selected_item = $(selected[m]).parent();
-				ids.push(selected_item.data('id'));
-				titles.push(selected_item.data('title'));
+				let id=selected_item.data('id');
+				ids.push(id);
 			}
-			that.config.callback(ids,titles);
+			that.config.selectData = that.config.data.filter(item => ids.includes(item.id));
+			that.config.callback(that.config.selectData);
 			$container.fadeOut(function () {
 				$container.remove();
 				$('#root').show();
@@ -249,8 +253,12 @@ mbui.define(['tool'], function (exports) {
 				that.count=res.count;
 				that.total+=res.data.length;
 				container.find('.load-data-none').addClass('load-data-'+that.count);
+				if(that.page==1){
+					that.config.data.length=0;
+				}
 				if (res.count > 0) {
 					that.page++;
+					that.config.data.push(...res.data);
 					$.each(res.data, function (index, item) {
 						// 转义JSON对象中的字符串值,防止XSS
 						for (var key in item) {
@@ -302,7 +310,12 @@ mbui.define(['tool'], function (exports) {
 			type:type,
 			template:opts.template,
 			limit:20,
-			callback:function(ids,titles){
+			callback:function(selectData){
+				let ids=[],titles=[];
+				for ( var i = 0; i <selectData.length; i++){
+					ids.push(selectData[i].id);
+					titles.push(selectData[i].title);
+				}
 				that.val(titles.join(','));
 				that.next().val(ids.join(','));
 			}

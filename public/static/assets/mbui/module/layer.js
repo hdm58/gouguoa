@@ -312,6 +312,18 @@ mbui.define([], function (exports) {
 			for (var i = 0, len = boxs.length; i < len; i++) {
 				layer.close((boxs[0].getAttribute('index') | 0));
 			}
+		},
+		copy:function(content) {
+			var save = function(e){
+				e.clipboardData.setData('text/plain', content);
+				e.preventDefault();
+			}
+			document.addEventListener('copy', save);
+			document.execCommand('copy');
+			document.removeEventListener('copy',save);
+			if (content != '') {
+				layer.msg('复制成功');
+			}
 		}
 	};
 	// 输出接口

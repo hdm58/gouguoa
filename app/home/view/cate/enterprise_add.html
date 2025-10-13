@@ -1,7 +1,7 @@
 {extend name="../../base/view/common/base" /}
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">企业主体</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">企业主体</h3>
 	{if condition="$id eq 0"}
 	<table class="layui-table layui-table-form">
 		<tr>
@@ -19,7 +19,7 @@
 			<td>
 				<input type="text" name="address" value="" lay-verify="required" lay-reqText="请完善详细地址" placeholder="请完善详细地址" class="layui-input">
 			</td>
-			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
 			<td><input type="text" name="tax_num" value="" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
 		</tr>
 		<tr>
@@ -54,7 +54,7 @@
 			<td>
 				<input type="text" name="address" value="{$detail.address}" lay-verify="required" lay-reqText="请完善详细地址" placeholder="请完善详细地址" class="layui-input">
 			</td>
-			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
 			<td><input type="text" name="tax_num" value="{$detail.tax_num}" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
 		</tr>	
 		<tr>

@@ -218,7 +218,7 @@ class Task extends BaseController
     }
 
     //删除
-    public function delete()
+    public function del()
     {
         if (request()->isDelete()) {
             $id = get_params("id");
@@ -227,6 +227,10 @@ class Task extends BaseController
             if ($detail['admin_id'] != $this->uid && $auth==0) {
                 return to_assign(1, "你不是该任务的创建人，无权限删除");
             }
+			$hour = Db::name('Schedule')->where(['tid' => $id,'delete_time' => 0])->count();
+			if($hour>0){
+				return to_assign(1, "已有工作日志的任务不支持删除");
+			}
             if (Db::name('ProjectTask')->where('id', $id)->update(['delete_time' => time()]) !== false) {
                 return to_assign(0, "删除成功");
             } else {
@@ -281,6 +285,9 @@ class Task extends BaseController
 			$list = $model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         } else {
+			View::assign('is_leader', isLeader($this->uid));
+			View::assign('role_auth', isAuth($this->uid,'office_admin','conf_1'));
+			View::assign('hour_auth', valueAuth('office_admin','conf_2'));
             return view();
         }
     }

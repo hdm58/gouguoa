@@ -1,0 +1,157 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<link rel="stylesheet" href="{__GOUGU__}/third_party/fullcalendar/main.min.css"/>
+<style>
+#calendar {width: 100%;margin: 0 auto; background-color:#fff;
+-moz-user-select: none; /*火狐*/
+-webkit-user-select: none; /*webkit浏览器*/
+}
+.fc .fc-toolbar.fc-header-toolbar{margin-bottom:0;border:1px solid #eeeeee; border-bottom:none;padding:15px 12px;}
+.fc-col-header{background-color:#fafafa;}
+.fc .fc-button-primary {color: #fff; background-color: #1E9FFF; border-color: #1E9FFF;}
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { color: #fff; background-color: #FBBC05; border-color: #FBBC05;}
+.fc .fc-button-primary:focus, .fc .fc-button-primary:not(:disabled).fc-button-active:focus, .fc .fc-button-primary:not(:disabled):active:focus {box-shadow: 0 0 0 0;}
+.fc .fc-button-primary:hover{color:#fff; background-color:#52B5FF; border-color:#52B5FF;}
+.fc-daygrid-event-harness{cursor:pointer;}
+.fc .fc-daygrid-week-number{font-size:12px;}
+.fc-daygrid-block-event .fc-event-time{font-weight:800}
+.fc-h-event .fc-event-main{color:#111111}
+.fc-theme-standard .fc-scrollgrid,.fc-theme-standard td, .fc-theme-standard th{border-color:#eee;}
+.fc-v-event .fc-event-main-frame{color:#333}
+/*今天背景色和字体颜色 */
+.fc .fc-daygrid-day.fc-day-today .fc-event-title,.fc .fc-daygrid-day.fc-day-today .fc-event-time,.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{font-weight:800;color:#FF5722;}
+.calendar-select{width:100px; height:40px; position:absolute; top:31px; right:262px; z-index:100;}
+.calendar-select .layui-input{height: 36px; line-height: 1.2;}
+.layui-tags-span {padding: 3px 6px;font-size: 12px; background-color:#fff; border-radius: 3px; margin:2px 0; margin-right: 5px; border: 1px solid #e6e6e6; display: inline-block;}
+.layui-layer-content .layui-table-view .layui-table td,.layui-layer-content .layui-table-view .layui-table th{padding:1px 0;}
+.layui-unselect dl {max-height:188px;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<script src="{__GOUGU__}/third_party/fullcalendar/main.min.js"></script>
+<div class="p-page">
+	<div id="calendar"></div>
+</div>
+<!-- /主体 -->
+{/block}
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script type="text/javascript">
+	var id={$detail.id};	
+	function addZero(num){
+		if(num<10){
+			num='0'+num;
+		}
+		return num;
+	}
+	const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool, oaPicker = layui.oaPicker,laydate = layui.laydate,dropdown = layui.dropdown;				
+		//日历
+		var calendarEl = document.getElementById('calendar');
+		var calendar = new FullCalendar.Calendar(calendarEl, {
+			views: {
+				dayGrid: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', window.innerHeight-30);
+					}
+				},
+				timeGrid: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', 'auto');
+					}
+				},
+				week: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', 'auto');
+					}
+				},
+				day: {
+					viewDidMount:function(arg){
+						calendar.setOption('height', 'auto');
+					}
+				}
+			},
+			//initialDate: '2020-09-12',//默认显示日期
+			initialView: 'dayGridMonth',//默认显示月视图
+			headerToolbar: {
+				left: 'prev,next',//prev,next today add
+				center: 'title',
+				right: 'dayGridMonth,timeGridWeek,listWeek' //clear dayGridMonth,timeGridWeek,timeGridDay,listWeek
+			},
+			height: 'auto',//自动高度
+			navLinks: true, // can click day/week names to navigate views
+			editable: true,//确定是否可以拖拉调整日历事件的时间。
+			eventResize:function(ev) {
+				var arg = ev.event
+				console.log(arg);
+			},
+			eventDrop:function(ev) {
+				var arg = ev.event
+				console.log(arg);
+			},
+			selectable: true,//拖拉选择日期
+			selectMirror: true,//是否在用户拖动时绘制"占位符"事件。
+			select: function(arg) {
+				console.log(arg);	
+			},
+			nowIndicator: true,
+			firstDay: 1,
+			weekNumbers: true,// 是否开启周数
+			displayEventEnd: false, //所有视图显示结束时间
+			eventTimeFormat: { // 事件的时间格式，like '14:30:00'
+				hour: '2-digit',
+				minute: '2-digit',
+				//second: '2-digit',
+				meridiem: false,
+				hour12: false //设置时间为24小时
+			},
+			slotLabelFormat: { // 列表视图左边的时间格式，like '14:30:00'
+				hour: '2-digit',
+				minute: '2-digit',
+				//second: '2-digit',
+				meridiem: false,
+				hour12: false //设置时间为24小时
+			},
+			locale: 'zh-cn',//语言
+			buttonText: {
+				//按钮文本
+				today: '今天',
+				month: '月',
+				week: '周',
+				day: '日',
+				list: '预定列表',
+			},
+			weekText: '周',
+			allDayText: '全天',
+			moreLinkText: function(n) {
+				return '另外 ' + n + ' 个'
+			},
+			noEventsText: '没有预定记录',
+			events: function(fetchInfo, successCallback, failureCallback ){
+				$.ajax({
+					type:"POST",
+					url: "/adm/meeting/room_use",
+					dataType:"json",
+					data:{start:fetchInfo.startStr,end:fetchInfo.endStr,id:id},
+					success:function(result){
+						//console.info(result);
+						successCallback(result);
+					},
+					error:function(){
+						failureCallback();
+					}
+				})
+			},
+			eventClick: function(info) {
+				//console.log(info.event);
+				tool.side('/adm/meeting/view?id='+info.event.id);
+			}
+		});
+		calendar.render();
+	}
+	</script>
+{/block}
+<!-- /脚本 -->

@@ -144,8 +144,8 @@ class Api extends BaseController
     {
 		$param = get_params();
 		$where = array();
-		$where[] = ['delete_time', '=', 0];
-		$where[] = ['cid', '=', $param['cid']];
+		$where[] = ['a.delete_time', '=', 0];
+		$where[] = ['a.cid', '=', $param['cid']];
 		$model = new CustomerTrace();
 		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);
@@ -156,10 +156,10 @@ class Api extends BaseController
     {
 		$param = get_params();
 		$where = array();
-		$where[] = ['delete_time', '=', 0];
-		$where[] = ['cid', '=', $param['cid']];
+		$where[] = ['a.delete_time', '=', 0];
+		$where[] = ['a.cid', '=', $param['cid']];
 		if (!empty($param['keywords'])) {
-			$where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+			$where[] = ['a.title|a.content', 'like', '%' . $param['keywords'] . '%'];
 		}
 		$model = new CustomerChance();
 		$list = $model->datalist($param,$where);

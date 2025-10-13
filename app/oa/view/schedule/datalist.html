@@ -98,19 +98,22 @@
 				,{field: 'labor_time', title: '工时', align:'center',width:80}
 				,{field: 'title', title: '工作内容'}
 				,{field: 'create_time', title: '记录时间', align:'center',width:150}
-				,{field: 'right', title: '操作',fixed:'right', width:150, align:'center',templet:function(d){
+				,{field: 'right', title: '操作',fixed:'right', width:180, align:'center',templet:function(d){
 					var html='<div class="layui-btn-group">';
 					if(hour_auth==2 && d.admin_id==login_admin){
 						//开放员工自己调整
-						html+='<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="time">调整工时</button>';
+						html+='<button class="layui-btn layui-btn-xs layui-bg-orange" lay-event="time">调整工时</button>';
+						html+='<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</button>';
 					}
 					if(hour_auth==3 && is_leader > 0){
 						//开放部门负责人调整
-						html+='<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="time">调整工时</button>';
+						html+='<button class="layui-btn layui-btn-xs layui-bg-orange" lay-event="time">调整工时</button>';
+						html+='<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</button>';
 					}
 					if(hour_auth==4 && role_auth > 0){
 						//开放日常办公数据管理员调整
-						html+='<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="time">调整工时</button>';
+						html+='<button class="layui-btn layui-btn-xs layui-bg-orange" lay-event="time">调整工时</button>';
+						html+='<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</button>';
 					}
 					if(d.admin_id==login_admin){
 						html+='<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
@@ -230,6 +233,21 @@
 			}
 			else if(obj.event === 'view'){
 				work.view(obj.data);				
+			}
+			else if(obj.event === 'del'){
+				layer.confirm('您确定要删除该工作记录？', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.scheduleTable.reload();
+						}
+					}
+					tool.delete("/oa/schedule/del", { id: obj.data.id }, callback);
+					layer.close(index);
+				});
 			}
 		});
 		  

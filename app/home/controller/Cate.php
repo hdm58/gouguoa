@@ -96,5 +96,62 @@ class Cate extends BaseController
 			return to_assign(0, '操作失败');
 		}
     }	  
+	
+    //书签链接
+	public function links()
+    {
+        if (request()->isAjax()) {
+            $links = Db::name('Links')->where('delete_time',0)->order('sort desc')->select();
+            return to_assign(0, '', $links);
+        } else {
+            return view();
+        }
+    }
+    //书签链接新建编辑
+    public function links_add()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+            if (!empty($param['id']) && $param['id'] > 0) {
+                $param['update_time'] = time();
+                $res = Db::name('Links')->strict(false)->update($param);
+                if ($res) {
+                    add_log('edit', $param['id'], $param);
+                }
+                return to_assign();
+            } else {
+                $param['create_time'] = time();
+                $insertId = Db::name('Links')->strict(false)->insertGetId($param);
+                if ($insertId) {
+                    add_log('add', $insertId, $param);
+                }
+                return to_assign();
+            }
+        }
+		else{
+			$id = isset($param['id']) ? $param['id'] : 0;
+            if ($id > 0) {
+                $detail = Db::name('Links')->where(['id' => $id])->find();
+                View::assign('detail', $detail);
+            }
+            View::assign('id', $id);
+			return view();
+		}
+    }
+	
+    //书签链接删除
+    public function links_del()
+    {
+		$param = get_params();
+		$param['delete_time'] = time();
+        $res = Db::name('Links')->strict(false)->field('id,delete_time')->update($param);
+		if ($res) {
+			add_log('delete', $param['id'], $param);
+			return to_assign();
+		}
+		else{
+			return to_assign(0, '操作失败');
+		}
+    }
    
 }

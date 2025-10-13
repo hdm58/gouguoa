@@ -1,0 +1,37 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-title">办公工具</div>
+			<div class="layui-card-body">
+				<div id="website" class="website"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//办公工具
+function layoutLinks() {
+	$.ajax({
+		url: "/home/index/get_links",
+		type: 'post',
+		data: {
+			page:1,
+			limit: 100
+		},
+		success: function(e) {
+			if (e.code == 0) {
+				var html = '';
+				$.each(e.data, function(key, value) {
+					if(value.target==1){
+						html += '<a class="layui-btn layui-btn-primary layui-btn-sm layui-border" href="'+value.url+'" target="_blank">'+value.title+'</a>';
+					}
+					else{
+						html += '<a class="layui-btn layui-btn-primary layui-btn-sm layui-border tab-a" data-href="'+value.url+'" data-id="99999'+value.id+'" data-title="'+value.title+'" href="javascript:;">'+value.title+'</a>';
+					}
+				});
+				$('#website').html(html);
+			}
+		}
+	})
+}
+</script>

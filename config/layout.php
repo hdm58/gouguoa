@@ -55,6 +55,12 @@ return [
 			'name'       => 'approve',
 			'title'       => '办公审批',
         ],
+		[
+			'id'       => 13,
+			'row'       => 2,
+			'name'       => 'links',
+			'title'       => '办公工具',
+        ],
         [
 			'id'       => 10,
 			'row'       => 2,

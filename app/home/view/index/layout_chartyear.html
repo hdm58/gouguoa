@@ -15,20 +15,9 @@ function layoutChartYear() {
 		data: {},
 		success: function (e) {
 			if (e.code == 0) {			
-				let data= e.data.data_three;
-				let archiveCalendar = {};
-				data.forEach(item => {
-					// 将时间戳转换为日期对象
-					const timestamp = parseInt(item.create_time, 10);
-					const date = new Date(timestamp * 1000); // 转换为 JavaScript Date 对象
-					const dateString = date.toISOString().substring(0, 10); // 获取 YYYY-MM-DD 格式的日期
-
-					if (archiveCalendar[dateString]) {
-						archiveCalendar[dateString] += 1; // 如果日期已经存在，则增加计数
-					} else {
-						archiveCalendar[dateString] = 1; // 否则，初始化计数为1
-					}
-				});
+				let archiveCalendar= e.data.data_three;
+				is_log=1;
+				//console.log(archiveCalendar);
 				let option = {
 					title: {
 						top: '12px',

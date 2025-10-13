@@ -23,9 +23,13 @@ class CustomerTrace extends Model
     public function datalist($param,$where)
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$order = empty($param['order']) ? 'id desc' : $param['order'];
+		$order = empty($param['order']) ? 'a.id desc' : $param['order'];
         try {
             $list = self::where($where)
+			->field('a.*')
+			->alias('a')
+			->join('Customer c','a.cid = c.id')
+			->join('CustomerChance cc','a.chance_id = cc.id','left')
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
@@ -34,6 +38,7 @@ class CustomerTrace extends Model
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				$item->type_name = Db::name('BasicCustomer')->where(['id' => $item->types])->value('title');
 				$item->stage_name = Db::name('BasicCustomer')->where(['id' => $item->stage])->value('title');
+				$item->customer = Db::name('Customer')->where(['id' => $item->cid])->value('name');
 				if($item->chance_id>0){
 					$item->chance = Db::name('CustomerChance')->where(['id' => $item->chance_id])->value('title');
 				}

@@ -204,7 +204,7 @@ class Project extends Model
             $param['update_time'] = time();
 			$old = self::find($param['id']);
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);		
-			add_log('edit', $param['id'], $param);
+			add_log('edit', $param['id'], $param,'项目');
 			$log=new EditLog();
 			$log->edit('Project',$param['id'],$param,$old);
 		} catch(\Exception $e) {

@@ -453,4 +453,15 @@ class Index extends BaseController
 			return to_assign(1,'操作错误');
 		}
     }
+	
+    //办公工具
+    public function get_links()
+    {
+		if (request()->isAjax()) {
+			$links = Db::name('Links')->where('delete_time',0)->order('sort desc')->select();
+			return to_assign(0, '', $links);
+		}else{
+			return view();
+		}
+    }
 }

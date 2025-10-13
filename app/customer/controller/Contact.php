@@ -43,6 +43,7 @@ class Contact extends BaseController
         if (request()->isAjax()) {
 			$uid=$this->uid;
 			$where=[];
+			$whereOr=[];
 			$where[]=['delete_time','=',0];
             if (!empty($param['keywords'])) {
                 $where[] = ['id|name|mobile|email', 'like', '%' . $param['keywords'] . '%'];
@@ -57,28 +58,22 @@ class Contact extends BaseController
 			$dids_a = get_leader_departments($uid);
 			//是否是客户管理员
 			$auth = isAuth($uid,'customer_admin','conf_1');
-			if($auth == 1){
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$mapOr[] = ['belong_did','in',$dids];
-				}
-			}
-			else{
+			if($auth == 0){
 				if(!empty($dids_a)){
 					$mapOr[] = ['belong_did','in',$dids_a];
 				}
-			}
 			
-			$cids = Db::name('Customer')
-				->where($map)
-				->where(function ($query) use($mapOr) {
-					if (!empty($mapOr)){
-						$query->whereOr($mapOr);
-					}
-				})->column('id');
-			$where[] = ['cid', 'in',$cids];
-            $list = $this->model->datalist($param,$where);
+				$cids = Db::name('Customer')
+					->where($map)
+					->where(function ($query) use($mapOr) {
+						if (!empty($mapOr)){
+							$query->whereOr($mapOr);
+						}
+					})->column('id');
+				$whereOr[] = ['cid', 'in',$cids];
+			}
+			$whereOr[] = ['admin_id','=',$uid];
+            $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{

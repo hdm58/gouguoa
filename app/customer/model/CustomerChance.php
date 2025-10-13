@@ -23,9 +23,12 @@ class CustomerChance extends Model
     public function datalist($param=[],$where=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$order = empty($param['order']) ? 'id desc' : $param['order'];
+		$order = empty($param['order']) ? 'a.id desc' : $param['order'];
         try {
             $list = self::where($where)
+			->field('a.*')
+			->alias('a')
+			->join('Customer c','a.cid = c.id')
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){

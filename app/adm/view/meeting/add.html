@@ -1,0 +1,103 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page" lay-filter="form-outs">
+	<h3 class="pb-2">会议室预定</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">会议主题<font>*</font></td>
+			<td colspan="3"><input name="title" class="layui-input" value="{$detail.title|default=''}" lay-verify="required" placeholder="请输入会议主题" lay-reqText="请输入会议主题"></td>
+			<td class="layui-td-gray">会议地点<font>*</font></td>
+			<td>
+				<input type="text" name="room" value="{$detail.room|default=''}" readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择会议室" class="layui-input picker-oa" data-types="room">
+				<input type="hidden" name="room_id" value="{$detail.room_id|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">开始时间<font>*</font></td>
+			<td><input id="start_date" name="start_date" class="layui-input" value="{$detail.start_time|default=''}" readonly lay-verify="required" placeholder="请选择开始时间" lay-reqText="请选择开始时间"></td>
+			<td class="layui-td-gray">结束时间<font>*</font></td>
+			<td><input id="end_date" name="end_date" class="layui-input" value="{$detail.end_time|default=''}" readonly lay-verify="required" placeholder="请选择结束时间" lay-reqText="请选择结束时间"></td>
+			<td class="layui-td-gray">会议人数<font>*</font></td>
+			<td><input name="num" class="layui-input" value="{$detail.num|default=''}" lay-verify="required|number" placeholder="请完善会议人数" lay-reqText="请完善会议人数"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">会议需求<font>*</font></td>
+			<td colspan="5">
+				{empty name="detail"}
+				{volist name="$requirements" id="v"}
+				<input type="checkbox" name="requirement[]" title="{$v.title}" value="{$v.id}" lay-skin="primary">
+				{/volist}
+				{else/}
+				{volist name="$requirements" id="v"}
+				<input type="checkbox" name="requirement[]" title="{$v.title}" value="{$v.id}" lay-skin="primary" {eq name="$v.checked" value="1" }checked{/eq}>
+				{/volist}
+				{/empty}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">其他要求</td>
+			<td colspan="5">
+				<input name="remark" class="layui-input" value="{$detail.remark|default=''}" placeholder="请输入其他要求">
+			</td>
+		</tr>
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck,laydate=layui.laydate;
+		oaCheck.init({
+			check_name:'meeting_order',
+			check_btn:0
+		});
+		
+		laydate.render({
+			elem: '#start_date',
+			fullPanel :true,
+			type: 'datetime',
+			format: 'yyyy-MM-dd HH:mm'
+		});
+		
+		laydate.render({
+			elem: '#end_date',
+			fullPanel :true,
+			type: 'datetime',
+			format: 'yyyy-MM-dd HH:mm'
+		});
+	
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'meeting_order';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/adm/meeting/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

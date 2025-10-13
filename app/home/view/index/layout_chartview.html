@@ -10,7 +10,7 @@ var chartView;
 function layoutChartView() {
 	chartView = echarts.init(document.getElementById('chartView'));
 	$.ajax({
-		url: "/home/api/get_view_data",
+		url: "/home/api/get_last_data",
 		type: 'get',
 		data: {},
 		success: function (e) {

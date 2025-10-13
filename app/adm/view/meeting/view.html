@@ -1,0 +1,52 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-2">会议室预定</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">会议主题</td>
+			<td colspan="3">{$detail.title|default=''}</td>
+			<td class="layui-td-gray">会议地点</td>
+			<td>{$detail.room|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">开始时间</td>
+			<td>{$detail.start_time|default=''}</td>
+			<td class="layui-td-gray">结束时间</td>
+			<td>{$detail.end_time|default=''}</td>
+			<td class="layui-td-gray">会议人数</td>
+			<td>{$detail.num|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">会议需求</td>
+			<td colspan="5">
+				{volist name="$detail.requirements_array" id="v"}
+				{eq name="$v.checked" value="1" }<span class="layui-badge layui-bg-blue">{$v.title}</span>{/eq}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">其他要求</td>
+			<td colspan="5">{$detail.remark|default=''}</td>
+		</tr>
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}" class="pt-3"></div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaCheck'];
+
+	function gouguInit() {
+		var tool = layui.tool,oaCheck = layui.oaCheck;
+		//审批相关
+        oaCheck.init({
+            check_name:'meeting_order',
+        });
+	}
+</script>
+{/block}
+<!-- /脚本 -->

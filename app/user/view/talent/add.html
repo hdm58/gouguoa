@@ -266,14 +266,6 @@
 				layer.msg('请选择入职人员性别');
 				return false;
 			}
-			if(!data.field.type){
-				layer.msg('请选择员工类型');
-				return false;
-			}
-			if(!data.field.is_staff){
-				layer.msg('请选择身份类型');
-				return false;
-			}
 			let callback = function (e) {
 				layer.msg(e.msg);
 				if (e.code == 0) {

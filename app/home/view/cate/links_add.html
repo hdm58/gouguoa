@@ -1,0 +1,59 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">办公工具</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">工具名称<font>*</font></td>
+			<td><input type="text" name="title" value="{$detail.title|default=''}" lay-verify="required" lay-reqText="请完善工具名称" placeholder="请完善工具名称" class="layui-input"></td>
+			<td class="layui-td-gray">链接地址<font>*</font></td>
+			<td><input type="text" name="url" value="{$detail.url|default=''}" lay-verify="required" lay-reqText="请完善链接地址" placeholder="请完善链接地址" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">是否新窗口打开<font>*</font></td>
+			<td>
+				{empty name="$detail"}
+				<input type="radio" name="target" value="1" title="是" checked>
+				<input type="radio" name="target" value="0" title="否" >
+				{else/}
+				<input type="radio" name="target" value="1" title="是" {eq name="$detail.target" value="1"} checked{/eq}>
+				<input type="radio" name="target" value="0" title="否" {eq name="$detail.target" value="0"} checked{/eq}>
+				{/empty}
+			</td>
+			<td class="layui-td-gray-2">排序</td>
+			<td><input type="text" name="sort" value="{$detail.sort|default=''}" lay-verify="number" class="layui-input"></td>
+		</tr>
+	</table>
+	<div class="pt-3">
+		<input type="hidden" value="{$detail.id|default=0}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交保存</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		//监听发送
+		form.on('submit(webform)', function(data){
+			$.ajax({
+				url: "/home/cate/links_add",
+				type:'post',
+				data:data.field,
+				success:function(e){
+					layer.msg(e.msg);
+					if (e.code == 0) {						
+						tool.sideClose(1000);
+					}
+				}
+			})
+			return false;
+		});
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

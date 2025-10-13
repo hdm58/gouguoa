@@ -111,8 +111,14 @@ class Talent extends BaseController
 		$param = get_params();	
         if (request()->isAjax()) {			
             $param['entry_time'] = empty($param['entry_time']) ? '0':strtotime($param['entry_time']);
-			$count_a = Db::name('Blacklist')->where([['idcard','=',$param['idcard']],['delete_time','=',0]])->count();
-			$count_b = Db::name('Blacklist')->where([['mobile','=',$param['mobile']],['delete_time','=',0]])->count();
+            $count_a=0;
+            $count_b=0;
+            if(!empty($param['idcard'])){
+			    $count_a = Db::name('Blacklist')->where([['idcard','=',$param['idcard']],['delete_time','=',0]])->count();
+            }
+            if(!empty($param['mobile'])){
+			    $count_b = Db::name('Blacklist')->where([['mobile','=',$param['mobile']],['delete_time','=',0]])->count();
+            }
 			if($count_a>0 || $count_b>0){
 				return to_assign(1, '该员工的信息已被列入黑名单，不支持申请');
 			}

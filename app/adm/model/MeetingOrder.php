@@ -10,31 +10,43 @@
 * @Author 勾股工作室 <hdm58@qq.com>
 +-----------------------------------------------------------------------------------------------
 */
+
 namespace app\adm\model;
 use think\model;
 use think\facade\Db;
-class Note extends Model
+class MeetingOrder extends Model
 {
     /**
     * 获取分页列表
     * @param $where
     * @param $param
     */
-    public function datalist($where, $param)
+    public function datalist($param=[],$where=[],$whereOr=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$order = empty($param['order']) ? 'a.sort desc,a.create_time desc' : $param['order'];
-        try {
+		$order = empty($param['order']) ? 'id desc' : $param['order'];
+        try {			
             $list = self::where($where)
-			->field('a.*,c.title as cate')
-            ->alias('a')
-            ->join('NoteCate c', 'a.cate_id = c.id', 'LEFT')
-			->order($order)
-			->paginate(['list_rows'=> $rows])
-			->each(function ($item, $key){
-				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
-				$item->create_time = to_date($item->create_time);
-			});
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})
+				->order($order)
+				->paginate(['list_rows'=> $rows])
+				->each(function ($item, $key){
+					$item['room'] = Db::name('MeetingRoom')->where(['id' => $item['room_id']])->value('title');
+					$item['meeting_date'] = date('Y-m-d H:i', $item['start_date']).' 至 '.date('Y-m-d H:i', $item['end_date']);
+					$item['did_name'] = Db::name('Department')->where(['id' => $item['did']])->value('title');
+					$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
+					$item['create_time'] = to_date($item['create_time']);
+					$item->check_status_str = check_status_name($item->check_status);
+					$item['check_user'] = '-';
+					if($item['check_status']==1 && !empty($item['check_uids'])){
+						$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
+						$item['check_user'] = implode(',',$check_user);
+					}
+				});
 			return $list;
         } catch(\Exception $e) {
             return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];
@@ -52,22 +64,10 @@ class Note extends Model
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
 			add_log('add', $insertId, $param);
-			$users= Db::name('Admin')->field('id as from_uid')->where(['status' => 1])->column('id');
-			$msg=[
-				'from_uid'=>$param['admin_id'],//发送人
-				'to_uids'=>$users,//接收人
-				'template_id'=>'note',//消息模板ID
-				'content'=>[ //消息内容
-					'create_time'=>date('Y-m-d H:i:s'),
-					'title' => $param['title'],
-					'action_id'=>$insertId
-				]
-			];
-			event('SendMessage',$msg);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
         }
-		return to_assign(0,'操作成功',['aid'=>$insertId]);
+		return to_assign(0,'操作成功',['return_id'=>$insertId]);
     }
 
     /**
@@ -83,9 +83,9 @@ class Note extends Model
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
         }
-		return to_assign();
-    }
-	
+		return to_assign(0,'操作成功',['return_id'=>$param['id']]);
+    }	
+
     /**
     * 根据id获取信息
     * @param $id
@@ -93,6 +93,21 @@ class Note extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		$info['start_time'] = to_date($info['start_date'],'Y-m-d H:i');
+		$info['end_time'] = to_date($info['end_date'],'Y-m-d H:i');
+		$info['room'] = Db::name('MeetingRoom')->where(['id' => $info['room_id']])->value('title');
+		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
+		$info['admin_name'] = Db::name('Admin')->where('id','=',$info['admin_id'])->value('name');
+		$requirements = get_base_type_data('BasicAdm',2);
+		$requirements_array = explode(',', $info['requirements']);
+		foreach ($requirements as &$val) {
+			if (in_array($val['id'], $requirements_array)) {
+				$val['checked'] = 1;
+			} else {
+				$val['checked'] = 0;
+			}
+		}
+		$info['requirements_array'] = $requirements;
 		return $info;
     }
 
@@ -126,4 +141,3 @@ class Note extends Model
 		return to_assign();
     }
 }
-

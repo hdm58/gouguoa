@@ -99,9 +99,13 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 			if(record.length>0){
 				tem+='<tr><td class="layui-td-gray-2">审批记录</td><td colspan="5"><ul class="layui-timeline flow-record pt-2">';
 				for(let l=0;l<record.length;l++){
+					let check_content='';
+					if(record[l].content!=''){
+						check_content='审批意见：<span class="green">'+record[l].content+'</span>。';
+					}
 					tem+='<li class="layui-timeline-item delete-'+record[l].delete_time+'">\
 								<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
-								<p style="padding-left:24px">'+record[l].check_time_str+'<span class="black ml-2">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="green">'+record[l].content+'。</span></p>';
+								<p style="padding-left:24px">'+record[l].check_time_str+'<span class="black ml-2">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。'+check_content+'</p>';
 					let file_array= record[l].file_array;	
 					if(file_array.length>0){
 						tem+='<p style="padding:4px 24px 0;">审批附件：</p><div class="layui-row" style="padding:2px 16px;">';
@@ -259,7 +263,7 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 									</td>
 								</tr>
 							<tr>
-							<td class="layui-td-gray-2">审批意见 <font>*</font></td>
+							<td class="layui-td-gray-2">审批意见</td>
 							<td colspan="3">
 								<textarea name="content" placeholder="请输入审批意见" class="layui-textarea"></textarea>
 							</td>
@@ -521,7 +525,7 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 				let check_status=$(this).data('status');
 				let check_role = checkBox.find('input[name="check_role"]').val();
 				
-				let check_node=0,check_uids='';
+				let check_node=0,check_uids='',check_files='';
 				if(check_role == 0 && check_status==1){
 					check_node = checkBox.find('input[name="check_node"]:checked').val();
 					check_uids = checkBox.find('input[name="check_uids"]').val();
@@ -535,14 +539,14 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 					}
 				}
 				if(check_status ==1 || check_status==2){
-					if(content==''){
-						layer.msg('请输入审批意见');
-						return false;
-					}
 					let check_files = checkBox.find('input[name="check_files"]').val();
 					let confirmTips='确定通过该审批？';
 					if(check_status==2){
 						confirmTips='确定拒绝该审批？';
+						if(content==''){
+							layer.msg('请输入审批意见');
+							return false;
+						}
 					}				
 					tool.ask(confirmTips, function(index){
 						if(typeof me.sets.post_form ==='string' && typeof me.sets.post_url ==='string'){

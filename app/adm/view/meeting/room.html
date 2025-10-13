@@ -42,7 +42,7 @@
 					,{field:'title',title: '会议室名称',width:150}
 					,{field:'num',title: '可容纳人数',width:100, align:'center'}
 					,{field:'keep_name',title: '管理员',width:80, align:'center'}
-					,{field:'address',title: '会议室地址',width:300, align:'center'}
+					,{field:'address',title: '会议室地址',width:300}
 					,{field:'device',title: '会议室设备',minWidth:240,}
 					,{field:'status', title: '状态',width:60,align:'center',templet: function(d){
 						var html1='<span class="green">正常</span>';
@@ -54,17 +54,18 @@
 							return html2;
 						}
 					}}
-					,{width:124,title: '操作', align:'center',templet: function(d){
+					,{width:180,title: '操作', align:'center',templet: function(d){
 						var html='';
 						var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</a>';
 						var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
 						var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
 						var btn3='<a class="layui-btn layui-btn-xs layui-bg-purple" lay-event="open">启用</a>';
+						var btn4='<a class="layui-btn layui-btn-xs layui-bg-blue" lay-event="use">使用情况</a>';
 						if(d.status==1){
-							html = '<div class="layui-btn-group">'+btn+btn1+btn2+'</div>';
+							html = '<div class="layui-btn-group">'+btn+btn1+btn2+btn4+'</div>';
 						}
 						else{
-							html = '<div class="layui-btn-group">'+btn+btn1+btn3+'</div>';
+							html = '<div class="layui-btn-group">'+btn+btn1+btn3+btn4+'</div>';
 						}
 						return html;
 					}}
@@ -78,6 +79,9 @@
 			}
 			if(obj.event === 'view'){					
 				tool.side("/adm/meeting/room_view?id="+obj.data.id);
+			}
+			if(obj.event === 'use'){					
+				tool.side("/adm/meeting/room_use?id="+obj.data.id);
 			}
 			if(obj.event === 'disable'){
 				layer.confirm('确定要禁用该会议室吗?', {icon: 3, title:'提示'}, function(index){

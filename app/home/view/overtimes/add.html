@@ -6,9 +6,9 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">开始时间<font>*</font></td>
-			<td><input name="start_date" class="layui-input tool-time" value="{$detail.start_date|default=''}" readonly lay-verify="required" placeholder="请选择开始时间" lay-reqText="请选择开始时间" data-type="datetime"></td>
+			<td><input name="start_date" class="layui-input tool-time" value="{$detail.start_date|default=''}" readonly lay-verify="required" placeholder="请选择开始时间" lay-reqText="请选择开始时间" data-type="datetime" data-format="yyyy-MM-dd HH:mm"></td>
 			<td class="layui-td-gray">结束时间<font>*</font></td>
-			<td><input name="end_date" class="layui-input tool-time" value="{$detail.end_date|default=''}" readonly lay-verify="required" placeholder="请选择结束时间" lay-reqText="请选择结束时间" data-type="datetime"></td>
+			<td><input name="end_date" class="layui-input tool-time" value="{$detail.end_date|default=''}" readonly lay-verify="required" placeholder="请选择结束时间" lay-reqText="请选择结束时间" data-type="datetime" data-format="yyyy-MM-dd HH:mm"></td>
 			<td class="layui-td-gray">加班时长<font>*</font></td>
 			<td><input name="duration" class="layui-input" value="{$detail.duration|default=''}" lay-verify="required|number" placeholder="请输入加班时长(小时)" lay-reqText="请输入加班时长(小时)"></td>
 		</tr>

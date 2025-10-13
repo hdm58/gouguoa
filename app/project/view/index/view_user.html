@@ -101,12 +101,12 @@ function project_user(){
 				}
 			}
 		if (obj.event === 'remove') {
-			layer.confirm('确定要移除该项目成员吗?', { icon: 3, title: '提示' }, function (index) {
+			tool.ask('确定要移除该项目成员吗?', function (index) {
 				tool.delete("/project/api/remove_user", postData, callback);
 			});
 		}
 		if (obj.event === 'recover') {
-			layer.confirm('确定要恢复该项目成员吗?', { icon: 3, title: '提示' }, function (index) {
+			tool.ask('确定要恢复该项目成员吗?', function (index) {
 				tool.post("/project/api/recover_user", postData, callback);
 			});
 		}

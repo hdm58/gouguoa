@@ -110,13 +110,15 @@ class Loan extends Model
 		}
 		else{
 			$info['pay_time'] = '-';
+			$info['pay_admin'] = '-';
 		}
 		if ($info['back_time'] > 0) {
 			$info['back_time'] = date('Y-m-d H:i:s', $info['back_time']);
 			$info['back_admin'] = Db::name('Admin')->where(['id' => $info['back_admin_id']])->value('name');
 		}
 		else{
-			$info['pay_time'] = '-';
+			$info['back_time'] = '-';
+			$info['back_admin'] = '-';
 		}
 		if ($info['project_id'] > 0) {
 			$info['ptname'] = Db::name('Project')->where(['id' => $info['project_id']])->value('name');

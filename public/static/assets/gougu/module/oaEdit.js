@@ -345,6 +345,7 @@ layui.define(['tool','oaPicker','tinymce'],function(exports){
 			this.sets = $.extend({}, opts, options);
 			let me = this;
 			let editBox = $('#'+me.sets.box);
+			editBox.find('.click-edit').addClass('on');
 			editBox.on('click','.click-edit',function(){
 				let that = $(this);
 				let types = that.data('types');

@@ -59,22 +59,82 @@ class api extends BaseController
 		return table_assign(0, '', $res);
 	}
 	
+    // 初始历史操作记录数据
+    public function initAdminLog(){
+        $second_time = time() - 86400;
+		$startDate = date('Y-m-d',$second_time);
+        $data = [];
+        for ($i = 0; $i < 365; $i++) {
+            $year = date('Y', strtotime($startDate . ' -' . $i . ' days'));
+            $date = date('Y-m-d', strtotime($startDate . ' -' . $i . ' days'));
+			$begin_second=strtotime($date. " 00:00:00");
+			$end_second=strtotime($date. " 23:59:59");
+			$count = Db::name('AdminLogCount')->where('date', $date)->count();
+			if($count>0){
+				continue;
+			}
+            $data[] = [
+                'year' => $year,
+                'date' => $date,
+                'num' => Db::name('AdminLog')->whereBetween('create_time', "$begin_second,$end_second")->count(),
+                'create_time' => time()
+            ];            
+            // 分批插入，避免数据量过大
+            if (count($data) >= 100) {
+                Db::name('AdminLogCount')->insertAll($data);
+                $data = [];
+            }
+        }        
+        // 插入剩余数据
+        if (!empty($data)) {
+             Db::name('AdminLogCount')->insertAll($data);
+        }        
+        //return to_assign();
+    }
+    //获取最近访问记录
+    public function get_last_data()
+    {
+        $first_time = time();
+        $second_time = $first_time - 86400;
+		
+        $begin_first = strtotime(date('Y-m-d', $first_time) . " 00:00:00");
+        $end_first = strtotime(date('Y-m-d', $first_time) . " 23:59:59");
+		
+        $begin_second = strtotime(date('Y-m-d', $second_time) . " 00:00:00");
+        $end_second = strtotime(date('Y-m-d', $second_time) . " 23:59:59");
+		
+		//当天
+        $data_first = Db::name('AdminLog')->field('create_time')->whereBetween('create_time', "$begin_first,$end_first")->select();
+		//昨天
+        $data_second = Db::name('AdminLog')->field('create_time')->whereBetween('create_time', "$begin_second,$end_second")->select();
+        return to_assign(0, '', ['data_first' => hour_document($data_first), 'data_second' => hour_document($data_second)]);
+    }
+	
     //获取访问记录
     public function get_view_data()
     {
-        $param = get_params();
         $first_time = time();
         $second_time = $first_time - 86400;
         $three_time = $first_time - 86400 * 365;
-        $begin_first = strtotime(date('Y-m-d', $first_time) . " 00:00:00");
+		
+		$begin_first = strtotime(date('Y-m-d', $first_time) . " 00:00:00");
         $end_first = strtotime(date('Y-m-d', $first_time) . " 23:59:59");
-        $begin_second = strtotime(date('Y-m-d', $second_time) . " 00:00:00");
-        $end_second = strtotime(date('Y-m-d', $second_time) . " 23:59:59");
-        $begin_three = strtotime(date('Y-m-d', $three_time) . " 00:00:00");
-        $data_first = Db::name('AdminLog')->field('create_time')->whereBetween('create_time', "$begin_first,$end_first")->select();
-        $data_second = Db::name('AdminLog')->field('create_time')->whereBetween('create_time', "$begin_second,$end_second")->select();
-        $data_three = Db::name('AdminLog')->field('create_time')->whereBetween('create_time', "$begin_three,$end_first")->select();
-        return to_assign(0, '', ['data_first' => hour_document($data_first), 'data_second' => hour_document($data_second), 'data_three' => $data_three]);
+		
+        $begin_time = date('Y-m-d', $three_time);
+        $end_time = date('Y-m-d', $second_time);
+		
+		$last_count = Db::name('AdminLogCount')->where('date', $end_time)->count();
+		if($last_count==0){
+			//如果不存在生成记录
+			$this->initAdminLog();
+		}
+		//当天
+        $today_count = Db::name('AdminLog')->whereBetween('create_time', "$begin_first,$end_first")->count();
+		//一年
+        $data_three = Db::name('AdminLogCount')->field('date,num')->order('date asc')->whereBetween('date', "$begin_time,$end_time")->column('num', 'date');
+		$today = date('Y-m-d');
+		$data_three[$today] = $today_count;
+        return to_assign(0, '', ['data_three' => $data_three]);
     }
 	
 	//获取员工活跃数据

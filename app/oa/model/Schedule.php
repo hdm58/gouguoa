@@ -51,7 +51,15 @@ class Schedule extends Model
 					if($item->tid > 0){
 						$task = Db::name('ProjectTask')->where(['id' => $item->tid])->find();
 						$item->task = $task['title'];
-						$item->project = Db::name('Project')->where(['id' => $task['project_id']])->value('name');
+						if($task['project_id']>0){
+							$item->project = Db::name('Project')->where(['id' => $task['project_id']])->value('name');
+						}
+						else{
+							$item->project='-';
+						}
+					}
+					else{
+						$item->task = '-';
 					}
 					$item->start_time_a = empty($item->start_time) ? '' : date('Y-m-d', $item->start_time);
 					$item->start_time_b = empty($item->start_time) ? '' : date('H:i', $item->start_time);

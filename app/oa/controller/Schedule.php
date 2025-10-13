@@ -237,7 +237,7 @@ class Schedule extends BaseController
         }
     }
 
-    public function view()
+	public function view()
     {
         $id = get_params('id');
         $schedule = Db::name('Schedule')->where(['id' => $id])->find();
@@ -257,7 +257,15 @@ class Schedule extends BaseController
 			if($schedule['tid']>0){
 				$task = Db::name('ProjectTask')->where(['id' => $schedule['tid']])->find();
 				$schedule['task'] = $task['title'];
-				$schedule['project'] = Db::name('Project')->where(['id' => $task['project_id']])->value('name');
+				if($task['project_id']>0){
+					$schedule['project'] = Db::name('Project')->where(['id' => $task['project_id']])->value('name');
+				}
+				else{
+					$schedule['project'] ='-';
+				}
+			}
+			else{
+				$schedule['task'] ='-';
 			}
         }
         if (request()->isAjax()) {

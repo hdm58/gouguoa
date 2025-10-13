@@ -42,6 +42,7 @@ class Note extends BaseController
         if (request()->isAjax()) {
 			$where=[];
 			$where[]=['a.delete_time','=',0];
+			$where[]=['a.status','=',1];
             if (!empty($param['keywords'])) {
                 $where[] = ['a.id|a.title', 'like', '%' . $param['keywords'] . '%'];
             }

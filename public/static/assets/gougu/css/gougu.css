@@ -79,9 +79,10 @@
 .layui-data-none{padding:12px 0; color:#969696; text-align:center; font-size:12px;}
 .gougu-data-none{background:url(../images/data-none.png) no-repeat center center; background-size:auto 80%;}
 
-.click-edit{position: relative; padding-right:24px; box-sizing:border-box; cursor:pointer;}
-.click-edit::after{content: ""; width: 36px; height: 36px; display: block; position: absolute; right:0; top: 0; background:url(../images/click-edit.png) no-repeat center; background-size:24px auto; opacity: 0; transition: opacity ease-in-out .2s;}
-.click-edit:hover::after {opacity: 1;}
+.click-edit{position: relative; padding-right:24px; box-sizing:border-box;}
+.click-edit.on{cursor:pointer;}
+.click-edit::after{content: ""; width: 36px; height: 24px; display: block; position: absolute; right:0; top: 0; background:url(../images/click-edit.png) no-repeat center; background-size:24px auto; opacity: 0; transition: opacity ease-in-out .2s;}
+.click-edit.on:hover::after {opacity: 1;}
 
 html {background-color: #F9F9F9;}
 html,body{height:100%;scrollbar-width: thin; color:#323232;}

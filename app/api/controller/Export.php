@@ -19,6 +19,7 @@ use think\facade\View;
 use Mpdf\Mpdf;
 use PhpOffice\PhpWord\TemplateProcessor;
 use app\adm\model\MeetingRecords;
+use app\adm\model\MeetingOrder;
 use app\home\model\Leaves;
 use app\home\model\Trips;
 use app\home\model\Outs;
@@ -160,6 +161,12 @@ class Export extends BaseController
 			$detail= $model->getById($id);
 			$name = date('Ymd',$detail['meeting_date']).$detail['did_name'].'_会议纪要';
 			$check_record=false;
+		}
+		//会议室预定
+		if($types=='meeting_order'){
+			$model = new MeetingOrder();
+			$detail= $model->getById($id);
+			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的会议室预定';
 		}
 		//员工档案
 		if($types=='files'){

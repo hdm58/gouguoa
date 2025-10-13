@@ -30,11 +30,14 @@
 <form class="layui-form p-5">
 	<h1>{$detail.title}</h1>
 	<div class="text-detial-ops">
-		<span>{$detail.admin_name}发表于：{$detail.create_time | date='Y-m-d H:i:s'}</span><span>公告分类：{$detail.cate}</span>
-		<span>展示期间：{$detail.start_time | date='Y-m-d'} - {$detail.end_time | date='Y-m-d'}</span>
+		<span>{$detail.admin_name}发表于：{$detail.create_time | date='Y-m-d H:i:s'} {$detail.sourse==1?'PC端':'手机端'}</span><span>公告分类：{$detail.cate}</span>
 	</div>
 	<div class="text-detial-content">
-	{$detail.content|raw}
+		{eq name="$detail.sourse" value="1"}
+		{$detail.content|raw}
+		{else/}
+		<pre style="font-family:inherit;white-space: pre-wrap;">{$detail.content}</pre>
+		{/eq}
 	</div>
 	{notempty name="$detail.src"}
 	<div class="py-3" style="font-size:16px;">

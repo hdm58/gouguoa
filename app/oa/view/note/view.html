@@ -31,7 +31,6 @@
 	<h1>{$detail.title}</h1>
 	<div class="text-detial-ops">
 		<span>{$detail.admin_name}发表于：{$detail.create_time | date='Y-m-d H:i:s'}</span><span>公告分类：{$detail.cate}</span>
-		<span>展示期间：{$detail.start_time | date='Y-m-d'} - {$detail.end_time | date='Y-m-d'}</span>
 	</div>
 	<div class="text-detial-content">
 	{$detail.content|raw}

@@ -661,7 +661,7 @@ function get_base_type_data($table,$type)
 
 //读取所属地区
 function get_region_name($id){
-    $region = Db::name('city')->where(['id'=>$id])->find();
+    $region = Db::name('Area')->where(['id'=>$id])->find();
 	if(empty($region)){
 		return '';
 	}

@@ -105,6 +105,10 @@
 					}			
 					return html;
 				}}
+				,{field: 'right', title: '操作',fixed:'right', width:90, align:'center',templet:function(d){
+					var html='<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">查看</button><button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</button></div>';
+					return html;
+				}}
 			]]
 		});
 		
@@ -113,6 +117,27 @@
 			if(obj.event === 'add'){
 				tool.side('/project/task/add');
 				return;
+			}
+		});
+		table.on('tool(task)', function(obj){
+			if(obj.event === 'view'){
+				tool.side('/project/task/view/id/'+obj.data.id);
+				return;
+			}
+			if(obj.event === 'del'){
+				layer.confirm('您确定要删除该任务？', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.taskTable.reload();
+						}
+					}
+					tool.delete("/project/task/del", { id: obj.data.id }, callback);
+					layer.close(index);
+				});
 			}
 		});
 	}		

@@ -92,6 +92,9 @@ class Note extends BaseController
 				View::assign('detail', $detail);
 			}
 			View::assign('id', $id);
+			if(is_mobile()){
+				return view('qiye@/index/note_add');
+			}
 			return view();
 		}
     }

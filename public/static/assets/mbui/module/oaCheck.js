@@ -102,7 +102,11 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 				tem+='<div class="padding-12-b"><span class="f16 mbui-text-gray">审批记录</span></div>';
 				tem+='<div class="mbui-steps">';
 						for(let l=0;l<record.length;l++){
-							tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="text-black">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。审批意见：<span class="text-black">'+record[l].content+'。</span></small>';
+							let check_content='';
+							if(record[l].content!=''){
+								check_content='审批意见：<span class="text-green">'+record[l].content+'</span>。';
+							}
+							tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="text-black">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。'+check_content+'</small>';
 						
 							let file_array= record[l].file_array;	
 							if(file_array.length>0){
@@ -535,7 +539,6 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 				if(check_role == 0 && check_status==1){
 					check_node = checkBox.find('input[name="check_node"]:checked').val();
 					check_uids = checkBox.find('input[name="check_uids"]').val();
-					check_files = checkBox.find('input[name="check_files"]').val();
 					if(!check_node){
 						layer.msg('请选择下一审批节点');
 						return false;
@@ -546,13 +549,14 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 					}
 				}
 				if(check_status ==1 || check_status==2){
-					if(content==''){
-						layer.msg('请输入审批意见');
-						return false;
-					}
+					check_files = checkBox.find('input[name="check_files"]').val();
 					let confirmTips='确定通过该审批？';
 					if(check_status==2){
 						confirmTips='确定拒绝该审批？';
+						if(content==''){
+							layer.msg('请输入审批意见');
+							return false;
+						}
 					}				
 					layer.confirm(confirmTips, function(index){
 						$.ajax({

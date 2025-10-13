@@ -42,15 +42,15 @@ class Chance extends BaseController
         if (request()->isAjax()) {
 			$where=[];
 			$whereOr=[];
-			$where[]=['delete_time','=',0];
+			$where[]=['a.delete_time','=',0];
             if (!empty($param['keywords'])) {
-                $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['a.title|a.content|c.name', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['stage'])) {
-                $where[] = ['stage','=',$param['stage']];
+                $where[] = ['a.stage','=',$param['stage']];
             }
 			if (!empty($param['uid'])) {
-                $where[] = ['belong_uid','=',$param['uid']];
+                $where[] = ['a.belong_uid','=',$param['uid']];
             }
 			
 			$map=[];
@@ -63,26 +63,19 @@ class Chance extends BaseController
 			$dids_a = get_leader_departments($uid);
 			//是否是客户管理员
 			$auth = isAuth($uid,'customer_admin','conf_1');
-			if($auth == 1){
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$mapOr[] = ['belong_did','in',$dids];
-				}
-			}
-			else{
+			if($auth == 0){
 				if(!empty($dids_a)){
 					$mapOr[] = ['belong_did','in',$dids_a];
 				}
-			}
-			$cids = Db::name('Customer')
+				$cids = Db::name('Customer')
 				->where($map)
 				->where(function ($query) use($mapOr) {
 					if (!empty($mapOr)){
 						$query->whereOr($mapOr);
 					}
 				})->column('id');	
-			$where[] = ['cid', 'in',$cids];
+				$where[] = ['a.cid', 'in',$cids];
+			}
             $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         }

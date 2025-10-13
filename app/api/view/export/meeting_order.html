@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+		</style>
+	</head>
+	<body>
+	<h2>会议室预定</h2>
+	<table class="pdf-table">
+		<tr>
+			<td class="pdf-td-gray">会议主题</td>
+			<td>{$detail.title|default=''}</td>
+			<td class="pdf-td-gray">会议地点</td>
+			<td>{$detail.room|default=''}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">开始时间</td>
+			<td>{$detail.start_time|default=''}</td>
+			<td class="pdf-td-gray">结束时间</td>
+			<td>{$detail.end_time|default=''}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">会议人数</td>
+			<td colspan="3">{$detail.num}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">会议需求</td>
+			<td colspan="3">
+				{volist name="$detail.requirements_array" id="v"}
+				{eq name="$v.checked" value="1" }<span style="margin-right:16px;">{$v.title}</span>{/eq}
+				{/volist}
+			</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">其他要求</td>
+			<td colspan="3">{$detail.remark|default=''}</td>
+		</tr>
+	</table>
+	{include file="export/pdf_check" /}
+	</body>
+</html>

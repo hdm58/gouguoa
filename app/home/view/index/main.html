@@ -28,6 +28,8 @@
 	.layui-right-bar a .iconfont{display: inline-block; font-weight:600; width: 100%; height: 37px; line-height: 39px; text-align: center;font-size: 24px;}
 	.layui-right-bar a:hover{color: #1A75FF; background-color:#F2F8FF;}
 	.layui-card-title{padding:12px 12px 0}
+	.website{padding-bottom:3px;}
+	.website .layui-btn,.website .layui-btn+.layui-btn{margin:6px; font-size:13px;}
 </style>
 {/block}
 <!-- 主体 -->
@@ -77,6 +79,10 @@
 			
 			{if ( $layout.row == 2) AND ( $layout.name == 'approve') }
 				{include file="/index/layout_approve" /}	
+			{/if}
+			
+			{if ( $layout.row == 2) AND ( $layout.name == 'links') }
+				{include file="/index/layout_links" /}	
 			{/if}
 			
 			{if ( $layout.row == 2) AND ( $layout.name == 'system') }
@@ -183,6 +189,10 @@
 		
 		if(typeof layoutFastentry ==='function'){
 			layoutFastentry(tool,work,table)
+		}
+		
+		if(typeof layoutLinks ==='function'){
+			layoutLinks()
 		}
 		
 		if(typeof layoutSystem ==='function'){
