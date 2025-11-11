@@ -1347,12 +1347,12 @@ function get_select_tree($data, $pid ,$deep=0, $selected=[])
 		if(in_array($v['id'],$selected)){
 			$vv['selected'] = 'selected';
 		}
-		if($v['pid'] == $pid){ 
-		//父亲找到儿子
-		$deep++;
-		$vv['children'] = get_select_tree($data, $v['id'],$deep,$selected);
+		if(!empty($v['pid']) && $v['pid'] == $pid){
+			//父亲找到儿子
+			$deep++;
+			$vv['children'] = get_select_tree($data, $v['id'],$deep,$selected);
+		}
 		$tree[] = $vv;
-	   }
 	}
 	return array_values($tree);
 }
