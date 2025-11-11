@@ -17,6 +17,15 @@
 			</td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:80%;">
+					<select id="dids" name="dids" xm-selected="" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span class="red" style="font-size:12px;"> (如果不选，默认是全公司)</span>
+			</td>
+		</tr>
+		<tr>
 			<td class="layui-td-gray">用途简述</td>
 			<td colspan="3"><textarea name="remark" placeholder="请输入用途简述，可空" class="layui-textarea"></textarea></td>
 		</tr>
@@ -32,6 +41,15 @@
 			<td>
 				<input type="text" name="keep_name" placeholder="请选择" value="{$detail.keep_name}" autocomplete="off" class="layui-input picker-admin">
 				<input type="hidden" name="keep_uid" value="{$detail.keep_uid}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应用部门</td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:80%;">
+					<select id="dids" name="dids" xm-selected="{$detail.dids}" xm-select="select1" xm-select-skin="default"></select>
+				</div>
+				<span class="red" style="font-size:12px;"> (如果不选，默认是全公司)</span>
 			</td>
 		</tr>
 		<tr>
@@ -52,9 +70,15 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const moduleInit = ['tool','oaPicker'];
+	const moduleInit = ['tool','oaPicker','formSelects'];
 	function gouguInit() {
-		var form = layui.form,tool=layui.tool;		  
+		var form = layui.form,tool=layui.tool,formSelects= layui.formSelects;	
+		//选择用印部门
+		var selected_a = $('#dids').attr('xm-selected');
+		formSelects.data('select1', 'server', {
+			url: '/api/index/get_department_select',
+			keyword: selected_a
+		});
 		//监听提交
 		form.on('submit(webform)', function(data){
 			let callback = function (e) {

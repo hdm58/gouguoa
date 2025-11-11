@@ -169,7 +169,7 @@ layui.define(['tool'], function (exports) {
 			if(me.settings.ids!='' && me.settings.names!=''){
 				select_ids=me.settings.ids.split(',');
 				select_names=me.settings.names.split(',');
-				select_ids.sort((a, b) => a - b);
+				//select_ids.sort((a, b) => a - b);
 				for(var m=0;m<select_ids.length;m++){
 					select_array.push({id:select_ids[m],name:select_names[m]});
 				}
@@ -275,7 +275,7 @@ layui.define(['tool'], function (exports) {
 							$('.layui-tags-all').on('click',function(){
 								for(var a=0; a<dataList.length;a++){
 									if(select_ids.indexOf(dataList[a]['id']) == -1){
-										select_array.push(dataList[a]);;
+										select_array.push(dataList[a]);
 									}									
 								}
 								selectTags.html(me.employeeSelect(1));	

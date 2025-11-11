@@ -111,6 +111,7 @@ layui.define(['tool'], function (exports) {
 			if (schedule['id'] > 0) {
 				if(schedule['admin_id'] != login_admin){
 					layer.msg('不能编辑他人的工作记录');
+					that.loading = false;
 					return false;
 				}
 				title = '编辑工作记录';

@@ -81,10 +81,16 @@ class Template extends BaseController
             }	 
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
+			$copyid = isset($param['copyid']) ? $param['copyid'] : 0;
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);
 			}
+			if ($copyid>0) {
+				$detail = $this->model->getById($copyid);
+				View::assign('detail', $detail);
+			}
+			View::assign('copyid', $copyid);
 			return view();
 		}
     }

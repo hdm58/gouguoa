@@ -141,6 +141,7 @@ class Expense extends BaseController
 			$param['admin_id'] = $this->uid;
 			$param['did'] = $this->did;
 			$param['cost'] = $cost;
+			$param['pay_amount'] = $cost;
             if (!empty($param['id']) && $param['id'] > 0) {
                 try {
                     validate(ExpenseValidate::class)->scene('edit')->check($param);

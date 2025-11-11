@@ -69,7 +69,11 @@
 		</tr>
 	</table>
 	<div class="pt-4">
+		{eq name="$copyid" value="0"}
 		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		{else/}
+		<input type="hidden" name="id" value="0"/>
+		{/eq}
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 	</div>

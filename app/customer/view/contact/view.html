@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">联系人信息</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">联系人信息</h3>
     <table class="layui-table layui-table-form">
       <tr>
         <td class="layui-td-gray">客户名称</td>
@@ -40,31 +40,6 @@
         <td>{$detail.birthday}</td>
 		<td class="layui-td-gray">家庭住址</td>
         <td colspan="3">{$detail.address}</td>
-      </tr>
-	  <tr>
-		<td class="layui-td-gray">家庭成员</td>
-        <td colspan="5">
-			<table id="interfix" class="layui-table layui-table-min" style="margin:0;">
-				<tr>
-					<th width="150">成员姓名</th>
-					<th width="150">成员关系</th>
-					<th>备注信息</th>
-				</tr>
-				{notempty name="$detail.family_array" }
-				{volist name="$detail.family_array" id="vo"}
-				<tr class="more_interfix">
-					<td>{$vo.family_name}</td>
-					<td>{$vo.family_relations}</td>
-					<td>{$vo.family_remarks}</td>
-				</tr>
-				{/volist}
-				{else/}
-				<tr class="tr-none">
-					<td colspan="3" style="padding:12px 0; text-align:center;">暂无数据</td>
-				</tr>
-				{/notempty}
-			</table>
-		</td>
       </tr>
     </table>
 </form>

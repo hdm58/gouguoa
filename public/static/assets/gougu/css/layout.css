@@ -99,7 +99,7 @@ body{color:#323232}
 .layui-side-white .layui-this>a,
 .layui-side-white .layui-this>a:hover {background-color: #EBF3FF;}
 .layui-side-white .layui-nav-child dd a:hover{background-color:#F8FAFF!important;color: #1A75FF!important; opacity: 0.9;}
-.layui-side-white .layui-nav-tree .layui-nav-child{background-color:#ffffff!important;}
+.layui-side-white .layui-nav-tree .layui-nav-child,.layui-side-white .layui-nav{background-color:#ffffff!important;}
 /**blue**/
 .layui-side-blue{background-color:#192A5E; color: #C5C9D2;}
 .layui-side-blue .layui-logo {background-color:#192A5E;border-bottom: 1px solid #122150;}
@@ -204,7 +204,7 @@ body{color:#323232}
 
 .side-spread .layui-side .layui-nav-item cite,
 .side-spread .layui-side .layui-nav>.layui-nav-item>.layui-nav-child,
-.side-spread .layui-side .layui-nav>.layui-nav-item>a .layui-nav-more {display: none; padding: 8px 0;width: 180px}
+.side-spread .layui-side .layui-nav>.layui-nav-item>a .layui-nav-more {display: none!important; padding: 8px 0;width: 180px}
 
 .side-spread .layui-side .layui-nav>.layui-nav-itemed>a {background: rgba(0, 0, 0, .3)}
 

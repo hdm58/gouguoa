@@ -32,7 +32,15 @@ class Sealcate extends BaseController
 				->alias('a')
 				->join('Admin u', 'u.id = a.keep_uid')
 				->join('Department d', 'd.id = u.did')
-				->order('create_time asc')->select();
+				->order('create_time asc')->select()->toArray();
+				foreach ($cate as $key => &$value) {
+					if(!empty($value['dids'])){
+						$value['departments']=get_department_name($value['dids']);
+					}
+					else{
+						$value['departments']='全部';
+					}
+				}
             return to_assign(0, '', $cate);
         } else {
             return view();

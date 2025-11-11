@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">新增联系人</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">新增联系人</h3>
     <table class="layui-table layui-table-form">
       <tr>
         <td class="layui-td-gray">客户名称</td>
@@ -57,27 +57,8 @@
 		<td class="layui-td-gray">家庭住址</td>
         <td colspan="3"><input type="text" name="address" placeholder="请输入联系人家庭住址" class="layui-input"></td>
       </tr>
-	  <tr>
-		<td class="layui-td-gray">家庭成员</td>
-        <td colspan="5">
-				<table id="interfix" class="layui-table layui-table-min" style="margin:0;">
-					<tr>
-						<th width="150">成员姓名</th>
-						<th width="150">成员关系</th>
-						<th>备注信息</th>
-						<th width="60">操作</th>
-					</tr>
-					<tr class="tr-none">
-						<td colspan="4" style="padding:12px 0; text-align:center;">暂无数据</td>
-					</tr>
-				</table>
-				<div class="pt-2">
-					<button class="layui-btn layui-btn-sm" type="button" id="addInterfix">+ 家庭成员</button>
-				</div>
-		</td>
-      </tr>
     </table>
-    <div class="pt-4">
+    <div class="pt-3">
 	   <input type="hidden" name="cid" value="{$customer_id}">
       <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
       <button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -92,27 +73,6 @@
 	const moduleInit = ['tool'];
 	function gouguInit() {
 		var form = layui.form,tool=layui.tool;
-		
-		//添加家庭成员表格
-		$('#addInterfix').on('click',function(){
-			var html = '';
-			html += '<tr class="more_interfix">\
-						<td><input type="text" name="family_name[]" value="" placeholder="请输入" class="layui-input" lay-verify="required" lay-reqText="请完善成员姓名"></td>\
-						<td><input type="text" name="family_relations[]" value=""  placeholder="请输入，如:父子" class="layui-input" lay-verify="required" lay-reqText="请完善成员关系"></td>\
-						<td><input type="text" name="family_remarks[]" class="layui-input" value=""></td>\
-						<td><a class="layui-btn layui-btn-danger layui-btn-xs" data-id="0" lay-event="del">删除</a></td>\
-					</tr>';
-			$("#interfix").append(html).find('.tr-none').remove();
-			form.render();
-		});
-
-		$('#interfix').on('click', '[lay-event="del"]', function() {
-			$(this).parents(".more_interfix").remove();
-			if($('.more_interfix').length<1){
-				$("#interfix").append('<tr class="tr-none"><td colspan="4" style="padding:12px 0; text-align:center;">暂无数据</td></tr>')
-			}
-		});
-		
 		//监听提交
 		form.on('submit(webform)', function (data) {
 			if(!data.field.sex){

@@ -20,7 +20,7 @@ class DiskValidate extends Validate
 	// 自定义验证规则
 	protected function checkOne($value,$rule,$data=[])
 	{
-		$count = Db::name('Disk')->where([['name','=',$data['name']],['group_id','=',$data['group_id']],['id','<>',$data['id']]])->count();
+		$count = Db::name('Disk')->where([['name','=',$data['name']],['group_id','=',$data['group_id']],['pid','=',$data['pid']],['id','<>',$data['id']]])->count();
 		return $count == 0 ? true : false;
 	}
     protected $rule = [

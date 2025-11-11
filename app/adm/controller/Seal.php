@@ -119,6 +119,18 @@ class Seal extends BaseController
             }	 
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
+			$did = $this->did;
+			$map1 = [];
+			$map2 = [];
+			$map1[] = ['status', '=', 1];
+			$map1[] = ['dids', '=', ''];
+
+			$map2[] = ['status', '=', 1];
+			$map2[] = ['', 'exp', Db::raw("FIND_IN_SET('{$did}',dids)")];
+
+			$sealcate = Db::name('SealCate')->whereOr([$map1,$map2])->order('id desc')->select()->toArray();
+			View::assign('sealcate', $sealcate);
+			View::assign('user', get_admin($this->uid));
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 				if($detail['check_status']==0 || $detail['check_status']==4){
@@ -128,7 +140,6 @@ class Seal extends BaseController
 					}
 					return view('edit');
 				}
-				return view(EEEOR_REPORTING,['code'=>403,'warning'=>'当前状态不支持编辑']);
 			}
 			if(is_mobile()){
 				return view('qiye@/approve/add_seal');

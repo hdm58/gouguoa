@@ -146,10 +146,16 @@ class Index extends BaseController
 		if (request()->isAjax()) {
 			$id = get_params("id");
 			$time = strtotime(date('Y-m-d')." 00:00:00");
-			$max_num = Db::name('DataAuth')->where('name','customer_admin')->value('conf_2');
-			$count = Db::name('Customer')->where([['belong_time','>',$time],['belong_uid','=',$this->uid]])->count();
-			if($count>=$max_num){
+			$max_num_day = Db::name('DataAuth')->where('name','customer_admin')->value('conf_2');
+			$count_day = Db::name('Customer')->where([['belong_time','between',[$time,time()]],['belong_uid','=',$this->uid]])->count();
+			if($count_day>=$max_num_day){
 				return to_assign(1, "今日领取客户数已到达上限，请明天再来领取");
+			}
+			
+			$max_num = Db::name('DataAuth')->where('name','customer_admin')->value('conf_3');
+			$count = Db::name('Customer')->where([['belong_uid','=',$this->uid]])->count();
+			if($count>=$max_num){
+				return to_assign(1, "领取客户数已到达上限，请把部分客户移到公海里再来领取");
 			}
 			$data['id'] = $id;
 			$data['belong_uid'] = $this->uid;

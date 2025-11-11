@@ -29,6 +29,7 @@
         "topthink/think-view": "^2.0",
         "topthink/think-captcha": "^3.0",
         "topthink/think-helper": "^3.1",
+        "topthink/think-image": "^1.0.8",
         "overtrue/pinyin": "^5.2",
         "phpmailer/phpmailer": "^6.8",
         "firebase/php-jwt": "^6.8",

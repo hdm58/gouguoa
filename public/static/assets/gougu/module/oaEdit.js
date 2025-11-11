@@ -283,10 +283,18 @@ layui.define(['tool','oaPicker','tinymce'],function(exports){
 			let field = that.data('field');
 			let types = that.data('picker');
 			let type = that.data('type');
+			let where = that.data('where');
+			let map = {}
 			if (typeof(type) == "undefined") {
 				type = 1;
 			}
-			let map = {};
+			if (typeof(where) == "undefined" || where == '') {
+				map = {};
+			}
+			else{
+				const jsonStr = where.replace(/(\w+):/g, '"$1":').replace(/'/g, '"'); 
+				map = JSON.parse(jsonStr);
+			}
 			let callback = function(data){
 				let ids = [],titles=[];
                 for ( var i = 0; i <data.length; i++){

@@ -1635,14 +1635,26 @@ input[type="file"] {display: block;}
 .mbui-file-div .mbui-file-del{ width: 30px; height: 30px;position:absolute;top:14px; right:2px; font-size:20px;line-height:28px; text-align:center; color:var(--color-gray-500);}
 
 /*人员选择*/
-.mbui-picker-selector {background-color:var(--color-white);width:100%;height:100vh;position:fixed;top:0;left:0;z-index:999;}
+.mbui-picker-search{margin: 0;padding:6px 12px;position: relative;}
+.mbui-picker-search:after{ content: " ";pointer-events: none; position: absolute; bottom: 0; left: 0; width: 200%; height: 0; border-bottom: 1px solid var(--color-gray-100);
+ -webkit-transform: scale(0.5);
+    transform: scale(0.5);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+.mbui-picker-search .search-input {width: 100%; padding: 10px; border: none; background: #f5f7fa; border-radius: 4px; font-size: 16px; color: #333;}
+.mbui-picker-tags{padding:3px 12px; font-size:14px;}
+.mbui-picker-tags .tags-search{display: inline-block; line-height: 1.40625; padding: 6px 12px; margin:3px 6px 3px 0;border-radius:1rem; background-color:#fff;}
+.mbui-picker-tags .tags-search.active{background-color:#333333; color:#ffffff}
+
+.mbui-picker-selector {background-color:var(--color-white);width:100%;height:100vh;position:fixed;top:0;left:0;z-index:99;}
 .mbui-picker-selector .mbui-bar:before { content: " ";pointer-events: none; position: absolute; bottom: 0; left: 0; width: 200%; height: 0; border-top: 1px solid var(--color-gray-100);
  -webkit-transform: scale(0.5);
     transform: scale(0.5);
     -webkit-transform-origin: 0 0;
     transform-origin: 0 0;
 }
-.mbui-picker-item{margin: 0;padding:8px 12px; color: var(--color-gray-900); text-align: left; background: var(--color-white); position: relative;
+.mbui-picker-item{margin: 0;padding: 10px; color: var(--color-gray-900); text-align: left; background: var(--color-white); position: relative;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -1662,6 +1674,7 @@ input[type="file"] {display: block;}
 .mbui-picker-selector .contacts{ padding: 0 0 48px; margin:0; height:100vh; overflow-y:auto;}
 .mbui-picker-selector .contacts .mbui-contacts-title{padding:8px 16px; background-color:var(--color-gray-50); font-size:12px; color:var(--color-gray-400);}
 .mbui-picker-selector .lists{padding: 0; margin:0; height:calc(100vh - 46px); overflow-y:auto;}
+.mbui-picker-selector .data-lists{height:calc(100vh - 96px);}
 /*picker-radio*/
 .mbui-picker-item .mbui-input-radio{width: 19px; height: 19px; margin-left:4px; appearance: none; position: relative;}
 .mbui-picker-item .mbui-input-radio:before{content: ''; width: 19px; height: 19px; border: 1px solid var(--color-gray-400); display: inline-block; border-radius: 50%; vertical-align: bottom;}

@@ -49,6 +49,9 @@ class Files extends BaseController
                 ->where($where)
                 ->paginate(['list_rows'=> $rows])
 				->each(function($item, $key){
+					if(empty($item['thumbpath'])){
+						$item['thumbpath'] = $item['filepath'];
+					}
 					$item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
 					return $item;
 				});

@@ -16,6 +16,7 @@ namespace app\api\controller;
 
 use app\api\BaseController;
 use app\api\model\EditLog;
+use think\Image; // 引入Image类
 use think\facade\Db;
 
 class Index extends BaseController
@@ -82,9 +83,18 @@ class Index extends BaseController
 			});
 			if ($filename) {
 				//写入到附件表
+				$imagePath = get_config('filesystem.disks.public.url'). '/' . $filename;
+				$thumbPath = '';
+				if(in_array($file->extension(),['jpg','png','jpeg','gif'])){
+					// 生成等比缩略图
+					$image = Image::open(request()->file('file'));
+					$thumbPath = dirname($imagePath) . '/thumb_' . basename($imagePath);
+					// 生成等比缩略图保存到指定位置，这里设置最大宽度为360px, 高度自适应
+					$image->thumb(360,360,Image::THUMB_CENTER)->save('./'.$thumbPath);
+				}
 				$data = [];
-				$path = get_config('filesystem.disks.public.url');
-				$data['filepath'] = $path . '/' . $filename;
+				$data['filepath'] = $imagePath;
+				$data['thumbpath'] = $thumbPath;
 				$data['name'] = $file->getOriginalName();
 				$data['mimetype'] = $file->getOriginalMime();
 				$data['fileext'] = $file->extension();

@@ -123,6 +123,9 @@ class Meeting extends BaseController
 				View::assign('detail', $detail);
 			}
 			View::assign('requirements', $requirements);
+			if(is_mobile()){
+				return view('qiye@/approve/add_meeting');
+			}			
 			return view();
 		}
     }
@@ -134,8 +137,12 @@ class Meeting extends BaseController
     {
 		$model = new MeetingOrder();
 		$detail = $model->getById($id);
+		View::assign('create_user', get_admin($detail['admin_id']));
 		if (!empty($detail)) {
 			View::assign('detail', $detail);
+			if(is_mobile()){
+				return view('qiye@/approve/view_meeting');
+			}
 			return view();
 		}
 		else{

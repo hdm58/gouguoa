@@ -55,10 +55,10 @@
     .file-item .attach .subject ul li video { width: 100px; height: 100px; border-radius: 3px; }
     .file-item .attach .subject ul li p {overflow: hidden; margin: 5px 0 0; width: 98px; font-size: 13px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
     .file-item .attach .subject ul li .file-check{position: absolute; width:20px; height:20px; left: 0; top: 0; display: none; font-size: 14px; border-radius:2px 0 4px 0; text-align: center; line-height: 20px; color: #ffffff; background-color:#fff; border-right:1px solid #dddddd; border-bottom:1px solid #dddddd; cursor:pointer;}	
+	.file-item .attach ul li .layui-btn-ctrl{position:absolute; top:0; right:0; opacity: 0;}
+	.file-item .attach ul li:hover .layui-btn-ctrl{opacity: 1;}
 	.file-item .attach .subject ul li:hover .file-check{display: block;}
     .file-item .attach .subject ul li.on .file-check{ display: block; background: #ff5722; border-color:#ff5722}
-	.file-item .attach .subject ul li .layui-btn-ctrl{position:absolute; top:0; right:0; display:none;}
-	.file-item .attach .subject ul li:hover .layui-btn-ctrl{display:block}
 	
     .file-item .attach .footer { display: flex; align-items: center; justify-content: end; padding: 5px 15px 0; height: 45px; border-top: 1px solid #f2f2f2; text-align: center; background: #ffffff; }
 
@@ -366,7 +366,7 @@
 								// 判断元素是否在数组中
 								let path='/static/home/images/icon/file.png';
 								if (image.includes(item[a].fileext)) {
-									path=item[a].filepath;
+									path=item[a].thumbpath;
 									type = 1;
 									ext="image";
 								}

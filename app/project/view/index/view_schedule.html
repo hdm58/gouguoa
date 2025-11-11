@@ -40,7 +40,12 @@ function project_schedule(){
 			, { field: 'department', title: '所在部门', align: 'center', width: 100 }
 			, { field: 'create_time', title: '记录时间', align: 'center', width: 150 }
 			, {title: '操作',fixed:'right', align: 'center', width: 100, templet: function (d) {
-					return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span></div>';
+					if(d.admin_id == login_admin){
+						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span></div>';
+					}
+					else{
+						return '<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span>';
+					}
 				}
 			}
 		]]

@@ -39,9 +39,14 @@ class Disk extends Model
 				$item->department = Db::name('Department')->where('id',$item->did)->value('title');
 				if($item->types == 0){
 					$item->filepath = Db::name('File')->where('id',$item->action_id)->value('filepath');
+					$item->thumbpath = Db::name('File')->where('id',$item->action_id)->value('thumbpath');
+					if(empty($item->thumbpath)){
+						$item->thumbpath = $item->filepath;
+					}
 				}
 				else{
 					$item->filepath='';
+					$item->thumbpath='';
 				}
 			});
 			return $list;

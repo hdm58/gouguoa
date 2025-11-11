@@ -20,7 +20,7 @@ class CustomerContact extends Model
     * @param $where
     * @param $param
     */
-    public function datalist($param,$where,$whereOr)
+    public function datalist($param,$where,$whereOr=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$order = empty($param['order']) ? 'id desc' : $param['order'];
@@ -84,9 +84,6 @@ class CustomerContact extends Model
     public function getById($id)
     {
         $info = self::find($id);
-		if(!empty($info['family'])){
-			$info['family_array'] = unserialize($info['family']);
-		}
 		if(!empty($info['birthday'])){
 			$info['birthday'] = date('Y-m-d',$info['birthday']);
 		}

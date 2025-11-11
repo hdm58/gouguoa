@@ -59,7 +59,7 @@
 .layui-tree-set{padding:2px 0}
 .layui-tree-main.on .layui-tree-txt,.layui-tree-main.on .layui-icon{color:#1A75FF;}
 .layui-icon layui-icon-file{font-size:16px;}
-.layui-tree-icon {height: 16px;line-height: 14px; width: 16px; text-align: center;}
+.layui-tree-icon {height: 17px;line-height: 14px; width: 16px; text-align: center;}
 .layui-tree-icon .layui-icon{color:#969696}
 .layui-tree-line .layui-tree-set .layui-tree-set:after{top:18px;}
 .layui-tree-line .layui-tree-entry:hover .layui-tree-txt{text-decoration:none; color:#186AF2;}
