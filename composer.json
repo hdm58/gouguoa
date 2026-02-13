@@ -16,15 +16,15 @@
         }        
     ],
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.2",
 		"ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-zip": "*",
-        "topthink/framework": "^8.0.3",
-		"topthink/think-orm": "4.0.8",
-		"topthink/think-filesystem": "^2.0",
+        "topthink/framework": "^8.1.2",
+		"topthink/think-orm": "^4.0.5",
+		"topthink/think-filesystem": "^3.0",
         "topthink/think-multi-app": "^1.0",
         "topthink/think-view": "^2.0",
         "topthink/think-captcha": "^3.0",
@@ -35,7 +35,8 @@
         "firebase/php-jwt": "^6.8",
         "phpoffice/phpspreadsheet": "^1.2",
         "phpoffice/phpword": "^1.2",
-		"mpdf/mpdf": "^8.1"
+		"mpdf/mpdf": "^8.1",
+		"alibabacloud/dysmsapi-20170525":"^4.3"
     },
     "require-dev": {
         "symfony/var-dumper": "^6.0",

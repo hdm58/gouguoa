@@ -26,7 +26,7 @@
 			</div>
 			<div class="layui-input-inline" style="width:150px;">
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
-				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">重置</button>
 			</div>
 		</form>
 		<table class="layui-hide" id="test" lay-filter="test"></table>
@@ -57,6 +57,8 @@
 					onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
 					click: function(obj){
 						//layer.msg(JSON.stringify(obj.data));
+						$('#cate').find('.layui-tree-main').removeClass('on');
+						$(obj.elem).find('.layui-tree-main').eq(0).addClass('on');
 						layui.pageTable.reload({
 						   where: {cate_id: obj.data.id},
 						   page:{curr:1}
@@ -68,6 +70,11 @@
 				});	
 			}
 		})
+		
+		$('[lay-filter="reset"]').click(function(){
+			$('#cate').find('.layui-tree-main').removeClass('on');
+		});
+		
 		layui.pageTable = table.render({
 			elem: '#test'
 			,toolbar: '#toolbarDemo'

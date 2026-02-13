@@ -84,6 +84,7 @@ class <Bmodel> extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		//$info['file_array'] = Db::name('File')->where([['id','in',$info['file_ids']]])->select()->toArray();
 		return $info;
     }
 

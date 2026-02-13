@@ -33,7 +33,6 @@ layui.define(function (exports) {
 			if(window.innerWidth<=1000){
 				sideWidth = '95%';
 			}
-			$(parent.$('.express-close')).addClass('parent-colse');
 			layer.open({
 				type: 2,
 				title: false,
@@ -44,8 +43,8 @@ layui.define(function (exports) {
 				area: [sideWidth, '100%'],
 				skin:'layui-layer-gougu-admin',
 				end: function(){
-					$('body').removeClass('right-open');
 					$(parent.$('.express-close')).removeClass('parent-colse');
+					$('body').removeClass('right-open');
 					if (layui.pageTable && layui.pageTable.resize) {
 						layui.pageTable.resize();
 					}
@@ -56,7 +55,10 @@ layui.define(function (exports) {
 					that.loading = false;
 					obj.on('click','.express-close', function () {					
 						layer.close(index);
-					})
+					});
+					setTimeout(function(){
+						$(parent.$('.express-close')).addClass('parent-colse');
+					},500)
 				}
 			})
 		},
@@ -237,23 +239,33 @@ layui.define(function (exports) {
 				layer.close(index);
 			});
 		},
-		close: function (delay,table) {
+		close: function (delay,table,reload) {
 			//延迟关闭，一般是在编辑完页面数据后需要自动关闭页面用到
-			if(delay && delay>0){
+			if (typeof(delay) === "undefined" || delay === '') {
+				delay = 0;
+			}
+			if (typeof(table) === "undefined" || table === '') {
+				table = 'pageTable';
+			}
+			if (typeof(reload) === "undefined" || reload === '') {
+				reload = 1;
+			}
+			
+			if(delay>0){
 				setTimeout(function () {
 					$('.express-close').last().click();
 				}, delay);
 			}else{
 				$('.express-close').last().click();
 			}
-			if (typeof(table) == "undefined" || table == '') {
-				table = 'pageTable';
-			}
+			
 			if (layui[table]) {
 				layui[table].reload();
 			}
 			else{
-				tool.reload(delay);
+				if(reload==1){
+					tool.reload(delay);
+				}
 			}
 		},
 		ajax: function (options, callback, clickbtn) {
@@ -323,9 +335,9 @@ layui.define(function (exports) {
 				}
 			}
 		},
-		sideClose(delay,table){
+		sideClose(delay,table,reload){
 			if(parent.layui.tool){
-				parent.layui.tool.close(delay,table);
+				parent.layui.tool.close(delay,table,reload);
 			}
 			else{
 				console.log('父页面没引用tool模块');

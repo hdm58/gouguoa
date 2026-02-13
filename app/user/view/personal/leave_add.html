@@ -57,7 +57,11 @@
 			<td class="layui-td-gray">离职员工</td>
 			<td>{$detail.name}</td>
 			<td class="layui-td-gray">所在部门</td>
-			<td>{$detail.department}</td>
+			<td>
+				{$detail.department}
+				<input type="hidden" name="uid" value="{$detail.uid}" autocomplete="off">
+				<input type="hidden" name="did" value="{$detail.did}" autocomplete="off">
+			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">离职日期<font>*</font></td>

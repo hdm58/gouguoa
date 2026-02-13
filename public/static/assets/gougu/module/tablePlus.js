@@ -41,6 +41,9 @@ layui.define(function(exports) {
 	}
 	//重写渲染方法
     tablePlus.render=function(params){
+		if(params.excel_auth === undefined){
+			params.excel_auth = 1;
+		}
 		if(params.excel_limit === undefined){
 			params.excel_limit = 10000;
 		}
@@ -82,6 +85,10 @@ layui.define(function(exports) {
 					].join(''),
 					done: function(panel, list) { 
 						list.on('click', function() {
+							if(options.excel_auth==0){
+								layer.msg('无权限导出');
+								return false;
+							}
 							if(total==0){
 								layer.msg('暂无数据');
 								return false;

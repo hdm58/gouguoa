@@ -39,7 +39,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-112'
+			,height: 'full-113'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'title',title: '名称'}

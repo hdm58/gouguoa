@@ -465,7 +465,7 @@ class Car extends BaseController
 			if (isset($param['mileage_time'])) {
                 $param['mileage_time'] = strtotime($param['mileage_time']);
             }
-			$latestMileage = Db::name('CarMileage')->where([['id','<>',$param['id']],['delete_time','=',0]])->order('mileage_time', 'desc')->value('mileage');
+			$latestMileage = Db::name('CarMileage')->where([['id','<>',$param['id']],['car_id','=',$param['car_id']],['delete_time','=',0]])->order('mileage_time', 'desc')->value('mileage');
 			$mileage = Db::name('Car')->where('id',$param['car_id'])->value('mileage');
 			if(empty($latestMileage)){
 				$latestMileage = $mileage;

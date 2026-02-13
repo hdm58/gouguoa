@@ -173,6 +173,10 @@ class api extends BaseController
 		if($type=='district'){
 			$data = Db::name('Area')->where(['level'=>3,'status'=>1])->column('name', 'id');
 		}
+		if($type=='all'){
+			$area = Db::name('Area')->field('id,pid,name')->select()->toArray();
+			$data = generateTree($area);
+		}
         // 导出为 JSON 格式
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 		return $json;

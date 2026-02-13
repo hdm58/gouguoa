@@ -141,21 +141,30 @@
 			selectable: false,//拖拉选择日期
 			selectMirror: false,//是否在用户拖动时绘制"占位符"事件。
 			dateClick: function(arg) {
-				console.log(arg);
-				var dateStr	= arg.date.getFullYear()+'-'+addZero(arg.date.getMonth()+1)+'-'+addZero(arg.date.getDate());			
-				var detail={};
-				detail['id']=0;
-				detail['title']='';
-				detail['labor_type']=0;
-				detail['start_time_a']=dateStr;
-				detail['end_time_a']=dateStr;		
-				detail['start_time_b']='09:00';
-				detail['end_time_b']='09:30';		
-				detail['remark']='';
-				detail['type']=0;
-				detail['remind_type']=0;
-				//console.log(detail);	
-				work.add(0, detail);	
+				var dateStr	= arg.date.getFullYear()+'-'+addZero(arg.date.getMonth()+1)+'-'+addZero(arg.date.getDate());
+				const dateToCheck = new Date(dateStr);
+				const currentDate = new Date();
+				const sevenDaysAgo = new Date();
+				sevenDaysAgo.setDate(currentDate.getDate() - 7);
+				if (dateToCheck < sevenDaysAgo) {
+					// 七日前的日期不可选，可以显示提示信息
+					layer.msg('不能选择七日前的日期。');
+					return false;
+				} else {
+					var detail={};
+					detail['id']=0;
+					detail['title']='';
+					detail['labor_type']=0;
+					detail['start_time_a']=dateStr;
+					detail['end_time_a']=dateStr;		
+					detail['start_time_b']='09:00';
+					detail['end_time_b']='09:30';		
+					detail['remark']='';
+					detail['type']=0;
+					detail['remind_type']=0;
+					//console.log(detail);	
+					work.add(0, detail);
+				}
 			},
 			nowIndicator: true,
 			weekNumbers: true,// 是否开启周数

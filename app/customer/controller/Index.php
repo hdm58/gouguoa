@@ -45,7 +45,7 @@ class Index extends BaseController
             return table_assign(0, '', $list);
         } else {
 			$time = strtotime(date('Y-m-d')." 00:00:00");
-			$max_num = Db::name('DataAuth')->where('name','customer_admin')->value('conf_3');
+			$max_num = Db::name('DataAuth')->where('name','customer_admin')->value('conf_2');
 			$count = Db::name('Customer')->where([['belong_time','>',$time],['belong_uid','=',$this->uid]])->count();
 			View::assign('max_num', $max_num);
 			View::assign('count', $count);

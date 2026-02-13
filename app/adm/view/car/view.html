@@ -1,8 +1,14 @@
 {extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-tab-title .layui-this{background-color:#fff;}
+.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+</style>
+{/block}
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-3">车辆信息详情</h3>
+	<h3 class="pb-2">车辆信息详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">车辆名称</td>
@@ -68,31 +74,50 @@
 			</td>
 		</tr>
 		{/notempty}
-		<tr>
-			<td colspan="6"><strong>里程记录<strong> <span class="layui-btn layui-btn-xs add-mileage">+ 里程记录</span></td>
-		</tr>
-		<tr>
-			<td colspan="6"><table class="layui-hide" id="mileage" lay-filter="mileage"></table></td>
-		</tr>
-		<tr>
-			<td colspan="6"><strong>费用记录<strong> <span class="layui-btn layui-btn-xs side-a" data-href="/adm/car/fee_add?cid={$detail.id}">+ 费用记录</span></td>
-		</tr>
-		<tr>
-			<td colspan="6"><table class="layui-hide" id="fee" lay-filter="fee"></table></td>
-		</tr>
-		<tr>
-			<td colspan="6"><strong>维修记录<strong> <span class="layui-btn layui-btn-xs side-a" data-href="/adm/car/repair_add?cid={$detail.id}">+ 维修记录</span></td>
-		</tr>
-		<tr>
-			<td colspan="6"><table class="layui-hide" id="repair" lay-filter="repair"></table></td>
-		</tr>
-		<tr>
-			<td colspan="6"><strong>保养记录<strong> <span class="layui-btn layui-btn-xs side-a" data-href="/adm/car/protect_add?cid={$detail.id}">+ 保养记录</span></td>
-		</tr>
-		<tr>
-			<td colspan="6"><table class="layui-hide" id="protect" lay-filter="protect"></table></td>
-		</tr>
 	</table>
+		
+	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="car" id="carTab">
+		<ul class="layui-tab-title">
+			<li class="layui-this" data-load="true"><strong>里程记录</strong></li>
+			<li><strong>费用记录</strong></li>
+			<li><strong>维修记录</strong></li>
+			<li><strong>保养记录</strong></li>
+		</ul>
+		<div class="layui-tab-content" style="padding:0;">
+			<div class="layui-tab-item layui-show">
+				<div class="p-3">
+					<div class="pb-3">
+						<span class="layui-btn layui-btn-sm add-mileage">+ 里程记录</span>
+					</div>
+					<table class="layui-hide" id="mileage" lay-filter="mileage"></table>
+				</div>
+			</div>
+			<div class="layui-tab-item">
+				<div class="p-3">
+					<div class="pb-3">
+						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/fee_add?cid={$detail.id}">+ 费用记录</span>
+					</div>
+					<table class="layui-hide" id="fee" lay-filter="fee"></table>
+				</div>
+			</div>
+			<div class="layui-tab-item">	
+				<div class="p-3">
+					<div class="pb-3">
+						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/repair_add?cid={$detail.id}">+ 维修记录</span>
+					</div>
+					<table class="layui-hide" id="repair" lay-filter="repair"></table>
+				</div>
+			</div>
+			<div class="layui-tab-item">	
+				<div class="p-3">
+					<div class="pb-3">
+						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/protect_add?cid={$detail.id}">+ 保养记录</span>
+					</div>
+					<table class="layui-hide" id="protect" lay-filter="protect"></table>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {/block}
 <!-- /主体 -->
@@ -102,7 +127,162 @@
 	var car_id = {$detail.id};
 	var moduleInit = ['tool'];
 	function gouguInit() {
-		var tool = layui.tool,table = layui.table;
+		var tool = layui.tool,table = layui.table,element = layui.element;
+		element.on('tab(car)', function(data){
+			let index = data.index;
+			if(index == 1){
+				layui.feeTable = table.render({
+					elem: '#fee',
+					title: '费用记录',
+					cellMinWidth: 80,
+					url: "/adm/api/get_car_fee", //数据接口
+					where: { 'car_id': car_id },
+					page: true, //开启分页
+					limit: 10,
+					cols: [[
+						{field:'id',width:80, title: 'ID号', align:'center'}
+						,{field:'fee_time',title: '费用日期',align: 'center',width: 100}
+						,{field:'types_str',title: '费用类型',align: 'center',width: 100}
+						,{field:'amount',width:100, title: '费用金额(元)', align:'center',style:"color:#16b777"}
+						,{field:'title',minWidth:300,title: '费用主题'}
+						,{field:'handled_name',title: '跟进人',align: 'center',width: 80}
+						,{field:'create_time',title: '记录时间',align: 'center',width: 130}
+						,{width:120,fixed:'right', title: '操作', align:'center',templet: function(d){
+							var html='<div class="layui-btn-group"><a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></div>';
+							return html;
+						}}
+					]]
+				});
+				//监听行工具事件
+				table.on('tool(fee)', function(obj) {
+					var data = obj.data;			
+					if(obj.event === 'edit'){
+						tool.side('/adm/car/fee_add?id='+data.id);
+						return;
+					}
+					if(obj.event === 'view'){
+						tool.side('/adm/car/fee_view?id='+data.id);
+						return;
+					}
+					if (obj.event === 'del') {
+						layer.confirm('确定要删除吗?', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							let callback = function (e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									obj.del();
+								}
+							}
+							tool.delete("/adm/car/fee_del", {id: data.id}, callback);
+							layer.close(index);
+						});
+					}
+				});	
+			}
+			if(index == 2){
+				layui.repairTable = table.render({
+					elem: '#repair',
+					title: '维修记录',
+					cellMinWidth: 80,
+					url: "/adm/api/get_car_repair", //数据接口
+					where: { 'car_id': car_id },
+					page: true, //开启分页
+					limit: 10,
+					cols: [[ //表头
+						{ field: 'id', title: '序号', width: 60, align: 'center' }
+						, { field: 'amount', title: '维修金额', style: 'color: #91CC75;', align: 'center', width: 100 }
+						, { field: 'repair_time', title: '维修日期', align: 'center', width: 100 }
+						, { field: 'content', title: '维修内容',minWidth:240}
+						, { field: 'handled_name', title: '经手人', align: 'center', width: 80 }
+						, { field: 'create_time', title: '记录时间', align: 'center', width: 136}
+						, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
+								return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
+							}
+						}
+					]]
+				});
+				//监听行工具事件
+				table.on('tool(repair)', function(obj) {
+					var data = obj.data;			
+					if(obj.event === 'edit'){
+						tool.side('/adm/car/repair_add?id='+data.id);
+						return;
+					}
+					if(obj.event === 'view'){
+						tool.side('/adm/car/repair_view?id='+data.id);
+						return;
+					}
+					if (obj.event === 'del') {
+						layer.confirm('确定要删除吗?', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							let callback = function (e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									obj.del();
+								}
+							}
+							tool.delete("/adm/car/repair_del", {id: data.id}, callback);
+							layer.close(index);
+						});
+					}
+				});		
+			}
+			if(index == 3){		
+				layui.protectTable = table.render({
+					elem: '#protect',
+					title: '保养记录',
+					cellMinWidth: 80,
+					url: "/adm/api/get_car_protect", //数据接口
+					where: { 'car_id': car_id },
+					page: true, //开启分页
+					limit: 10,
+					cols: [[ //表头
+						{ field: 'id', title: '序号', width: 60, align: 'center' }
+						, { field: 'amount', title: '保养金额', style: 'color: #91CC75;', align: 'center', width: 100 }
+						, { field: 'repair_time', title: '保养日期', align: 'center', width: 100 }
+						, { field: 'content', title: '保养内容',minWidth:240}
+						, { field: 'handled_name', title: '经手人', align: 'center', width: 80 }
+						, { field: 'create_time', title: '记录时间', align: 'center', width: 136}
+						, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
+								return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
+							}
+						}
+					]]
+				});
+				//监听行工具事件
+				table.on('tool(protect)', function(obj) {
+					var data = obj.data;			
+					if(obj.event === 'edit'){
+						tool.side('/adm/car/protect_add?id='+data.id);
+						return;
+					}
+					if(obj.event === 'view'){
+						tool.side('/adm/car/protect_view?id='+data.id);
+						return;
+					}
+					if (obj.event === 'del') {
+						layer.confirm('确定要删除吗?', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							let callback = function (e) {
+								layer.msg(e.msg);
+								if (e.code == 0) {
+									obj.del();
+								}
+							}
+							tool.delete("/adm/car/protect_del", {id: data.id}, callback);
+							layer.close(index);
+						});
+					}
+				});	
+			}
+		});
+		
 		
 		layui.mileageTable = table.render({
 			elem: '#mileage',
@@ -200,155 +380,6 @@
 						}
 					}
 					tool.delete("/adm/car/mileage_del", {id: data.id}, callback);
-					layer.close(index);
-				});
-			}
-		});
-		
-		layui.feeTable = table.render({
-			elem: '#fee',
-			title: '费用记录',
-			cellMinWidth: 80,
-			url: "/adm/api/get_car_fee", //数据接口
-			where: { 'car_id': car_id },
-			page: true, //开启分页
-			limit: 10,
-			cols: [[
-				{field:'id',width:80, title: 'ID号', align:'center'}
-				,{field:'fee_time',title: '费用日期',align: 'center',width: 100}
-				,{field:'types_str',title: '费用类型',align: 'center',width: 100}
-				,{field:'amount',width:100, title: '费用金额(元)', align:'center',style:"color:#16b777"}
-				,{field:'title',minWidth:300,title: '费用主题'}
-				,{field:'handled_name',title: '跟进人',align: 'center',width: 80}
-				,{field:'create_time',title: '记录时间',align: 'center',width: 130}
-				,{width:120,fixed:'right', title: '操作', align:'center',templet: function(d){
-					var html='<div class="layui-btn-group"><a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></div>';
-					return html;
-				}}
-			]]
-		});
-		//监听行工具事件
-		table.on('tool(fee)', function(obj) {
-			var data = obj.data;			
-			if(obj.event === 'edit'){
-				tool.side('/adm/car/fee_add?id='+data.id);
-				return;
-			}
-			if(obj.event === 'view'){
-				tool.side('/adm/car/fee_view?id='+data.id);
-				return;
-			}
-			if (obj.event === 'del') {
-				layer.confirm('确定要删除吗?', {
-					icon: 3,
-					title: '提示'
-				}, function(index) {
-					let callback = function (e) {
-						layer.msg(e.msg);
-						if (e.code == 0) {
-							obj.del();
-						}
-					}
-					tool.delete("/adm/car/fee_del", {id: data.id}, callback);
-					layer.close(index);
-				});
-			}
-		});	
-
-		layui.repairTable = table.render({
-			elem: '#repair',
-			title: '维修记录',
-			cellMinWidth: 80,
-			url: "/adm/api/get_car_repair", //数据接口
-			where: { 'car_id': car_id },
-			page: true, //开启分页
-			limit: 10,
-			cols: [[ //表头
-				{ field: 'id', title: '序号', width: 60, align: 'center' }
-				, { field: 'amount', title: '维修金额', style: 'color: #91CC75;', align: 'center', width: 100 }
-				, { field: 'repair_time', title: '维修日期', align: 'center', width: 100 }
-				, { field: 'content', title: '维修内容',minWidth:240}
-				, { field: 'handled_name', title: '经手人', align: 'center', width: 80 }
-				, { field: 'create_time', title: '记录时间', align: 'center', width: 136}
-				, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
-						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
-					}
-				}
-			]]
-		});
-		//监听行工具事件
-		table.on('tool(repair)', function(obj) {
-			var data = obj.data;			
-			if(obj.event === 'edit'){
-				tool.side('/adm/car/repair_add?id='+data.id);
-				return;
-			}
-			if(obj.event === 'view'){
-				tool.side('/adm/car/repair_view?id='+data.id);
-				return;
-			}
-			if (obj.event === 'del') {
-				layer.confirm('确定要删除吗?', {
-					icon: 3,
-					title: '提示'
-				}, function(index) {
-					let callback = function (e) {
-						layer.msg(e.msg);
-						if (e.code == 0) {
-							obj.del();
-						}
-					}
-					tool.delete("/adm/car/repair_del", {id: data.id}, callback);
-					layer.close(index);
-				});
-			}
-		});
-		
-		
-		layui.protectTable = table.render({
-			elem: '#protect',
-			title: '保养记录',
-			cellMinWidth: 80,
-			url: "/adm/api/get_car_protect", //数据接口
-			where: { 'car_id': car_id },
-			page: true, //开启分页
-			limit: 10,
-			cols: [[ //表头
-				{ field: 'id', title: '序号', width: 60, align: 'center' }
-				, { field: 'amount', title: '保养金额', style: 'color: #91CC75;', align: 'center', width: 100 }
-				, { field: 'repair_time', title: '保养日期', align: 'center', width: 100 }
-				, { field: 'content', title: '保养内容',minWidth:240}
-				, { field: 'handled_name', title: '经手人', align: 'center', width: 80 }
-				, { field: 'create_time', title: '记录时间', align: 'center', width: 136}
-				, {title: '操作',fixed:'right', align: 'center', width: 124, templet: function (d) {
-						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span><span class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</span></div>';
-					}
-				}
-			]]
-		});
-		//监听行工具事件
-		table.on('tool(protect)', function(obj) {
-			var data = obj.data;			
-			if(obj.event === 'edit'){
-				tool.side('/adm/car/protect_add?id='+data.id);
-				return;
-			}
-			if(obj.event === 'view'){
-				tool.side('/adm/car/protect_view?id='+data.id);
-				return;
-			}
-			if (obj.event === 'del') {
-				layer.confirm('确定要删除吗?', {
-					icon: 3,
-					title: '提示'
-				}, function(index) {
-					let callback = function (e) {
-						layer.msg(e.msg);
-						if (e.code == 0) {
-							obj.del();
-						}
-					}
-					tool.delete("/adm/car/protect_del", {id: data.id}, callback);
 					layer.close(index);
 				});
 			}

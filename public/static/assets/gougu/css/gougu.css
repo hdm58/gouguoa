@@ -15,7 +15,7 @@
 .layui-table-box{background-color:#fff;}
 .layui-table-page{background-color:#fff;border-bottom:1px solid #eeeeee;}
 .layui-table-tool{box-shadow: 0 0 0 rgb(0 0 0 / 1%);padding:10px 12px; background-color:#fff;}
-.layui-input, .layui-select, .layui-textarea {height: 36px;line-height: 1.22;line-height: 36px\9;}
+.layui-input, .layui-select, .layui-textarea {height: 36px;line-height: 1.22;line-height: 36px\9; border-color:#dddddd}
 .layui-input, .layui-textarea {padding-left:6px;}
 .layui-input-readonly {border-style: dashed; background-color:#fafafa;}
 .layui-form-pane .layui-form-label{height: 36px; padding:8px;}
@@ -59,7 +59,7 @@
 .layui-tree-set{padding:2px 0}
 .layui-tree-main.on .layui-tree-txt,.layui-tree-main.on .layui-icon{color:#1A75FF;}
 .layui-icon layui-icon-file{font-size:16px;}
-.layui-tree-icon {height: 17px;line-height: 14px; width: 16px; text-align: center;}
+.layui-tree-icon {height: 16px;line-height: 14px; width: 16px; text-align: center;}
 .layui-tree-icon .layui-icon{color:#969696}
 .layui-tree-line .layui-tree-set .layui-tree-set:after{top:18px;}
 .layui-tree-line .layui-tree-entry:hover .layui-tree-txt{text-decoration:none; color:#186AF2;}
@@ -199,8 +199,9 @@ a.tab-a:hover,a:hover,a.open-a:hover,a.link-a:hover,a.right-a:hover{color:#1A75F
 .layui-bg-5{background-color:#FF5823 !important;}/*亮红*/
 .layui-bg-6{background-color:#4AC8BE !important;}/*亮青*/
 .layui-bg-7{background-color:#7860C0 !important;}/*亮紫*/
-.layui-bg-8{background-color:#646464 !important;}/*黑*/
-.layui-bg-9{background-color:#969696 !important;}/*灰黑*/
+.layui-bg-8{background-color:#9F6000 !important;}/*橙黄*/
+.layui-bg-9{background-color:#383D41 !important;}/*中性灰*/
+.layui-bg-10{background-color:#969696 !important;}/*灰黑*/
 
 .layui-color-0{color:#648A8D !important;}/*灰青*/
 .layui-color-1{color:#16b777 !important;}/*亮绿*/
@@ -210,15 +211,21 @@ a.tab-a:hover,a:hover,a.open-a:hover,a.link-a:hover,a.right-a:hover{color:#1A75F
 .layui-color-5{color:#FF5823 !important;}/*亮红*/
 .layui-color-6{color:#4AC8BE !important;}/*亮青*/
 .layui-color-7{color:#7860C0 !important;}/*亮紫*/
-.layui-color-8{color:#646464 !important;}/*黑*/
-.layui-color-9{color:#969696 !important;}/*灰黑*/
+.layui-color-8{color:#9F6000 !important;}/*橙黄*/
+.layui-color-9{color:#383D41 !important;}/*中性灰*/
+.layui-color-10{color:#969696 !important;}/*灰黑*/
 
-.check-status-color-0{color:#a233c6 !important;}/*待提交审核,亮紫*/
-.check-status-color-1{color:#1A75FF !important;}/*审核中,亮蓝*/
-.check-status-color-2{color:#16b777 !important;}/*审核通过,亮绿*/
-.check-status-color-3{color:#FF5823 !important;}/*审核不通过,亮红*/
-.check-status-color-4{color:#969696 !important;}/*撤销审核,灰黑*/
-.check-status-color-5{color:#a233c6 !important;}/*反确认审核,亮紫*/
+.status-color-0{color:#FF5823 !important;}/*亮红*/
+.status-color-1{color:#1A75FF !important;}/*亮蓝*/
+.status-color-2{color:#16b777 !important;}/*亮绿*/
+.status-color-3{color:#7860C0 !important;}/*亮紫*/
+
+.check-status-color-0{color:#856404 !important;}/*待提交,柔和黄色，提醒关注*/
+.check-status-color-1{color:#1A75FF !important;}/*审核中,浅蓝，表示进行中*/
+.check-status-color-2{color:#16b777 !important;}/*已通过,浅绿，成功/完成*/
+.check-status-color-3{color:#721C24 !important;}/*已拒绝,浅红，表示拒绝*/
+.check-status-color-4{color:#383D41 !important;}/*已撤销,中性灰，取消操作*/
+.check-status-color-5{color:#9F6000 !important;}/*反确认,橙黄，需注意但非错误*/
 
 .black{color:#182b50}
 
@@ -394,7 +401,7 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 
 
 .express-close{width: 40px; height:200px;position: absolute; left:-39px; right: 0; top: 12%; cursor: pointer;}
-.express-close.parent-colse{opacity:0;}
+.express-close.parent-colse{width: 0!important; overflow:hidden;}
 .express-container{position:relative; width:40px;}
 .express-bar{left:-92px;top: 80px; width: 220px; height: 44px; position: absolute;
 	transform:rotate(-90deg);
@@ -411,7 +418,7 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 .gougu-upload-files{background-color: #ffffff; border:1px solid #e4e7ed;color: #c0c4cc; min-width:400px; cursor: not-allowed; padding:0 12px; box-sizing: border-box; display: inline-block; font-size: inherit; height: 38px; line-height: 35px; margin-right:8px; border-radius:2px;}
 .gougu-upload-box{background-color:#f8f8f8; border:1px solid #eee; border-radius:6px; width:888px; height:440px; padding:5px; overflow-y:auto; margin:0 auto; position:relative;-webkit-user-select:none;-moz-user-select:none-ms-user-select:none;}
 .select .gougu-upload-btn{width:100%; height:100%; position:absolute;top:0;left:0; line-height:440px;}
-.select .gougu-upload-btn-box{width:100%; height:100%; box-sizing: border-box; padding-top:160px; line-height:1.2;text-align:center; cursor:pointer; color:#49bc85;font-size:22px;}\
+.select .gougu-upload-btn-box{width:100%; height:100%; box-sizing: border-box; padding-top:160px; line-height:1.2;text-align:center; cursor:pointer; color:#49bc85;font-size:22px;}
 .select .gougu-upload-btn-box i{font-size:60px;}
 .selected .gougu-upload-btn{width:100px; height:100px; float:left; padding:5px;}
 .selected .gougu-upload-btn-box{width:100px; height:100px; box-sizing: border-box; background-color:#eaf7f0; border:1px solid #49bc85; padding-top:16px; line-height:1.2;font-size:14px; text-align:center; cursor:pointer; color:#49bc85}

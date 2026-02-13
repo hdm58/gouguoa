@@ -83,6 +83,10 @@
 			}
 		});
 		
+		$('[lay-filter="table-reset"]').click(function(){
+			$('#depament').find('.layui-tree-main').removeClass('on');
+		});
+		
 		form.on('select(status)', function(data){
 			$('[lay-filter="table-search"]').click();
 			$("#btnGroup").attr("class",'layui-btn-group btn-group-'+data.value);

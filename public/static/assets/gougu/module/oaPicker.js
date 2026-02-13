@@ -58,11 +58,13 @@ layui.define(['tool'], function (exports) {
 		'customer':{
 			title:'选择客户',
 			url:'/customer/api/get_customer',
+			add:'/customer/customer/add',
 			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'name',title:'客户名称'}]
 		},
 		'supplier':{
 			title:'选择供应商',
 			url:'/contract/api/get_supplier',
+			add:'/contract/supplier/add',
 			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'供应商名称'}]
 		},
 		'contract':{
@@ -370,12 +372,12 @@ layui.define(['tool'], function (exports) {
 					$(parent.$('.express-close')).removeClass('parent-colse');
 				},
 				success: function () {
-					let cols=JSON.parse(JSON.stringify(settings.cols));
+					let cols=[];
 					if(settings.type==1){
-						cols.splice(0, 0, {type: 'radio', title: '选择'});
+						cols = [{type: 'radio', title: '选择'}, ...settings.cols];
 					}
 					if(settings.type==2){
-						cols.splice(0, 0, {type: 'checkbox', title: '选择'});
+						cols = [{type: 'checkbox', title: '选择'}, ...settings.cols];
 					}
 					pickerTable = table.render({
 						elem: '#pickerTable'+pickerIndex,

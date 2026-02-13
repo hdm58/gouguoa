@@ -35,7 +35,7 @@
 			</div>
 			<div class="layui-input-inline" style="width:150px">
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
-				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">重置</button>
 			</div>
 		</form>
 		<table class="layui-hide" id="test" lay-filter="test"></table>
@@ -67,6 +67,8 @@
 					onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
 					click: function(obj){
 						//layer.msg(JSON.stringify(obj.data));
+						$('#cate').find('.layui-tree-main').removeClass('on');
+						$(obj.elem).find('.layui-tree-main').eq(0).addClass('on');
 						layui.pageTable.reload({
 						   where: {cate_id: obj.data.id},
 						   page:{curr:1}
@@ -80,6 +82,9 @@
 			}
 		})
 		
+		$('[lay-filter="reset"]').click(function(){
+			$('#cate').find('.layui-tree-main').removeClass('on');
+		});
 		
 		layui.pageTable = table.render({
 			elem: '#test'
@@ -101,9 +106,9 @@
 				,{field:'price',width:100, title: '价格(元)', align:'center',style:"color:#16b777"}
 				,{field:'status_str', title: '状态',width:60,align:'center'}
 				,{field:'create_name',title: '创建人',align: 'center',width: 80}
-				,{field:'create_time',title: '创建时间',align: 'center',width: 145}
+				,{field:'create_time',title: '创建时间',align: 'center',width: 150}
 				,{field:'update_name',title: '最后修改人',align: 'center',width: 100}
-				,{field:'update_time_str',title: '最后修改时间',align: 'center',width: 145}
+				,{field:'update_time_str',title: '最后修改时间',align: 'center',width: 150}
 				,{width:200,fixed:'right', title: '操作', align:'center',templet: function(d){
 					var html='';
 					var btn='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a><a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';

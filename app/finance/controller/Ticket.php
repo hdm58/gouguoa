@@ -333,10 +333,11 @@ class Ticket extends BaseController
    /**
     * 无发票付款删除
     */
-    public function del_a($id)
+    public function del_a()
     {
+        $param = get_params();	
 		if (request()->isDelete()) {
-			$this->model->delById($id);
+			$this->model->delById($param['id']);
 		} else {
             return to_assign(1, "错误的请求");
         }

@@ -118,12 +118,6 @@ class Loan extends BaseController
     {
 		$param = get_params();	
         if (request()->isAjax()) {
-			if($param['project_id'] > 0){
-				$project = Db::name('Project')->where(['id' => $param['project_id']])->find();
-				if($project['status'] > 3){
-					return to_assign(1, "不支持该操作：项目已申请提成，请先删除对应的提成申请记录");
-				}
-			}
             $param['loan_time'] = isset($param['loan_time']) ? strtotime(urldecode($param['loan_time'])) : 0;
             $param['plan_time'] = isset($param['plan_time']) ? strtotime(urldecode($param['plan_time'])) : 0;
 			$param['admin_id'] = $this->uid;

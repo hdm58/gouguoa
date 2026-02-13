@@ -16,6 +16,7 @@ namespace app\api\controller;
 
 use app\api\BaseController;
 use app\api\model\EditLog;
+use smsservice\Smsservice;
 use think\Image; // 引入Image类
 use think\facade\Db;
 
@@ -350,6 +351,20 @@ class Index extends BaseController
         } else {
             return to_assign(1, '邮件发送失败');
         }
+    }
+	
+	//测试发送阿里云短信
+	public function sms_test()
+    {
+        $phoneNumbers = '136xxxxxxxx';
+       // $code = rand(1000, 9999); // 示例验证码
+        $sms = new Smsservice();
+        $result = $sms->sendSms($phoneNumbers, 'SMS_xxxxxx', ['name' => '勾股OA','title'=>'《测试阿里云短信发送成功》']);
+		if ($result['code'] === 'OK') {
+			return to_assign(0, '发送成功');
+		} else {
+			return to_assign(1, '发送失败：'.$result['message']);
+		}
     }
 	
 	//获取未读消息

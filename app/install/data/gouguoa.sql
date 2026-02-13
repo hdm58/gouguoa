@@ -526,7 +526,7 @@ INSERT INTO `oa_admin_rule` VALUES (241, 238, 'finance/invoice/view', '查看', 
 
 INSERT INTO `oa_admin_rule` VALUES (242, 6, 'finance/ticket/datalist', '收票管理', '发票', 'finance', '', 1, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (243, 242, 'finance/ticket/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (244, 242, 'finance/ticket/delete', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (244, 242, 'finance/ticket/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (245, 242, 'finance/ticket/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
 
 INSERT INTO `oa_admin_rule` VALUES (246, 6, 'finance/income/datalist', '回款管理', '回款记录', 'finance', '', 1, 1, 1, 0, 0);
