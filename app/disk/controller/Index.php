@@ -145,7 +145,7 @@ class Index extends BaseController
 			$where[]=['delete_time','=',0];
 			$where[]=['group_id','=',0];
 			$where[]=['types','<',2];
-			$where[]=['share_types','>',0];
+			$where[]=['share_types','>',0];			
             if (!empty($param['keywords'])) {
                 $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
             }            
@@ -157,7 +157,28 @@ class Index extends BaseController
 					$where[] = ['file_ext', 'in',$param['ext']];
 				}
             }
-            $list = $this->model->datalist($param,$where);
+			
+			$uid=$this->uid;
+			$did=$this->did;
+			$pid=$this->pid;
+			
+			$map1=[
+				['share_types','=',1]
+			];
+			$map2=[
+				['share_types','=',2],
+				['', 'exp', Db::raw("FIND_IN_SET('{$did}',share_dids)")]
+			];
+			$map3=[
+				['share_types','=',3],
+				['', 'exp', Db::raw("FIND_IN_SET('{$pid}',share_pids)")]
+			];
+			$map4=[
+				['share_types','=',4],
+				['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_uids)")]
+			];
+			$whereOr =[$map1,$map2,$map3,$map4];
+            $list = $this->model->datalist($param,$where,$whereOr);
 			return table_assign(0, '', $list);
         }
         else{
