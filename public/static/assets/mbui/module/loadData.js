@@ -15,6 +15,7 @@ mbui.define(['tool'], function (exports) {
 	var LoadData = function () {
 		this.config = {
 			elem: "#listBox",
+			seachBar: "#listSearch",
 			url: "",
 			where: {},
 			limit: 10,
@@ -33,9 +34,10 @@ mbui.define(['tool'], function (exports) {
 		var that = this;
 		$.extend(true, that.config, options);
 		var elem = $(that.config.elem);
-		elem.html('<div class="load-data-container"></div><div class="load-data-none"><i class="iconfont icon-none"></i><br>暂无数据</div><div class="load-data-loading"><span>努力加载中</span></div><div class="load-data-end"><span>—— ● ——</span></div>');
+		elem.html('<div class="load-data-container"></div><div class="load-data-none"><i class="iconfont icon-none"></i><br>暂无数据</div><div class="load-data-loading"><span>努力加载中</span></div><div class="load-data-end"><span>—————— 底 ● 线 ——————</span></div>');
 		
 		if(that.config.scroll==2){
+			//容器监听滚动事件
 			$('#root').scroll(function(){
 				if ($(this).scrollTop() + $('#root').height() >= $('#app').height()-10) {					
 					// 滚动到页面底部时加载更多数据
@@ -46,7 +48,7 @@ mbui.define(['tool'], function (exports) {
 			});
 		}
 		else{
-			// 监听滚动事件
+			// 页面监听滚动事件
 			$(window).scroll(function () {
 				if ($(window).scrollTop() + $(window).height() >= $(document).height()-10) {
 					// 滚动到页面底部时加载更多数据
@@ -56,17 +58,56 @@ mbui.define(['tool'], function (exports) {
 				}
 			});
 		}
+		//回车搜索
+		$(that.config.seachBar).on('keyup','[type="search"]',function(event){
+			if (event.keyCode === 13) {
+				$(this).blur();
+				that.page=1;
+				that.ajax();
+			}
+		})
+		//清空时
+		$(that.config.seachBar).on('input','[type="search"]', function() {
+			var val = $(this).val();			
+			// 如果值为空，说明可能点击了 X 或者手动删除了
+			if (val === '') {
+				$(this).blur();
+				that.page=1;
+				that.ajax();
+			}
+		});
+		//点击搜索重置按钮
+		$(that.config.seachBar).on('click','.search-reset',function(){
+			$(that.config.seachBar).find('input').val('');
+			that.page=1;
+			that.ajax();
+		})
+		that.ajax();
+	};
+
+	LoadData.prototype.reload = function () {
+		var that = this;
+		that.page=1;
 		that.ajax();
 	};
 
 	LoadData.prototype.ajax = function () {
 		var that = this;
-		var elem = $(that.config.elem);
+		var elem = $(that.config.elem),seachBar = $(that.config.seachBar),map = {page:that.page,limit:that.config.limit};
+		var keys = seachBar.find('.search-key');
+		keys.each(function(){
+			let key=$(this).attr('name');
+			let val=$(this).val();
+			if(val!=''){
+				map[key]=val;
+			}
+		});
+		var maps = $.extend({}, that.config.where, map);
 		// 发送请求获取数据
 		$.ajax({
-			url: that.config.url + '?page=' + that.page + '&limit=' + that.config.limit,
+			url: that.config.url,
 			type: 'GET',
-			data: that.config.where,
+			data: maps,
 			beforeSend: function () {
 				// 显示加载按钮
 				that.loaded = 1;
@@ -82,6 +123,12 @@ mbui.define(['tool'], function (exports) {
 					that.count=res.count;
 					that.total+=res.data.length;
 				}
+				if(that.page==1){
+					elem.find('.load-data-container').html('');
+				}
+				if(that.count>=that.total && that.count>0){
+					elem.find('.load-data-end').show();
+				}
 				elem.find('.load-data-none').addClass('load-data-'+that.count);
 				if (res.data.length > 0) {
 					that.page++;
@@ -89,7 +136,7 @@ mbui.define(['tool'], function (exports) {
 						// 转义JSON对象中的字符串值,防止XSS
 						for (var key in item) {
 						  if (typeof item[key] === 'string') {
-							item[key] = escapeHtml(item[key]);
+								item[key] = escapeHtml(item[key]);
 						  }
 						}
 						// 创建列表项并添加到列表中
@@ -101,7 +148,6 @@ mbui.define(['tool'], function (exports) {
 			complete: function () {
 				that.loaded = 0;
 				elem.find('.load-data-loading').hide();
-				elem.find('.load-data-end').show();
 			}
 		});
 	}
@@ -110,5 +156,6 @@ mbui.define(['tool'], function (exports) {
 	exports('loadData', function (options) {
 		var loadData = new LoadData();
 		loadData.init(options);
+		return loadData;
 	});
 });

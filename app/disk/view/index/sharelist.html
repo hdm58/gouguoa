@@ -8,15 +8,15 @@
 	.disk-left h3{font-size:18px; height:30px; padding-left:10px; font-weight:800}
 	
 	.disk-table{margin-left:120px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
+	.disk-table.types-2 #thumb{display:none;}
+	.disk-table.types-1 #list{display:none;}
 	.layui-btn.tool-add{padding:0 12px;}
 	
-	.disk-path{height:40px;padding:0 4px 0 12px;}
-	.disk-breadcrumb{float:left; padding:7px 0}
-	.disk-breadcrumb span{color:#666; margin:0 8px; font-size:10px;}
-	.layui-tab{margin:0;}
-    .file-item {height:calc(100vh - 206px); overflow-y: auto;}
-	.disk-path .layui-form-checkbox[lay-skin=primary]>div{padding-right:4px}
-	.layui-tabs-header li{padding:0 12px;}
+	.disk-path{height:42px;padding:0 4px 0 12px;}
+	.disk-breadcrumb{float:left; padding:8px 0}
+	.disk-breadcrumb span{color:#666; margin:0 3px; font-size:10px;}
+	.disk-path .layui-tabs-header{height:42px;}
+	.disk-path .layui-tabs-header li{padding:0 10px;line-height:42px; font-size:13px;}
 
     /** 共享空间 **/
     .disk-group {display: flex; flex-direction: column; width: 180px; border-right: 1px solid #f6f6f6; padding-top:12px;}
@@ -35,33 +35,42 @@
     .disk-group ul li .dropdown dl::before { position: absolute; top: -16px; left: 44px; z-index: 12; display: block; padding: 0; width: 0; height: 0; border-top: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid #ffffff; border-left: 8px solid transparent; content: ""; box-sizing: content-box; }
     .group-footer { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; position:absolute;bottom:0; border-top: 1px solid #f2f2f2; border-right: 1px solid #f2f2f2; }
 	
-    /** 文件 **/
-    .file-item .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
-    .file-item .file-subject:hover::-webkit-scrollbar { display: block; }
-    .file-item .file-subject ul { display: flex; flex-wrap: wrap; }
-    .file-item .file-subject ul li {position: relative; height: 144px; margin:20px 10px; padding: 6px; border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 3px; transition: all 0.2s ease-in-out; }
-    .file-item .file-subject ul li:hover {border: 1px solid #eee; background-color:#f8f8f8;}
-    .file-item .file-subject ul li.on {border: 1px solid #ff5722; }
-    .file-item .file-subject ul li img { width: 86px; height: 86px; padding:16px;}
-    .file-item .file-subject ul li img.file-image { width: 118px; height: 118px; padding:0; border-radius: 2px; }
-    .file-item .file-subject ul li video { width: 60px; height: 60px; border-radius: 3px; }
-    .file-item .file-subject ul li p {overflow: hidden; margin: 5px 0 0; width: 118px; font-size: 13px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
-    .file-item .file-subject ul li .file-check{position: absolute; width:20px; height:20px; left: 0; top: 0; display: none; font-size: 14px; border-radius:2px 0 4px 0; text-align: center; line-height: 20px; color: #ffffff; background-color:#fff; border-right:1px solid #eee; border-bottom:1px solid #eee; cursor:pointer;}	
-	.file-item .file-subject ul li:hover .file-check{display: block;}
-    .file-item .file-subject ul li.on .file-check{ display: block; background: #ff5722; border-color:#ff5722}
-	.file-item .file-subject ul li .layui-btn-ctrl{position:absolute; top:0; right:0; opacity: 0;}
-	.file-item .file-subject ul li:hover .layui-btn-ctrl{opacity: 1;}
-	.file-folder,.file-image,.file-pdf,.file-video,.file-audio{cursor:pointer;}
-	.file-item .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 32px; top: 75px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
+    /** 缩略图模式 **/
+    .file-thumb {height:calc(100vh - 206px); overflow-y: auto;}
+    .file-thumb .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
+    .file-thumb .file-subject:hover::-webkit-scrollbar { display: block; }
+    .file-thumb .file-subject ul { display: flex; flex-wrap: wrap; }
+    .file-thumb .file-subject ul li {position: relative; height: 160px; margin:12px; padding: 10px; border-radius: 4px; border:2px solid #ffffff;}
+    .file-thumb .file-subject ul li:hover {border: 2px solid #f8f8f8; background-color:#F2F2F2;}
+    .file-thumb .file-subject ul li.on {border: 2px solid #1e9fff; background-color:#E5F2FF}
+    .file-thumb .file-subject ul li img {width: 86px; height: 86px; border-radius: 6px; padding:16px; border:1px solid rgba(0, 0, 0, 0.05); background-color:#fff;}
+    .file-thumb .file-subject ul li img.file-image { width: 106px; height: 106px; padding:6px;}
+    .file-thumb .file-subject ul li video { width: 60px; height: 60px; border-radius: 3px; }
+    .file-thumb .file-subject ul li p {margin: 5px 0 0; width: 118px; font-size: 13px; text-align: center; word-break: break-all; text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;}
+    .file-thumb .file-subject ul li .file-check{position: absolute; width:20px; height:20px; left: 1px; top: 1px; display: none; font-size: 14px; border-radius:2px 0 4px 0; text-align: center; line-height: 20px; color: #ffffff; background-color:#fff; border-right:1px solid #eee; border-bottom:1px solid #eee; cursor:pointer;}	
+	.file-thumb .file-subject ul li:hover .file-check{display: block;}
+    .file-thumb .file-subject ul li.on .file-check{ display: block; background: #1e9fff; border-color:#1e9fff}
+	.file-thumb .file-subject ul li .layui-btn-ctrl{position:absolute; top:1px; right:1px; opacity: 0;}
+	.file-thumb .file-subject ul li:hover .layui-btn-ctrl{opacity: 1;}
+	.file-thumb .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 1px; top: 80px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
+	.file-thumb .file-subject ul li .has-share{position: absolute; width:20px; height:20px; right: 1px; top: 108px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ff5722; border:1px solid #fff; padding:2px;}
 	
-	.file-item .file-subject ul li .file-info{position: absolute; width:100%; height:23px; left: 0; top: 0; text-align:center; font-size: 12px; line-height: 23px; background-color:rgba(0,0,0,.12);border-radius:2px 2px 0 0;}	
+    .file-footer {display: flex; align-items: center; padding: 5px 15px 0; height: 45px; border-top: 1px solid #f2f2f2; text-align: center; background: #ffffff;}
+    .empty{ display: flex; flex: 1; align-items: center; flex-direction: column; justify-content: center; overflow: hidden; text-align: center; color: #cccccc;}
+    .empty p{width: 180px; text-align: center;}
+    .empty i{font-size: 180px;}
+	.file-item{cursor:pointer;white-space: nowrap;}
 	
-    .file-footer { display: flex; align-items: center; padding: 5px 15px 0; height: 45px; border-top: 1px solid #f2f2f2; text-align: center; background: #ffffff; }
-
-    /** 无数据 **/
-    .file-item .empty { display: flex; flex: 1; align-items: center; flex-direction: column; justify-content: center; overflow: hidden; text-align: center; color: #cccccc; }
-    .file-item .empty i { font-size: 180px; }
-    .file-item .empty p { width: 180px; text-align: center; }
+	/** 拖拽上传文件 **/
+	.file-tree{padding:6px; width:680px; height:480px; overflow-y:scroll;}
+	.file-tree tr.ok{color:#16baaa}
+	.file-tree .folder,.file{padding:0;}
+	.file-tree .folder:before{content: "📁 "; font-size:18px;}
+	.file-tree .file:before{content: "📄 "; font-size:18px;}
+	.del-file{color:#16b777;cursor:pointer;}
+	.file-tree-bottom{padding:9px 0; text-align:center; border-top:2px solid #eeeeee;}
+	.dropimg{z-index:9999999999; display:none; position:fixed; top:0;left:0; right:0; bottom:0; background-color:rgba(255,255,255,.6); text-align:center; font-size:58px; border:3px dashed #666;}
+	body.drop .dropimg{display:block;}
 </style>
 {/block}
 <!-- 主体 -->
@@ -78,13 +87,13 @@
 			<span class="layui-btn layui-btn-primary layui-btn-sm add-new">创建共享空间</span>
 		</div>
 	</div>
-	<div class="disk-table">
+	<div id="diskBox" class="disk-table types-2">
 		<form class="layui-form gg-form-bar border-b" lay-filter="barsearchform">
 			<div class="layui-input-inline" style="width:312px">
 				<div class="layui-btn-group">
-					<span class="layui-btn tool-add" id="uploadBtn"><strong class="iconfont icon-shangchuan"></strong> 上传文件</span>
-					<span class="layui-btn layui-btn-normal tool-add" id="addArticle"><strong class="iconfont icon-lunwenguanli"></strong> 新建文档</span>
-					<span class="layui-btn layui-btn-warm tool-add" id="addFolder"><strong class="iconfont icon-xiangmuguanli"></strong> 新建目录</span>
+					<span class="layui-btn tool-add tool-tips" data-tips="拖拽文件到页面也可以上传哦(^_^)" id="uploadBtn"><strong class="iconfont icon-shangchuan"></strong> 上传文件</span>
+					<span class="layui-btn layui-btn-normal tool-add tool-tips" data-tips="新建在线文档" id="addArticle"><strong class="iconfont icon-lunwenguanli"></strong> 新建文档</span>
+					<span class="layui-btn layui-btn-warm tool-add tool-tips" data-tips="新建文件目录" id="addFolder"><strong class="iconfont icon-xiangmuguanli"></strong> 新建目录</span>
 				 </div>
 			</div>
 			<div class="layui-input-inline" style="width:300px">
@@ -99,59 +108,321 @@
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 				<button type="reset" class="layui-btn layui-btn-reset">清空</button>
 			</div>
+			<div class="layui-input-inline" style="width:132px; padding-top:3px; float:right;">
+				<div class="layui-btn-group">
+					<span class="layui-btn layui-btn-sm layui-btn-primary" id="fileThumb">缩略模式</span>
+					<span class="layui-btn layui-btn-sm" id="fileList">列表模式</span>
+				</div>
+			</div>
 		</form>
 		<div class="disk-path layui-form border-b">
-			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="1">公司共享</a></div>
-			<div class="layui-input-inline" style="width:450px; float:right;">
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="1">共享空间</a></div>
+			<div class="layui-input-inline" style="width:482px; float:right;">
 				<div class="layui-tabs layui-tab-brief" id="tab">
 					<ul class="layui-tabs-header">
 						<li class="layui-this" lay-id="">全部</li>
 						<li lay-id="image">图片</li>
 						<li lay-id="video">视频</li>
 						<li lay-id="audio">音频</li>
-						<li lay-id="office">Office文件</li>
-						<li lay-id="pdf">在线文档</li>
+						<li lay-id="pdf">PDF</li>
+						<li lay-id="office">办公文档</li>
+						<li lay-id="online">在线文档</li>
 						<li lay-id="zip">压缩包</li>
+						<li lay-id="other">其他</li>
 					</ul>
 				</div>
 			</div>
 		</div>	
-		
-		<div class="file-item">
+		<div id="thumb">
 			<!-- 主体 -->
-			<div class="file-subject">
-				<ul id="filesBox"></ul>
+			<div class="file-thumb">
+				<div class="file-subject">
+					<ul id="filesBox"></ul>
+				</div>
+			</div>
+			<!-- 页脚 -->
+			<div class="file-footer">
+				<div id="laypage"></div>
 			</div>
 		</div>
-		<!-- 页脚 -->
-		<div class="file-footer">
-			<div id="laypage"></div>
+		
+		<div id="list">
+			<table class="layui-hide" id="table_list" lay-filter="table_list"></table>
 		</div>
     </div>
-</div>						
+</div>
+<div class="dropimg"><div style="padding-top:20%">上传文件到当前目录下</div></div>			
 {/block}
 <!-- /主体 -->
 <!-- 脚本 -->
 {block name="script"}
 <script>	
-	const typeExt=['','image','video','audio','office','pdf','zip'];
+	const typeExt = ['all','image','video','audio','pdf','office','article','zip','other'];
 	const fileExt={
+		all:[],
 		image:['jpg','jpeg','png','gif'],
-		office:['doc','docx','xls','xlsx','ppt','pptx'],
-		pdf:['txt','pdf','article'],
-		zip:['zip','rar','7z','gz','tar'],
 		video:['mpg','mp4','mpeg','avi','wmv','mov','flv','m4v'],
-		audio:['mp3','wav','wma','flac','midi']
+		audio:['mp3','wav','wma','flac','midi'],
+		pdf:['txt','pdf'],
+		office:['doc','docx','xls','xlsx','ppt','pptx'],
+		article:['article'],
+		zip:['zip','rar','7z','gz','tar'],
+		other:['other']
 	};
 	
-	function isValidFileName(fileName) {
+	function validFileName(fileName) {
 		const illegalChars = /[\\\/\*\:"<>|\?]/;
 		return !illegalChars.test(fileName);
 	}
 	
-	const moduleInit = ['tool','uploadPlus'];
+	function fileDo(item){
+		let type = '0,3,4,5',ext="zip",is_star='';
+		// 判断元素是否在数组中
+		let path='/static/home/images/icon/file.png';
+		if (fileExt.image.includes(item.file_ext)) {
+			path=item.thumbpath;
+			type = '0,1,3,4,5';
+			ext="image";
+		}
+		if (fileExt.office.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="office";
+			path='/static/home/images/icon/'+item.file_ext+'.png';
+		}
+		if (fileExt.pdf.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="pdf";
+			path='/static/home/images/icon/'+item.file_ext+'.png';
+		}								
+		if (fileExt.video.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="video";
+			path='/static/home/images/icon/video.png';
+		}
+		if (fileExt.audio.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="audio";
+			path='/static/home/images/icon/audio.png';
+		}
+		if (fileExt.zip.includes(item.file_ext)) {
+			type = '0,3,4,5';
+			ext="zip";
+			path='/static/home/images/icon/rar.png';
+		}
+		if(fileExt.article.includes(item.file_ext)){
+			type = '1,2,3,4,5';
+			ext="article";
+			path='/static/home/images/icon/article.png';
+		}
+		if(item.file_ext == 'folder'){
+			type = '3,4,5';
+			ext="folder";
+			path='/static/home/images/icon/folder.png';
+		}
+		return {type:type,path:path,ext:ext,is_star:is_star};
+	}
+	var types=2;
+	const moduleInit = ['tool','uploadPlus','tablePlus'];
 	function gouguInit() {
-		var tool = layui.tool,uploadPlus = layui.uploadPlus,form = layui.form,laypage = layui.laypage,tabs = layui.tabs,dropdown = layui.dropdown;
+		var tool = layui.tool,uploadPlus = layui.uploadPlus,table = layui.tablePlus,form = layui.form,laypage = layui.laypage,tabs = layui.tabs,dropdown  = layui.dropdown ;
+		
+// 拖拽
+		let files = [],folders=[];droping=false;
+        const drop = $('body');
+        drop.bind('dragenter', function (e) {
+			drop.addClass('drop');
+        })
+        drop.bind('dragleave', function (e) {
+			if(droping==false){
+				layer.open({
+					type: 1,
+					area: ['692px', '600px'],
+					title: '拖拽文件夹及文件上传',
+					shade: 0.6, // 遮罩透明度
+					content: '<div class="file-tree">\
+								<table id="fileTree" class="layui-table layui-table-min" style="margin:0 auto;">\
+									<tr><th>文件名</th><th width="80">文件大小</th><th width="80">上传状态</th><th width="80">操作</th></tr>\
+								</table>\
+							</div>\
+							<div class="file-tree-bottom"><span class="layui-btn layui-bg-blue" id="fileTreeUpload">开始上传</span> <span class="layui-btn layui-btn-primary" id="fileTreeClear">清空文件</span></div>',
+					success:function(){
+						droping=true;
+						$('#fileTreeUpload').on('click',function(){
+							let a=0;
+							$.each(files, function(index, file) {
+								if(file.isok==0){
+									let formData = new FormData(); // 创建 FormData 对象
+									formData.append('file', file); // 将文件添加到 FormData
+									formData.append('filePath', file.filePath); // 将文件添加到 FormData
+									formData.append('pid',$('[name="pid"]').val());// 将当前文件夹添加到 FormData
+									formData.append('group_id',$('[name="group_id"]').val());// 将当前文件夹添加到 FormData
+									// 使用 jQuery AJAX 上传文件
+									setTimeout(function () {
+										$.ajax({
+											url: '/disk/api/drop_upload', // 服务器接收文件的接口
+											type: 'POST',
+											data: formData,
+											contentType: false, // 必须设置为 false，使用 FormData 对象不设置内容类型
+											processData: false, // 不处理数据
+											success: function(e) {
+												if(e.code==0){
+													files[index].isok = 1;
+													$('#'+file.id).addClass('ok').find('td').eq(2).html('已上传');
+													$('#'+file.id).addClass('ok').find('td').eq(3).html('-');
+													layer.msg(files[index].name+'上传完成');
+												}
+											},
+											error: function(e) {
+												$('#file'+index).addClass('error');	
+											}
+										});
+									}, 300*a);
+									a++;
+								}
+							});
+						})
+
+						$('#fileTreeClear').on('click',function(){						
+							// 这里可以进行文件的上传操作
+							files.length = 0;
+							$('#fileTree').html('');
+						})		
+
+						$('#fileTree').on('click','.del-file',function(){
+							let id = $(this).data('id');
+							let element = files.find(item => item.id === id);
+							// 如果找到元素，就将 isok 修改为 1
+							if (element) {
+								console.log(element);
+								element.isok = 2;
+								$('#'+id).remove();
+							}
+						})							
+					},
+					end:function(){						
+						droping=false;
+						files.length = 0;
+						$('[lay-filter="webform"]').click();
+					}
+				});		
+			}
+        })
+        $(document).bind('dragover', function (e) {
+            e.preventDefault();
+			e.stopPropagation();
+            return false
+        })
+        $(document).bind('drop', function (e) {
+            e.preventDefault();
+			e.stopPropagation();
+			drop.removeClass('drop');
+            return false
+        })
+		
+		let count = 0,num = 0;
+        drop.bind('drop', function (e) {
+            const items = e.originalEvent.dataTransfer.items;
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+                if (item.kind == 'file') {
+                    let entry = item.webkitGetAsEntry();
+					//console.log(entry);
+                    //递归解析文件夹
+                    getCount(entry)
+                    setTimeout(() => {
+						entry.id='file'+num;
+						num++;
+                        getFilesFromEntry(entry);
+                    }, 200)
+                }
+            }
+        })
+ 
+        function getCount(entry) {
+            if (entry.isFile) {
+                entry.file(
+                    file => {
+                        count++
+                    },
+                    err => {
+                        console.log(err);
+                    }
+                )
+            } else {
+                const entryReader = entry.createReader()
+                entryReader.readEntries(
+                    (results) => {
+                        results.forEach(result => {
+                            getCount(result);
+                        })
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
+            }
+        }
+		
+        function getFilesFromEntry(entry) {
+            if (entry.isFile) {
+                entry.file(
+                    file => {
+                        file.filePath = entry.fullPath.slice(1);
+						file.isok=0;
+						file.id=entry.id;
+						
+						let element = files.find(item => item.filePath === file.filePath);						
+						if (element) {
+							console.log(files);
+						}
+						else{
+							files.push(file);
+							let tr = '<tr class="file-tr" id="'+file.id+'"><td style="text-align:left;"><div class="file">'+entry.fullPath+'</div></td><td>'+tool.renderSize(file.size)+'</td><td>等待上传</td><td class="del-file" data-id="'+file.id+'">取消</td></tr>';
+							$('#fileTree').append(tr);
+						}
+                    },
+                    err => {
+                        console.log(err);
+                    }
+                )
+            } else {
+                const entryReader = entry.createReader();
+                entryReader.readEntries(
+                    (results) => {
+                        results.forEach(result => {
+							result.id='file'+num;
+							num++;
+                            getFilesFromEntry(result);
+                        })
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
+            }			
+        }
+		
+		
+		$('#fileThumb').click(function(){
+			types=1;
+			$(this).attr('class','layui-btn layui-btn-sm');
+			$('#fileList').attr('class','layui-btn layui-btn-sm layui-btn-primary');
+			$('#diskBox').attr('class','disk-table types-1');
+			$('[lay-filter="all"]').removeAttr('disabled');
+			$('.layui-form-checkbox').animate({opacity: 1 },200);
+			$('[lay-filter="webform"]').click();
+		})
+		
+		$('#fileList').click(function(){
+			types=2;
+			$(this).attr('class','layui-btn layui-btn-sm');
+			$('#fileThumb').attr('class','layui-btn layui-btn-sm layui-btn-primary');
+			$('#diskBox').attr('class','disk-table types-2');
+			$('[lay-filter="all"]').attr('disabled',true);
+			$('.layui-form-checkbox').animate({opacity: 0.3 },200);
+			$('[lay-filter="webform"]').click();
+		})
+		
 		
 		let fileGroup = [{id:0,title:'公司共享'}];
 		tabs.on('afterChange(tab)', function(data){
@@ -173,7 +444,7 @@
                 "type":1,//0ajax多文件模式，1ajax单文件单记录模式
                 "ajaxSave":function(res){
                     $.ajax({
-                        url: "/disk/index/add_upload",
+                        url: "/disk/api/drop_upload",
                         type:'post',
                         data:{
 							'pid':$('[name="pid"]').val(),
@@ -210,8 +481,7 @@
 		$('#diskPath').on('click','a',function(){
 			let id=$(this).data('id');
 			$('[name="pid"]').val(id);
-			let data = form.val('barsearchform');
-			get_files(data);
+			$('[lay-filter="webform"]').click();
 		})
 		
 		//新增在线文档
@@ -226,7 +496,7 @@
 					layer.msg('目录名称不能为空');
 					return false;
 				}
-				if(isValidFileName(val)==false){
+				if(validFileName(val)==false){
 					layer.msg('目录名称不能包含下列任何字符：\/:*?".<>|');
 					return false;
 				}
@@ -245,7 +515,7 @@
 		})
 		
 		//查看文件
-		$('#filesBox').on('click','.file-item',function(){
+		$('#filesBox,#list').on('click','.file-item',function(){
 			let id = $(this).parent().data('id');
 			let href = $(this).data('href');
 			let ext = $(this).data('ext');
@@ -266,8 +536,7 @@
 			}
 			else if(ext == 'folder'){
 				$('[name="pid"]').val(id);
-				let data = form.val('barsearchform');
-				get_files(data);
+				$('[lay-filter="webform"]').click();
 			}
 			else{
 				return false;
@@ -275,7 +544,7 @@
 		})
 		
 		//重命名文件
-		$('#filesBox').on('click','.name-edit',function(){
+		$('#filesBox,#list').on('click','.name-edit',function(){
 			let id = $(this).parent().parent().data('id');
 			let title = $(this).parent().parent().data('title');
 			let ext = $(this).parent().parent().data('ext');
@@ -286,7 +555,7 @@
 					layer.msg('文件名不能为空');
 					return false;
 				}
-				if(isValidFileName(val)==false){
+				if(validFileName(val)==false){
 					layer.msg('文件名不能包含下列任何字符：\/:*?".<>|');
 					return false;
 				}
@@ -298,7 +567,7 @@
 		})		
 		
 		//单文件删除
-		$('#filesBox').on('click','.file-delete',function(){
+		$('#filesBox,#list').on('click','.file-delete',function(){
 			let id = $(this).parent().parent().data('id');
 			layer.confirm('确定要删除该文件吗？请慎重', { icon: 3, title: '提示' }, function (index) {
 				tool.delete("/disk/index/del", {ids:id}, ctrl_callback);
@@ -306,7 +575,7 @@
 		})
 		
 		//单文件移动
-		$('#filesBox').on('click','.file-move',function(){
+		$('#filesBox,#list').on('click','.file-move',function(){
 			let ids = $(this).parent().parent().data('id');
 			layer.open({
 				type: 2,
@@ -435,13 +704,24 @@
 		
 		//加载数据
 		var data = form.val('barsearchform');
-		get_files(data);
+		if(types==1){
+			get_files(data);
+		}
 		get_group();
 		
 		form.on('submit(webform)', function (data) {
-			get_files(data.field);
+			if(types==1){
+				get_files(data.field);
+			}
+			else{
+				layui.fileTable.reload({
+					where: data.field,
+					page: {curr: 1}
+				});
+			}
 			return false;
 		});
+		
 		$('.layui-btn-reset').click(function(){
 			setTimeout(function(){
 				$('[lay-filter="webform"]').click();
@@ -489,57 +769,15 @@
 						var item=res.data,li='';
 						if(item.length>0){
 							for(var a=0;a<item.length;a++){								
-								let type = '',ext="zip";
-								// 判断元素是否在数组中
-								let path='/static/home/images/icon/file.png';
-								if (fileExt.image.includes(item[a].file_ext)) {
-									path=item[a].thumbpath;
-									type = '0,1,3,4,5';
-									ext="image";
-								}
-								if (fileExt.office.includes(item[a].file_ext)) {
-									type = '0,1,3,4,5';
-									ext="office";
-									path='/static/home/images/icon/'+item[a].file_ext+'.png';
-								}
-								if (item[a].file_ext == 'pdf' || item[a].file_ext == 'txt') {
-									type = '0,1,3,4,5';
-									ext="pdf";
-									path='/static/home/images/icon/'+item[a].file_ext+'.png';
-								}								
-								if (fileExt.video.includes(item[a].file_ext)) {
-									type = '0,1,3,4,5';
-									ext="video";
-									path='/static/home/images/icon/video.png';
-								}
-								if (fileExt.audio.includes(item[a].file_ext)) {
-									type = '0,1,3,4,5';
-									ext="audio";
-									path='/static/home/images/icon/audio.png';
-								}
-								if (fileExt.zip.includes(item[a].file_ext)) {
-									type = '0,1,3,4,5';
-									ext="zip";
-									path='/static/home/images/icon/rar.png';
-								}
-								if(item[a].types==1){
-									type = '1,2,3,4,5';
-									ext="article";
-									path='/static/home/images/icon/article.png';
-								}
-								if(item[a].types==2){
-									type = '3,4,5';
-									ext="folder";
-									path='/static/home/images/icon/folder.png';
-								}
-								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+ext+'" data-type="'+type+'">操作</span>';
+								let fileitem = fileDo(item[a]);
+								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+fileitem.ext+'" data-type="'+fileitem.type+'">操作</span>';
 								
-								li+='<li data-id="'+item[a].id+'" data-title="'+item[a].name+'" data-ext="'+item[a].file_ext+'" data-types="'+item[a].types+'"><img src="'+path+'" alt="'+item[a].name+'" style="object-fit: contain;" class="file-item file-'+ext+'" data-href="'+item[a].filepath+'" data-ext="'+ext+'"><p title="'+item[a].name+'">'+item[a].name+'</p>\
+								li+='<li data-id="'+item[a].id+'" data-title="'+item[a].name+'" data-ext="'+item[a].file_ext+'" data-types="'+item[a].types+'"><img src="'+fileitem.path+'" alt="'+item[a].name+'" style="object-fit: contain;" class="file-item file-'+fileitem.ext+'" data-href="'+item[a].filepath+'" data-ext="'+fileitem.ext+'"><p title="'+item[a].name+'">'+item[a].name+'</p>\
 									<div class="layui-btn-ctrl">'+ctrl+'\
 									<span class="name-edit" style="display:none;" id="fileEdit'+item[a].id+'" title="重命名"></span>\
 									<span class="file-delete" style="display:none;" id="fileDel'+item[a].id+'" title="删除"></span>\
 									<span class="file-move" style="display:none;" id="fileMove'+item[a].id+'" title="移动"></span>\
-									</div></li>';
+									</div>';
 							}
 							$('#filesBox').html(li);
 							$('#laypage').show();
@@ -552,6 +790,52 @@
 				}				
 			});
 		}
+		
+		//列表数据加载
+		layui.fileTable = table.render({
+			elem: "#table_list"
+			,toolbar: false
+			,url: "/disk/index/sharelist"
+			,page: true
+			,limit: 30
+			,where:data
+			,cellMinWidth: 80
+			,height: 'full-156'
+			,skin:'line'
+			,size:'lg'
+			,cols: [[
+				{field:'name',title: '文件名',minWidth:240,templet:function(d){
+					let fileitem = fileDo(d);
+					return '<div data-id="'+d.id+'"><div class="file-item file-item-'+fileitem.ext+'" data-href="'+d.filepath+'" data-ext="'+fileitem.ext+'"><div style="float:left; width:33px; height:33px; margin-right:10px; margin-left:3px;"><img src="'+fileitem.path+'" style="width:100%; height:100%; vertical-align:top;object-fit: cover;" /></div><span>'+d.name+'</span></div></div>';
+				}}
+				,{field:'file_size',title: '文件大小',align: 'center',width: 120,templet:function(d){
+					if(d.file_size>0){
+						return tool.renderSize(d.file_size);
+					}else{
+						return '-';
+					}
+				}}
+				,{field:'admin_name',title: '创建人',width:100,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:100,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					let fileitem = fileDo(d);
+					var ctrl = '<div data-id="'+d.id+'" data-title="'+d.name+'" data-ext="'+d.file_ext+'" data-types="'+d.types+'"><span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+d.id+'" data-actionid="'+d.action_id+'" data-href="'+d.filepath+'" data-filename="'+d.name+'" data-ext="'+fileitem.ext+'" data-type="'+fileitem.type+'">操作</span><div style="display:none"><span class="name-edit" id="fileEdit'+d.id+'" title="重命名"></span>\
+					<span class="file-delete" id="fileDel'+d.id+'" title="删除"></span>\
+					<span class="file-move" id="fileMove'+d.id+'" title="移动"></span></div></div>';
+					return ctrl
+				}}
+			]],
+			done:function(res){
+				let folder = res.totalRow;
+				let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">共享空间</a>';
+				if(folder.length>0){
+					for(var f=0;f<folder.length;f++){
+						folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
+					}
+				}
+				$('#diskPath').html(folderHtml);
+			}
+		});
 	}
 </script>
 {/block}

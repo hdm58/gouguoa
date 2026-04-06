@@ -433,7 +433,7 @@ layui.define(function (exports) {
 			if(null==val||val==''){
 				 return "0 Bytes";
 			}
-			var unitArr = new Array("Bytes","KB","MB","GB","TB","PB","EB","ZB","YB");
+			var unitArr = new Array("B","KB","MB","GB","TB","PB","EB","ZB","YB");
 			var index=0;
 			var srcsize = parseFloat(val);
 			index=Math.floor(Math.log(srcsize)/Math.log(1024));
@@ -537,8 +537,8 @@ layui.define(function (exports) {
 
 	//附件操作	
 	const ctrlBtn=function(ctrl){
-			//操作按钮'0下载','1查看','2编辑','3重命名','4删除','5移动','6标星','7取消标星','8还原','9清除'
-		let ctrl_types = ['下载','查看','编辑','重命名','删除','移动','标星','取消标星','还原','清除'];
+		//操作按钮'0下载','1查看','2编辑','3重命名','4删除','5移动','6标星','7取消标星','8分享','9取消分享','10还原','11清除'
+		let ctrl_types = ['下载','查看','编辑','重命名','删除','移动','标星','取消标星','分享','取消分享','还原','清除'];
 		let	ctrls=[];
 		for(let i=0;i<ctrl.length;i++){
 			ctrls.push({"id":ctrl[i]+'',"title":ctrl_types[ctrl[i]]});
@@ -579,7 +579,6 @@ layui.define(function (exports) {
 				file_menu = ctrlBtn((type+'').split(","));
 			}
 		}
-		console.log(actionid);
 		dropdown.render({
 			elem: that,
 			className:'file-menu',
@@ -645,10 +644,16 @@ layui.define(function (exports) {
 				  case '7'://取消标星
 					$('#fileStarno'+fileid).click();
 					break;
-				  case '8'://还原
+				  case '8'://分享
+					$('#fileShare'+fileid).click();
+					break;
+				  case '9'://取消分享
+					$('#fileShareno'+fileid).click();
+					break;
+				  case '10'://还原
 					$('#fileBack'+fileid).click();
 					break;
-				  case '9'://清除
+				  case '11'://清除
 					$('#fileClear'+fileid).click();
 					break;
 				  default:
@@ -678,6 +683,18 @@ layui.define(function (exports) {
 		}
 		tool.side(href);	
 		return false;
+	});
+	
+	$('.tool-tips').hover(function(){
+		var tips = $(this).data('tips');
+		if(typeof(tips) != "undefined" && tips!=''){
+			layer.tips(tips, this, {
+				tips: 1,
+				time: 0
+			});
+		}
+	}, function(){
+		layer.closeAll('tips'); // 关闭提示
 	});
 	
 	$('body').on('click', '.tab-a', function () {

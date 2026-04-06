@@ -365,6 +365,7 @@ class Check extends BaseController
 		$subject = $flow_cate['title'];
 		$action_id = $param['action_id'];
 		$check_table = $flow_cate['check_table'];
+		$param['send_msg'] = 1;
 		//审核内容详情
 		$detail = Db::name($check_table)->where(['id' => $action_id])->find();
 		if (empty($detail)){		
@@ -437,6 +438,9 @@ class Check extends BaseController
 						$param['check_uids'] ='';
 					}
 				}
+				else{
+					$param['send_msg'] = 0;
+				}
 			}
 			if($param['check_status'] == 1 && empty($param['check_uids'])){
 				return to_assign(1,'找不到下一步的审批人，该审批流程设置有问题，请联系HR或者管理员');
@@ -467,7 +471,7 @@ class Check extends BaseController
 				add_log('check', $action_id, $param,$subject);
 				//发送消息通知
 				if($param['check_status'] == 1){
-					if($flow_cate['template_id']>0){
+					if($flow_cate['template_id']>0 && $param['send_msg']==1){
 						$msg=[
 							'from_uid'=>$detail['admin_id'],//发送人
 							'to_uids'=>$param['check_uids'],//接收人

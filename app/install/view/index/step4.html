@@ -47,23 +47,5 @@
 			</div>
 		</div>
 	</div>
-
-	<script src="{__GOUGU__}/layui/layui.js" charset="utf-8"></script>
-	<script>
-		var url = "{$domain|default='http://www.gougucms.com'}";
-		layui.use(['element', 'jquery', 'layer', 'form'], function () {
-			var $ = layui.jquery;
-			$.ajax({  
-				url:url+"/index.php?s=home/get_module/install_ajax",
-				dataType:'jsonp',  
-				data:{'name':'勾股OA'},  
-				jsonp:'callback',  
-				success:function(result) {  
-					console.log(result);
-				},  
-				timeout:3000  
-			});
-		});
-	</script>
 </body>
 </html>

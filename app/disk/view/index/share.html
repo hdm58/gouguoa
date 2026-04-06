@@ -1,0 +1,102 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>	
+.otypes-table-1 .tr-1-1,
+.otypes-table-1 .tr-1-2,
+.otypes-table-1 .tr-1-3{display:none;}
+
+.otypes-table-2 .tr-1-2,
+.otypes-table-2 .tr-1-3{display:none;}
+
+.otypes-table-3 .tr-1-1,
+.otypes-table-3 .tr-1-3{display:none;}
+
+.otypes-table-4 .tr-1-1,
+.otypes-table-4 .tr-1-2{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page" lay-filter="page-form">
+	<table class="layui-table layui-table-form otypes-table-1" id="pageTable">
+		<tr class="tr-1">
+			<td class="layui-td-gray">分享对象<font>*</font></td>
+			<td>
+				<input type="radio" name="share_types" lay-filter="otypes" value="1" title="所有人" checked>
+				<input type="radio" name="share_types" lay-filter="otypes" value="2" title="部门">
+				<input type="radio" name="share_types" lay-filter="otypes" value="3" title="岗位">
+				<input type="radio" name="share_types" lay-filter="otypes" value="4" title="员工">
+			</td>
+			<td class="layui-td-gray-2">分享截止日期</td>
+			<td><input type="text" name="share_time" placeholder="请选择分享截止日期，空为永久" class="layui-input tool-time" readonly></td>
+		</tr>
+		<tr class="tr-1 tr-1-1">
+			<td class="layui-td-gray">分享部门<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="departments" value="" placeholder="请选择要分享的部门" readonly class="layui-input picker-oa" data-types="department" data-type="2">
+				<input type="hidden" name="share_dids" value="">
+			</td>
+		</tr>
+		<tr class="tr-1 tr-1-2">
+			<td class="layui-td-gray">分享岗位<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="positions" value="" placeholder="请选择要分享岗位" readonly class="layui-input picker-oa" data-types="position" data-type="2">
+				<input type="hidden" name="share_pids" value="">
+			</td>
+		</tr>
+		<tr class="tr-1 tr-1-3">
+			<td class="layui-td-gray">分享人员<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="unames" value="" placeholder="请选择要分享的人员" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="share_uids" value="">
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="ids" value="{$detail.id|default=0}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即分享</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaPicker'];
+function gouguInit() {
+	var form = layui.form,tool=layui.tool,laydate = layui.laydate;
+	
+	form.on('radio(otypes)', function (data) {
+		let formVal = form.val('page-form');
+		$('#pageTable').attr('class','layui-table layui-table-form otypes-table-'+formVal.share_types);
+	});
+	
+	form.on('submit(webform)', function(data){
+		if(data.field.share_types == 2 && data.field.departments == ''){
+			layer.msg('请先完善要分享的部门');
+			return false;
+		}
+		if(data.field.share_types == 3 && data.field.positions == ''){
+			layer.msg('请先完善分享的岗位');
+			return false;
+		}
+		if(data.field.share_types == 4 && data.field.unames == ''){
+			layer.msg('请先完善分享的员工');
+			return false;
+		}
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);				
+			}
+		}
+		tool.post("/disk/index/share", data.field, callback);
+		return false;
+	});
+		
+}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -3,27 +3,35 @@
 <style>
     ::-webkit-scrollbar { display: none; width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #e1e1e1;}
-	.disk-left{width:120px; float:left; height:calc(100vh - 86px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px;}
+	.file-folder,.file-image,.file-pdf,.file-video,.file-audio{cursor:pointer;}
+	
+	.disk-left{width:150px; float:left; height:calc(100vh - 86px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px;user-select: none;}
 	.disk-left::-webkit-scrollbar {width: 0;}
 	.disk-left h3{font-size:18px; height:30px; padding-left:10px; font-weight:800}
+	
 	.disk-types{padding:12px 0;}
-	.disk-types li{padding:8px; border-radius:3px; cursor:pointer;}
+	.disk-types li{padding:8px; border-radius:4px; cursor:pointer;}
 	.disk-types li strong{margin-right:12px; font-size:18px;}
 	.disk-types li:hover{background-color:#F3F4F5;}
-	.disk-types li.on-this{background-color:#F2FAFF; color:#1E9FFF}
+	.disk-types li.on-this{background-color:#EDF7FD; color:#1E9FFF}
 	.disk-line{border-bottom:1px solid #eee; margin:6px 0;}
 	
-	.disk-table{margin-left:120px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
-	.disk-table.types-2 #thumb{display:none;}
-	.disk-table.types-1 #list{display:none;}
-	.layui-btn.tool-add{padding:0 12px;}
+	.disk-table{margin-left:150px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
+	.disk-table.types-1 .types-thumb,.disk-table.types-1 #list{display:none;}
+	.disk-table.types-2 .types-list,.disk-table.types-2 #thumb{display:none;}
+	
+	.disk-form{padding:10px; background-color: #fff;}
+	.disk-form .tool-add{padding:0 10px;}
+	.disk-form .iconfont{font-size:16px;}
+	.disk-form .layui-form-checkbox[lay-skin=primary]>i{border-color:#5f5f5f}
+	.disk-form .layui-form-checkbox[lay-skin=primary]{padding:0; margin:0;}
+	.disk-form .layui-form-checkbox[lay-skin=primary]>div{padding:0px; margin:0;}
 	
 	.disk-path{height:42px;padding:0 4px 0 12px;}
 	.disk-breadcrumb{float:left; padding:8px 0}
-	.disk-breadcrumb span{color:#666; margin:0 8px; font-size:10px;}
-	.layui-tab{margin:0;}
-    .file-item {height:calc(100vh - 216px); overflow-y: auto;}
-	.disk-path .layui-form-checkbox[lay-skin=primary]>div{padding-right:4px}
+	.disk-breadcrumb span{color:#666; margin:0 3px; font-size:10px;}
+	.disk-path .layui-tabs-header{height:42px;}
+	.disk-path .layui-tabs-header li{padding:0 10px;line-height:42px; font-size:13px;}
 	
     /** 缩略图模式 **/
     .file-thumb {height:calc(100vh - 206px); overflow-y: auto;}
@@ -37,9 +45,6 @@
     .file-thumb .file-subject ul li img.file-image { width: 106px; height: 106px; padding:6px;}
     .file-thumb .file-subject ul li video { width: 60px; height: 60px; border-radius: 3px; }
     .file-thumb .file-subject ul li p {margin: 5px 0 0; width: 118px; font-size: 13px; text-align: center; word-break: break-all; text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;}
-    .file-thumb .file-subject ul li .file-check{position: absolute; width:20px; height:20px; left: 1px; top: 1px; display: none; font-size: 14px; border-radius:2px 0 4px 0; text-align: center; line-height: 20px; color: #ffffff; background-color:#fff; border-right:1px solid #eee; border-bottom:1px solid #eee; cursor:pointer;}	
-	.file-thumb .file-subject ul li:hover .file-check{display: block;}
-    .file-thumb .file-subject ul li.on .file-check{ display: block; background: #1e9fff; border-color:#1e9fff}
 	.file-thumb .file-subject ul li .layui-btn-ctrl{position:absolute; top:1px; right:1px; opacity: 0;}
 	.file-thumb .file-subject ul li:hover .layui-btn-ctrl{opacity: 1;}
 	.file-thumb .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 1px; top: 80px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
@@ -50,58 +55,57 @@
     .empty p{width: 180px; text-align: center;}
     .empty i{font-size: 180px;}
 	.file-item{cursor:pointer;white-space: nowrap;}
-	
-	/** 拖拽上传文件 **/
-	.file-tree{padding:6px; width:680px; height:480px; overflow-y:scroll;}
-	.file-tree tr.ok{color:#16baaa}
-	.file-tree .folder,.file{padding:0;}
-	.file-tree .folder:before{content: "📁 "; font-size:18px;}
-	.file-tree .file:before{content: "📄 "; font-size:18px;}
-	.del-file{color:#16b777;cursor:pointer;}
-	.file-tree-bottom{padding:9px 0; text-align:center; border-top:2px solid #eeeeee;}
-	.dropimg{z-index:9999999999; display:none; position:fixed; top:0;left:0; right:0; bottom:0; background-color:rgba(255,255,255,.6); text-align:center; font-size:58px; border:3px dashed #666;}
-	body.drop .dropimg{display:block;}
+
 </style>
 {/block}
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
 	<div class="disk-left">
-		<h3>回收站文件</h3>
-		<div id="diskTypes" class="disk-types">
+		<h3>个人空间</h3>
+		<div class="disk-types">
 			<ul>
-				<li class="on-this" data-tab=""><strong class="iconfont icon-kaohezhibiao"></strong>全部</li>
-				<li data-tab="image"><strong class="iconfont icon-sucaiguanli"></strong>图片</li>
-				<li data-tab="video"><strong class="iconfont icon-wodekecheng"></strong>视频</li>
-				<li data-tab="audio"><strong class="iconfont icon-tuiguang"></strong>音频</li>
-				<li data-tab="office"><strong class="iconfont icon-chengjiliebiao"></strong>Office文件</li>
-				<li data-tab="pdf"><strong class="iconfont icon-lunwenguanli"></strong>在线文档</li>
-				<li data-tab="zip"><strong class="iconfont icon-xiaoshoupin"></strong>压缩文件</li>
-				<li data-tab="other"><strong class="iconfont icon-wenjuan"></strong>其他文件</li>
+				<li data-tab="my"><a href="/disk/index/datalist"><strong class="iconfont icon-contact" style="color:#1e9fff"></strong>我的文件</a></li>
+				<li data-tab="star"><a href="/disk/index/starlist"><strong class="iconfont icon-shoucang" style="color:#ffb800"></strong>标星文件</a></li>
+				<li data-tab="myshare"><a href="/disk/index/mysharelist"><strong class="iconfont icon-daochu" style="color:#16b777"></strong>我分享的</a></li>
+				<li data-tab="share" class="on-this"><a href="/disk/index/tosharelist"><strong class="iconfont icon-daoru" style="color:#ff5722"></strong>别人分享的</a></li>
 			</ul>
 		</div>
 	</div>
 	<div id="diskBox" class="disk-table types-2">
-		<form class="layui-form gg-form-bar border-b" lay-filter="barsearchform">
-			<div class="layui-input-inline" style="width:300px">
+		<form class="layui-form disk-form border-b" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:268px">
 				<input type="text" name="keywords" placeholder="输入关键字，文件名称/目录名称" class="layui-input" autocomplete="off" />
 			</div>
-			<div class="layui-input-inline" style="width:150px">
+			<div class="layui-input-inline" style="width:142px">
 				<input type="hidden" name="pid" value="0" />
 				<input type="hidden" name="ext" value="" />
 				<input type="hidden" name="limit" value="30" />
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
-				<button type="reset" class="layui-btn layui-btn-reset">清空</button>
+				<button type="reset" class="layui-btn layui-btn-reset" style="margin-left:3px;">清空</button>
 			</div>
-			<div class="layui-input-inline" style="width:132px; padding-top:3px; float:right;">
-				<div class="layui-btn-group">
-					<span class="layui-btn layui-btn-sm layui-btn-primary" id="fileThumb">缩略模式</span>
-					<span class="layui-btn layui-btn-sm" id="fileList">列表模式</span>
-				</div>
+			<div class="layui-input-inline" style="width:40px; float:right; padding-top:3px;">
+				<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips show-types types-thumb" style="margin:0" data-tips="缩略图模式" data-types="1"><i class="iconfont icon-charutupian"></i></span>
+				<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips show-types types-list" style="margin:0" data-tips="列表模式" data-types="2"><i class="iconfont icon-liebiao"></i></span>
 			</div>
 		</form>
 		<div class="disk-path layui-form border-b">
-			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">回收站</a></div>
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">别人分享的文件</a></div>
+			<div class="layui-input-inline" style="width:482px; float:right;">
+				<div class="layui-tabs layui-tab-brief" id="tab">
+					<ul class="layui-tabs-header">
+						<li class="layui-this" lay-id="">全部</li>
+						<li lay-id="image">图片</li>
+						<li lay-id="video">视频</li>
+						<li lay-id="audio">音频</li>
+						<li lay-id="pdf">PDF</li>
+						<li lay-id="office">办公文档</li>
+						<li lay-id="online">在线文档</li>
+						<li lay-id="zip">压缩包</li>
+						<li lay-id="other">其他</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		<div id="thumb">
 			<!-- 主体 -->
@@ -141,72 +145,80 @@
 	};
 	
 	function fileDo(item){
-		let type = '0,10',ext="zip",is_star='';
+		let type = '0',ext="zip",is_star='',is_share='';
+		// 判断元素是否在数组中
 		let path='/static/home/images/icon/file.png';
 		if (fileExt.image.includes(item.file_ext)) {
-			path=item.filepath;
-			type = '0,1,10';
+			path=item.thumbpath;
+			type = '0,1';
 			ext="image";
 		}
 		if (fileExt.office.includes(item.file_ext)) {
-			type = '0,1,10';
+			type = '0,1';
 			ext="office";
 			path='/static/home/images/icon/'+item.file_ext+'.png';
 		}
-		if (item.file_ext == 'pdf' || item.file_ext == 'txt') {
-			type = '0,1,10';
+		if (fileExt.pdf.includes(item.file_ext)) {
+			type = '0,1';
 			ext="pdf";
 			path='/static/home/images/icon/'+item.file_ext+'.png';
 		}								
 		if (fileExt.video.includes(item.file_ext)) {
-			type = '0,1,10';
+			type = '0,1';
 			ext="video";
 			path='/static/home/images/icon/video.png';
 		}
 		if (fileExt.audio.includes(item.file_ext)) {
-			type = '0,1,10';
+			type = '0,1';
 			ext="audio";
 			path='/static/home/images/icon/audio.png';
 		}
 		if (fileExt.zip.includes(item.file_ext)) {
-			type = '0,10';
+			type = '0';
 			ext="zip";
 			path='/static/home/images/icon/rar.png';
 		}
 		if(fileExt.article.includes(item.file_ext)){
-			type = '1,10';
+			type = '1';
 			ext="article";
 			path='/static/home/images/icon/article.png';
 		}
 		if(item.file_ext == 'folder'){
-			type = '10';
+			type = '1';
 			ext="folder";
 			path='/static/home/images/icon/folder.png';
 		}
-		return {type:type,path:path,ext:ext,is_star:is_star};
+		return {type:type,path:path,ext:ext,is_star:is_star,is_share:is_share};
 	}
+	
+	//默认是列表模式
 	var types=2;
 	const moduleInit = ['tool','uploadPlus','tablePlus'];
 	function gouguInit() {
-		var tool = layui.tool,uploadPlus = layui.uploadPlus,table = layui.tablePlus,form = layui.form,laypage = layui.laypage;
-		
-		$('#fileThumb').click(function(){
-			types=1;
-			$(this).attr('class','layui-btn layui-btn-sm');
-			$('#fileList').attr('class','layui-btn layui-btn-sm layui-btn-primary');
-			$('#diskBox').attr('class','disk-table types-1');
-			$('[lay-filter="all"]').removeAttr('disabled');
-			$('.layui-form-checkbox').animate({opacity: 1 },200);
+		var tool = layui.tool,uploadPlus = layui.uploadPlus,table = layui.tablePlus,form = layui.form,laypage = layui.laypage,tabs = layui.tabs;
+		//选择文件类型
+		tabs.on('afterChange(tab)', function(data){
+			if(data.index==0){
+				$('[name="ext"]').val('');
+			}
+			else{
+				let ext = typeExt[data.index];
+				$('[name="ext"]').val(fileExt[ext]);
+			}
 			$('[lay-filter="webform"]').click();
-		})
+			return false;
+		});
 		
-		$('#fileList').click(function(){
-			types=2;
-			$(this).attr('class','layui-btn layui-btn-sm');
-			$('#fileThumb').attr('class','layui-btn layui-btn-sm layui-btn-primary');
-			$('#diskBox').attr('class','disk-table types-2');
-			$('[lay-filter="all"]').attr('disabled',true);
-			$('.layui-form-checkbox').animate({opacity: 0.3 },200);
+		$('#diskBox').on('click','.show-types',function(){
+			types=$(this).data('types');
+			$('#diskBox').attr('class','disk-table types-'+types);
+			if(types==1){
+				$('[lay-filter="all"]').removeAttr('disabled').prop('checked', false);
+			}
+			else{
+				$('[lay-filter="all"]').attr('disabled',true).prop('checked', false);
+			}
+			form.render();
 			$('[lay-filter="webform"]').click();
 		})
 		
@@ -220,28 +232,6 @@
 				layer.msg(e.msg);
 			}
 		}
-		
-		//左侧操作
-		$('#diskTypes').on('click','li',function(){
-			$(this).addClass('on-this').siblings().removeClass('on-this');
-			let tab = $(this).data('tab');
-			$('[name="pid"]').val(0);
-			$('[name="keywords"]').val('');
-			if(tab==''){
-				$('[name="ext"]').val('');
-			}
-			else{
-				$('[name="ext"]').val(fileExt[tab]);
-			}
-			$('[lay-filter="webform"]').click();
-		})
-		
-		//顶部目录操作
-		$('#diskPath').on('click','a',function(){
-			let id=$(this).data('id');
-			$('[name="pid"]').val(id);
-			$('[lay-filter="webform"]').click();
-		})
 		
 		//查看文件
 		$('#filesBox,#list').on('click','.file-item',function(){
@@ -272,22 +262,6 @@
 			}
 		})
 		
-		//单文件还原
-		$('#filesBox,#list').on('click','.file-back',function(){
-			let id = $(this).parent().parent().data('id');
-			layer.confirm('确定要还原该文件吗？', { icon: 3, title: '提示' }, function (index) {
-				tool.delete("/disk/index/back", {ids:id}, ctrl_callback);
-			});
-		})
-		
-		//单文件清除
-		$('#filesBox,#list').on('click','.file-clear',function(){
-			let id = $(this).parent().parent().data('id');
-			layer.confirm('确定要清除该文件吗？清除后将不可恢复', { icon: 3, title: '提示' }, function (index) {
-				tool.post("/disk/index/clear", {ids:id}, ctrl_callback);
-			});
-		})
-		
 		//加载数据
 		var data = form.val('barsearchform');
 		if(types==1){
@@ -313,10 +287,11 @@
 			},200)
 		})
 		
+		//thumb数据加载
 		function get_files(param){
 			var loadIndex = layer.load(0);
 			$.ajax({
-				url:"/disk/index/clearlist",
+				url:"/disk/index/tosharelist",
 				data:param,
 				complete:function(){
 					layer.close(loadIndex)
@@ -340,17 +315,7 @@
 									get_files(data);
 								}
 							}
-						});
-
-						let folder = res.totalRow;
-						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">回收站</a>';
-						if(folder.length>0){
-							for(var f=0;f<folder.length;f++){
-								folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
-							}
-						}
-						$('#diskPath').html(folderHtml);
-					
+						});					
 						var item=res.data,li='';
 						if(item.length>0){
 							for(var a=0;a<item.length;a++){								
@@ -359,15 +324,21 @@
 								
 								li+='<li data-id="'+item[a].id+'" data-title="'+item[a].name+'" data-ext="'+item[a].file_ext+'" data-types="'+item[a].types+'"><img src="'+fileitem.path+'" alt="'+item[a].name+'" style="object-fit: contain;" class="file-item file-'+fileitem.ext+'" data-href="'+item[a].filepath+'" data-ext="'+fileitem.ext+'"><p title="'+item[a].name+'">'+item[a].name+'</p>\
 									<div class="layui-btn-ctrl">'+ctrl+'\
-									<span class="file-back" style="display:none;" id="fileBack'+item[a].id+'" title="还原"></span>\
-									<span class="file-clear" style="display:none;" id="fileClear'+item[a].id+'" title="清除"></span>\
-									</div></li>';
+									<span class="name-edit" style="display:none;" id="fileEdit'+item[a].id+'" title="重命名"></span>\
+									<span class="file-delete" style="display:none;" id="fileDel'+item[a].id+'" title="删除"></span>\
+									<span class="file-move" style="display:none;" id="fileMove'+item[a].id+'" title="移动"></span>\
+									<span class="file-star" style="display:none;" id="fileStar'+item[a].id+'" title="标星"></span>\
+									<span class="file-starno" style="display:none;" id="fileStarno'+item[a].id+'" title="取消标星"></span>\
+									<span class="file-share" style="display:none;" id="fileShare'+item[a].id+'" title="分享"></span>\
+									<span class="file-shareno" style="display:none;" id="fileShareno'+item[a].id+'" title="取消分享"></span>\
+									</div>\
+									<div class="file-check"><i class="layui-icon layui-icon-ok" style="font-size: 16px; color: #eeeeee;"></i></div>'+fileitem.is_star+fileitem.is_share+'</li>';
 							}
 							$('#filesBox').html(li);
 							$('#laypage').show();
 						}
 						else{
-							$('#filesBox').html('<div class="empty"><i class="layui-icon layui-icon-upload"></i><p>无文件文件</p></div>');
+							$('#filesBox').html('<div class="empty"><i class="layui-icon layui-icon-upload"></i><p>无文件文件，赶紧去上传吧!</p></div>');
 							$('#laypage').hide();
 						}
 					}	
@@ -379,18 +350,19 @@
 		layui.fileTable = table.render({
 			elem: "#table_list"
 			,toolbar: false
-			,url: "/disk/index/clearlist"
+			,url: "/disk/index/tosharelist"
 			,page: true
 			,limit: 30
 			,where:data
 			,cellMinWidth: 80
-			,height: 'full-156'
+			,height: 'full-155'
+			,lineStyle: 'height: 54px;'
 			,skin:'line'
 			,size:'lg'
 			,cols: [[
-				{field:'name',title: '文件名',minWidth:240,templet:function(d){
+				{field:'name',title: '文件名',minWidth:300,templet:function(d){
 					let fileitem = fileDo(d);
-					return '<div data-id="'+d.id+'"><div class="file-item file-item-'+fileitem.ext+'" data-href="'+d.filepath+'" data-ext="'+fileitem.ext+'"><div style="float:left; width:33px; height:33px; margin-right:10px; margin-left:3px;"><img src="'+fileitem.path+'" style="width:100%; height:100%; vertical-align:top;object-fit: cover;" /></div><span>'+d.name+'</span></div></div>';
+					return '<div data-id="'+d.id+'"><div class="file-item file-item-'+fileitem.ext+'" data-href="'+d.filepath+'" data-ext="'+fileitem.ext+'"><div style="float:left; width:32px; height:32px; margin-right:10px; margin-top:3px; margin-left:3px;"><img src="'+fileitem.path+'" style="width:100%; height:100%; vertical-align:top;object-fit: cover;" /></div><span>'+d.name+'</span></div></div>';
 				}}
 				,{field:'file_size',title: '文件大小',align: 'center',width: 120,templet:function(d){
 					if(d.file_size>0){
@@ -403,19 +375,30 @@
 				,{field:'create_time', title: '创建时间',width:150,align:'center'}
 				,{width:100,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
 					let fileitem = fileDo(d);
-					var ctrl = '<div data-id="'+d.id+'" data-title="'+d.name+'" data-ext="'+d.file_ext+'" data-types="'+d.types+'"><span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+d.id+'" data-actionid="'+d.action_id+'" data-href="'+d.filepath+'" data-filename="'+d.name+'" data-ext="'+fileitem.ext+'" data-type="'+fileitem.type+'">操作</span><div style="display:none"><span class="file-back" id="fileBack'+d.id+'" title="还原"></span><span class="file-clear" id="fileClear'+d.id+'" title="清除"></span>\</div></div>';
+					var ctrl = '<div data-id="'+d.id+'" data-title="'+d.name+'" data-ext="'+d.file_ext+'" data-types="'+d.types+'"><span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+d.id+'" data-actionid="'+d.action_id+'" data-href="'+d.filepath+'" data-filename="'+d.name+'" data-ext="'+fileitem.ext+'" data-type="'+fileitem.type+'">\
+					操作 <i class="layui-icon layui-icon-down"></i></span>\
+					<div style="display:none">\
+						<span class="name-edit" id="fileEdit'+d.id+'" title="重命名"></span>\
+						<span class="file-delete" id="fileDel'+d.id+'" title="删除"></span>\
+						<span class="file-move" id="fileMove'+d.id+'" title="移动"></span>\
+						<span class="file-star" id="fileStar'+d.id+'" title="标星"></span>\
+						<span class="file-starno" id="fileStarno'+d.id+'" title="取消标星"></span>\
+						<span class="file-share" id="fileShare'+d.id+'" title="分享"></span>\
+						<span class="file-shareno" id="fileShareno'+d.id+'" title="取消分享"></span>\
+					</div></div>';
 					return ctrl
 				}}
-			]],
-			done:function(res){
-				let folder = res.totalRow;
-				let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">回收站</a>';
-				if(folder.length>0){
-					for(var f=0;f<folder.length;f++){
-						folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
-					}
+			]]
+		});
+			
+		table.on('tool(table_list)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if(e.code==0){
+					layui.fileTable.reload();
 				}
-				$('#diskPath').html(folderHtml);
 			}
 		});
 	}

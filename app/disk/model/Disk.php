@@ -37,6 +37,7 @@ class Disk extends Model
 			->each(function ($item, $key){
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				$item->department = Db::name('Department')->where('id',$item->did)->value('title');
+				$item->create_time = to_date($item->create_time);
 				if($item->types == 0){
 					$item->filepath = Db::name('File')->where('id',$item->action_id)->value('filepath');
 					$item->thumbpath = Db::name('File')->where('id',$item->action_id)->value('thumbpath');

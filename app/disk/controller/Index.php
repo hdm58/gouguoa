@@ -35,7 +35,7 @@ class Index extends BaseController
     }
 	
     /**
-    * 数据列表
+    * 个人空间
     */
     public function datalist()
     {
@@ -43,25 +43,22 @@ class Index extends BaseController
         if (request()->isAjax()) {
 			$pid = isset($param['pid']) ? $param['pid'] : 0;
 			$where=[];
+			$whereOr=[];
 			$where[]=['admin_id','=',$this->uid];
 			$where[]=['delete_time','=',0];
 			$where[]=['group_id','=',0];
+			$where[]=['pid','=',$pid];
             if (!empty($param['keywords'])) {
                 $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
-            }            
-			if (!empty($param['is_star'])) {
-				$where[]=['types','<',2];
-				$where[]=['is_star','=',1];
             }
 			if (!empty($param['ext'])) {
-                $where[] = ['file_ext', 'in',$param['ext']];
+				if($param['ext'] == 'other'){
+					$where[] = ['file_ext', 'notin','jpg,jpeg,png,gif,mpg,mp4,mpeg,avi,wmv,mov,flv,m4v,mp3,wav,wma,flac,midi,txt,pdf,doc,docx,xls,xlsx,ppt,pptx,article,folder,zip,rar,7z,gz,tar'];
+				}
+				else{
+					$where[] = ['file_ext', 'in',$param['ext']];
+				}
             }
-			if (!empty($param['is_star']) || !empty($param['ext'])) {
-
-            }
-			else{
-				$where[]=['pid','=',$pid];
-			}
             $list = $this->model->datalist($param,$where);
 			$folder = get_pfolder($pid);
             return table_assign(0, '', $list,$folder);
@@ -70,6 +67,104 @@ class Index extends BaseController
             return view();
         }
     }
+
+	/**
+    * 标星文件
+    */
+    public function starlist()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+			$where=[];
+			$whereOr=[];
+			$where[]=['admin_id','=',$this->uid];
+			$where[]=['delete_time','=',0];
+			$where[]=['group_id','=',0];
+			$where[]=['types','<',2];
+			$where[]=['is_star','=',1];
+            if (!empty($param['keywords'])) {
+                $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
+            }            
+			if (!empty($param['ext'])) {
+				if($param['ext'] == 'other'){
+					$where[] = ['file_ext', 'notin','jpg,jpeg,png,gif,mpg,mp4,mpeg,avi,wmv,mov,flv,m4v,mp3,wav,wma,flac,midi,txt,pdf,doc,docx,xls,xlsx,ppt,pptx,article,folder,zip,rar,7z,gz,tar'];
+				}
+				else{
+					$where[] = ['file_ext', 'in',$param['ext']];
+				}
+            }
+            $list = $this->model->datalist($param,$where);
+            return table_assign(0, '', $list);
+        }
+        else{
+            return view();
+        }
+    }
+	
+	/**
+    * 我分享的文件
+    */
+    public function mysharelist()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+			$where=[];
+			$where[]=['admin_id','=',$this->uid];
+			$where[]=['delete_time','=',0];
+			$where[]=['group_id','=',0];
+			$where[]=['types','<',2];
+			$where[]=['share_types','>',0];
+            if (!empty($param['keywords'])) {
+                $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
+            }            
+			if (!empty($param['ext'])) {
+				if($param['ext'] == 'other'){
+					$where[] = ['file_ext', 'notin','jpg,jpeg,png,gif,mpg,mp4,mpeg,avi,wmv,mov,flv,m4v,mp3,wav,wma,flac,midi,txt,pdf,doc,docx,xls,xlsx,ppt,pptx,article,folder,zip,rar,7z,gz,tar'];
+				}
+				else{
+					$where[] = ['file_ext', 'in',$param['ext']];
+				}
+            }
+            $list = $this->model->datalist($param,$where);
+            return table_assign(0, '', $list);
+        }
+        else{
+            return view();
+        }
+    }
+	
+	/**
+    * 别人分享的文件
+    */
+    public function tosharelist()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+			$where=[];
+			$where[]=['admin_id','<>',$this->uid];
+			$where[]=['delete_time','=',0];
+			$where[]=['group_id','=',0];
+			$where[]=['types','<',2];
+			$where[]=['share_types','>',0];
+            if (!empty($param['keywords'])) {
+                $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
+            }            
+			if (!empty($param['ext'])) {
+				if($param['ext'] == 'other'){
+					$where[] = ['file_ext', 'notin','jpg,jpeg,png,gif,mpg,mp4,mpeg,avi,wmv,mov,flv,m4v,mp3,wav,wma,flac,midi,txt,pdf,doc,docx,xls,xlsx,ppt,pptx,article,folder,zip,rar,7z,gz,tar'];
+				}
+				else{
+					$where[] = ['file_ext', 'in',$param['ext']];
+				}
+            }
+            $list = $this->model->datalist($param,$where);
+			return table_assign(0, '', $list);
+        }
+        else{
+            return view();
+        }
+    }
+	
 
     /**
     * 分享列表
@@ -83,26 +178,18 @@ class Index extends BaseController
 			$where=[];
 			$where[]=['delete_time','=',0];
 			$where[]=['group_id','=',$group_id];
+			$where[]=['pid','=',$pid];
             if (!empty($param['keywords'])) {
                 $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
             }            
-			if (!empty($param['is_star'])) {
-				if($pid>0){
-					$where[]=['pid','=',$pid];
+			if (!empty($param['ext'])) {
+				if($param['ext'] == 'other'){
+					$where[] = ['file_ext', 'notin','jpg,jpeg,png,gif,mpg,mp4,mpeg,avi,wmv,mov,flv,m4v,mp3,wav,wma,flac,midi,txt,pdf,doc,docx,xls,xlsx,ppt,pptx,article,folder,zip,rar,7z,gz,tar'];
 				}
 				else{
-					$where[]=['is_star','=',1];
+					$where[] = ['file_ext', 'in',$param['ext']];
 				}
             }
-			if (!empty($param['ext'])) {
-                $where[] = ['file_ext', 'in',$param['ext']];
-            }
-			if (!empty($param['is_star']) || !empty($param['ext'])) {
-
-            }
-			else{
-				$where[]=['pid','=',$pid];
-			}
             $list = $this->model->datalist($param,$where);
 			$folder = get_pfolder($param['pid']);
             return table_assign(0, '', $list,$folder);
@@ -122,18 +209,22 @@ class Index extends BaseController
 			$where=[];
 			$where[]=['admin_id','=',$this->uid];
 			$where[]=['clear_time','=',0];
+			$where[]=['delete_time','>',0];
 			if($pid>0){
 				$where[]=['pid','=',$pid];
 			}
-			else{
-				$where[]=['delete_time','>',0];
-			}
 			if (!empty($param['ext'])) {
-                $where[] = ['file_ext', 'in',$param['ext']];
+				if($param['ext'] == 'other'){
+					$where[] = ['file_ext', 'notin','jpg,jpeg,png,gif,mpg,mp4,mpeg,avi,wmv,mov,flv,m4v,mp3,wav,wma,flac,midi,txt,pdf,doc,docx,xls,xlsx,ppt,pptx,article,folder,zip,rar,7z,gz,tar'];
+				}
+				else{
+					$where[] = ['file_ext', 'in',$param['ext']];
+				}
             }
             if (!empty($param['keywords'])) {
                 $where[] = ['name', 'like', '%' . $param['keywords'] . '%'];
             }
+			//dd($where);exit;
             $list = $this->model->datalist($param,$where);
 			$folder = get_pfolder($param['pid']);
             return table_assign(0, '', $list,$folder);
@@ -231,6 +322,9 @@ class Index extends BaseController
 			$param['did'] = $this->did;
 			$this->model->add($param);
 		}
+		else{
+			return view();
+		}
     }
 	
 	/**
@@ -249,6 +343,7 @@ class Index extends BaseController
 			$param['types'] = 2;
 			$param['admin_id'] = $this->uid;
 			$param['did'] = $this->did;
+			$param['file_ext'] = 'folder';
 			$this->model->add($param);	 
         }
     }
@@ -264,6 +359,7 @@ class Index extends BaseController
 					add_log('edit', $param['id'], $param);
 					$disk['id'] = $param['disk_id'];
 					$disk['name'] = $param['name'];
+					$disk['file_ext'] = 'article';
 					$disk['update_time'] = $param['update_time'];
 					$this->model->edit($disk);					
 				} else {
@@ -278,7 +374,7 @@ class Index extends BaseController
 					add_log('add', $aid, $param);
 					$param['action_id'] = $aid;
 					$param['types'] = 1;
-					$param['ext'] = 'article';
+					$param['file_ext'] = 'article';
 					$param['did'] = $this->did;
 					$this->model->add($param);
 				} else {
@@ -411,8 +507,22 @@ class Index extends BaseController
 			$idArray = explode(',', strval($ids));
 			$list = [];
 			foreach ($idArray as $key => $val) {
+				$detail = Db::name('Disk')->where(['id'=>$val])->find();
+				$has=Db::name('Disk')->where(['pid'=>$detail['pid'],'name'=>$detail['name'],'group_id'=>$detail['group_id'],'admin_id'=>$detail['admin_id'],'delete_time'=>0])->find();
+				if(!empty($has)){
+					if($detail['type']==0){
+						$newname = pathinfo($detail['name'], PATHINFO_FILENAME).'_'.date('Ymd').'_'.date('His').'还原.'.$detail['fileext'];
+					}
+					else{
+						$newname = $detail['name'].'_'.date('Ymd').'_'.date('His').'还原';
+					}
+				}
+				else{
+					$newname = $detail['name'];
+				}
 				$list[] = [
 					'id' => $val,
+					'newname' => $newname,
 					'delete_time' => 0
 				];
 			}
@@ -589,6 +699,81 @@ class Index extends BaseController
 					'id' => $val,
 					'is_star' => 0,
 					'update_time' => time()
+				];
+			}
+			if(!empty($list)){
+				$model = new DiskModel();
+				foreach ($list as $item) {
+					$model->update($item);
+				}
+				return to_assign();
+			}
+			else{
+				return to_assign(1, "操作失败");
+			}
+        }
+	}
+	
+	
+   /**
+    * 分享
+    */
+    public function share()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+            $ids = $param["ids"];
+			$idArray = explode(',', strval($ids));
+			$share_time = 0;
+			if(!empty($param['share_time'])){
+				$param['share_time'] = strtotime($param['share_time'].' 23:59:59');
+			}
+			$list = [];
+			foreach ($idArray as $key => $val) {
+				$list[] = [
+					'id' => $val,
+					'share_types' => $param["share_types"],
+					'share_dids' => $param["share_dids"],
+					'share_pids' => $param["share_pids"],
+					'share_uids' => $param["share_uids"],
+					'share_time' => $share_time,
+				];
+			}
+			if(!empty($list)){
+				$model = new DiskModel();
+				foreach ($list as $item) {
+					$model->update($item);
+				}
+				return to_assign();
+			}
+			else{
+				return to_assign(1, "操作失败");
+			}
+        }else{
+			$id = isset($param['id']) ? $param['id']: 0 ;
+			$detail = Db::name('Disk')->where(['id'=>$id])->find();
+			View::assign('detail', $detail);
+			return view();
+		}
+	}
+	/**
+    * 取消分享
+    */
+    public function unshare()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+            $ids = $param["ids"];
+			$idArray = explode(',', strval($ids));
+			$list = [];
+			foreach ($idArray as $key => $val) {
+				$list[] = [
+					'id' => $val,
+					'share_types' => 0,
+					'share_dids' => '',
+					'share_pids' => '',
+					'share_uids' => '',
+					'share_time' => 0,
 				];
 			}
 			if(!empty($list)){

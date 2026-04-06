@@ -60,13 +60,12 @@
 						</tr>
 						<tr>
 							<td>php版本</td>
-							<td>≥ 8.0</td>
+							<td>≥ 8.2</td>
 							<td>
 								<?php echo PHP_VERSION ?>
 							</td>
-							<?php $php_version=explode('.', PHP_VERSION); ?>
-							<td class="<?php if(($php_version['0']>=8))echo 'yes'; ?>">
-								<?php if (($php_version['0']>=8)): ?>
+							<td class="<?php if((PHP_VERSION_ID >= 80200))echo 'yes'; ?>">
+								<?php if ((PHP_VERSION_ID >= 80200)): ?>
 								<i class="layui-icon layui-icon-ok"></i>
 								<?php else: ?>
 								<i class="layui-icon layui-icon-close"></i>

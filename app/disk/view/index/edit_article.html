@@ -1,18 +1,22 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">新增文档</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-1">编辑文档</h3>
     <table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">文档标题<font>*</font></td>
 			<td><input type="text" name="name" value="{$detail.name}" lay-verify="required" lay-reqText="请输入文档标题" autocomplete="off" placeholder="请输入文档标题" class="layui-input"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">
-				<div class="layui-input-inline">关联附件</div>
-				<div class="layui-input-inline">
-					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+			<td class="layui-td-gray" style="vertical-align:top;">文档内容<font>*</font></td>
+			<td><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content}</textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div>相关附件</div>
+				<div>
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i>选择上传</button>
 				</div>
 			</td>
 			<td>
@@ -25,13 +29,9 @@
 					{/notempty}
 				</div>
 			</td>
-		</tr> 
-		<tr>
-			<td class="layui-td-gray" style="vertical-align:top;">文档内容<font>*</font></td>
-			<td><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content}</textarea></td>
 		</tr>
     </table>
-    <div class="pt-3">
+    <div class="pt-4">
 		<input type="hidden" name="id" value="{$detail.id}">
 		<input type="hidden" name="disk_id" value="{$detail.disk_id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
@@ -53,7 +53,7 @@ function gouguInit() {
 		selector: "#container",
 		menubar:false,
 		images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
-		height: 555
+		height: 536
 	});
 
 	//相关附件上传

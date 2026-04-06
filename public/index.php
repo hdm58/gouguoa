@@ -9,7 +9,7 @@ if (empty(file_exists(__DIR__ . '/../vendor/autoload.php'))) {
 require __DIR__ . '/../vendor/autoload.php';
 
 // 定义当前版本号
-define('CMS_VERSION','5.10.0');
+define('CMS_VERSION','6.0.1');
 
 // 定义手机端当前版本号
 define('MB_VERSION','1.5');

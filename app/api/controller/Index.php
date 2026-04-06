@@ -90,8 +90,8 @@ class Index extends BaseController
 					// 生成等比缩略图
 					$image = Image::open(request()->file('file'));
 					$thumbPath = dirname($imagePath) . '/thumb_' . basename($imagePath);
-					// 生成等比缩略图保存到指定位置，这里设置最大宽度为360px, 高度自适应
-					$image->thumb(360,360,Image::THUMB_CENTER)->save('./'.$thumbPath);
+					// 生成等比缩略图保存到指定位置，这里设置最大宽度为256px, 高度自适应
+					$image->thumb(256,256)->save('./'.$thumbPath);
 				}
 				$data = [];
 				$data['filepath'] = $imagePath;

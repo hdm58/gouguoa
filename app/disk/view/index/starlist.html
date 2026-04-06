@@ -58,17 +58,7 @@
     .empty p{width: 180px; text-align: center;}
     .empty i{font-size: 180px;}
 	.file-item{cursor:pointer;white-space: nowrap;}
-	
-	/** 拖拽上传文件 **/
-	.file-tree{padding:6px; width:680px; height:480px; overflow-y:scroll;}
-	.file-tree tr.ok{color:#16baaa}
-	.file-tree .folder,.file{padding:0;}
-	.file-tree .folder:before{content: "📁 "; font-size:18px;}
-	.file-tree .file:before{content: "📄 "; font-size:18px;}
-	.del-file{color:#16b777;cursor:pointer;}
-	.file-tree-bottom{padding:9px 0; text-align:center; border-top:2px solid #eeeeee;}
-	.dropimg{z-index:9999999999; display:none; position:fixed; top:0;left:0; right:0; bottom:0; background-color:rgba(255,255,255,.6); text-align:center; font-size:58px; border:3px dashed #666;}
-	body.drop .dropimg{display:block;}
+
 </style>
 {/block}
 <!-- 主体 -->
@@ -78,8 +68,8 @@
 		<h3>个人空间</h3>
 		<div class="disk-types">
 			<ul>
-				<li data-tab="my" class="on-this"><a href="/disk/index/datalist"><strong class="iconfont icon-contact" style="color:#1e9fff"></strong>我的文件</a></li>
-				<li data-tab="star"><a href="/disk/index/starlist"><strong class="iconfont icon-shoucang" style="color:#ffb800"></strong>标星文件</a></li>
+				<li data-tab="my"><a href="/disk/index/datalist"><strong class="iconfont icon-contact" style="color:#1e9fff"></strong>我的文件</a></li>
+				<li data-tab="star" class="on-this"><a href="/disk/index/starlist"><strong class="iconfont icon-shoucang" style="color:#ffb800"></strong>标星文件</a></li>
 				<li data-tab="myshare"><a href="/disk/index/mysharelist"><strong class="iconfont icon-daochu" style="color:#16b777"></strong>我分享的</a></li>
 				<li data-tab="share"><a href="/disk/index/tosharelist"><strong class="iconfont icon-daoru" style="color:#ff5722"></strong>别人分享的</a></li>
 			</ul>
@@ -87,13 +77,6 @@
 	</div>
 	<div id="diskBox" class="disk-table types-2">
 		<form class="layui-form disk-form border-b" lay-filter="barsearchform">
-			<div class="layui-input-inline" style="width:300px">
-				<div class="layui-btn-group">
-					<span class="layui-btn tool-add tool-tips" data-tips="拖拽文件到页面也可以上传哦(^_^)" id="uploadBtn"><strong class="iconfont icon-shangchuan"></strong> 上传文件</span>
-					<span class="layui-btn layui-btn-normal tool-add tool-tips" data-tips="新建在线文档" id="addArticle"><strong class="iconfont icon-lunwenguanli"></strong> 新建文档</span>
-					<span class="layui-btn layui-btn-warm tool-add tool-tips" data-tips="新建文件目录" id="addFolder"><strong class="iconfont icon-xiangmuguanli"></strong> 新建目录</span>
-				 </div>
-			</div>
 			<div class="layui-input-inline" style="width:268px">
 				<input type="text" name="keywords" placeholder="输入关键字，文件名称/目录名称" class="layui-input" autocomplete="off" />
 			</div>
@@ -110,12 +93,12 @@
 					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips show-types types-thumb" data-tips="缩略图模式" data-types="1"><i class="iconfont icon-charutupian"></i></span>
 					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips show-types types-list" data-tips="列表模式" data-types="2"><i class="iconfont icon-liebiao"></i></span>
 					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips" data-tips="删除文件" id="fileDelete"><i class="iconfont icon-cuowukongxin"></i></span>
-					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips" data-tips="移动文件" id="fileMove"><i class="iconfont icon-renjijiaohu"></i></span>
+					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips" data-tips="取消标星" id="fileUnstar"><i class="iconfont icon-shoucang"></i></span>
 				</div>
 			</div>
 		</form>
 		<div class="disk-path layui-form border-b">
-			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">我的文件</a></div>
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">标星文件</a></div>
 			<div class="layui-input-inline" style="width:482px; float:right;">
 				<div class="layui-tabs layui-tab-brief" id="tab">
 					<ul class="layui-tabs-header">
@@ -150,7 +133,6 @@
 		</div>
     </div>
 </div>
-<div class="dropimg"><div style="padding-top:20%">上传文件到当前目录下</div></div>
 {/block}
 <!-- /主体 -->
 
@@ -181,41 +163,41 @@
 		let path='/static/home/images/icon/file.png';
 		if (fileExt.image.includes(item.file_ext)) {
 			path=item.thumbpath;
-			type = '0,1,3,4,5';
+			type = '0,1,3,4';
 			ext="image";
 		}
 		if (fileExt.office.includes(item.file_ext)) {
-			type = '0,1,3,4,5';
+			type = '0,1,3,4';
 			ext="office";
 			path='/static/home/images/icon/'+item.file_ext+'.png';
 		}
 		if (fileExt.pdf.includes(item.file_ext)) {
-			type = '0,1,3,4,5';
+			type = '0,1,3,4';
 			ext="pdf";
 			path='/static/home/images/icon/'+item.file_ext+'.png';
 		}								
 		if (fileExt.video.includes(item.file_ext)) {
-			type = '0,1,3,4,5';
+			type = '0,1,3,4';
 			ext="video";
 			path='/static/home/images/icon/video.png';
 		}
 		if (fileExt.audio.includes(item.file_ext)) {
-			type = '0,1,3,4,5';
+			type = '0,1,3,4';
 			ext="audio";
 			path='/static/home/images/icon/audio.png';
 		}
 		if (fileExt.zip.includes(item.file_ext)) {
-			type = '0,3,4,5';
+			type = '0,3,4';
 			ext="zip";
 			path='/static/home/images/icon/rar.png';
 		}
 		if(fileExt.article.includes(item.file_ext)){
-			type = '1,2,3,4,5';
+			type = '1,2,3,4';
 			ext="article";
 			path='/static/home/images/icon/article.png';
 		}
 		if(item.file_ext == 'folder'){
-			type = '3,4,5';
+			type = '3,4';
 			ext="folder";
 			path='/static/home/images/icon/folder.png';
 		}
@@ -234,13 +216,12 @@
 		if(item.share_types==0 && item.types<2){
 			type+=',8';
 		}
+		console.log(type);
 		return {type:type,path:path,ext:ext,is_star:is_star,is_share:is_share};
 	}
 	
 	//默认是列表模式
 	var types=2;
-	// 拖拽
-	var files = [],folders=[];droping=false;
 	const moduleInit = ['tool','uploadPlus','tablePlus'];
 	function gouguInit() {
 		var tool = layui.tool,uploadPlus = layui.uploadPlus,table = layui.tablePlus,form = layui.form,laypage = layui.laypage,tabs = layui.tabs;
@@ -257,183 +238,6 @@
 			return false;
 		});
 		
-		// 拖拽
-        const drop = $('body');
-        drop.bind('dragenter', function (e) {
-			drop.addClass('drop');
-        });
-		
-        drop.bind('dragleave', function (e) {
-			if(droping==false){
-				layer.open({
-					type: 1,
-					area: ['692px', '600px'],
-					title: '拖拽文件夹及文件上传',
-					shade: 0.6, // 遮罩透明度
-					content: '<div class="file-tree">\
-								<table id="fileTree" class="layui-table layui-table-min" style="margin:0 auto;">\
-									<tr><th>文件名</th><th width="80">文件大小</th><th width="80">上传状态</th><th width="80">操作</th></tr>\
-								</table>\
-							</div>\
-							<div class="file-tree-bottom"><span class="layui-btn layui-bg-blue" id="fileTreeUpload">开始上传</span> <span class="layui-btn layui-btn-primary" id="fileTreeClear">清空文件</span></div>',
-					success:function(){
-						droping=true;
-						$('#fileTreeUpload').on('click',function(){
-							let t=0;
-							$.each(files, function(index, file) {
-								if(file.isok==0){
-									let formData = new FormData(); // 创建 FormData 对象
-									formData.append('file', file); // 将文件添加到 FormData
-									formData.append('filePath', file.filePath); // 将文件添加到 FormData
-									formData.append('pid',$('[name="pid"]').val());// 将当前文件夹添加到 FormData
-									formData.append('group_id',0);// 将当前文件夹添加到 FormData
-									// 使用 jQuery AJAX 上传文件
-									setTimeout(function () {
-										$.ajax({
-											url: '/disk/api/drop_upload', // 服务器接收文件的接口
-											type: 'POST',
-											data: formData,
-											contentType: false, // 必须设置为 false，使用 FormData 对象不设置内容类型
-											processData: false, // 不处理数据
-											success: function(e) {
-												if(e.code==0){
-													files[index].isok = 1;
-													$('#'+file.id).addClass('ok').find('td').eq(2).html('已上传');
-													$('#'+file.id).addClass('ok').find('td').eq(3).html('-');
-													layer.msg(files[index].name+'上传完成');
-												}
-											},
-											error: function(e) {
-												$('#file'+index).addClass('error');	
-											}
-										});
-									}, 300*t);
-									t++;
-								}
-							});
-						})
-
-						$('#fileTreeClear').on('click',function(){						
-							// 这里可以进行文件的上传操作
-							files.length = 0;
-							$('#fileTree').html('');
-						})		
-
-						$('#fileTree').on('click','.del-file',function(){
-							let id = $(this).data('id');
-							let element = files.find(item => item.id === id);
-							// 如果找到元素，就将 isok 修改为 1
-							if (element) {
-								element.isok = 2;
-								$('#'+id).remove();
-							}
-						})							
-					},
-					end:function(){						
-						droping=false;
-						files.length = 0;
-						$('[lay-filter="webform"]').click();
-					}
-				});		
-			}
-        })
-        $(document).bind('dragover', function (e) {
-            e.preventDefault();
-			e.stopPropagation();
-            return false
-        })
-        $(document).bind('drop', function (e) {
-            e.preventDefault();
-			e.stopPropagation();
-			drop.removeClass('drop');
-            return false
-        })
-		
-		let count = 0,num = 0;
-        drop.bind('drop', function (e) {
-            const items = e.originalEvent.dataTransfer.items;
-            for (let i = 0; i < items.length; i++) {
-                let item = items[i];
-				console.log(item);
-                if (item.kind == 'file') {
-                    let entry = item.webkitGetAsEntry();
-					//console.log(entry);
-                    //递归解析文件夹
-                    getCount(entry)
-                    setTimeout(() => {
-						entry.id='file'+num;
-						num++;
-                        getFilesFromEntry(entry);
-                    }, 200)
-                }
-            }
-        })
-		
-        function getCount(entry) {
-            if (entry.isFile) {
-                entry.file(
-                    file => {
-                        count++
-                    },
-                    err => {
-                        console.log(err);
-                    }
-                )
-            } else {
-                const entryReader = entry.createReader()
-                entryReader.readEntries(
-                    (results) => {
-                        results.forEach(result => {
-                            getCount(result);
-                        })
-                    },
-                    (error) => {
-                        console.log(error);
-                    }
-                );
-            }
-        }
-		
-        function getFilesFromEntry(entry) {
-           if (entry.isFile) {
-                entry.file(
-                    file => {
-                        file.filePath = entry.fullPath.slice(1);
-						file.isok=0;
-						file.id=entry.id;
-						
-						let element = files.find(item => item.filePath === file.filePath);						
-						if (element) {
-							console.log(files);
-						}
-						else{
-							files.push(file);
-							console.log(file);
-							let tr = '<tr class="file-tr" id="'+file.id+'"><td style="text-align:left;"><div class="file">'+entry.fullPath+'</div></td><td>'+tool.renderSize(file.size)+'</td><td>等待上传</td><td class="del-file" data-id="'+file.id+'">取消</td></tr>';
-							$('#fileTree').append(tr);
-						}
-                    },
-                    err => {
-                        console.log(err);
-                    }
-                )
-            } else {
-                const entryReader = entry.createReader();
-                entryReader.readEntries(
-                    (results) => {
-                        results.forEach(result => {
-							result.id='file'+num;
-							num++;
-                            getFilesFromEntry(result);
-                        })
-                    },
-                    (error) => {
-                        console.log(error);
-                    }
-                );
-            }			
-        }
-		
 		$('#diskBox').on('click','.show-types',function(){
 			types=$(this).data('types');
 			$('#diskBox').attr('class','disk-table types-'+types);
@@ -447,25 +251,6 @@
 			$('[lay-filter="webform"]').click();
 		})
 		
-		//上传文件
-        var attachment = new uploadPlus({
-            "title":'上传文件',
-            "target":'uploadBtn',
-            "url":'/disk/api/drop_upload',
-			"data":{
-				'pid':function(){
-					return $('[name="pid"]').val();
-				},
-				'group_id':0
-			},
-			"attachment":{
-				"ajaxSave":function(){
-					$('[lay-filter="webform"]').click();
-					layer.closeAll();
-				}
-			}
-		})
-		
 		let ctrl_callback = function (e) {
 			if(e.code == 0){
 				layer.closeAll();
@@ -476,13 +261,6 @@
 				layer.msg(e.msg);
 			}
 		}
-		
-		//顶部目录操作
-		$('#diskPath').on('click','a',function(){
-			let id=$(this).data('id');
-			$('[name="pid"]').val(id);
-			$('[lay-filter="webform"]').click();
-		})
 		
 		//单文件选择操作
 		$('#filesBox').on('click','.file-check',function(){
@@ -525,8 +303,8 @@
 			});
 		});
 		
-		//批量移动操作
-		$('#fileMove').on('click',function(){
+		//批量取消标星操作
+		$('#fileUnstar').on('click',function(){
 			let select_array = [];
 			if(types==1){
 				$('#filesBox').find('li.on').each(function(index,item){
@@ -544,51 +322,8 @@
 				layer.msg('请先选择文件');
 				return false;
 			}
-			layer.open({
-				type: 2,
-				title: '移动到',
-				area: ['720px', '480px'],
-				content: '/disk/index/move',
-				maxmin: true,
-				btn: ['移动到此', '取消'],
-				btnAlign: 'c',
-				yes: function(index, layero){
-					// 获取 iframe 的窗口对象
-					let iframeWin =  window[layero.find('iframe')[0]['name']];
-					let folder = iframeWin.$('#folder'); // 获得 iframe 中某个输入框元素
-					let val = folder.val();
-					tool.post("/disk/index/move", {ids:select_array.join(','),pid:val}, ctrl_callback);
-				}
-			});
-		})
-		
-		//新增在线文档
-		$('#addArticle').on('click',function(){
-			tool.side('/disk/index/add_article?pid='+$('[name="pid"]').val());
-		})
-		
-		//新增目录
-		$('#addFolder').on('click',function(){
-			layer.prompt({title: '请输入目录名称'}, function(val, index, elem){
-				if(val==''){
-					layer.msg('目录名称不能为空');
-					return false;
-				}
-				if(validFileName(val)==false){
-					layer.msg('目录名称不能包含下列任何字符：\/:*?".<>|');
-					return false;
-				}
-				$.ajax({
-					url: "/disk/index/add_folder",
-					type:'post',
-					data:{
-						'pid':$('[name="pid"]').val(),
-						'name':val,
-						'id':0,
-						'group_id':0
-					},
-					success: ctrl_callback
-				})
+			layer.confirm('确定要取消标星选中文件吗？', { icon: 3, title: '提示' }, function (index) {
+				tool.post("/disk/index/unstar", {ids:select_array.join(',')}, ctrl_callback);
 			});
 		})
 		
@@ -642,7 +377,7 @@
 				}
 				tool.post("/disk/index/rename", {id:id,name:val,group_id:0,pid:$('[name="pid"]').val()}, ctrl_callback);
 			});
-		})		
+		})
 		
 		//单文件删除
 		$('#filesBox,#list').on('click','.file-delete',function(){
@@ -665,27 +400,6 @@
 			let id = $(this).parent().parent().data('id');			
 			layer.confirm('确定要取消标星该文件吗？', { icon: 3, title: '提示' }, function (index) {
 				tool.post("/disk/index/unstar", {ids:id}, ctrl_callback);
-			});
-		})
-		
-		//单文件移动
-		$('#filesBox,#list').on('click','.file-move',function(){
-			let ids = $(this).parent().parent().data('id');
-			layer.open({
-				type: 2,
-				title: '移动到',
-				area: ['720px', '480px'],
-				content: '/disk/index/move',
-				maxmin: true,
-				btn: ['移动到此', '取消'],
-				btnAlign: 'c',
-				yes: function(index, layero){
-					// 获取 iframe 的窗口对象
-					let iframeWin =  window[layero.find('iframe')[0]['name']];
-					let folder = iframeWin.$('#folder'); // 获得 iframe 中某个输入框元素
-					let val = folder.val();
-					tool.post("/disk/index/move", {ids:ids,pid:val}, ctrl_callback);
-				}
 			});
 		})
 		
@@ -732,7 +446,7 @@
 		function get_files(param){
 			var loadIndex = layer.load(0);
 			$.ajax({
-				url:"/disk/index/datalist",
+				url:"/disk/index/starlist",
 				data:param,
 				complete:function(){
 					layer.close(loadIndex)
@@ -757,15 +471,6 @@
 								}
 							}
 						});
-
-						let folder = res.totalRow;
-						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">我的文件</a>';
-						if(folder.length>0){
-							for(var f=0;f<folder.length;f++){
-								folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
-							}
-						}
-						$('#diskPath').html(folderHtml);
 					
 						var item=res.data,li='';
 						if(item.length>0){
@@ -801,7 +506,7 @@
 		layui.fileTable = table.render({
 			elem: "#table_list"
 			,toolbar: false
-			,url: "/disk/index/datalist"
+			,url: "/disk/index/starlist"
 			,page: true
 			,limit: 30
 			,where:data
@@ -860,17 +565,7 @@
 					</div></div>';
 					return ctrl
 				}}
-			]],
-			done:function(res){
-				let folder = res.totalRow;
-				let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">我的文件</a>';
-				if(folder.length>0){
-					for(var f=0;f<folder.length;f++){
-						folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
-					}
-				}
-				$('#diskPath').html(folderHtml);
-			}
+			]]
 		});
 			
 		table.on('tool(table_list)',function (obj) {

@@ -31,6 +31,7 @@ layui.define(['tool'],function(exports){
 		"target":'uploadBtn',
 		"targetBox":'uploadBox',
 		"use":'attachment',//attachment(附件上传),shard(大文件分片上传),single(单图上传),multi(多图上传),import(excel导入上传)
+		"data":{},
 		"attachment":{
 			"type":0,//0ajax多文件模式，1ajax单文件单记录模式
 			"exts": 'png|jpg|gif|jpeg|doc|docx|ppt|pptx|xls|xlsx|pdf|zip|rar|7z|txt|wps|avi|wmv|mpg|mov|rm|flv|mp4|mp3|wav|wma|flac|midi|dwg|dxf|dwt|xmind', //只允许上传文件格式
@@ -162,6 +163,7 @@ layui.define(['tool'],function(exports){
 			upload.render({
 				elem: '#'+me.settings.target,
 				url: me.settings.url,
+				data: me.settings.data,
 				accept: 'file',
 				exts: attachment.exts,
 				multiple: true,
@@ -234,6 +236,7 @@ layui.define(['tool'],function(exports){
 			let single = upload.render({
 				elem: "#"+me.settings.target,
 				url: me.settings.url,
+				data: me.settings.data,
 				accept: 'images',
 				acceptMime:'image/*',
 				done: function (res) {
@@ -354,6 +357,7 @@ layui.define(['tool'],function(exports){
 			let uploadOne = upload.render({
 				elem: '#gouguUploadBtn'+me.settings.index
 				,url: me.settings.url
+				,data: me.settings.data
 				,auto: false
 				,accept: 'images'
 				,acceptMime:'image/*'
@@ -407,6 +411,7 @@ layui.define(['tool'],function(exports){
 				elem: '#gouguUploadBtn'+me.settings.index
 				,elemList: $('#gouguUploadBox'+me.settings.index) //列表元素对象
 				,url: me.settings.url
+				,data: me.settings.data
 				,accept: 'images'
 				,acceptMime:'image/*'
 				,multiple: true
@@ -525,6 +530,7 @@ layui.define(['tool'],function(exports){
 					let uploadImport = upload.render({
 						elem: '#importSelect'+me.settings.index
 						,url: me.settings.url
+						,data: me.settings.data
 						,auto: false
 						,accept: 'file' //普通文件
 						,acceptMime: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // 此处设置上传的文件格式
