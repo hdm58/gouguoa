@@ -38,6 +38,16 @@ class Disk extends Model
 				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				$item->department = Db::name('Department')->where('id',$item->did)->value('title');
 				$item->create_time = to_date($item->create_time);
+				if($item->share_types>0){
+					$item->delay=100;
+					if($item->share_time>0){
+						$item->delay = count_days(date("Y-m-d"),date('Y-m-d', $item->share_time));
+						$item->share_time = to_date($item->share_time,'Y-m-d');
+					}
+					else{
+						$item->share_time='永久';
+					}
+				}
 				if($item->types == 0){
 					$item->filepath = Db::name('File')->where('id',$item->action_id)->value('filepath');
 					$item->thumbpath = Db::name('File')->where('id',$item->action_id)->value('thumbpath');

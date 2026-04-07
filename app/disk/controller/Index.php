@@ -745,9 +745,11 @@ class Index extends BaseController
         if (request()->isAjax()) {
             $ids = $param["ids"];
 			$idArray = explode(',', strval($ids));
-			$share_time = 0;
 			if(!empty($param['share_time'])){
 				$param['share_time'] = strtotime($param['share_time'].' 23:59:59');
+			}
+			else{
+				$param['share_time'] = 0;
 			}
 			$list = [];
 			foreach ($idArray as $key => $val) {
@@ -757,7 +759,7 @@ class Index extends BaseController
 					'share_dids' => $param["share_dids"],
 					'share_pids' => $param["share_pids"],
 					'share_uids' => $param["share_uids"],
-					'share_time' => $share_time,
+					'share_time' => $param['share_time'],
 				];
 			}
 			if(!empty($list)){
