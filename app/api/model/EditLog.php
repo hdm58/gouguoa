@@ -98,9 +98,11 @@ class EditLog extends Model
 			  'director_uid'=>['title'=>'项目经理','action'=>'','table'=>'Admin','table_field'=>'name','table_more'=>'0','enumerate'=>[],'time'=>'','suffix'=>''],
 			  'did'=>['title'=>'项目所属部门','action'=>'','table'=>'Department','table_field'=>'title','table_more'=>'0','enumerate'=>[],'time'=>'','suffix'=>''],
 			  'content'=>['title'=>'项目描述','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'','suffix'=>''],
-			  'start_time'=>['title'=>'项目开始时间','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'Y-m-d','suffix'=>''],
-			  'end_time'=>['title'=>'项目结束时间','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'Y-m-d','suffix'=>''],
+			  'start_time'=>['title'=>'项目计划开始时间','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'Y-m-d','suffix'=>''],
+			  'end_time'=>['title'=>'项目计划结束时间','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'Y-m-d','suffix'=>''],
 			  'amount'=>['title'=>'项目金额','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'','suffix'=>''],
+			  'score'=>['title'=>'项目评分','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>[],'time'=>'','suffix'=>''],
+			  'importance'=>['title'=>'项目重要程度','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>['未设置','一般','重要','非常重要'],'time'=>'','suffix'=>''],
 			  'status'=>['title'=>'项目状态','action'=>'','table'=>'','table_field'=>'','table_more'=>'0','enumerate'=>['未设置','未开始','进行中','已完成','已关闭'],'time'=>'','suffix'=>'']
 		],
 		'Task'=>[

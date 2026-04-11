@@ -46,6 +46,7 @@ class Index extends BaseController
         if (request()->isAjax()) {
 			$where = array();
 			$whereOr = array();
+			$dids_son = get_leader_departments($uid);
 			$where[] = ['delete_time', '=', 0];
 			if (!empty($param['status'])) {
 				$where[] = ['status', '=', $param['status']];
@@ -53,45 +54,44 @@ class Index extends BaseController
 			if (!empty($param['cate_id'])) {
                 $where[] = ['cate_id', '=', $param['cate_id']];
             }
+			if (!empty($param['importance'])) {
+                $where[] = ['importance', '=', $param['importance']];
+            }
 			if (!empty($param['keywords'])) {
 				$where[] = ['name|content', 'like', '%' . $param['keywords'] . '%'];
 			}
-			if (!empty($param['director_uid'])) {
-				$where[] = ['director_uid', 'in', $param['director_uid']];
-			}
-			else{
-				if($auth == 0){
-					$whereOr[] = ['director_uid', '=', $uid];
-					$project_ids = Db::name('ProjectUser')->where(['uid' => $uid, 'delete_time' => 0])->column('project_id');
-					$whereOr[] = ['id', 'in', $project_ids];
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
+			
+			//全部项目
+			if($tab==0){
+				if (!empty($param['director_uid'])) {
+					$where[] = ['director_uid', 'in', $param['director_uid']];
+				}
+				else{
+					if($auth == 0){
+						$whereOr[] = ['admin_id', '=', $uid];//我创建的项目
+						$whereOr[] = ['director_uid', '=', $uid];//我负责的项目
+						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];//我参与的项目
+						$whereOr[] = ['did','in',$dids_son];//我下属的项目
 					}
 				}
 			}
-			if($tab == 0){
-
+			//我负责的项目
+			if($tab==1){
+				$where[] = ['director_uid', '=', $uid];
 			}
-			if($tab == 1){
-				$where[] = ['status', '=', 2];
+			//我参与的项目
+			if($tab==2){
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];
 			}
-			if($tab == 2){
-				$time = time();
-				$dalay_time = time()+7*86400;
-				$where[] = ['status', '<', 3];
-				$where[] = ['end_time', 'between', [$time,$dalay_time]];
-			}
+			//我下属的项目
 			if($tab == 3){
-				$where[] = ['status', '<', 3];
-				$where[] = ['end_time', '<', time()];
+				$where[] = ['did','in',$dids_son];
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('leader', isLeader($uid));
 			View::assign('auth', $auth);
             return view();
         }
@@ -207,8 +207,7 @@ class Index extends BaseController
 		if (!empty($detail)) {
 			$detail['status_name'] = status_name($detail['status']);
 			$detail['cate'] = Db::name('ProjectCate')->where([['id', '=', $detail['cate_id']]])->value('title');
-			$team_admin_ids = Db::name('ProjectUser')->where(['delete_time' => 0,'project_id'=>$id])->column('uid');
-            $team_admin_names = Db::name('Admin')->where('id', 'in', $team_admin_ids)->column('name');
+            $team_admin_names = Db::name('Admin')->where('id', 'in', $detail['uids'])->column('name');
             $detail['team_admin_names'] = implode(',', $team_admin_names);
 			
 			$tids = Db::name('ProjectTask')->where([['project_id', '=', $detail['id']], ['delete_time', '=', 0]])->column('id');

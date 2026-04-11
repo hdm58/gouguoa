@@ -45,20 +45,20 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h2 class="pb-3">
+	<h2 class="pb-2">
 		<span class="font20">{$detail.name}</span> 
-		{gt name="$role" value="0"}
-			{eq name="$detail.status" value="4"}
-			<span class="layui-btn layui-btn-xs" data-event="open">开启</span>
-			{else/}
-			<span class="layui-btn layui-btn-danger layui-btn-xs" data-event="close">关闭</span>
-			{/eq}
-		{/gt}
 	</h2>
 	<div class="pb-2">
 		<span class="layui-badge layui-bg-gray">#T{$detail.id}</span>
 		<span class="mx-2">{$detail.admin_name}</span>
 		<span class="gray">创建于{$detail.create_time}<span>{gt name="$detail.update_time" value="0"}，最近更新于 {$detail.update_time}{/gt}</span></span>
+		{gt name="$role" value="0"}
+			{eq name="$detail.status" value="4"}
+			<span class="layui-btn layui-btn-xs ml-2" data-event="open">开启项目</span>
+			{else/}
+			<span class="layui-btn layui-btn-danger layui-btn-xs ml-2" data-event="close">关闭项目</span>
+			{/eq}
+		{/gt}
 	</div>
 	<div class="layui-tabs layui-tab-brief" id="projectTab">
 		<ul class="layui-tabs-header border-t border-x bg-white">
@@ -67,6 +67,9 @@
 			<li data-load="">工作记录</li>
 			<li data-load="">项目文档</li>
 			<li data-load="">项目人员</li>
+			<li data-load="">项目报销</li>
+			<li data-load="">销项发票</li>
+			<li data-load="">进项发票</li>
 			<li data-load="">项目动态</li>
 			<li data-load="">项目评论</li>
 		</ul>
@@ -89,6 +92,18 @@
 			
 			<div class="layui-tabs-item">
 				{include file="/index/view_user" /}		
+			</div>
+			
+			<div class="layui-tabs-item">
+				{include file="/index/view_expense" /}
+			</div>
+			
+			<div class="layui-tabs-item">
+				{include file="/index/view_invoice" /}
+			</div>
+			
+			<div class="layui-tabs-item">
+				{include file="/index/view_ticket" /}
 			</div>
 			
 			<div class="layui-tabs-item">
@@ -543,6 +558,13 @@
 				project_user();	
 			}
 			else if(index == 5){
+				project_expense();	
+			}
+			else if(index == 6){
+				project_invoice();	
+			}else if(index == 7){
+				project_ticket();	
+			}else if(index == 8){
 				project_log();	
 			}
 		});

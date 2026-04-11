@@ -2,7 +2,7 @@
 {block name="style"}
 <link rel="stylesheet" href="{__GOUGU__}/third_party/prism/prism.css"/>
 <style>
-.text-detial-ops{line-height: 30px; color:#999; font-size: 12px; padding: 12px 0;}
+.text-detial-ops{line-height: 30px; color:#999; font-size: 12px;}
 .text-detial-ops span{margin-right: 20px;}
 .text-detial-ops a{margin-right:10px;}
 .text-detial-content{padding: 8px 0; color:#333; word-break: break-all; border-top:1px solid #e8e8e8;font-size: 16px!important; line-height: 1.72!important;}
@@ -27,8 +27,8 @@
 {/block}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h1>{$detail.title}</h1>
+<form class="layui-form p-page">
+	<h1 style="font-size:20px;">{$detail.title}</h1>
 	<div class="text-detial-ops">
 		<span>{$detail.admin_name}发表于：{$detail.create_time}</span><span>关联项目：{$detail.project_name}</span>
 	</div>

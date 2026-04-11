@@ -39,6 +39,7 @@ class Project extends Model
 				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
 				$item->admin_name = Db::name('Admin')->where(['id' => $item->admin_id])->value('name');
 				$item->status_name = status_name($item->status);
+				$item->importance_name = importance_name($item->importance);
 				$item->range_time = date('Y-m-d',$item->start_time). ' 至 ' .date('Y-m-d',$item->end_time);
 				$item->delay = count_days(date("Y-m-d"),date('Y-m-d', $item->end_time));
 				$item->cate = Db::name('ProjectCate')->where('id', $item->cate_id)->value('title');
@@ -140,11 +141,10 @@ class Project extends Model
 				}
 			}
 			Db::name('ProjectUser')->strict(false)->field(true)->insertAll($project_user_array);
-			
-			
 			add_log('add', $insertId, $param);
 			$log=new EditLog();
 			$log->add('Project',$insertId);
+			set_project_uids($insertId);
 			// 提交事务
 			Db::commit();
         } catch(\Exception $e) {
@@ -188,6 +188,7 @@ class Project extends Model
 			add_log('edit', $param['id'], $param);
 			$log=new EditLog();
 			$log->edit('Project',$param['id'],$param,$old);
+			set_project_uids($param['id']);
 			// 提交事务
 			Db::commit();
         } catch(\Exception $e) {
@@ -207,6 +208,7 @@ class Project extends Model
 			add_log('edit', $param['id'], $param,'项目');
 			$log=new EditLog();
 			$log->edit('Project',$param['id'],$param,$old);
+			set_project_uids($param['id']);
 		} catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
 		}

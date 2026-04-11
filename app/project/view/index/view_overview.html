@@ -4,16 +4,22 @@
 		<td><span class="check-status-color-{$detail.status}">『{$detail.status_name}』</span></td>
 		<td class="layui-td-gray">项目类别</td>
 		<td>{$detail.cate}</td>
-		<td class="layui-td-gray">始止日期</td>
-		<td>{$detail.start_time|date='Y-m-d'} 到 {$detail.end_time|date='Y-m-d'}</td>
-		<td class="layui-td-gray">所属部门</td>
-		<td>{$detail.department|default='-'}</td>
+		<td class="layui-td-gray">项目评分</td>
+		<td>{$detail.score}</td>
+		<td class="layui-td-gray">重要程度</td>
+		<td>{:importance_name($detail.importance)}</td>
 	</tr>
 	<tr>
 		<td class="layui-td-gray">项目经理</td>
 		<td>{$detail.director_name}</td>
-		<td class="layui-td-gray">项目成员</td>
-		<td colspan="5">{$detail.team_admin_names|default='-'}</td>
+		<td class="layui-td-gray">所属部门</td>
+		<td>{$detail.department|default='-'}</td>
+		<td class="layui-td-gray">计划周期</td>
+		<td colspan="3">{$detail.start_time|date='Y-m-d'} 到 {$detail.end_time|date='Y-m-d'}</td>
+	</tr>
+	<tr>
+		<td class="layui-td-gray">参与人员</td>
+		<td colspan="7">{$detail.team_admin_names|default='-'}</td>
 	</tr>
 	{gt name="$detail.contract_id" value="0"}
 	<tr>

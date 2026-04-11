@@ -2,15 +2,25 @@
 <!-- 主体 -->
 {block name="style"}
 <style>
-	.layui-unselect dl {
-		max-height: 188px;
-	}
+.layui-unselect dl {max-height: 188px;}
+.tab-1 .user-name,.tab-2 .user-name,.tab-3 .user-name,.tab-4 .user-name{display:none;}
 </style>
 {/block}
 {block name="body"}
 <div class="p-page">
-	<div class="gg-form-bar border-t border-x">
-		<form id="taskForm" class="layui-form" lay-filter="barsearchform">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">任务列表</li>
+				<li>我负责的任务</li>
+				<li>我参与的任务</li>
+				{eq name="$leader" value="1"}
+				<li>下属的任务(部门负责人)</li>
+				{/eq}
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
 			<div class="layui-input-inline" style="width:100px;">
 				<select name="status" lay-filter="status">
 					<option value="">任务状态</option>
@@ -43,7 +53,7 @@
 				<input type="text" name="project_name" placeholder="所属项目" readonly class="layui-input picker-oa" data-types="project" autocomplete="off" />
 				<input name="project_id" style="display: none;" value="" />
 			</div>
-			<div class="layui-input-inline" style="width:160px;">
+			<div class="layui-input-inline user-name" style="width:160px;">
 				<input type="text" name="director" placeholder="任务负责人，可多选" readonly class="layui-input picker-admin" data-type="2" autocomplete="off" />
 				<input name="director_uid" style="display: none;" value="" />
 			</div>
@@ -51,6 +61,7 @@
 				<input type="text" name="keywords" placeholder="关键字，任务主题/描述内容" class="layui-input" autocomplete="off" />
 			</div>
 			<div class="layui-input-inline" style="width:150px;">
+				<input type="hidden" name="tab" value="0" />
 				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 			</div>
@@ -71,7 +82,16 @@
 <script>
 	const moduleInit = ['tool','tablePlus','oaPicker'];
 	function gouguInit() {
-		var table = layui.tablePlus, form = layui.form, tool = layui.tool;
+		var table = layui.tablePlus, form = layui.form, tool = layui.tool, tabs = layui.tabs;
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.taskTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		})
 
 		layui.taskTable = table.render({
 			elem: '#task',
@@ -80,7 +100,7 @@
 			is_excel:true,
 			cellMinWidth: 80,
 			url: "/project/task/datalist", //数据接口
-			height: 'full-114',
+			height: 'full-155',
 			cols: [[
 				{field: 'id', title: '任务编号', width: 80, align: 'center', fixed: 'left', templet: function (d) {
 					return 'T' + d.id;

@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="layui-form p-page">
-	<h3 class="pb-3">报销详情</h3>
+	<h3 class="pb-2">报销详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">凭证编号</td>
@@ -63,7 +63,7 @@
 		{notempty name="$detail.file_ids"}
 		<tr>
 			<td class="layui-td-gray">相关附件</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>

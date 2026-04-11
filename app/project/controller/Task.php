@@ -45,13 +45,11 @@ class Task extends BaseController
 		$param = get_params();
 		$uid = $this->uid;
 		$auth = isAuth($uid,'project_admin','conf_1');
+		$tab = isset($param['tab']) ? $param['tab'] : 0;
         if (request()->isAjax()) {
-			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$time = time();
-			$time = time();
-			$dalay_time = time()+7*86400;
-			$where = [];
-			$whereOr = [];
+			$where = array();
+			$whereOr = array();
+			$dids_son = get_leader_departments($uid);
 			$where[] = ['delete_time', '=', 0];
 			if (!empty($param['status'])) {
 				$where[] = ['status', '=', $param['status']];
@@ -68,44 +66,38 @@ class Task extends BaseController
 			if(!empty($param['project_id'])){
 				$where[] = ['project_id', '=', $param['project_id']];			
 			}
-			if (!empty($param['director_uid'])) {
-				$where[] = ['director_uid', 'in', $param['director_uid']];
-			}
-			else{
-				if($auth == 0){
-					$whereOr[] = ['admin_id', '=', $uid];
-					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
-					}
-					if (empty($param['director_uid'])) {
-						$whereOr[] = ['director_uid', '=', $uid];
+			
+			//全部任务
+			if($tab==0){
+				if (!empty($param['director_uid'])) {
+					$where[] = ['director_uid', 'in', $param['director_uid']];
+				}
+				else{
+					if($auth == 0){
+						$whereOr[] = ['admin_id', '=', $uid];//我创建的任务
+						$whereOr[] = ['director_uid', '=', $uid];//我负责的任务
+						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];//我参与的任务
+						$whereOr[] = ['did','in',$dids_son];//我下属的任务
 					}
 				}
 			}
+			//我负责的任务
 			if($tab==1){
-				//进行中
-				$where[] = ['status', '<', 3];
+				$where[] = ['director_uid', '=', $uid];
 			}
+			//我参与的任务
 			if($tab==2){
-				//即将逾期
-				$where[] = ['status', '<', 3];
-				$where[] = ['end_time','between',[$time,$dalay_time]];
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];
 			}
-			if($tab==3){
-				//已逾期
-				$where[] = ['status', '<', 3];
-				$where[] = ['end_time','<',$time];
-			}			
-			$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-			$order = empty($param['order']) ? 'status asc,id desc' : $param['order'];
+			//我下属的任务
+			if($tab == 3){
+				$where[] = ['did','in',$dids_son];
+			}
 			$list = $this->model->datalist($param,$where,$whereOr);
 			return table_assign(0, '', $list);
         }
         else{
+			View::assign('leader', isLeader($uid));
 			View::assign('auth', $auth);
             return view();
         }
@@ -242,51 +234,54 @@ class Task extends BaseController
     }
 	
 	public function hour() {
+		$uid = $this->uid;
         if (request()->isAjax()) {
             $param = get_params();
-			$uid = $this->uid;
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$auth = isAuth($uid,'project_admin','conf_1');
-            $tid = isset($param['tid']) ? $param['tid'] : 0;
+            $dids_son = get_leader_departments($uid);
             $where = [];
             $whereOr = [];
 			
+			$where[] = ['a.delete_time', '=', 0];
+			$where[] = ['a.tid', '>', 0];
+			if (!empty($param['keywords'])) {
+				$where[] = ['a.title', 'like', '%' . trim($param['keywords']) . '%'];
+			}
             //按时间检索
 			if (!empty($param['range_time'])) {
-				$range_time =explode('至', $param['range_time']);
-				$where[] = ['a.start_time', 'between',[strtotime($range_time[0]),strtotime($range_time[1])]];
+				$range_time =explode('~', $param['range_time']);
+				$where[] = ['a.start_time', 'between',[strtotime($range_time[0]),strtotime($range_time[1].' 23:59:59')]];
 			}
 			
-			if ($tid>0) {
-                $task_ids = Db::name('ProjectTask')->where(['delete_time' => 0, 'project_id' => $param['tid']])->column('id');
-				$where[] = ['a.tid', 'in', $task_ids];
-            }
-			else{
-				$where[] = ['a.tid', '>', 0];
-				if (!empty($param['keywords'])) {
-					$where[] = ['a.title', 'like', '%' . trim($param['keywords']) . '%'];
+			
+			//全部工时
+			if($tab==0){
+				if (!empty($param['uid'])) {
+					$where[] = ['admin_id', '=', $param['uid']];
 				}
-				if($auth == 0){
-					if (!empty($param['uid'])) {
-						$where[] = ['a.admin_id', '=', $param['uid']];
-					} else {
-						$whereOr[] = ['a.admin_id', '=', $uid];
-						$dids_a = get_leader_departments($uid);	
-						$dids_b = get_role_departments($uid);
-						$dids = array_merge($dids_a, $dids_b);
-						if(!empty($dids)){
-							$whereOr[] = ['a.did','in',$dids];
-						}
+				else{
+					if($auth == 0){
+						$whereOr[] = ['admin_id', '=', $uid];//我创建的工时
+						$whereOr[] = ['did','in',$dids_son];//我下属的工时
 					}
 				}
 			}
-            $where[] = ['a.delete_time', '=', 0];
+			//我的工时
+			if($tab==1){
+				$where[] = ['admin_id', '=', $uid];
+			}
+			//下属的工时
+			if($tab==2){
+				$where[] = ['did','in',$dids_son];
+			}
 			
 			$model = new Schedule();
 			$list = $model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         } else {
-			View::assign('is_leader', isLeader($this->uid));
-			View::assign('role_auth', isAuth($this->uid,'office_admin','conf_1'));
+			View::assign('leader', isLeader($uid));
+			View::assign('role_auth', isAuth($uid,'office_admin','conf_1'));
 			View::assign('hour_auth', valueAuth('office_admin','conf_2'));
             return view();
         }

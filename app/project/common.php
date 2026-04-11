@@ -41,6 +41,33 @@ function status_name($status=0)
 	return $status_array[$status];
 }
 
+//获取项目重要性
+function get_importance($id=0)
+{
+	$array = ['未设置','一般','重要','非常重要'];
+	if($id==0){
+		return $array;
+	}
+	else{
+		$news_array=[];
+		foreach($array as $key => $value){
+			if($key>0){
+				$news_array[]=array(
+					'id'=>$key,
+					'title'=>$value,
+				);
+			}
+		}
+		return $news_array;
+	}
+}
+
+//根据项目重要性名称
+function importance_name($importance=0)
+{
+	$array = get_importance();
+	return $array[$importance];
+}
 
 //获取任务全部状态
 function get_task_status($id=0)
@@ -98,18 +125,6 @@ function priority_name($priority=0)
 	return $priority_array[$priority];
 }
 
-//是否是项目管理员,count>1即有权限
-function isAuthProject($uid)
-{
-	if($uid == 1){
-		return 1;
-	}
-	$map = [];
-	$map[] = ['name', '=', 'project_admin'];
-	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_1)")];
-    $count = Db::name('DataAuth')->where($map)->count();
-    return $count;
-}
 //读取项目
 function get_project($uid = 0)
 {
@@ -167,4 +182,21 @@ function cross_count($arrData)
         }
     }
     return $documents;
+}
+
+//设置项目成员
+function set_project_uids($project_id)
+{
+    $project = Db::name('Project')->find($project_id);
+    $uid_array = Db::name('ProjectUser')->where([['project_id','=',$project_id],['uid','>',0],['delete_time','=',0]])->column('uid');
+	$uid_array[] = $project['admin_id'];
+	$uid_array[] = $project['director_uid'];
+    $step_uid_array = Db::name('ProjectStep')->where(['project_id'=>$project_id,'delete_time'=>0])->column('director_uid');
+    $step_uids_array = Db::name('ProjectStep')->where(['project_id'=>$project_id,'delete_time'=>0])->column('uids');
+	$result = array_merge($uid_array, $step_uid_array,$step_uids_array);
+	$str = implode(',' , $result);
+	$new_array = explode(',', $str);
+	$uniqueArray = array_unique($new_array);
+	$str = implode(',' , $uniqueArray);
+    Db::name('Project')->where(['id'=>$project_id])->update(['uids'=>$str]);
 }

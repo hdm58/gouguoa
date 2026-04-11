@@ -277,7 +277,7 @@ class Api extends BaseController
 				->join('Department d', 'a.did = d.id', 'LEFT')
 				->join('Position p', 'a.position_id = p.id', 'LEFT')
 				->order('pu.id asc')
-				->where(['pu.project_id' => $param['tid']])
+				->where([['pu.project_id','=',$param['tid']],['uid','>',0]])
 				->select()->toArray();
 		if(!empty($users)){
 			foreach ($users as $k => &$v) {
@@ -360,6 +360,7 @@ class Api extends BaseController
 				$param['create_time'] = time();
 				$res = Db::name('ProjectUser')->strict(false)->field(true)->insert($param);
 				if ($res) {
+					set_project_uids($param['project_id']);
 					to_assign();
 				}				
 			}else{
@@ -383,7 +384,8 @@ class Api extends BaseController
 					to_assign(1, '该项目成员是项目的负责人，需要去除负责人权限才能移除');
 				}
 				$param['delete_time'] = time();
-				if (Db::name('ProjectUser')->update($param) !== false) {				
+				if (Db::name('ProjectUser')->update($param) !== false) {
+					set_project_uids($detail['project_id']);
 					return to_assign(0, "移除成功");
 				} else {
 					return to_assign(1, "移除失败");
@@ -404,7 +406,103 @@ class Api extends BaseController
 			$project = Db::name('Project')->where(['id' => $detail['project_id']])->find();
 			if($this->uid == $project['admin_id'] || $this->uid == $project['director_uid']){
 				$param['delete_time'] = 0;
-				if (Db::name('ProjectUser')->update($param) !== false) {				
+				if (Db::name('ProjectUser')->update($param) !== false) {
+					set_project_uids($detail['project_id']);
+					return to_assign(0, "恢复成功");
+				} else {
+					return to_assign(1, "恢复失败");
+				}
+			}else{
+				to_assign(1, '只有项目创建者和负责人才有权限恢复项目成员');
+			}
+		}else{
+			return to_assign(1, "错误的请求");
+		}
+	}
+	
+	public function project_member()
+    {
+        $param = get_params();
+		$users = Db::name('ProjectUser')->order('id asc')->where([['project_id','=',$param['ptid']],['uid','=',0]])->select()->toArray();
+		if(!empty($users)){
+			foreach ($users as $k => &$v) {
+				$v['create_time'] = date('Y-m-d', (int) $v['create_time']);
+				if($v['delete_time'] > 0){
+					$v['delete_time'] = date('Y-m-d', (int) $v['delete_time']);
+				}
+				else{
+					$v['delete_time'] = '-';
+				}
+			}
+		}
+        to_assign(0, '', $users);
+    }
+
+	//新增外部项目成员
+    public function add_member()
+    {
+        $param = get_params();
+        if (request()->isPost()) {
+			$id = isset($param['id']) ? $param['id'] : 0;
+			$project = Db::name('Project')->where(['id' => $param['project_id']])->find();
+			if($this->uid == $project['admin_id'] || $this->uid == $project['director_uid'] || isAuth($this->uid,'project_admin','conf_1') > 0){
+				$param['create_time'] = time();
+				if($id==0){
+					$param['admin_id'] = $this->uid;
+					$res = Db::name('ProjectUser')->strict(false)->field(true)->insert($param);
+					if ($res) {
+						to_assign();
+					}
+					else{
+						to_assign(1, '操作失败');
+					}
+				}
+				else{
+					$res = Db::name('ProjectUser')->update($param);
+					if ($res) {
+						to_assign();
+					}
+					else{
+						to_assign(1, '操作失败');
+					}
+				}				
+			}else{
+				to_assign(1, '只有项目创建者和负责人才有权限新增或编辑项目成员');
+			}
+		}
+	}
+
+	//移除外部项目成员
+	public function remove_member()
+	{
+		$param = get_params();
+		if (request()->isDelete()) {
+			$detail = Db::name('ProjectUser')->where(['id' => $param['id']])->find();
+			$project = Db::name('Project')->where(['id' => $detail['project_id']])->find();
+			if($this->uid == $project['admin_id'] || $this->uid == $project['director_uid'] || isAuth($this->uid,'project_admin','conf_1') > 0){
+				$param['delete_time'] = time();
+				if (Db::name('ProjectUser')->update($param) !== false) {			
+					return to_assign(0, "移除成功");
+				} else {
+					return to_assign(1, "移除失败");
+				}
+			}else{
+				to_assign(1, '只有项目创建者和负责人才有权限移除项目成员');
+			}
+		}else{
+			return to_assign(1, "错误的请求");
+		}
+	}
+	//恢复外部项目成员
+	public function recover_member()
+	{
+		$param = get_params();
+		if (request()->isPost()) {
+			$detail = Db::name('ProjectUser')->where(['id' => $param['id']])->find();
+			$project = Db::name('Project')->where(['id' => $detail['project_id']])->find();
+			if($this->uid == $project['admin_id'] || $this->uid == $project['director_uid'] || isAuth($this->uid,'project_admin','conf_1') > 0){
+				$param['delete_time'] = 0;
+				if (Db::name('ProjectUser')->update($param) !== false) {		
 					return to_assign(0, "恢复成功");
 				} else {
 					return to_assign(1, "恢复失败");

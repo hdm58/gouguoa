@@ -2,8 +2,18 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<div class="gg-form-bar border-t border-x">
-		<form class="layui-form" lay-filter="barsearchform">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">文档列表</li>
+				<li>我的文档</li>
+				{eq name="$leader" value="1"}
+				<li>下属的文档(部门负责人)</li>
+				{/eq}
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
 			<div class="layui-input-inline" style="width:240px;">
 				<input type="text" name="project_name" placeholder="所属项目" readonly class="layui-input picker-oa" data-types="project" autocomplete="off" />
 				<input name="project_id" style="display: none;" value="" />
@@ -32,15 +42,24 @@
 <script>
 	const moduleInit = ['tool','tablePlus','oaPicker'];
 	function gouguInit() {
-		var table = layui.tablePlus, form = layui.form, tool = layui.tool;
-
+		var table = layui.tablePlus, tabs = layui.tabs,form = layui.form, tool = layui.tool;
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.documentTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		})
+		
 		layui.documentTable = table.render({
 			elem: '#document',
 			title: '文档列表',
 			toolbar: '#toolbarDemo',
 			is_excel: true,
 			cellMinWidth: 80,
-			height: 'full-114',
+			height: 'full-155',
 			url: "/project/document/datalist",
 			cols: [[
 				{
@@ -68,7 +87,12 @@
 						var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span>';
 						var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
 						var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
-						return html+btn1+btn2+btn3+'</div>';
+						if(d.admin_id == login_admin){
+							return html+btn1+btn2+btn3+'</div>';
+						}
+						else{
+							return btn1;
+						}
 					}						
 				}
 			]]

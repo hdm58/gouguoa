@@ -44,7 +44,7 @@
 
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
-  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/finance/ticket/add">+ 添加收票信息</button>
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/finance/ticket/add">新增进项发票申请</button>
   </div>
 </script>
 
@@ -70,7 +70,7 @@
 		layui.pageTable = table.render({
 			elem: "#table_ticket"
 			,toolbar: "#toolbarDemo"
-			,title: '发票列表'
+			,title: '进项发票列表'
 			,url: "/finance/ticket/datalist"
 			,page: true
 			,limit: 20
@@ -94,8 +94,7 @@
 					},{
 						field: 'code',
 						title: '发票号码',
-						align: 'center',
-						width: 160
+						width: 180
 					},{
 						field: 'invoice_type',
 						title: '开票类型',
@@ -107,10 +106,10 @@
 								html='<span class="green">增值税专用发票</span>';
 							}
 							else if(d.invoice_type==2){
-								html='<span class="blue">普通发票</span>';
+								html='<span class="blue">增值税普通发票</span>';
 							}
 							else if(d.invoice_type==3){
-								html='<span class="red">专业发票</span>';
+								html='<span class="red">其他专业发票</span>';
 							}
 							return html;
 						}
@@ -160,7 +159,7 @@
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 130,
+						width: 120,
 						align: 'center',
 						templet:function(d){
 							var html='<div class="layui-btn-group">';

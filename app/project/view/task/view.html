@@ -18,7 +18,7 @@
 {/block}
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-3">任务详情</h3>
+	<h3 class="pb-2">任务详情</h3>
 	<table class="layui-table layui-table-form" id="task">
 		<tr>
 			<td class="layui-td-gray">任务主题</td>
@@ -41,14 +41,14 @@
 		<tr>
 			<td class="layui-td-gray">完成进度</td>
 			<td class="click-edit" data-types="num" data-field="done_ratio" data-text="{$detail.done_ratio}" data-min="0" data-max="100">{$detail.done_ratio|default='0'}%</td>
-			<td class="layui-td-gray">估计结束日期</td>
+			<td class="layui-td-gray">预估结束日期</td>
 			<td class="click-edit" data-types="oadate" data-field="end_time">{$detail.end_time|date='Y-m-d'}</span>{gt name="$detail.delay" value="0"}<span class="red">『逾期 {$detail.delay}天』</span>{/gt}</td>
-			<td class="layui-td-gray-3">估计工作量(工时)</td>
+			<td class="layui-td-gray">预估工时</td>
 			<td class="click-edit" data-types="num" data-field="plan_hours">{$detail.plan_hours|default=''}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">任务状态</td>
-			<td class="click-edit" data-types="dropdown" data-field="status" data-array="status" data-text="{$detail.status}">{$detail.status_name}</td>
+			<td class="click-edit check-status-color-{$detail.status}" data-types="dropdown" data-field="status" data-array="status" data-text="{$detail.status}">{$detail.status_name}</td>
 			<td class="layui-td-gray-2">实际完成日期</td>
 			<td>{eq name="$detail.over_time" value="0"}-{else/}{$detail.over_time|date='Y-m-d'}{/eq}</td>
 			<td class="layui-td-gray">实际工时</td>
@@ -100,7 +100,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
   <div>
-  	<div class="layui-input-inline" style="margin-right:12px;"><strong>工作日志</strong></div><div class="layui-input-inline"><button class="layui-btn layui-btn-xs" type="button" lay-event="add">+ 添加工作日志</button></div>
+  	<div class="layui-input-inline"><button class="layui-btn layui-btn-sm" type="button" lay-event="add">添加工作记录</button></div>
   </div>
 </script>
 {/block}

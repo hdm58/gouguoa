@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-2">新增开票申请</h3>
+	<h3 class="pb-2">新增销项发票申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">开票金额<font>*</font></td>
@@ -12,8 +12,8 @@
 			<select name="invoice_type" lay-verify="required" lay-reqText="请选择开票类型">
 				<option value="">请选择开票类型</option>
 				<option value="1">增值税专用发票</option>
-				<option value="2">普通发票</option>
-				<option value="3">专业发票</option>
+				<option value="2">增值税普通发票</option>
+				<option value="3">其他专业发票</option>
 			  </select>
 			</td>
 			<td class="layui-td-gray">开票主体<font>*</font></td>
@@ -32,10 +32,15 @@
 				<input type="radio" name="types" lay-filter="type" value="1" title="企业" checked>
 				<input type="radio" name="types" lay-filter="type" value="2" title="个人">
 			</td>
-			<td class="layui-td-gray-2">开票抬头<span class="layui-btn layui-btn-xs invoice-qiye customer-picker">选择</span></td>
-			<td><input type="text" name="invoice_title" class="layui-input" value="" placeholder="请输入开票抬头" lay-verify="required"  lay-reqText="请输入开票抬头"></td>
+			<td class="layui-td-gray">开票抬头<font>*</font></td>
+			<td>
+				<div class="layui-input-group" style="width:100%">
+					<input type="text" name="invoice_title" value="" placeholder="请输入，若是个人输入姓名" class="layui-input" lay-verify="required" lay-reqText="请输入开票抬头">
+					<div class="layui-input-split layui-input-suffix invoice-qiye customer-picker" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i></div>
+				</div>
+			</td>
 			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
-			<td><input type="text" name="invoice_tax" class="layui-input" value=""  placeholder="请输入纳税人识别号，个人输入身份证号码"lay-verify="required"  lay-reqText="请输入纳税人识别号，个人输入身份证号码"></td>
+			<td><input type="text" name="invoice_tax" class="layui-input" value=""  placeholder="输入纳税人识别号，若是个人输入身份证号" lay-verify="required"  lay-reqText="请输入纳税人识别号，若是个人输入身份证号"></td>
 		</tr>
 		<tr class="invoice-qiye">
 			<td class="layui-td-gray">开户行<font>*</font></td>
@@ -48,31 +53,29 @@
 		<tr>
 			<td class="layui-td-gray">电话号码</td>
 			<td><input type="text" name="invoice_phone" class="layui-input" value=""></td>
-			<td class="layui-td-gray">地址</td>
+			<td class="layui-td-gray">详细地址</td>
 			<td colspan="3"><input type="text" name="invoice_address" class="layui-input" value=""></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">关联合同</td>
-			<td colspan="5">
-				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的合同" readonly value="">		
+			<td class="layui-td-gray">关联销售合同</td>
+			<td>
+				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的销售合同" readonly value="">		
 				<input type="hidden" class="layui-input" name="contract_id" value="0">		
 			</td>
-		</tr>
-		<tr>
 			<td class="layui-td-gray">关联项目</td>
-			<td colspan="5">
+			<td colspan="3">
 				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="">		
 				<input type="hidden" class="layui-input" name="project_id" value="0">		
 			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline">
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>

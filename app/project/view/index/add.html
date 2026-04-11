@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">新建项目</h3>
+	<h3 class="pb-1">新建项目</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">项目名称<font>*</font></td>
@@ -26,8 +26,8 @@
 			</td>
 			<td class="layui-td-gray">归属部门<font>*</font></td>
 			<td><input type="text" name="department" value="" autocomplete="off" readonly class="layui-input"></td>
-			<td class="layui-td-gray">始止日期<span style="color: red">*</span></td>
-			<td><input type="text" name="range_time" class="layui-input tool-time" data-range="到" readonly placeholder="开始 到 结束" lay-verify="required" lay-reqText="请选择计划完成周期"></td>
+			<td class="layui-td-gray">计划周期<span style="color: red">*</span></td>
+			<td><input type="text" name="range_time" class="layui-input tool-time" data-range="到" readonly placeholder="开始 到 结束" lay-verify="required" lay-reqText="请选择项目计划周期"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">项目成员<span style="color: red">*</span></td>
@@ -37,9 +37,19 @@
 			</td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray">项目评分<font>*</font></td>
+			<td><input type="text" name="score" lay-verify="required|number" lay-reqText="请输入项目评分" placeholder="请输入项目评分" class="layui-input" value=""></td>
+			<td class="layui-td-gray">重要程度<font>*</font></td>
+			<td>
+				<select name="importance" lay-verify="required" lay-reqText="请选择重要程度">
+					<option value="1" selected>一般</option>
+					<option value="2">重要</option>
+					<option value="3">非常重要</option>
+				</select>
+			</td>
 			<td class="layui-td-gray">关联合同</td>
-			<td colspan="5">
-				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的合同" readonly value="">		
+			<td>
+				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的销售合同" readonly value="">		
 				<input type="hidden" class="layui-input" name="contract_id" value="0">
 			</td>
 		</tr>
@@ -97,6 +107,12 @@
 					</tr>
 					{/volist}
 				</table>
+				<div style="padding:10px; margin-top:10px; font-size:12px; background-color:#fffcf0">
+					<p><strong>温馨提示</strong></p>
+					<p>1、项目开始流转时，只有当前阶段的负责人才可以操作阶段流转，其他人无权限操作。</p>
+					<p>2、项目立项后，只有项目管理员，创建人和项目经理(项目负责人)可修改编辑项目信息。</p>
+					<p>3、项目管理员，创建人和负责人可以修改项目阶段的信息，但是已完成的项目阶段无法修改，需要退回后才可修改。</p>
+				</div>
 			</td>
 		</tr>
 	</table>

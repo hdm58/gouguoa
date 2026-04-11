@@ -1,9 +1,26 @@
 {extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tab-1 .user-name,.tab-2 .user-name,.tab-3 .user-name,.tab-4 .user-name{display:none;}
+</style>
+{/block}
 <!-- 主体 -->
 {block name="body"}
 
 <div class="p-page">
-	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">项目列表</li>
+				<li>我负责的项目</li>
+				<li>我参与的项目</li>
+				{eq name="$leader" value="1"}
+				<li>下属的项目(部门负责人)</li>
+				{/eq}
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:100px;">
 			<select name="status">
 				<option value="">项目状态</option>
@@ -11,6 +28,14 @@
 				<option value="2">进行中</option>
 				<option value="3">已完成</option>
 				<option value="4">已关闭</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:132px;">
+			<select name="importance">
+				<option value="">项目重要程度</option>
+				<option value="1">一般</option>
+				<option value="2">重要</option>
+				<option value="3">非常重要</option>
 			</select>
 		</div>
 		<div class="layui-input-inline" style="width:136px;">
@@ -21,7 +46,7 @@
                 {/volist}
             </select>
         </div>
-		<div class="layui-input-inline" style="width:160px;">
+		<div class="layui-input-inline user-name" style="width:160px;">
 			<input type="text" name="director" placeholder="项目负责人，可多选" readonly class="layui-input picker-admin" data-type="2" autocomplete="off" />
 			<input name="director_uid" style="display: none;" value="" />
 		</div>
@@ -29,6 +54,7 @@
 			<input type="text" name="keywords" placeholder="关键字,项目名称/项目描述" class="layui-input" autocomplete="off" />
 		</div>
 		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0" />
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -51,27 +77,38 @@
 	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','oaPicker'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool;
+		var table = layui.tablePlus, form = layui.form, tool = layui.tool, tabs = layui.tabs;
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		})
 		
 		layui.pageTable = table.render({
 			elem: "#table_project"
-			, toolbar: "#toolbarDemo"
+			,toolbar: "#toolbarDemo"
 			,url: "/project/index/datalist"
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-114'
+			,height: 'full-155'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{ field: 'status', title: '项目状态', align: 'center', width: 90, templet: function (d) {
-					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
-					return html;
+						var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+						return html;
 					}
 				}
+				,{field:'importance_name',title: '重要程度',width:80,align:'center'}
+				,{field:'score',title: '项目评分',width:80,align:'center'}
 				,{field:'cate',title: '项目类别',width:100,align:'center'}
 				,{field:'name',title: '项目名称',minWidth:240}
 				,{field:'director_name',title: '负责人',width:80,align:'center'}
-				,{ field:'range_time', title: '项目计划周期', align: 'center', width: 200}
+				,{ field:'range_time', title: '项目计划周期', align: 'center', width: 180}
 				,{field:'step',title: '当前阶段及负责人',align: 'center',width: 180}
 				,{field:'tasks_unfinish', align: 'center', style: 'color: #91CC75;', width: 90, 'title': '进行中任务' }
 				,{field:'tasks_finish', align: 'center', style: 'color: #FAC858;', width: 90, 'title': '已完成任务' }
@@ -98,15 +135,12 @@
 		});
 			
 		table.on('tool(table_project)',function (obj) {
-			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
 			var data = obj.data;
 			if (obj.event === 'view') {
 				tool.side("/project/index/view?id="+data.id);
-				return;
 			}
 			if (obj.event === 'edit') {
 				tool.side("/project/index/add?id="+data.id);
-				return;
 			}
 			if (obj.event === 'affirm') {
 				let callback = function (e) {
@@ -132,10 +166,9 @@
 						}
 					}
 				})
-				return;
 			}
 			if (obj.event === 'del') {
-				layer.confirm('确定要删除该项目吗?', { icon: 3, title: '提示' }, function (index) {
+				tool.ask('确定要删除该项目吗?', function (index) {
 					let callback = function (e) {
 						layer.msg(e.msg);
 						if (e.code == 0) {
@@ -145,8 +178,8 @@
 					tool.delete("/project/index/del", { id: data.id }, callback);
 					layer.close(index);
 				});
-				return;
 			}
+			return false;
 		});
 	}
 </script>

@@ -36,24 +36,46 @@ class Document extends BaseController
 	
     public function datalist()
     {
+		$uid = $this->uid;
         if (request()->isAjax()) {
-            $param = get_params();			
-			$where = array();
-			$whereOr  = array();
+            $param = get_params();
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
+			$auth = isAuth($uid,'project_admin','conf_1');
+            $dids_son = get_leader_departments($uid);
+            $where = [];
+            $whereOr = [];
+			$where[] = ['delete_time', '=', 0];
 			if (!empty($param['keywords'])) {
 				$where[] = ['title|content', 'like', '%' . $param['keywords'] . '%'];
 			}
 			if (!empty($param['project_id'])) {
 				$where[] = ['project_id', '=', $param['project_id']];
-			} else {
-				$project_ids = Db::name('ProjectUser')->where(['uid' => $this->uid, 'delete_time' => 0])->column('project_id');
-				$whereOr[] = ['admin_id', '=', $this->uid];
-				$whereOr[] = ['project_id', 'in', $project_ids];
 			}
-			$where[] = ['delete_time', '=', 0];
+			
+			//全部文档
+			if($tab==0){
+				if (!empty($param['uid'])) {
+					$where[] = ['admin_id', '=', $param['uid']];
+				}
+				else{
+					if($auth == 0){
+						$whereOr[] = ['admin_id', '=', $uid];//我创建的文档
+						$whereOr[] = ['did','in',$dids_son];//我下属的文档
+					}
+				}
+			}
+			//我的文档
+			if($tab==1){
+				$where[] = ['admin_id', '=', $uid];
+			}
+			//下属的文档
+			if($tab==2){
+				$where[] = ['did','in',$dids_son];
+			}
 			$list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         } else {
+			View::assign('leader', isLeader($uid));
             return view();
         }
     }
@@ -86,6 +108,7 @@ class Document extends BaseController
                 }
                 $param['create_time'] = time();
                 $param['admin_id'] = $this->uid;
+                $param['did'] = $this->did;
                 $sid = ProjectDocument::strict(false)->field(true)->insertGetId($param);
                 if ($sid) {
                     add_log('add', $sid, $param);

@@ -20,6 +20,7 @@
 .layui-input-readonly {border-style: dashed; background-color:#fafafa;}
 .layui-form-pane .layui-form-label{height: 36px; padding:8px;}
 .layui-form-pane .layui-label-inline{height: 24px; padding:8px; float:left;}
+.layui-input-suffix .layui-form-checkbox{padding-right:0; margin-right:0}
 
 .layui-btn {height: 36px;line-height: 36px; padding:0 16px;}
 .layui-btn-sm {height: 30px; line-height: 30px; padding:0 8px;}
@@ -438,7 +439,7 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 .layui-import .layui-form-item{margin-bottom:8px;}
 .layui-import .layui-input-block{min-height:24px;}
 /*附件*/
-.file-card {background: #fff;border: 1px solid #f1f1f1; border-radius: 2px; padding:0; margin:4px 6px;line-height:1;
+.file-card {background: #fff;border: 1px solid #dddddd; border-radius: 2px; padding:0; margin:4px 6px;line-height:1;
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;

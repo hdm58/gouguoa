@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">模块配置及数据权限配置</h3>
+	<h3 class="pb-2">模块配置及数据权限配置</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td colspan="8" class="red" style="line-height:1.8">
@@ -20,25 +20,25 @@
 			<td>{$detail.name}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-3">合同管理员</td>
+			<td class="layui-td-gray-3">销售合同管理员</td>
 			<td>
 				<input type="text" name="conf_1_str" value="{$detail.conf_1_str|default=''}" readonly placeholder="请选择权限人员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_1" value="{$detail.conf_1}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_1</td>
-		</tr>		
-		<tr>		
-			<td class="layui-td-gray-3">合同编号自动生成</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">采购合同管理员</td>
 			<td>
-				<input type="radio" name="conf_2" value="1" title="开启" {eq name="$detail.conf_2" value="1"}checked{/eq}>
-				<input type="radio" name="conf_2" value="0" title="不开启" {eq name="$detail.conf_2" value="0"}checked{/eq}>
+				<input type="text" name="conf_2_str" value="{$detail.conf_2_str|default=''}" readonly placeholder="请选择权限人员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="conf_2" value="{$detail.conf_2}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
-			<td style="width:100px;">conf_2</td>
+			<td style="width:100px;">conf_1</td>
 		</tr>
 		<tr>			
-			<td class="layui-td-gray-2">是否开启关联客户<br>[销售合同]</td>
+			<td class="layui-td-gray-2">开启关联客户<br>[销售合同]</td>
 			<td>
 				<input type="radio" name="conf_3" value="1" title="关联" {eq name="$detail.conf_3" value="1"}checked{/eq}>
 				<input type="radio" name="conf_3" value="0" title="不关联" {eq name="$detail.conf_3" value="0"}checked{/eq}>
@@ -47,7 +47,7 @@
 			<td style="width:100px;">conf_3</td>
 		</tr>
 		<tr>			
-			<td class="layui-td-gray-2">是否开启关联产品<br>[销售合同]</td>
+			<td class="layui-td-gray-2">开启关联产品<br>[销售合同]</td>
 			<td>
 				<input type="radio" name="conf_4" value="1" title="关联" {eq name="$detail.conf_4" value="1"}checked{/eq}>
 				<input type="radio" name="conf_4" value="0" title="不关联" {eq name="$detail.conf_4" value="0"}checked{/eq}>
@@ -56,7 +56,7 @@
 			<td style="width:100px;">conf_4</td>
 		</tr>
 		<tr>			
-			<td class="layui-td-gray-2">是否开启关联服务<br>[销售合同]</td>
+			<td class="layui-td-gray-2">开启关联服务<br>[销售合同]</td>
 			<td>
 				<input type="radio" name="conf_5" value="1" title="关联" {eq name="$detail.conf_5" value="1"}checked{/eq}>
 				<input type="radio" name="conf_5" value="0" title="不关联" {eq name="$detail.conf_5" value="0"}checked{/eq}>
@@ -65,7 +65,7 @@
 			<td style="width:100px;">conf_5</td>
 		</tr>
 		<tr>			
-			<td class="layui-td-gray-2">是否开启关联供应商<br>[采购合同]</td>
+			<td class="layui-td-gray-2">开启关联供应商<br>[采购合同]</td>
 			<td>
 				<input type="radio" name="conf_6" value="1" title="关联" {eq name="$detail.conf_6" value="1"}checked{/eq}>
 				<input type="radio" name="conf_6" value="0" title="不关联" {eq name="$detail.conf_6" value="0"}checked{/eq}>
@@ -74,7 +74,7 @@
 			<td style="width:100px;">conf_6</td>
 		</tr>
 		<tr>			
-			<td class="layui-td-gray-2">是否开启关联采购品<br>[采购合同]</td>
+			<td class="layui-td-gray-2">开启关联采购品<br>[采购合同]</td>
 			<td>
 				<input type="radio" name="conf_7" value="1" title="关联" {eq name="$detail.conf_7" value="1"}checked{/eq}>
 				<input type="radio" name="conf_7" value="0" title="不关联" {eq name="$detail.conf_7" value="0"}checked{/eq}>

@@ -2,16 +2,28 @@
 {block name="style"}
 <style>
 .layui-unselect dl {max-height:188px;}
+.tab-1 .user-name,.tab-2 .user-name,.tab-3 .user-name,.tab-4 .user-name{display:none;}
 </style>
 {/block}
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<form class="layui-form gg-form-bar border-x border-t" lay-filter="barsearchform">
-		<div class="layui-input-inline" style="width:180px;">
-			<input type="text" class="layui-input tool-time" data-range="至" placeholder="选择时间区间" readonly name="range_time">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">工时列表</li>
+				<li>我的工时</li>
+				{eq name="$leader" value="1"}
+				<li>下属的工时(部门负责人)</li>
+				{/eq}
+			</ul>
 		</div>
-		<div class="layui-input-inline" style="width:100px;">
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:180px;">
+			<input type="text" class="layui-input" id="range_time" placeholder="选择时间区间" readonly name="range_time">
+		</div>
+		<div class="layui-input-inline user-name" style="width:100px;">
 			<input type="text" name="username"  placeholder="请选择员工" class="layui-input picker-admin" readonly />
 			<input type="text" name="uid" value="" style="display:none" />	
 		</div>
@@ -36,12 +48,24 @@
 <!-- 脚本 -->
 {block name="script"}
 	<script>
-	const is_leader = '{$is_leader}';
+	const is_leader = '{$leader}';
 	const role_auth = '{$role_auth}';
 	const hour_auth = '{$hour_auth}';
-	const moduleInit = ['tool','tablePlus','oaPicker','oaSchedule'];
+	const moduleInit = ['tool','tablePlus','oaPicker','oaSchedule','laydatePlus'];
 	function gouguInit() {
-		var form = layui.form,table = layui.tablePlus,tool=layui.tool, work = layui.oaSchedule,laydate = layui.laydate;	  
+		var form = layui.form, tabs = layui.tabs,table = layui.tablePlus,tool=layui.tool, work = layui.oaSchedule,laydatePlus = layui.laydatePlus,laydate = layui.laydate;
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.scheduleTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		})
+		
+		var diff_time = new laydatePlus({'target':'range_time'});
+		
 		layui.scheduleTable = table.render({
 			elem: '#test'
 			,toolbar: '#toolbarDemo'
@@ -49,7 +73,7 @@
 			,url: "/project/task/hour"
 			,cellMinWidth: 80
 			,is_excel:true
-			,height: 'full-114'
+			,height: 'full-155'
 			,cols: [[ //表头
 				{field: 'id', title: '序号',fixed: 'left', width:80, align:'center'}
 				,{field: 'labor_type_string', title: '工作类型', align:'center',width:90,templet:function(d){

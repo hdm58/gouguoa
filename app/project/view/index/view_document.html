@@ -14,7 +14,7 @@ function project_document(){
 	$('#projectTab').find('li').eq(3).data('load','true');
 	let tool = layui.tool, table = layui.tablePlus;
 	//项目任务
-	parent.layui.documentTable = table.render({
+	layui.documentTable = table.render({
 		elem: '#document',
 		title: '文档列表',
 		toolbar: '#toolbardocument',
@@ -67,14 +67,11 @@ function project_document(){
 			return;
 		}
 		if (obj.event === 'del') {
-			layer.confirm('确定要删除吗?', {
-				icon: 3,
-				title: '提示'
-			}, function(index) {
+			tool.ask('确定要删除吗?', function(index) {
 				let callback = function (e) {
 					layer.msg(e.msg);
 					if (e.code == 0) {
-						obj.del();
+						layui.documentTable.reload();
 					}
 				}
 				tool.delete("/project/document/delete", {id: data.id}, callback);

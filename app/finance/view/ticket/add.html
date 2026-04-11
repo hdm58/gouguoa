@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-2">新增收票信息</h3>
+	<h3 class="pb-2">新增进项发票申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">发票金额<font>*</font></td>
@@ -16,8 +16,8 @@
 			<select name="invoice_type" lay-verify="required" lay-reqText="请选择发票类型">
 				<option value="">请选择发票类型</option>
 				<option value="1">增值税专用发票</option>
-				<option value="2">普通发票</option>
-				<option value="3">专业发票</option>
+				<option value="2">增值税普通发票</option>
+				<option value="3">其他专业发票</option>
 			  </select>
 			</td>
 			<td class="layui-td-gray">发票日期<font>*</font></td>
@@ -41,26 +41,24 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">关联采购合同</td>
-			<td colspan="3">
+			<td>
 				<input type="text" class="layui-input picker-oa" data-types="purchase" name="purchase_name" placeholder="请选择" readonly value="">		
 				<input type="hidden" class="layui-input" name="purchase_id" value="0">		
 			</td>
-		</tr>
-		<tr>
 			<td class="layui-td-gray">关联项目</td>
-			<td colspan="3">
+			<td>
 				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择" readonly value="">		
 				<input type="hidden" class="layui-input" name="project_id" value="0">		
 			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline">
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="3">
+			<td colspan="3" style="padding:4px 2px;">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>

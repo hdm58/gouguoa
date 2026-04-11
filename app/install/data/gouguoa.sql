@@ -519,12 +519,12 @@ INSERT INTO `oa_admin_rule` VALUES (235, 234, 'finance/expense/add', '新建/编
 INSERT INTO `oa_admin_rule` VALUES (236, 234, 'finance/expense/del', '删除', '报销', 'finance', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (237, 234, 'finance/expense/view', '查看', '报销', 'finance', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (238, 6, 'finance/invoice/datalist', '开票管理', '发票', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (238, 6, 'finance/invoice/datalist', '销项发票', '发票', 'finance', '', 1, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (239, 238, 'finance/invoice/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (240, 238, 'finance/invoice/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (241, 238, 'finance/invoice/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (242, 6, 'finance/ticket/datalist', '收票管理', '发票', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (242, 6, 'finance/ticket/datalist', '进项打票', '发票', 'finance', '', 1, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (243, 242, 'finance/ticket/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (244, 242, 'finance/ticket/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (245, 242, 'finance/ticket/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
@@ -3220,12 +3220,15 @@ CREATE TABLE `oa_project`  (
   `name` varchar(255) NOT NULL DEFAULT '' COMMENT '项目名称',
   `code` varchar(255) NOT NULL DEFAULT '' COMMENT '项目编号',
   `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '项目金额',
+  `score` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目评分',
+  `importance` int(2) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目重要程度:1一般,2重要,3非常重要',
   `cate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分类ID',
   `customer_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联客户ID',
   `contract_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联合同协议ID',
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建人',
   `director_uid` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目负责人',
   `did` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目所属部门',
+  `uids` varchar(500) NOT NULL DEFAULT '' COMMENT '项目参与人',
   `start_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目开始时间',
   `end_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目结束时间',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0未设置,1未开始,2进行中,3已完成,4已关闭',
@@ -3281,6 +3284,11 @@ CREATE TABLE `oa_project_user`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uid` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '项目成员id',
   `project_id` int(11) UNSIGNED NOT NULL COMMENT '关联项目id',
+  `name` varchar(255) NOT NULL DEFAULT '' COMMENT '成员姓名',
+  `role` varchar(255) NOT NULL DEFAULT '' COMMENT '担任项目角色',
+  `mobile` varchar(255) NOT NULL DEFAULT '' COMMENT '手机号码',
+  `company` varchar(255)  NOT NULL DEFAULT '' COMMENT '所在公司',
+  `enter_time` varchar(255) NOT NULL DEFAULT '' COMMENT '入驻项目日期',
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建人',
   `create_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建时间',
   `delete_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '移除时间',

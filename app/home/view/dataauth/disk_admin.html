@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">模块配置及数据权限配置</h3>
+	<h3 class="pb-2">模块配置及数据权限配置</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td colspan="8" class="red" style="line-height:1.8">
@@ -20,7 +20,7 @@
 			<td>{$detail.name}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-3">知识网盘数据管理员</td>
+			<td class="layui-td-gray-3">知识网盘数据<br>管理员</td>
 			<td>
 				<input type="text" name="conf_1_str" value="{$detail.conf_1_str|default=''}" readonly placeholder="请选择权限人员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_1" value="{$detail.conf_1}">

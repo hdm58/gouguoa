@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">编辑项目</h3>
+	<h3 class="pb-1">编辑项目</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">项目名称<font>*</font></td>
@@ -30,6 +30,16 @@
 			<td><input type="text" name="range_time" value="{$detail.start_time|date='Y-m-d'} 到 {$detail.end_time|date='Y-m-d'}" class="layui-input tool-time" data-range="到" readonly placeholder="开始 到 结束" lay-verify="required" lay-reqText="请选择计划完成周期"></td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray">项目评分<font>*</font></td>
+			<td><input type="text" name="score" lay-verify="required|number" lay-reqText="请输入项目评分" placeholder="请输入项目评分" class="layui-input" value="{$detail.score}"></td>
+			<td class="layui-td-gray">重要程度<font>*</font></td>
+			<td>
+				<select name="importance" lay-verify="required" lay-reqText="请选择重要程度">
+					<option value="1" {eq name="$detail.importance" value="1"} selected{/eq}>一般</option>
+					<option value="2" {eq name="$detail.importance" value="2"} selected{/eq}>重要</option>
+					<option value="3" {eq name="$detail.importance" value="3"} selected{/eq}>非常重要</option>
+				</select>
+			</td>
 			<td class="layui-td-gray">关联合同</td>
 			<td colspan="5">
 				<input type="text" class="layui-input picker-oa" data-types="contract" name="contract_name" placeholder="请选择需要关联的合同" readonly value="{$detail.contract_name|default=''}">		

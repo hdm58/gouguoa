@@ -194,8 +194,6 @@ class Expense extends BaseController
             }	 
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
-			$is_codeno = Db::name('DataAuth')->where('name','finance_admin')->value('conf_10');
-			View::assign('is_codeno', $is_codeno);
             View::assign('expense_cate', Db::name('ExpenseCate')->where(['status' => 1])->select()->toArray());
 			View::assign('user', get_admin($this->uid));
 			if ($id>0) {
@@ -206,11 +204,6 @@ class Expense extends BaseController
 				}
 				return view('edit');
 			}
-			$codeno='';
-			if($is_codeno==1){
-				$codeno = get_codeno(3);
-			}
-            View::assign('codeno', $codeno);
 			if(is_mobile()){
 				return view('qiye@/finance/add_expense');
 			}

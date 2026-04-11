@@ -61,6 +61,51 @@ class Api extends BaseController
 			});
 		return table_assign(0, '', $list);
     }
+	
+    //获取获取报销
+    public function get_expense()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['delete_time', '=', 0];
+		if(!empty($param['project_id'])){
+			$where[] = ['project_id', '=', $param['project_id']];
+		}
+		$model = new Expense();
+		$list = $model->datalist($param,$where);
+		return table_assign(0, '', $list);
+    }
+	
+    //获取销项发票
+    public function get_invoice()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['delete_time', '=', 0];
+		$where[] = ['open_status', '<', 2];
+		if(!empty($param['project_id'])){
+			$where[] = ['project_id', '=', $param['project_id']];
+		}
+		$model = new Invoice();
+		$list = $model->datalist($param,$where);
+		return table_assign(0, '', $list);
+    }
+	
+    //获取进项发票
+    public function get_ticket()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['delete_time', '=', 0];
+		$where[] = ['open_status', '<', 2];
+		if(!empty($param['project_id'])){
+			$where[] = ['project_id', '=', $param['project_id']];
+		}
+		$model = new Ticket();
+		$list = $model->datalist($param,$where);
+		return table_assign(0, '', $list);
+    }
+	
     //删除报销项
     public function del_expense_interfix()
     {

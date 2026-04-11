@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="layui-form p-page">
-	<h3 class="pb-2">发票详情</h3>
+	<h3 class="pb-2">销项发票详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">开票金额</td>
@@ -10,8 +10,8 @@
 			<td class="layui-td-gray">开票类型</td>
 			<td>
 				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-				{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
-				{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
+				{eq name="$detail.invoice_type" value="2"}增值税普通发票{/eq}
+				{eq name="$detail.invoice_type" value="3"}其他专业发票{/eq}
 			</td>
 			<td class="layui-td-gray">开票主体</td>
 			<td>{$detail.subject}</td>
@@ -37,9 +37,9 @@
 		</tr>
 		<tr class="invoice-type" {eq name="$detail.types" value="2"}style="display:none"{/eq}>
 			<td class="layui-td-gray-2">银行营业网点</td>
-			<td>{$detail.invoice_banking}</td>
-			<td class="layui-td-gray">地址</td>
-			<td colspan="3">{$detail.invoice_address}</td>
+			<td>{$detail.invoice_banking|default='-'}</td>
+			<td class="layui-td-gray">详细地址</td>
+			<td colspan="3">{$detail.invoice_address|default='-'}</td>
 		</tr>
 		{if condition="$detail.contract_id > 0"}
 		<tr>
@@ -61,8 +61,8 @@
 		{/notempty}
 		{notempty name="$detail.file_ids"}
 		<tr>
-			<td class="layui-td-gray">关联附件</td>
-			<td colspan="5">
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>

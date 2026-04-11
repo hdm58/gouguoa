@@ -1,9 +1,18 @@
 <div class="bg-white">
 	<table class="layui-hide" id="user" lay-filter="user"></table>
 </div>
+
+<div class="mt-3 bg-white">
+	<table class="layui-hide" id="member" lay-filter="member"></table>
+</div>
 <script type="text/html" id="toolbaruser">
   <div class="layui-btn-container">
-  	<button class="layui-btn layui-btn-sm" lay-event="add">+ 新增项目成员</button>
+  	<button class="layui-btn layui-btn-sm" lay-event="add">新增内部人员</button>
+  </div>
+</script>
+<script type="text/html" id="toolbarmember">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm" lay-event="add">新增外部人员</button>
   </div>
 </script>
 <script>
@@ -12,11 +21,11 @@ function project_user(){
 		return false;
 	}
 	$('#projectTab').find('li').eq(4).data('load','true');
-	let tool = layui.tool, table = layui.tablePlus,oaPicker = layui.oaPicker;
-	//项目成员
+	let tool = layui.tool,form = layui.form, table = layui.tablePlus,oaPicker = layui.oaPicker;
+	//项目人员
 	layui.userTable = table.render({
 		elem: '#user',
-		title: '项目成员列表',
+		title: '内部项目人员列表',
 		cellMinWidth: 60,
 		toolbar: '#toolbaruser',
 		url: "/project/api/project_user", //数据接口
@@ -24,10 +33,10 @@ function project_user(){
 		page: false, //开启分页
 		limit: 20,
 		cols: [[ //表头
-			{ field: 'name', fixed: 'left', title: '成员姓名', width: 90, align: 'center', rowspan: 2 }
+			{ field: 'name', fixed: 'left', title: '人员姓名', width: 90, align: 'center', rowspan: 2 }
 			, { field: 'create_time', title: '进入项目日期', width: 110, align: 'center', rowspan: 2 }
 			, { field: 'role', title: '角色', align: 'center', width: 90, rowspan: 2, templet: function (d) {
-				var html='<span style="color: #4285F4;">普通成员</span>';
+				var html='<span style="color: #4285F4;">普通人员</span>';
 				if(d.role==1){
 					html='<span style="color: #EE6666;">项目创建人</span>';
 				}
@@ -101,14 +110,242 @@ function project_user(){
 				}
 			}
 		if (obj.event === 'remove') {
-			tool.ask('确定要移除该项目成员吗?', function (index) {
+			tool.ask('确定要移除该项目人员吗?', function (index) {
 				tool.delete("/project/api/remove_user", postData, callback);
 			});
 		}
 		if (obj.event === 'recover') {
-			tool.ask('确定要恢复该项目成员吗?', function (index) {
+			tool.ask('确定要恢复该项目人员吗?', function (index) {
 				tool.post("/project/api/recover_user", postData, callback);
 			});
+		}
+		return;
+	});
+	
+	
+	//外部项目成员
+	layui.memberTable = table.render({
+		elem: '#member',
+		title: '外部项目人员列表',
+		cellMinWidth: 60,
+		is_excel:true,
+		toolbar: '#toolbarmember',
+		url: "/project/api/project_member", //数据接口
+		where: { 'ptid': project_id },
+		page: false, //开启分页
+		limit: 100,
+		cols: [[ //表头
+			{ field: 'name', fixed: 'left', title: '成员姓名', width: 90, align: 'center'}
+			, { field: 'create_time', title: '入驻项目日期', width: 110, align: 'center'}
+			, { field: 'role', title: '担任项目角色', align: 'center', width: 110}
+			, { field: 'company', title: '所属公司'}
+			, { field: 'mobile', title: '手机号码', align: 'center', width: 110}
+			, { field: 'delete_time', title: '移除日期', align: 'center', width: 110, rowspan: 2 }
+			, { field: 'status',fixed: 'right', title: '状态', align: 'center', width: 60, rowspan: 2, templet: function (d) {
+					var html = '<span style="color:#EE6666">✘</span>';
+					if(d.delete_time == '-')
+						html = '<span style="color:#91CC75">✔</span>';
+					return html;
+				}}				
+			, {title: '操作',fixed: 'right', align: 'center', width: 90, rowspan: 2, templet: function (d) {
+					var html = '<span class="layui-btn layui-btn-xs" lay-event="recover">恢复</span>';
+					if(d.delete_time == '-'){
+						html = '<div class="layui-btn-group"><span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove">移除</span><span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span></div>';
+					}
+					return html;
+				}
+			}
+		]]
+	});
+	
+	//触发事件
+	table.on('toolbar(member)', function(obj){
+		var checkStatus = table.checkStatus(obj.config.id);
+		switch(obj.event){
+			case 'add':	
+				let content = '<div style="width:666px">\
+								<table class="layui-table" style="margin:12px 12px 0;">\
+									<tr>\
+										<td class="layui-td-gray">成员姓名<span style="color: red">*</span></td>\
+										<td><input id="m_name" class="layui-input" value="" placeholder="请输入"></td>\
+										<td class="layui-td-gray-2">入驻项目日期<span style="color: red">*</span></td>\
+										<td><input id="enter_time" class="layui-input tool-time" value="" readonly placeholder="请选择"></td>\
+									</tr>\
+									<tr>\
+										<td class="layui-td-gray">手机号码<span style="color: red">*</span></td>\
+										<td><input id="m_mobile" class="layui-input" value="" placeholder="请输入"></td>\
+										<td class="layui-td-gray-2">担任项目角色</td>\
+										<td><input id="m_role" class="layui-input" value="" placeholder="请输入"></td>\
+									</tr>\
+									<tr>\
+										<td class="layui-td-gray">所属公司<span style="color: red">*</span></td>\
+										<td colspan="3"><input id="m_company" class="layui-input" value="" placeholder="请输入"></td>\
+									</tr>\
+								</table>\
+							</div>';			
+				layer.open({
+					type: 1,
+					title: '添加外部成员',
+					area: ['692px', '320px'],
+					content: content,
+					success: function () {
+						form.render();
+					},
+					btn: ['确定提交'],
+					btnAlign: 'c',
+					yes: function (idx) {
+						let name=$('#m_name').val();
+						let enter_time=$('#enter_time').val();
+						let role=$('#m_role').val();
+						let mobile=$('#m_mobile').val();
+						let company=$('#m_company').val();
+						if (name == '') {
+							layer.msg('请完善姓名');
+							return;
+						}
+						if(enter_time==''){
+							layer.msg('请选择入驻项目日期');
+							return;
+						}
+						if (mobile == '') {
+							layer.msg('请完善手机号码');
+							return;
+						}
+						if (company == '') {
+							layer.msg('请完善所属企业');
+							return;
+						}
+						let postData={
+							project_id:project_id,
+							name:name,
+							enter_time:enter_time,
+							mobile:mobile,
+							role:role,
+							company:company
+						}
+						let callback = function (e) {
+							if (e.code == 0) {
+								layer.closeAll();
+								layer.msg(e.msg);
+								if(layui.memberTable){
+									layui.memberTable.reload();
+								}
+								else{
+									setTimeout(function(){
+										location.reload();
+									},1000);	
+								}					
+							} else {
+								layer.msg(e.msg);
+							}
+						}
+						tool.post("/project/api/add_member", postData, callback);
+					}
+				})		
+			break;
+		};
+	});
+
+	//监听行工具事件
+	table.on('tool(member)', function (obj) {
+		let postData = { "id": obj.data.id };
+		let callback = function (e) {
+				layer.closeAll();
+				layer.msg(e.msg);
+				if(e.code == 0){
+					layui.memberTable.reload();
+				}
+			}
+		if (obj.event === 'remove') {
+			tool.ask('确定要移除该项目成员吗?', function (index) {
+				tool.delete("/project/api/remove_member", postData, callback);
+			});
+		}
+		if (obj.event === 'recover') {
+			tool.ask('确定要恢复该项目成员吗?', function (index) {
+				tool.post("/project/api/recover_member", postData, callback);
+			});
+		}if (obj.event === 'edit') {
+			let content = '<div style="width:666px">\
+								<table class="layui-table" style="margin:12px 12px 0;">\
+									<tr>\
+										<td class="layui-td-gray">成员姓名<span style="color: red">*</span></td>\
+										<td><input id="m_name" class="layui-input" value="'+obj.data.name+'" placeholder="请输入"></td>\
+										<td class="layui-td-gray-2">入驻项目日期<span style="color: red">*</span></td>\
+										<td><input id="enter_time" class="layui-input tool-time" value="'+obj.data.enter_time+'" readonly placeholder="请选择"></td>\
+									</tr>\
+									<tr>\
+										<td class="layui-td-gray">手机号码<span style="color: red">*</span></td>\
+										<td><input id="m_mobile" class="layui-input" value="'+obj.data.mobile+'" placeholder="请输入"></td>\
+										<td class="layui-td-gray">担任项目角色</td>\
+										<td><input id="m_role" class="layui-input" value="'+obj.data.role+'" placeholder="请输入"></td>\
+									</tr>\
+									<tr>\
+										<td class="layui-td-gray">所属公司<span style="color: red">*</span></td>\
+										<td colspan="3"><input id="m_company" class="layui-input" value="'+obj.data.company+'" placeholder="请输入"></td>\
+									</tr>\
+								</table>\
+							</div>';			
+				layer.open({
+					type: 1,
+					title: '编辑外部成员',
+					area: ['692px', '320px'],
+					content: content,
+					success: function () {
+						form.render();
+					},
+					btn: ['确定提交'],
+					btnAlign: 'c',
+					yes: function (idx) {
+						let name=$('#m_name').val();
+						let enter_time=$('#enter_time').val();
+						let role=$('#m_role').val();
+						let mobile=$('#m_mobile').val();
+						let company=$('#m_company').val();
+						if (name == '') {
+							layer.msg('请完善姓名');
+							return;
+						}
+						if(enter_time==''){
+							layer.msg('请选择入驻项目日期');
+							return;
+						}
+						if (mobile == '') {
+							layer.msg('请完善手机号码');
+							return;
+						}
+						if (company == '') {
+							layer.msg('请完善所属企业');
+							return;
+						}
+						let postData={
+							project_id:project_id,
+							name:name,
+							enter_time:enter_time,
+							mobile:mobile,
+							role:role,
+							company:company,
+							id:obj.data.id
+						}
+						let callback = function (e) {
+							if (e.code == 0) {
+								layer.closeAll();
+								layer.msg(e.msg);
+								if(layui.memberTable){
+									layui.memberTable.reload();
+								}
+								else{
+									setTimeout(function(){
+										location.reload();
+									},1000);	
+								}					
+							} else {
+								layer.msg(e.msg);
+							}
+						}
+						tool.post("/project/api/add_member", postData, callback);
+					}
+				})	
 		}
 		return;
 	});

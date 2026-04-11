@@ -20,8 +20,8 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">凭证编号<font>*</font></td>
-			<td><input type="text" name="code" autocomplete="off"  {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" placeholder="报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value="{$detail.code}"></td>
+			<td class="layui-td-gray">凭证编号</td>
+			<td>{$detail.code}</td>
 			<td class="layui-td-gray-2">原始单据日期<font>*</font></td>
 			<td><input type="text" class="layui-input tool-time" id="expense_time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="{$detail.expense_time}"></td>
 			<td class="layui-td-gray">入账月份<font>*</font></td>
@@ -74,10 +74,10 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div>
 			</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" name="file_ids" data-type="file" value="{$detail.file_ids}">
 					{notempty name="$detail.file_ids"}
@@ -179,7 +179,7 @@
 						let checkCallback = function (e) {
 							layer.msg(e.msg);
 							if (e.code == 0) {
-								tool.sideClose(1000);				
+								tool.sideClose(1000,'expenseTable');				
 							}
 						}
 						data.field.check_name = 'expense';

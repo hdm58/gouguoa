@@ -298,6 +298,14 @@ class Index extends BaseController
 		}
 	}
  
+	//获取编码
+	function get_codeno($prefix=1){
+		$param = get_params();
+		$prefix = isset($param['prefix'])?$param['prefix']:1;
+		$no = $prefix . date('YmdHis') . rand(1,9);
+		return to_assign(0, '', $no);
+	}
+ 
     //附件重命名
     public function file_edit()
     {

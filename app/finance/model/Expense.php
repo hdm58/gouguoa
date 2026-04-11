@@ -35,7 +35,7 @@ class Expense extends Model
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
 				$item->check_status_str = check_status_name($item->check_status);
-				$item->income_month_str = empty($item->income_month) ? '-' : date('Y-m', $item->income_month);
+				$item->income_month_str = to_date($item->income_month,'Y-m');
 				$item->expense_time = empty($item->expense_time) ? '-' : date('Y-m-d', $item->expense_time);
 				$item->admin_name = Db::name('Admin')->where(['id' => $item->admin_id])->value('name');
 				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');

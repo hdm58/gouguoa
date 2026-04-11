@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">添加报销申请</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">添加报销申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">报销员工</td>
@@ -21,7 +21,14 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">凭证编号<font>*</font></td>
-			<td><input type="text" name="code" value="{$codeno}" {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" placeholder="请输入报销凭证编号" lay-reqText="请填写报销凭证编号" class="layui-input" value=""></td>
+			<td>
+				<div class="layui-input-group" style="width:100%;">
+					<input type="text" name="code" class="layui-input" placeholder="请输入凭证编号" lay-verify="required" lay-reqText="请输入凭证编号" value="">
+					<div class="layui-input-split layui-input-suffix" style="width:120px;">
+						<input type="checkbox" name="setcode" title="自动生成" lay-skin="tag" lay-filter="code-filter">
+					</div>
+				</div>			
+			</td>
 			<td class="layui-td-gray">单据日期<font>*</font></td>
 			<td><input type="text" class="layui-input tool-time" name="expense_time" lay-verify="required" placeholder="请选择原始单据日期" lay-reqText="请选择原始单据日期" readonly value="">	
 			</td>
@@ -73,10 +80,10 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div>
 			</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="">
 				</div>
@@ -135,6 +142,24 @@
 			$(this).parents(".more_interfix").remove();
 		});
 
+		//自动生成编码
+		form.on('checkbox(code-filter)', function(data){
+			var elem = data.elem; // 获得 checkbox 原始 DOM 对象
+			var checked = elem.checked; // 获得 checkbox 选中状态
+			var othis = data.othis; // 获得 checkbox 元素被替换后的 jQuery 对象
+			if(elem.checked==true){				
+				tool.post("/api/index/get_codeno", {'prefix':'E'},function(e){
+					if (e.code == 0) {
+						$('[name="code"]').val(e.data);
+					}
+				});
+			}
+			else{
+				$('[name="code"]').val('');
+			}
+	    });
+
+
 		//监听提交
 		form.on('submit(webform)', function(data){
 		  	var interfix = $('.more_interfix');
@@ -149,7 +174,7 @@
 						let checkCallback = function (e) {
 							layer.msg(e.msg);
 							if (e.code == 0) {
-								tool.sideClose(1000);				
+								tool.sideClose(1000,'expenseTable');				
 							}
 						}
 						data.field.check_name = 'expense';

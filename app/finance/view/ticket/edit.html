@@ -2,7 +2,7 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-2">编辑开票申请</h3>
+	<h3 class="pb-2">编辑进项发票申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">发票金额<font>*</font></td>
@@ -41,26 +41,24 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">关联采购合同</td>
-			<td colspan="3">
+			<td>
 				<input type="text" class="layui-input picker-oa" data-types="purchase" name="purchase_name" placeholder="请选择" readonly value="{$detail.purchase_name|default=''}">		
 				<input type="hidden" class="layui-input" name="purchase_id" value="{$detail.purchase_id}">		
 			</td>
-		</tr>
-		<tr>
 			<td class="layui-td-gray">关联项目</td>
-			<td colspan="5">
+			<td>
 				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="{$detail.project_name|default=''}">		
 				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id}">		
 			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline">
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="5">
+			<td colspan="3" style="padding:4px 2px;">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.file_ids"}
@@ -73,7 +71,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">备注信息</td>
-			<td colspan="5"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
+			<td colspan="3"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
 		</tr>
 	</table>	
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
