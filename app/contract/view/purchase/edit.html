@@ -6,7 +6,9 @@
     <table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">合同名称<font>*</font></td>
-			<td colspan="3"><input type="text" name="name" value="{$detail.name}" lay-verify="required" lay-reqText="请输入合同名称" autocomplete="off" placeholder="请输入合同名称" class="layui-input"></td>
+			<td><input type="text" name="name" value="{$detail.name}" lay-verify="required" lay-reqText="请输入合同名称" autocomplete="off" placeholder="请输入合同名称" class="layui-input"></td>
+			<td class="layui-td-gray">合同编号<font>*</font></td>
+			<td><input type="text" name="code" value="{$detail.code}" readonly lay-verify="required" lay-reqText="请输入合同编号" placeholder="请输入合同编号" class="layui-input"></td>
 			<td class="layui-td-gray">合同性质</td>
 			<td>{$detail.types_name}</td>
 		</tr>
@@ -52,7 +54,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">合同金额<font>*</font></td>
-			<td>
+			<td colspan="3">
 				{eq name="$detail.types" value="1"}
 				<input type="text" name="cost" value="{$detail.cost}" lay-verify="required|number" lay-reqText="请输入合同金额，数字" placeholder="请输入合同金额，数字" autocomplete="off" class="layui-input">
 				{/eq}
@@ -72,8 +74,6 @@
 					{/volist}
 				</select>
 			</td>
-			<td class="layui-td-gray">合同编号<font>*</font></td>
-			<td><input type="text" name="code" value="{$detail.code}" autocomplete="off" {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" lay-reqText="请输入合同编号" placeholder="请输入合同编号" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td colspan="6"><strong>签订信息</strong></td>
@@ -84,7 +84,7 @@
 				 <input type="text" name="sign_name" value="{$detail.sign_name}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择合同签订人" placeholder="请选择合同签订人" class="layui-input picker-diy">
 				 <input type="hidden" name="sign_uid" value="{$detail.sign_uid}">
 			</td>
-			<td class="layui-td-gray-2">合同所属部门<font>*</font></td>
+			<td class="layui-td-gray">所属部门<font>*</font></td>
 			<td>
 				<input type="text" name="sign_department" value="{$detail.sign_department}" autocomplete="off" readonly lay-verify="required" lay-reqText="请选择合同所属部门"  placeholder="请选择合同所属部门" class="layui-input picker-oa" data-types="department">
 			  	<input type="hidden" name="did" value="{$detail.did}">
@@ -93,12 +93,12 @@
 			<td><input type="text" name="sign_time" value="{$detail.sign_time}" readonly lay-verify="required" lay-reqText="请选择合同签订日期" placeholder="请选择合同签订日期" class="layui-input tool-time"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">合同制定人</td>
+			<td class="layui-td-gray-2">合制定人</td>
 			<td>
 				<input type="text" name="prepared_name" value="{$detail.prepared_name}" autocomplete="off" readonly placeholder="请选择合同制定人" class="layui-input picker-admin">
 				<input type="hidden" name="prepared_uid" value="{$detail.prepared_uid}">
 			</td>
-			<td class="layui-td-gray-2">合同保管人</td>
+			<td class="layui-td-gray">保管人</td>
 			<td>
 				<input type="text" name="keeper_name" value="{$detail.keeper_name}" autocomplete="off" readonly placeholder="请选择合同保管人" class="layui-input picker-admin">
 				<input type="hidden" name="keeper_uid" value="{$detail.keeper_uid}">
@@ -118,7 +118,7 @@
 			<td class="layui-td-gray">
 				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
 			</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.file_ids"}

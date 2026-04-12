@@ -40,9 +40,12 @@ class Purchase extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$uid = $this->uid;
+		//是否是合同管理员
+		$auth = isAuth($uid,'contract_admin','conf_2');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$uid = $this->uid;
+			$dids_son = get_leader_departments($uid);
             $where = [];
             $whereOr = [];
 			$where[]=['delete_time','=',0];
@@ -74,34 +77,30 @@ class Purchase extends BaseController
 					$where[] = ['sign_uid', '=', $param['uid']];
 				}
 				else{
-					//是否是合同管理员
-					$auth = isAuth($uid,'contract_admin','conf_1');
 					if($auth == 0){
 						$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
 						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-						$dids_a = get_leader_departments($uid);
-						$dids_b = get_role_departments($uid);
-						$dids = array_merge($dids_a, $dids_b);
-						if(!empty($dids)){
-							$whereOr[] = ['did','in',$dids];
-						}
+						$whereOr[] = ['did','in',$dids_son];//我下属的合同
 					}
 				}
 			}
 			if($tab == 1){
-				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+				$where[] = ['sign_uid', '=', $uid];
 			}
 			if($tab == 2){
-				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+			}
+			if($tab == 3){
+				$where[] = ['did','in',$dids_son];
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
-			View::assign('is_leader', isLeader($this->uid));
-			View::assign('is_auth', isAuth($this->uid,'contract_admin','conf_1'));
+			View::assign('leader', isLeader($uid));
+			View::assign('auth', $auth);
 			View::assign('delay_num', valueAuth('contract_admin','conf_10'));
             return view();
         }
@@ -112,6 +111,9 @@ class Purchase extends BaseController
 		$param = get_params();
         if (request()->isAjax()) {
 			$uid = $this->uid;
+			//是否是合同管理员
+			$auth = isAuth($uid,'contract_admin','conf_1');
+			$dids_son = get_leader_departments($uid);
             $where = [];
             $whereOr = [];
 			$where[]=['delete_time','=',0];
@@ -133,19 +135,12 @@ class Purchase extends BaseController
 				$end_time =explode('~', $param['end_time']);
 				$where[] = ['end_time', 'between',[strtotime(urldecode($end_time[0])),strtotime(urldecode($end_time[1].' 23:59:59'))]];
             }
-			//是否是合同管理员
-			$auth = isAuth($uid,'contract_admin','conf_1');
 			if($auth == 0){
 				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-				$dids_a = get_leader_departments($uid);
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$whereOr[] = ['did','in',$dids];
-				}
+				$whereOr[] = ['did','in',$dids_son];//我下属的合同
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
@@ -161,6 +156,9 @@ class Purchase extends BaseController
 		$param = get_params();
         if (request()->isAjax()) {
 			$uid = $this->uid;
+			//是否是合同管理员
+			$auth = isAuth($uid,'contract_admin','conf_1');
+			$dids_son = get_leader_departments($uid);
             $where = [];
             $whereOr = [];
 			$where[]=['delete_time','=',0];
@@ -182,19 +180,12 @@ class Purchase extends BaseController
 				$end_time =explode('~', $param['end_time']);
 				$where[] = ['end_time', 'between',[strtotime(urldecode($end_time[0])),strtotime(urldecode($end_time[1].' 23:59:59'))]];
             }
-			//是否是合同管理员
-			$auth = isAuth($uid,'contract_admin','conf_1');
 			if($auth == 0){
 				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-				$dids_a = get_leader_departments($uid);
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$whereOr[] = ['did','in',$dids];
-				}
+				$whereOr[] = ['did','in',$dids_son];//我下属的合同
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
@@ -209,6 +200,9 @@ class Purchase extends BaseController
 		$param = get_params();
         if (request()->isAjax()) {
 			$uid = $this->uid;
+			//是否是合同管理员
+			$auth = isAuth($uid,'contract_admin','conf_1');
+			$dids_son = get_leader_departments($uid);
             $where = [];
             $whereOr = [];
 			$where[]=['delete_time','=',0];
@@ -230,19 +224,12 @@ class Purchase extends BaseController
 				$end_time =explode('~', $param['end_time']);
 				$where[] = ['end_time', 'between',[strtotime(urldecode($end_time[0])),strtotime(urldecode($end_time[1].' 23:59:59'))]];
             }
-			//是否是合同管理员
-			$auth = isAuth($uid,'contract_admin','conf_1');
 			if($auth == 0){
 				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-				$dids_a = get_leader_departments($uid);
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$whereOr[] = ['did','in',$dids];
-				}
+				$whereOr[] = ['did','in',$dids_son];//我下属的合同
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
@@ -272,6 +259,13 @@ class Purchase extends BaseController
 				}
             }
 			if($param['scene'] == 'add' || $param['scene'] == 'edit'){
+				$purchased = [];
+				$purchased_ids = [];
+				$purchased_title = '';
+				
+				$service = [];
+				$service_ids = [];
+				$service_title = '';
 				$param['content'] = serialize([]);
 				if($param['types']==2){			
 					$purchased_title_data = isset($param['purchased_title']) ? $param['purchased_title'] : '';
@@ -297,7 +291,12 @@ class Purchase extends BaseController
 							$data['purchased_num'] = $purchased_num_data[$key];
 							$data['purchased_subtotal'] = $purchased_subtotal_data[$key];
 							$data['purchased_remark'] = $purchased_remark_data[$key];
+							
+							if(in_array($purchased_id_data[$key],$purchased_ids)){
+								$purchased_title = $purchased_title_data[$key];
+							}
 							$purchased[]=$data;
+							$purchased_ids[]=$purchased_id_data[$key];
 						}
 					}
 					$param['content'] = serialize($purchased);
@@ -329,10 +328,21 @@ class Purchase extends BaseController
 							$data['service_num'] = $service_num_data[$key];
 							$data['service_subtotal'] = $service_subtotal_data[$key];
 							$data['service_remark'] = $service_remark_data[$key];
+							if(in_array($service_id_data[$key],$service_ids)){
+								$service_title = $service_title_data[$key];
+							}
+							$service_ids[]=$service_id_data[$key];
 							$service[]=$data;
 						}
 					}
 					$param['content'] = serialize($service);
+				}
+				if(!empty($purchased_title)){
+					return to_assign(1, '【'.$purchased_title.'】存在相同的产品');
+				}
+				
+				if(!empty($service_title)){
+					return to_assign(1, '【'.$service_title.'】存在相同的服务');
 				}
 			}
             if (!empty($param['id']) && $param['id'] > 0) {
@@ -357,10 +367,8 @@ class Purchase extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
 			$types = isset($param['types']) ? $param['types'] : 0;
 			$is_supplier = Db::name('DataAuth')->where('name','contract_admin')->value('conf_6');
-			$is_codeno = Db::name('DataAuth')->where('name','contract_admin')->value('conf_2');
 			$is_purchased = Db::name('DataAuth')->where('name','contract_admin')->value('conf_7');
             View::assign('is_supplier', $is_supplier);
-            View::assign('is_codeno', $is_codeno);
             View::assign('is_purchased', $is_purchased);
 			if ($id>0) {
 				$detail = $this->model->getById($id);
@@ -381,18 +389,12 @@ class Purchase extends BaseController
 					$detail['content_array'] = $content_array;
 				}
 				View::assign('types', $detail['types']);
-				View::assign('codeno', $detail['code']);
 				View::assign('detail', $detail);
 				if(is_mobile()){
 					return view('qiye@/contract/purchase_add');
 				}
 				return view('edit');
 			}
-			$codeno='';
-			if($is_codeno==1){
-				$codeno = get_codeno(2);
-			}
-            View::assign('codeno', $codeno);
             View::assign('id', $id);
             View::assign('types', $types);
 			if($types == 0){

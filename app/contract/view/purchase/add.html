@@ -6,7 +6,16 @@
     <table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">合同名称<font>*</font></td>
-			<td colspan="3"><input type="text" name="name" value="" lay-verify="required" lay-reqText="请输入合同名称" autocomplete="off" placeholder="请输入合同名称" class="layui-input"></td>
+			<td><input type="text" name="name" value="" lay-verify="required" lay-reqText="请输入合同名称" autocomplete="off" placeholder="请输入合同名称" class="layui-input"></td>
+			<td class="layui-td-gray">合同编号<font>*</font></td>
+			<td>
+				<div class="layui-input-group" style="width:100%;">
+					<input type="text" name="code" class="layui-input" placeholder="请输入合同编号" lay-verify="required" lay-reqText="请输入合同编号" value="">
+					<div class="layui-input-split layui-input-suffix" style="width:120px;">
+						<input type="checkbox" name="setcode" title="自动生成" lay-skin="tag" lay-filter="code-filter">
+					</div>
+				</div>
+			</td>
 			<td class="layui-td-gray">合同性质</td>
 			<td>
 				<input type="hidden" name="types" value="{$types}">
@@ -57,7 +66,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">合同金额<font>*</font></td>
-			<td>
+			<td colspan="3">
 				{eq name="$types" value="1"}
 				<input type="text" name="cost" value="" lay-verify="required|number" lay-reqText="请输入合同金额，数字" placeholder="请输入合同金额，数字" autocomplete="off" class="layui-input">
 				{/eq}
@@ -77,8 +86,6 @@
 					{/volist}
 				</select>
 			</td>
-			<td class="layui-td-gray">合同编号<font>*</font></td>
-			<td><input type="text" name="code" value="{$codeno}" autocomplete="off" {eq name="$is_codeno" value="1"}readonly{/eq} lay-verify="required" lay-reqText="请输入合同编号" placeholder="请输入合同编号" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td colspan="6"><strong>签订信息</strong></td>
@@ -123,7 +130,7 @@
 			<td class="layui-td-gray">
 				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
 			</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" id="fileBoxInput" data-type="file" name="file_ids" value="">
 				</div>
@@ -167,7 +174,22 @@
 			"target":'uploadBtn',
 			"targetBox":'uploadBox'
 		});
-		
+		//自动生成编码
+		form.on('checkbox(code-filter)', function(data){
+			var elem = data.elem; // 获得 checkbox 原始 DOM 对象
+			var checked = elem.checked; // 获得 checkbox 选中状态
+			var othis = data.othis; // 获得 checkbox 元素被替换后的 jQuery 对象
+			if(elem.checked==true){				
+				tool.post("/api/index/get_codeno", {'prefix':'P'},function(e){
+					if (e.code == 0) {
+						$('[name="code"]').val(e.data);
+					}
+				});
+			}
+			else{
+				$('[name="code"]').val('');
+			}
+	    });
 		//选择员工弹窗        
 		$('body').on('click','.picker-diy',function () {
 			let that = $(this);

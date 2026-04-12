@@ -66,7 +66,7 @@
 .layui-tree-line .layui-tree-entry:hover .layui-tree-txt{text-decoration:none; color:#186AF2;}
 .layui-tree-iconClick .layui-icon.layui-icon-file:before { content: "\e857";}
 .layui-select-tags{padding:10px 0;}
-.layui-tags-span{padding:3px 6px 4px; font-size:14px; border-radius:3px; margin-bottom:6px; margin-right:6px; border:1px solid #e6e6e6; display:inline-block;cursor:pointer;}
+.layui-tags-span{padding:3px 6px 0; font-size:14px; border-radius:3px; margin-bottom:6px; margin-right:6px; border:1px solid #e6e6e6; display:inline-block;cursor:pointer;}
 .layui-tags-span:hover{border:1px solid #ddd; background-color:#f5f5f5;}
 .layui-tags-span.on{border:1px solid #eee; color:#bbb; background-color:#ffffff;cursor:not-allowed}
 .layui-readonly{background-color: #f5f5f5; color:#999;}
@@ -75,7 +75,7 @@
 .layui-letter-span{padding:10px 5px; font-size:16px; display:inline-block; cursor:pointer;}
 .layui-letter-span.on{color:#FF6347;}
 .layui-letter-span:hover{color:#1e9fff;}
-.layui-tags-all{float: right; font-weight: 200; background-color:#1e9fff; color:#fff; border-radius: 3px; padding: 2px 6px; cursor: pointer; display: none;}
+.layui-tags-all{float: right; font-weight: 200; background-color:#1e9fff; color:#fff; border-radius: 3px; padding: 3px 6px 0; font-size: 12px; cursor: pointer; display: none;}
 
 .layui-data-none{padding:12px 0; color:#969696; text-align:center; font-size:12px;}
 .gougu-data-none{background:url(../images/data-none.png) no-repeat center center; background-size:auto 80%;}

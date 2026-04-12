@@ -35,14 +35,14 @@
 			<td class="layui-td-gray">客户联系电话</td>
 			<td>{$detail.contact_mobile|default='-'}</td>
 		</tr>
-		{notempty name="$detail.remark"}
+		{notempty name="$detail.chance"}
 		<tr>
 			<td class="layui-td-gray">关联机会线索</td>
 			<td colspan="5">{$detail.chance} <span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/customer/chance/view/?id={$detail.chance_id}">详情</span></td>
 		</tr>
 		{/notempty}
 		<tr>
-			<td class="layui-td-gray">合同金额</td>
+			<td class="layui-td-gray">合同金额(元)</td>
 			<td>{$detail.cost}</td>
 			<td class="layui-td-gray">合同性质</td>
 			<td>{$detail.types_name}</td>
@@ -55,7 +55,7 @@
 		<tr>
 			<td class="layui-td-gray-2">合同签订人</td>
 			<td>{$detail.sign_name}</td>
-			<td class="layui-td-gray-2">合同所属部门</td>
+			<td class="layui-td-gray">所属部门</td>
 			<td>{$detail.sign_department}</td>
 			<td class="layui-td-gray-2">合同签订日期</td>
 			<td>{$detail.sign_time}</td>
@@ -63,7 +63,7 @@
 		<tr>
 			<td class="layui-td-gray-2">合同制定人</td>
 			<td>{$detail.prepared_name|default='-'}</td>
-			<td class="layui-td-gray-2">合同保管人</td>
+			<td class="layui-td-gray">保管人</td>
 			<td>{$detail.keeper_name|default='-'} <span id="keeper" data-ids="{$detail.keeper_uid}" data-names="{$detail.keeper_name}" class="layui-btn layui-btn-xs layui-btn-normal ml-1">更改</span></td>
 			<td class="layui-td-gray">合同共享人员</td>
 			<td colspan="3">{$detail.share_names|default='-'} <span id="shares" data-ids="{$detail.share_ids}" data-names="{$detail.share_names}" class="layui-btn layui-btn-xs layui-btn-normal ml-1">更改</span></td>
@@ -75,7 +75,7 @@
 			<td colspan="6"><strong>相关附件</strong></td>
 		</tr>
 		<tr>
-			<td colspan="6">
+			<td colspan="6" style="padding:4px 2px">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4">{:file_card($vo,'view')}</div>
@@ -95,7 +95,7 @@
 		
 		{notempty name="$detail.invoice"}
 		<tr>
-			<td colspan="6"><strong>申请开票记录</strong>『 已申请开票金额：<strong class="green">{$detail.has_invoice}</strong> 元，未申请开票金额：<strong class="red">{$detail.no_invoice}</strong> 元 』</td>
+			<td colspan="6"><strong>开票记录</strong>『 已申请开票金额：<strong class="green">{$detail.has_invoice}</strong> 元，未申请开票金额：<strong class="red">{$detail.no_invoice}</strong> 元 』</td>
 		</tr>
 		<tr>
 			<td colspan="6">
@@ -235,7 +235,7 @@
 				<div>盖章合同文件</div>
 				<div><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn">文件上传</button></div>
 			</td>
-			<td colspan="5">
+			<td colspan="5" style="padding:4px 2px">
 				<div class="row" id="uploadBox">
 				<input type="hidden" data-type="file" name="seal_ids" value="{$detail.seal_ids|default=''}">
 				{volist name="$detail.seal_array" id="vo"}

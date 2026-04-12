@@ -1,9 +1,9 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">编辑产品</h3>
-	<table class="layui-table">
+<form class="layui-form p-page">
+	<h3 class="pb-2">编辑产品</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">产品名称<font>*</font></td>
 			<td colspan="3"><input type="text" name="title" value="{$detail.title}" autocomplete="off" placeholder="请输入产品名称" lay-verify="required" lay-reqText="请输入产品名称" class="layui-input"></td>
@@ -49,6 +49,12 @@
 				<input type="radio" name="is_object" value="1" title="是" {eq name="$detail.is_object" value="1"} checked {/eq}>
 				<input type="radio" name="is_object" value="2" title="否" {eq name="$detail.is_object" value="2"} checked {/eq}>
 			</td>
+		</tr> 
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">产品描述<font>*</font></td>
+			<td colspan="7">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content}</textarea>
+			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray-2">
@@ -57,7 +63,7 @@
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
 			</td>
-			<td colspan="7">
+			<td colspan="7" style="padding:4px 2px">
 				<div class="layui-row" id="uploadBox">
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.file_ids"}
@@ -67,15 +73,9 @@
 					{/notempty}
 				</div>
 			</td>
-		</tr> 
-		<tr>
-			<td class="layui-td-gray" style="vertical-align:top;">产品描述<font>*</font></td>
-			<td colspan="7">
-				<textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content}</textarea>
-			</td>
 		</tr>
 	</table>
-	<div class="pt-1">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$detail.id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
@@ -110,7 +110,7 @@ function gouguInit() {
 	var edit = editor.render({
 		selector: "#container",
 		images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
-		height: 500
+		height: 400
 	});	
 	
 	//附件上传
