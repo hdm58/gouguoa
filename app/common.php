@@ -137,9 +137,6 @@ function isAuth($uid,$name,$conf)
 //判断是否是部门负责人,
 function isLeader($uid = 0,$did='')
 {
-	if($uid == 1){
-		return 1;
-	}
 	$map = [];
 	$map[] = ['status','=',1];
 	if(!empty($did)){
@@ -483,6 +480,19 @@ function get_role_departments($uid = 0)
 	else{
 		return explode(',',$dids);
 	}
+}
+
+//获取部门与子部门的所有员工ids(包含主部门、次要部门,$is_self=1包括自己)
+function get_leader_admin_ids($uid=0,$is_self=1)
+{
+	$dids = get_leader_departments($uid);
+	$admin_ids = Db::name('Admin')->where([['status','=',1],['did','in',$dids]])->column('id');
+	if($is_self==0){
+		$admin_ids = array_filter($admin_ids, function($value) use ($uid) {
+			return $value !== $uid;
+		});
+	}
+    return $admin_ids;
 }
 
 /***************************************************审批相关*****************************************************/

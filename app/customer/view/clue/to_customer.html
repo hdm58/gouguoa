@@ -1,0 +1,130 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">转为客户</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">客户名称<font>*</font></td>
+			<td><input type="text" name="name" lay-verify="required" value="{$detail.name}" lay-reqText="请输入客户名称" autocomplete="off" placeholder="请输入客户名称" class="layui-input"></td>
+			<td class="layui-td-gray">客户来源<font>*</font></td>
+			<td>
+				<select name="source_id" lay-verify="required" lay-reqText="请选择客户来源">
+				<option value="">请选择客户来源</option>
+				{volist name=":get_base_data('customer_source')" id="v"}
+				<option value="{$v.id}" {eq name="$v.id" value="$detail.source_id"} selected{/eq}>{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray">所属行业<font>*</font></td>
+			<td>
+			  <select name="industry_id" lay-verify="required" lay-reqText="请选择所属行业">
+				<option value="">请选择所属行业</option>
+				{volist name=":get_base_data('Industry')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">联系地址<font>*</font></td>
+			<td colspan="3"><input type="text" name="address" value="{$detail.address}" autocomplete="off" lay-verify="required" lay-reqText="请输入客户联系地址" placeholder="请输入客户联系地址" class="layui-input"></td>
+			<td class="layui-td-gray">客户等级<font>*</font></td>
+			<td>
+			  <select name="grade_id" lay-verify="required" lay-reqText="请选择客户等级">
+				<option value="">请选择客户等级</option>
+				{volist name=":get_base_data('customer_grade')" id="v"}
+				<option value="{$v.id}" {eq name="$v.id" value="$detail.grade_id"} selected{/eq}>{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">客户状态<font>*</font></td>
+			<td>
+			  <select name="customer_status" lay-verify="required" lay-reqText="请选择客户状态">
+				<option value="">请选择客户当前状态</option>
+				{volist name=":get_base_type_data('basic_customer',1)" id="v"}
+				<option value="{$v.id}" {eq name="$v.id" value="$detail.customer_status"} selected{/eq}>{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+			<td class="layui-td-gray">客户意向<font>*</font></td>
+			<td>
+			  <select name="intent_status" lay-verify="required" lay-reqText="请选择客户意向">
+				<option value="">请选择客户意向</option>
+				{volist name=":get_base_type_data('basic_customer',2)" id="v"}
+				<option value="{$v.id}" {eq name="$v.id" value="$detail.intent_status"} selected{/eq}>{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+				<td class="layui-td-gray">归属员工</td>
+				<td>
+					<input type="text" name="belong_name" value="{$detail.belong_name|default=''}" autocomplete="off" readonly placeholder="请选择客户归属人" class="layui-input picker-admin">
+					<input type="hidden" name="belong_uid" value="{$detail.belong_uid|default=0}">
+					<input type="hidden" name="belong_did" value="{$detail.belong_did|default=0}">
+				</td>
+		  </tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">客户介绍<font>*</font></td>
+			<td colspan="5"><textarea name="content" placeholder="请输入客户介绍信息" lay-verify="required" lay-reqText="请输入客户介绍信息" class="layui-textarea">{$detail.content|default=""}</textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">备注信息</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=""}</textarea></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>首要联系人</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">联 系 人<font>*</font></td>
+			<td><input type="text" name="c_name" value="{$detail.clue_name|default=''}" lay-verify="required" lay-reqText="请输入联系人姓名" placeholder="请输入联系人姓名" class="layui-input"></td>
+			<td class="layui-td-gray">联系电话<font>*</font></td>
+			<td><input type="text" name="c_mobile" value="{$detail.clue_mobile|default=''}" lay-verify="required" lay-reqText="请输入联系人电话" placeholder="请输入联系人电话" class="layui-input"></td>
+			<td class="layui-td-gray">性别<font>*</font></td>
+			<td>
+				<input type="radio" name="c_sex" value="1" title="男" checked>
+				<input type="radio" name="c_sex" value="2" title="女" >
+			</td>
+	   </tr>
+	   <tr>
+			<td class="layui-td-gray">电子邮箱</td>
+			<td><input type="text" name="c_email" autocomplete="off" placeholder="请输入联系人电子邮箱" class="layui-input"></td>
+			<td class="layui-td-gray">微 信 号</td>
+			<td><input type="text" name="c_wechat" autocomplete="off" placeholder="请输入联系人微信号" class="layui-input"></td>
+			<td class="layui-td-gray">QQ号码</td>
+			<td><input type="text" name="c_qq" autocomplete="off" placeholder="请输入联系人QQ号码" class="layui-input"></td>
+		</tr>
+    </table>
+    <div class="pt-4">
+	   <input type="hidden" name="id" value="{$detail.id}">
+	   <input type="hidden" name="is_clue" value="0"/>
+      <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,oaPicker = layui.oaPicker;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000,'traceTable');
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/customer/clue/to_customer", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

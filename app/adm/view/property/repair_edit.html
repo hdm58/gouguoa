@@ -31,7 +31,7 @@
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids}">
 					{notempty name="$detail.fileArray"}
 					{volist name="$detail.fileArray" id="vo"}
-					<div class="layui-col-md4" id="fileItem{$vo.id}">{:file_card($vo)}</div>
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo)}</div>
 					{/volist}
 					{/notempty}
 				</div>

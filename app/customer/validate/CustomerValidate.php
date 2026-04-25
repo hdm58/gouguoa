@@ -26,7 +26,7 @@ class CustomerValidate extends Validate
 	}
 	
     protected $rule = [
-		'name' => 'require|checkOne',
+		'name' => 'require',
 		'id' => 'require',
 	];
 

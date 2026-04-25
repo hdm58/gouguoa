@@ -1,0 +1,76 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">编辑线索信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">线索名称<font>*</font></td>
+			<td><input type="text" name="name" lay-verify="required" value="{$detail.name}" lay-reqText="请输入线索线索名称" autocomplete="off" placeholder="请输入线索线索名称" class="layui-input"></td>
+			<td class="layui-td-gray">线索来源<font>*</font></td>
+			<td>
+				<select name="source_id" lay-verify="required" lay-reqText="请选择线索来源">
+				<option value="">请选择线索来源</option>
+				{volist name=":get_base_data('customer_source')" id="v"}
+				<option value="{$v.id}" {eq name="$v.id" value="$detail.source_id"} selected{/eq}>{$v.title}</option>
+				{/volist}
+			  </select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">联 系 人<font>*</font></td>
+			<td><input type="text" name="clue_name" value="{$detail.clue_name}" lay-verify="required" lay-reqText="请输入联系人" placeholder="请输入联系人" class="layui-input"></td>
+			<td class="layui-td-gray">联系电话<font>*</font></td>
+			<td><input type="text" name="clue_mobile" lay-verify="required" value="{$detail.clue_mobile}" lay-reqText="请输入联系电话" placeholder="请输入联系电话" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">客户地址</td>
+			<td><input type="text" name="address" value="{$detail.address}" autocomplete="off" placeholder="请输入线索客户地址" class="layui-input"></td>
+			<td class="layui-td-gray">归属员工</td>
+			<td>
+				<input type="text" name="belong_name" value="{$detail.belong_name|default=''}" autocomplete="off" readonly placeholder="请选择线索归属人" class="layui-input picker-admin">
+				<input type="hidden" name="belong_uid" value="{$detail.belong_uid|default=0}">
+				<input type="hidden" name="belong_did" value="{$detail.belong_did|default=0}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">线索介绍</td>
+			<td colspan="5"><textarea name="content" placeholder="请输入线索介绍信息" class="layui-textarea">{$detail.content|default=""}</textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top">备注信息</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=""}</textarea></td>
+		</tr>
+    </table>
+    <div class="pt-4">
+	   <input type="hidden" name="id" value="{$detail.id}">
+	   <input type="hidden" name="scene" value="edit"/>
+      <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,oaPicker = layui.oaPicker;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/customer/clue/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

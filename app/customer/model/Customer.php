@@ -40,6 +40,7 @@ class Customer extends Model
 			->each(function ($item, $key){
 				$item->create_time = to_date($item->create_time);
 				$item->update_time = to_date($item->update_time);
+				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
 				if($item->belong_uid>0){
 					$item->belong_name = Db::name('Admin')->where('id',$item->belong_uid)->value('name');
 					$item->belong_department = Db::name('Department')->where(['id' => $item->belong_did])->value('title');
@@ -119,19 +120,22 @@ class Customer extends Model
 			$param['create_time'] = time();
 			$param['update_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
-			$contact = [
-				'name' => $param['c_name'],
-				'mobile' => $param['c_mobile'],
-				'sex' => $param['c_sex'],
-				'qq' => $param['c_qq'],
-				'wechat' => $param['c_wechat'],
-				'email' => $param['c_email'],
-				'cid' => $insertId,
-				'is_default' => 1,
-				'create_time' => time(),
-				'admin_id' => $param['admin_id']
-			];
-			Db::name('CustomerContact')->strict(false)->field(true)->insert($contact);
+			if($param['is_clue'] == 0){
+				$contact = [
+					'name' => $param['c_name'],
+					'mobile' => $param['c_mobile'],
+					'sex' => $param['c_sex'],
+					'qq' => $param['c_qq'],
+					'wechat' => $param['c_wechat'],
+					'email' => $param['c_email'],
+					'cid' => $insertId,
+					'is_default' => 1,
+					'create_time' => time(),
+					'admin_id' => $param['admin_id']
+				];
+				Db::name('CustomerContact')->strict(false)->field(true)->insert($contact);
+				customer_search($insertId);
+			}
 			add_log('add', $insertId, $param);
 			$log=new EditLog();
 			$log->add('Customer',$insertId);
@@ -151,6 +155,43 @@ class Customer extends Model
             $param['update_time'] = time();
 			$old = self::find($param['id']);
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			if($old['is_clue'] == 0){
+				customer_search($param['id']);
+			}
+			add_log('edit', $param['id'], $param);
+			$log=new EditLog();
+			$log->edit('Customer',$param['id'],$param,$old);
+        } catch(\Exception $e) {
+			return to_assign(1, '操作失败，原因：'.$e->getMessage());
+        }
+		return to_assign(0,'操作成功',['return_id'=>$param['id']]);
+    }
+
+	/**
+    * 线索转成客户
+    * @param $param
+    */
+    public function to_customer($param)
+    {
+        try {
+            $param['update_time'] = time();
+			$old = self::find($param['id']);
+            self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			$contact = [
+				'name' => $param['c_name'],
+				'mobile' => $param['c_mobile'],
+				'sex' => $param['c_sex'],
+				'qq' => $param['c_qq'],
+				'wechat' => $param['c_wechat'],
+				'email' => $param['c_email'],
+				'cid' => $param['id'],
+				'is_default' => 1,
+				'create_time' => time(),
+				'admin_id' => $param['admin_id']
+			];
+			Db::name('CustomerContact')->strict(false)->field(true)->insert($contact);
+			Db::name('CustomerTrace')->where('cid', $param['id'])->update(['is_clue'=>0]);
+			customer_search($param['id']);
 			add_log('edit', $param['id'], $param);
 			$log=new EditLog();
 			$log->edit('Customer',$param['id'],$param,$old);

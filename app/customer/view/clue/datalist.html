@@ -1,0 +1,267 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.tab-1 .user-name,.tab-2 .user-name,.tab-3 .user-name,.tab-4 .user-name{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">线索列表</li>			
+				<li>我的线索</li>
+				{eq name="$leader" value="1"}
+				<li>下属线索</li>
+				{/eq}
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:172px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="最近跟进线索" readonly name="follow_time" id="follow_time">
+		</div>
+		<div class="layui-input-inline" style="width:172px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="下次跟进线索" readonly name="next_time" id="next_time">
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="source_id">
+				<option value="">线索来源</option>
+				{volist name=":get_base_data('customer_source')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
+		{gt name="$leader" value="0"}
+		<div class="layui-input-inline user-name" style="width:120px;">
+			<input type="text" name="username" placeholder="下属员工" class="layui-input picker-sub" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{/gt}
+		<div class="layui-input-inline" style="width:272px;">
+			<input type="text" name="keywords" placeholder="输入关键字，线索名称/联系电话" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:148px">
+			<input type="hidden" name="tab" value="0" />
+			<input type="hidden" name="order_field" value=''>
+			<input type="hidden" name="order_type" value=''>
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_customer" lay-filter="table_customer"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+<div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/customer/clue/add"><i class="layui-icon">&#xe624;</i>添加线索</button>
+	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="import"><i class="layui-icon">&#xe66f;</i>批量导入</button>
+	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="sea"><i class="layui-icon">&#xe609;</i>退回线索池</button>
+	<button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="distribute"><i class="layui-icon">&#xe770;</i>移交</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth={$auth};
+	const moduleInit = ['tool','tablePlus','oaPicker','uploadPlus','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool ,form = layui.form,tabs = layui.tabs, oaPicker = layui.oaPicker,uploadPlus=layui.uploadPlus,laydatePlus=layui.laydatePlus;
+		var follow_time = new laydatePlus({'target':'follow_time'});
+		var next_time = new laydatePlus({'target':'next_time'});
+		//tab切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		});
+		layui.pageTable = table.render({
+			elem: "#table_customer"
+			,title: '线索列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/customer/clue/datalist"
+			,excel_auth:auth
+			,height: 'full-155'
+			,autoSort: false
+			,cols:[
+				[ //表头
+					{type:'checkbox',fixed:'left'},
+					{field: 'id',title: 'ID号',align: 'center',width: 80},
+					{
+						field: 'name',
+						title: '线索名称',
+						minWidth:300
+					},{
+						field: 'clue_name',
+						title: '联系人',
+						align: 'center',
+						width: 110
+					},{
+						field: 'clue_mobile',
+						title: '联系电话',
+						align: 'center',
+						width: 110
+					},{
+						field: 'follow_time',
+						title: '最近跟进时间',
+						align: 'center',
+						width: 130
+					},{
+						field: 'next_time',
+						title: '下次跟进时间',
+						align: 'center',
+						width: 130
+					},{
+						field: 'source',
+						title: '线索来源',
+						align: 'center',
+						width: 100
+					},{
+						field: 'belong_name',
+						title: '所属员工',
+						align: 'center',
+						width: 80
+					},{
+						field: 'belong_department',
+						title: '所属部门',
+						align: 'center',
+						width: 90
+					},{
+						field: 'create_time',
+						title: '创建时间',
+						align: 'center',
+						width: 150
+					},{
+						field: 'admin_name',
+						title: '创建人',
+						align: 'center',
+						width: 90
+					},{
+						field: 'right',
+						fixed:'right',
+						title: '操作',
+						width: 150,
+						align: 'center',
+						templet: function (d) {
+							var html = '<div class="layui-btn-group">';
+							var btn0='<span class="layui-btn layui-btn-xs layui-bg-blue" lay-event="view">查看</span>';
+							var btn1='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
+							var btn2='<span class="layui-btn layui-btn-xs layui-bg-purple" lay-event="customer">转为客户</span>';
+							if(d.belong_uid == login_admin || d.admin_id == login_admin){
+								return html+btn0+btn1+btn2+'</div>';
+							}
+							else{
+								return html+btn0+'</div>';
+							}
+						}						
+					}
+				]
+			]
+		});
+			
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				layui.pageTable.reload();
+			}
+		}
+		//表头工具栏事件
+		table.on('toolbar(table_customer)', function(obj){
+			var checkStatus = table.checkStatus(obj.config.id);
+			var data = checkStatus.data;
+			if (obj.event === 'import') {
+				let importUpload = new uploadPlus({
+					"title":'批量导入线索',
+					"use":'import',
+					"url":'/api/import/import_clue/type/my',
+					"import":{
+						"template":'/static/home/file/勾股OA线索导入模板.xlsx',
+						"tips":'如果导入失败，请根据提示注意检查表格数据，线索来源、所属行业、需要是系统中存在的数据，如果不存在的话可能会导入失败。'
+					},
+					callback:function(res){
+						layui.pageTable.reload();
+					}
+				});	
+				return;				
+			}
+			if (obj.event === 'sea') {
+				if(data.length==0){
+					layer.msg('请选择要操作的线索');
+					return false;
+				}
+				var idArray=[];
+				for(var i=0;i<data.length;i++){
+					idArray.push(data[i].id);
+				}
+				layer.confirm('您确定要把选中的线索退回线索池?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/customer/clue/to_sea", {id: idArray.join(',')}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'distribute') {
+				if(data.length==0){
+					layer.msg('请选择要操作的线索');
+					return false;
+				}
+				var idArray=[];
+				for(var i=0;i<data.length;i++){
+					idArray.push(data[i].id);
+				}
+				oaPicker.employeeInit({
+					callback:function(selected){
+						//这里是选择后的回调方法，可以根据具体需求自定义写哦
+						let select_id=[],select_name=[],select_did=[];
+						for(var a=0; a<selected.length;a++){
+							select_id.push(selected[a].id);
+							select_name.push(selected[a].name);
+							select_did.push(selected[a].did);
+						}
+						layer.confirm('确定要把选中的线索转移给'+select_name.join(',')+'?', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							tool.post("/customer/clue/to_transfer", {id: idArray.join(','),uid:select_id.join(','),did:select_did.join(',')}, callback);
+							layer.close(index);
+						});
+					}
+				});
+			}
+		});	
+			
+		table.on('tool(table_customer)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/customer/clue/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/customer/clue/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'customer') {
+				tool.side("/customer/clue/to_customer?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

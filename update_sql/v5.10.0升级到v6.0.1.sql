@@ -39,3 +39,15 @@ ADD COLUMN `company` varchar(255)  NOT NULL DEFAULT '' COMMENT '所在公司' AF
 
 ALTER TABLE `oa_project_user` 
 ADD COLUMN `enter_time` varchar(255) NOT NULL DEFAULT '' COMMENT '入驻项目日期' AFTER `company`;
+
+ALTER TABLE `oa_customer` 
+ADD COLUMN `is_clue` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否是线索：0否,1是' AFTER `is_lock`;
+
+ALTER TABLE `oa_customer` 
+ADD COLUMN  `clue_name` varchar(255) NOT NULL DEFAULT '' COMMENT '线索联系人' AFTER `is_clue`;
+
+ALTER TABLE `oa_customer` 
+ADD COLUMN  `clue_mobile` char(20) NOT NULL DEFAULT '' COMMENT '线索手机号码' AFTER `clue_name`;
+
+ALTER TABLE `oa_customer_trace` 
+ADD COLUMN `is_clue` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否是线索：0否,1是' AFTER `cid`;

@@ -20,7 +20,7 @@
 			<td>{$detail.name}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-3">客户管理员</td>
+			<td class="layui-td-gray-3">线索、客户管理员</td>
 			<td>
 				<input type="text" name="conf_1_str" value="{$detail.conf_1_str|default=''}" readonly placeholder="请选择权限人员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_1" value="{$detail.conf_1}">
@@ -48,7 +48,18 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray-3">说明</td>
-			<td colspan="3" class="red">如：100，超过该数量，该员工就不能录入或者不能从公海领取客户，必须把自已的客户移到公海里，不超过该数量才能新增。</td>
+			<td colspan="3" class="red">如：100，超过该数量，该员工就不能从公海领取客户，必须把自已的客户移到公海里，不超过该数量才能新增。</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">员工线索数量限制</td>
+			<td><input name="conf_4" value="{$detail.conf_4}" lay-verify="required|number" lay-reqText="请输入员工线索数量限制" placeholder="请输入员工线索数量限制" autocomplete="off" class="layui-input">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_4</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">说明</td>
+			<td colspan="3" class="red">如：100，超过该数量，该员工就不能从公海领取线索，必须把自已的线索移到公海里，不超过该数量才能新增。</td>
 		</tr>
 	</table>
 	<div class="pt-4">

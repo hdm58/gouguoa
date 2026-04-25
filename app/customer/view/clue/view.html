@@ -1,0 +1,85 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-tabs.layui-tab-brief{margin-top:12px;}
+.log-timeline{border:1px solid #eee; border-top:0;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	<h3 class="pb-2">线索详情</h3>
+	<table class="layui-table layui-table-form">
+	  <tr>
+		<td class="layui-td-gray">线索名称</td>
+		<td>{$detail.name}</td>
+		<td class="layui-td-gray">信息来源</td>
+		<td>{$detail.source|default='-'}</td>
+		<td class="layui-td-gray">录入人</td>
+		<td>{$detail.admin_name}</td>
+	  </tr>
+	  <tr>
+		<td class="layui-td-gray">联系人</td>
+		<td>{$detail.clue_name}</td>
+		<td class="layui-td-gray">联系电话</td>
+		<td>{$detail.clue_mobile}</td>
+		<td class="layui-td-gray">联系地址</td>
+		<td>{$detail.address|default='-'}</td>
+	  </tr>
+	  <tr>
+		<td class="layui-td-gray">最后更新</td>
+		<td>{$detail.update_time|date='Y-m-d H:i:s'}</td>
+		<td class="layui-td-gray">最近联系</td>
+		<td>{$detail.follow_time|default='-'}</td>
+		<td class="layui-td-gray">录入时间</td>
+		<td>{$detail.create_time|date='Y-m-d H:i:s'}</td>
+	  </tr>
+	  <tr>
+		<td class="layui-td-gray">归属员工</td>
+		<td>{$detail.belong_name|default='-'}</td>
+		<td class="layui-td-gray">归属部门</td>
+		<td>{$detail.belong_department|default='-'}</td>
+		<td class="layui-td-gray">下次联系</td>
+		<td>{$detail.next_time|default='-'}</td>
+	  </tr>
+	  {notempty name="$detail.content"}
+	  <tr>
+		<td colspan="6" style="background-color:#FAFAFA;"><strong>线索介绍</strong></td>
+	  </tr>
+	  <tr>
+		<td colspan="6">{$detail.content|default=""}</td>
+	  </tr>
+	  {/notempty}
+	  {notempty name="$detail.remark"}
+	  <tr>
+		<td colspan="6" style="background-color:#FAFAFA;"><strong>备注信息</strong></td>
+	  </tr>
+	  <tr>
+		<td colspan="6">{$detail.remark}</td>
+	  </tr>
+	  {/notempty}
+	  <tr>
+		<td colspan="6" style="background-color:#FAFAFA;"><strong>跟进记录</strong></td>
+	  </tr>
+	  <tr>
+		<td colspan="6">
+			{include file="/clue/view_trace" /}
+		</td>
+	  </tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const customer_id = '{$detail.id}';
+const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,tabs = layui.tabs;	
+		trace();
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -69,3 +69,14 @@ function customer_chance($cid)
     $chance = Db::name('CustomerChance')->where(['delete_time' => 0,'cid'=>$cid])->select()->toArray();
     return $chance;
 }
+
+//更新客户联系人搜索关联
+function customer_search($customer_id)
+{
+    $customer_contact = Db::name('CustomerContact')->where(['delete_time' => 0,'cid'=>$customer_id])->select()->toArray();
+	$customer_contacts='';
+	foreach ($customer_contact as $key => $value) {
+        $customer_contacts.='|'.$value['name'].'|'.$value['mobile'].'|'.$value['email'];
+    }
+	Db::name('Customer')->where(['id' => $customer_id])->update(['clue_name'=>$customer_contacts]);
+}
