@@ -41,6 +41,7 @@ class Index extends BaseController
             $where[] = ['delete_time', '=', 0];
             $where[] = ['discard_time', '=', 0];
             $where[] = ['belong_uid', '=', 0];
+			$where[] = ['is_clue','=',0];
             $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         } else {
@@ -60,7 +61,7 @@ class Index extends BaseController
             $param = get_params();
             $where = array();
             if (!empty($param['keywords'])) {
-                $where[] = ['id|name', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['name|address|clue_name|content|market|remark', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['industry_id'])) {
                 $where[] = ['industry_id', '=', $param['industry_id']];
@@ -78,7 +79,7 @@ class Index extends BaseController
             $where[] = ['delete_time', '=', 0];
             $where[] = ['discard_time', '=', 0];
             $where[] = ['belong_uid', '=', 0];
-			
+			$where[] = ['is_clue','=',0];
             $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         } else {
@@ -93,7 +94,7 @@ class Index extends BaseController
             $param = get_params();
             $where = array();
             if (!empty($param['keywords'])) {
-                $where[] = ['id|name', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['name|address|clue_name|content|market|remark', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['industry_id'])) {
                 $where[] = ['industry_id', '=', $param['industry_id']];
@@ -107,6 +108,7 @@ class Index extends BaseController
             $where[] = ['delete_time', '>', 0];
             $where[] = ['discard_time', '=', 0];
             $where[] = ['belong_uid', '=', 0];
+			$where[] = ['is_clue','=',0];
             $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         } else {

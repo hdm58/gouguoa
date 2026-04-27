@@ -23,21 +23,23 @@ class CustomerContact extends Model
     public function datalist($param,$where,$whereOr=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$order = empty($param['order']) ? 'id desc' : $param['order'];
+		$order = empty($param['order']) ? 'a.id desc' : $param['order'];
         try {
-            $list = self::where($where)
-			->where(function ($query) use($whereOr) {
-				if (!empty($whereOr)){
-					$query->whereOr($whereOr);
-				}
-			})
-			->order($order)
-			->paginate(['list_rows'=> $rows])
-			->each(function ($item, $key){
-				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
-				$item->customer = Db::name('Customer')->where(['id' => $item->cid])->value('name');
-				$item->create_time = to_date($item->create_time);
-			});
+            $list = self::field('a.*,c.name as customer')
+				->alias('a')
+				->join('Customer c','c.id = a.cid')
+				->where($where)
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})
+				->order($order)
+				->paginate(['list_rows'=> $rows])
+				->each(function ($item, $key){
+					$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
+					$item['create_time'] = to_date($item['create_time']);
+				});
 			return $list;
         } catch(\Exception $e) {
             return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];
@@ -54,6 +56,7 @@ class CustomerContact extends Model
         try {
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
+			customer_search($param['cid']);
 			add_log('add', $insertId, $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -70,6 +73,7 @@ class CustomerContact extends Model
         try {
             $param['update_time'] = time();
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			customer_search($param['cid']);
 			add_log('edit', $param['id'], $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());

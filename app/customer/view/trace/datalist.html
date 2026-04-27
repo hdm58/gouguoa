@@ -3,8 +3,19 @@
 {block name="body"}
 
 <div class="p-page">
-	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
-		{gt name="$is_auth" value="0"}
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">跟进记录</li>			
+				<li>我的跟进</li>
+				{eq name="$leader" value="1"}
+				<li>下属跟进</li>
+				{/eq}
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-t border-x" id="barsearchform" lay-filter="barsearchform">
+		{gt name="$auth" value="0"}
 		<div class="layui-input-inline user-name" style="width:100px;">
 			<input type="text" name="username" placeholder="选择跟进人" class="layui-input picker-admin" readonly />
 			<input type="text" name="uid" value="" style="display:none" />	
@@ -17,6 +28,7 @@
 			<input type="text" name="keywords" placeholder="关键字,沟通内容/销售机会/客户名称" class="layui-input" autocomplete="off" />
 		</div>
 		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0" />
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -37,8 +49,17 @@
 <script>
 	const moduleInit = ['tool','oaPicker','laydatePlus','tablePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, form = layui.form,laydatePlus=layui.laydatePlus;
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form,tabs = layui.tabs,laydatePlus=layui.laydatePlus;
 		var follow_time = new laydatePlus({'target':'follow_time'});
+		//tab切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.traceTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		});
 		layui.traceTable = table.render({
 			elem: "#table_customer_trace"
 			, toolbar: "#toolbarDemo"
@@ -47,7 +68,7 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,is_excel: true
-			,height: 'full-114'
+			,height: 'full-155'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'stage_name',title: '当前阶段',width:100,align:'center'}

@@ -40,10 +40,13 @@ class Customer extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$uid = $this->uid;
+		//是否是客户管理员
+		$auth = isAuth($uid,'customer_admin','conf_1');
         if (request()->isAjax()) {
 			$where=[];
 			$whereOr = [];
-			$uid = $this->uid;
+			$dids_son = get_leader_departments($uid);
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
             if (!empty($param['keywords'])) {
                 $where[] = ['name|address|clue_name|content|market|remark', 'like', '%' . $param['keywords'] . '%'];
@@ -80,20 +83,13 @@ class Customer extends BaseController
 					$where[] = ['belong_uid', '=', $param['uid']];
 				}
 				else{
-					//是否是客户管理员
-					$auth = isAuth($uid,'customer_admin','conf_1');
 					if($auth == 0){
 						$whereOr[] = ['belong_uid','=',$uid];
 						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-						$dids_a = get_leader_departments($uid);
-						$dids_b = get_role_departments($uid);
-						$dids = array_merge($dids_a, $dids_b);
-						if(!empty($dids)){
-							$whereOr[] = ['belong_did','in',$dids];
-						}
+						$whereOr[] = ['belong_did','in',$dids_son];
 					}
 					else{
-						$where[] = ['belong_did','<>',0];
+						$where[] = ['belong_uid', '>', 0];
 					}
 				}
 			}
@@ -101,23 +97,21 @@ class Customer extends BaseController
 			if($tab == 1){
 				$where[] = ['belong_uid','=',$uid];
 			}
-			//下属客户
-			if($tab == 2){
-				$where[] = ['belong_uid','<>',$uid];
-				$dids_a = get_leader_departments($uid);
-				if(!empty($dids_a)){
-					$where[] = ['belong_did','in',$dids_a];
-				}				
-			}
 			//分享客户
-			if($tab == 3){
+			if($tab == 2){
 				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+			}
+			//下属客户
+			if($tab == 3){
+				$where[] = ['belong_uid','<>',$uid];
+				$whereOr[] = ['belong_did','in',$dids_son];				
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
-			View::assign('is_leader', isLeader($this->uid));
+			View::assign('auth', $auth);
+			View::assign('leader', isLeader($uid));
             return view();
         }
     }
@@ -184,6 +178,13 @@ class Customer extends BaseController
 		$detail['industry'] = Db::name('Industry')->where(['id' => $detail['industry_id']])->value('title');
 		$detail['source'] = Db::name('CustomerSource')->where(['id' => $detail['source_id']])->value('title');
 		$detail['grade'] = Db::name('CustomerGrade')->where(['id' => $detail['grade_id']])->value('title');
+		
+		$contact = Db::name('CustomerContact')->where(['is_default'=>1,'cid' => $detail['id']])->find();
+		if(!empty($contact)){
+			$detail['contact_name'] = $contact['name'];
+			$detail['contact_mobile'] = $contact['mobile'];
+			$detail['contact_email'] = $contact['email'];
+		}
 		
 		//附件
 		$file_array = Db::name('CustomerFile')

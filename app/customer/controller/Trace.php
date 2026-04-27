@@ -39,49 +39,48 @@ class Trace extends BaseController
     {
 		$param = get_params();
 		$uid=$this->uid;
+		//是否是客户管理员
+		$auth = isAuth($uid,'customer_admin','conf_1');
         if (request()->isAjax()) {
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$where=[];
+			$whereOr=[];
 			$where[]=['a.delete_time','=',0];
+			$where[]=['a.is_clue','=',0];
             if (!empty($param['keywords'])) {
-                $where[] = ['a.content|c.name|cc.title', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['a.content|c.name', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['follow_time'])) {
 				$follow_time =explode('~', $param['follow_time']);
-				$where[] = ['a.follow_time', 'between',[strtotime(urldecode($follow_time[0])),strtotime(urldecode($follow_time[1].' 23:59:59'))]];
+				$where[] = ['a.follow_time', 'between',[strtotime($follow_time[0]),strtotime($follow_time[1].' 23:59:59')]];
             }
-			if (!empty($param['uid'])) {
-                $where[] = ['a.admin_id','=',$param['uid']];
-            }
-			$map=[];
-			$mapOr=[];
-			$map[]=['delete_time','=',0];
-			$map[]=['discard_time','=',0];
-			
-			$mapOr[] = ['belong_uid','=',$uid];
-			$mapOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-			$dids_a = get_leader_departments($uid);
-			//是否是客户管理员
-			$auth = isAuth($uid,'customer_admin','conf_1');
-			if($auth == 0){
-				if(!empty($dids_a)){
-					$mapOr[] = ['belong_did','in',$dids_a];
+			//跟进列表(我的跟进+下属跟进)
+			if($tab == 0){
+				if (!empty($param['uid'])) {
+					$where[] = ['a.admin_id','=',$param['uid']];
 				}
-			
-				$cids = Db::name('Customer')
-					->where($map)
-					->where(function ($query) use($mapOr) {
-						if (!empty($mapOr)){
-							$query->whereOr($mapOr);
-						}
-					})->column('id');
-					
-				$where[] = ['a.cid', 'in',$cids];
+				else{
+					if($auth == 0){
+						$admin_ids = get_leader_admin_ids($uid);
+						$where[] = ['a.admin_id','in',$admin_ids];
+					}
+				}
 			}
-            $list = $this->model->datalist($param,$where);
+			//我的跟进
+			if($tab == 1){
+				$where[] = ['a.admin_id', '=', $uid];
+			}
+			//下属跟进
+			if($tab == 2){
+				$admin_ids = get_leader_admin_ids($uid,0);
+				$where[] = ['a.admin_id','in',$admin_ids];
+			}
+            $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
-			View::assign('is_auth', isAuth($uid,'customer_admin','conf_1'));
+			View::assign('leader', isLeader($uid));
+			View::assign('auth', $auth);
             return view();
         }
     }

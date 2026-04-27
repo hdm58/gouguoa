@@ -30,6 +30,14 @@
 		<td class="layui-td-gray">录入时间</td>
 		<td>{$detail.create_time|date='Y-m-d H:i:s'}</td>
 	  </tr>
+	  <tr>
+		<td class="layui-td-gray">联系人</td>
+		<td>{$detail.contact_name|default='-'}</td>
+		<td class="layui-td-gray">联系电话</td>
+		<td>{$detail.contact_mobile|default='-'}</td>
+		<td class="layui-td-gray-2">联系人邮箱</td>
+		<td>{$detail.contact_email|default='-'}</td>
+	  </tr>
 	  {gt name="$detail.belong_uid" value="0"}
 	  <tr>
 		<td class="layui-td-gray">归属员工</td>
@@ -95,7 +103,7 @@
 	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="customer" id="customerTab">
 		<ul class="layui-tab-title">
 			<li class="layui-this" data-load="true">跟进记录</li>
-			<li>线索机会</li>
+			<li>销售机会</li>
 			<li>联 系 人</li>
 			<li>操作记录</li>
 		</ul>

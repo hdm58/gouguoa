@@ -39,6 +39,8 @@ class Chance extends BaseController
     {
 		$param = get_params();
 		$uid=$this->uid;
+		//是否是客户管理员
+		$auth = isAuth($uid,'customer_admin','conf_1');
         if (request()->isAjax()) {
 			$where=[];
 			$whereOr=[];

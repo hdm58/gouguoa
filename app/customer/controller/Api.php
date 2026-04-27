@@ -171,8 +171,8 @@ class Api extends BaseController
     {
 		$param = get_params();
 		$where = array();
-		$where[] = ['delete_time', '=', 0];
-		$where[] = ['cid', '=', $param['cid']];
+		$where[] = ['a.delete_time', '=', 0];
+		$where[] = ['a.cid', '=', $param['cid']];
 		$model = new CustomerContact();
 		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);

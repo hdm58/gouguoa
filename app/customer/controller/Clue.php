@@ -48,7 +48,7 @@ class Clue extends BaseController
 			$dids_son = get_leader_departments($uid);
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
             if (!empty($param['keywords'])) {
-                $where[] = ['search_info', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['name|address|clue_name|clue_moble|content|remark', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['follow_time'])) {
 				$follow_time =explode('~', $param['follow_time']);
@@ -72,7 +72,7 @@ class Clue extends BaseController
 						$whereOr[] = ['belong_did','in',$dids_son];
 					}
 					else{
-						$whereOr[] = ['belong_uid', '>', 0];
+						$where[] = ['belong_uid', '>', 0];
 					}
 				}
 			}

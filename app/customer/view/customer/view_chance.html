@@ -1,5 +1,5 @@
 <div class="p-3">
-	<button class="layui-btn layui-btn-sm add-chance">+ 新建线索机会</button>
+	<button class="layui-btn layui-btn-sm add-chance">+ 新建销售机会</button>
 </div>
 <div>
 	<table class="layui-hide" id="chance" lay-filter="chance"></table>
@@ -14,7 +14,7 @@ function chance(){
 	//项目任务
 	layui.chanceTable = table.render({
 		elem: '#chance',
-		title: '线索机会列表',
+		title: '销售机会列表',
 		cellMinWidth:80,
 		url: "/customer/api/get_chance",
 		where:{'cid':customer_id},
@@ -65,7 +65,7 @@ function chance(){
 			tool.side(url);
 		}
 		if(layEvent === 'del'){ //删除
-			layer.confirm('确定要删除该线索机会吗?', {icon: 3, title:'提示'}, function(index){
+			layer.confirm('确定要删除该销售机会吗?', {icon: 3, title:'提示'}, function(index){
 				let callback = function (e) {
 					layer.msg(e.msg);
 					if (e.code == 0) {

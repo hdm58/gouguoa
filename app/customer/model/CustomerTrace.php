@@ -20,30 +20,34 @@ class CustomerTrace extends Model
     * @param $where
     * @param $param
     */
-    public function datalist($param,$where)
+    public function datalist($param,$where,$whereOr=[])
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$order = empty($param['order']) ? 'a.id desc' : $param['order'];
         try {
-            $list = self::where($where)
-			->field('a.*')
+			$list = self::field('a.*,c.name as customer')
 			->alias('a')
 			->join('Customer c','a.cid = c.id')
-			->join('CustomerChance cc','a.chance_id = cc.id','left')
+				->where($where)
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
-				$item->follow_time = date('Y-m-d H:i',$item->follow_time);
-				$item->next_time = date('Y-m-d H:i',$item->next_time);
-				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
-				$item->type_name = Db::name('BasicCustomer')->where(['id' => $item->types])->value('title');
-				$item->stage_name = Db::name('BasicCustomer')->where(['id' => $item->stage])->value('title');
-				$item->customer = Db::name('Customer')->where(['id' => $item->cid])->value('name');
-				if($item->chance_id>0){
-					$item->chance = Db::name('CustomerChance')->where(['id' => $item->chance_id])->value('title');
+				$item['type_name'] = Db::name('BasicCustomer')->where(['id' => $item['types']])->value('title');
+				$item['stage_name'] = Db::name('BasicCustomer')->where(['id' => $item['stage']])->value('title');
+				$item['follow_time'] = to_date($item['follow_time'],'Y-m-d H:i');
+				$item['next_time'] = to_date($item['next_time'],'Y-m-d H:i');
+				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
+				$item['create_time'] = to_date($item['create_time']);
+				if($item['chance_id']>0){
+					$item['chance'] = Db::name('CustomerChance')->where(['id' => $item['chance_id']])->value('title');
 				}
 				else{
-					$item->chance='-';
+					$item['chance']='-';
 				}
 			});
 			return $list;

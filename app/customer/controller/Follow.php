@@ -47,11 +47,11 @@ class Follow extends BaseController
 			$where[]=['a.delete_time','=',0];
 			$where[]=['a.is_clue','=',1];
             if (!empty($param['keywords'])) {
-                $where[] = ['a.content|c.name|cc.title', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['a.content|c.name', 'like', '%' . $param['keywords'] . '%'];
             }
 			if (!empty($param['follow_time'])) {
 				$follow_time =explode('~', $param['follow_time']);
-				$where[] = ['a.follow_time', 'between',[strtotime(urldecode($follow_time[0])),strtotime(urldecode($follow_time[1].' 23:59:59'))]];
+				$where[] = ['a.follow_time', 'between',[strtotime($follow_time[0]),strtotime($follow_time[1].' 23:59:59')]];
             }
 			//跟进列表(我的跟进+下属跟进)
 			if($tab == 0){

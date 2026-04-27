@@ -41,39 +41,33 @@ class Contact extends BaseController
     {
 		$param = get_params();
         if (request()->isAjax()) {
-			$uid=$this->uid;
-			$where=[];
-			$whereOr=[];
-			$where[]=['delete_time','=',0];
-            if (!empty($param['keywords'])) {
-                $where[] = ['id|name|mobile|email', 'like', '%' . $param['keywords'] . '%'];
-            }
-			$map=[];
-			$mapOr=[];
-			$map[]=['delete_time','=',0];
-			$map[]=['discard_time','=',0];
-			
-			$mapOr[] = ['belong_uid','=',$uid];
-			$mapOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-			$dids_a = get_leader_departments($uid);
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
+			$uid = $this->uid;
 			//是否是客户管理员
 			$auth = isAuth($uid,'customer_admin','conf_1');
-			if($auth == 0){
-				if(!empty($dids_a)){
-					$mapOr[] = ['belong_did','in',$dids_a];
-				}
-			
-				$cids = Db::name('Customer')
-					->where($map)
-					->where(function ($query) use($mapOr) {
-						if (!empty($mapOr)){
-							$query->whereOr($mapOr);
-						}
-					})->column('id');
-				$whereOr[] = ['cid', 'in',$cids];
+			$dids_son = get_leader_departments($uid);
+			$where=[];
+			$whereOr=[];
+			$where[]=['a.delete_time','=',0];
+			$where[]=['c.delete_time','=',0];
+            if (!empty($param['keywords'])) {
+                $where[] = ['a.name|a.mobile|a.email|a.qq|a.wechat', 'like', '%' . $param['keywords'] . '%'];
+            }
+			if($tab == 1){
+				$where[] = ['c.belong_uid','=',0];
 			}
-			$whereOr[] = ['admin_id','=',$uid];
-            $list = $this->model->datalist($param,$where,$whereOr);
+			else{
+				if($auth == 0){
+					$whereOr[] = ['c.belong_uid','=',$uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',c.share_ids)")];
+					$whereOr[] = ['c.belong_did','in',$dids_son];
+				}
+				else{
+					$where[] = ['c.belong_uid', '>', 0];
+				}
+			}
+			
+			$list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
