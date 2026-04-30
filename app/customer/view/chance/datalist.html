@@ -2,13 +2,22 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<form class="layui-form gg-form-bar border-x border-t" lay-filter="barsearchform">
-		{gt name="$is_auth" value="0"}
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">销售机会</li>			
+				<li>我的机会</li>
+				{eq name="$leader" value="1"}
+				<li>下属机会</li>
+				{/eq}
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-t border-x" id="barsearchform" lay-filter="barsearchform">
 		<div class="layui-input-inline user-name" style="width:100px;">
 			<input type="text" name="username" placeholder="选择归属人" class="layui-input picker-admin" readonly />
 			<input type="text" name="uid" value="" style="display:none" />	
 		</div>
-		{/gt}
 		<div class="layui-input-inline" style="width:120px;">
 			<select name="stage">
 				<option value="">销售阶段</option>
@@ -21,6 +30,7 @@
 			<input type="text" name="keywords" placeholder="输入关键字,机会主题/沟通内容/客户名称" class="layui-input" autocomplete="off" />
 		</div>
 		<div class="layui-input-inline" style="width:150px;">
+			<input type="hidden" name="tab" value="0" />
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -29,7 +39,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
   <div>
-  	<h3>线索机会</h3>
+  	<h3>销售机会</h3>
   </div>
 </script>
 {/block}
@@ -40,16 +50,25 @@
 	<script>
 	const moduleInit = ['tool','oaPicker','tablePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, form = layui.form;
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form, tabs = layui.tabs;
+		//tab切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.chanceTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		});
 		layui.chanceTable = table.render({
 			elem: '#test'
 			,toolbar: '#toolbarDemo'
-			,title:'线索机会列表'
+			,title:'销售机会列表'
 			,url: "/customer/chance/datalist"
 			,cellMinWidth: 80
 			,page: true //开启分页
 			,is_excel: true
-			,height: 'full-114'
+			,height: 'full-155'
 			,limit: 20
 			,cols:  [[
 					{field: 'id', title: '编号', width: 80, align: 'center'}

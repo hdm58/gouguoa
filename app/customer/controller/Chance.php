@@ -42,8 +42,10 @@ class Chance extends BaseController
 		//是否是客户管理员
 		$auth = isAuth($uid,'customer_admin','conf_1');
         if (request()->isAjax()) {
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$where=[];
-			$whereOr=[];
+			$whereOr = [];
+			$dids_son = get_leader_departments($uid);
 			$where[]=['a.delete_time','=',0];
             if (!empty($param['keywords'])) {
                 $where[] = ['a.title|a.content|c.name', 'like', '%' . $param['keywords'] . '%'];
@@ -55,34 +57,34 @@ class Chance extends BaseController
                 $where[] = ['a.belong_uid','=',$param['uid']];
             }
 			
-			$map=[];
-			$mapOr=[];
-			$map[]=['delete_time','=',0];
-			$map[]=['discard_time','=',0];
-			
-			$mapOr[] = ['belong_uid','=',$uid];
-			$mapOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-			$dids_a = get_leader_departments($uid);
-			//是否是客户管理员
-			$auth = isAuth($uid,'customer_admin','conf_1');
-			if($auth == 0){
-				if(!empty($dids_a)){
-					$mapOr[] = ['belong_did','in',$dids_a];
+			//机会列表(我的机会+下属机会)
+			if($tab == 0){
+				if (!empty($param['uid'])) {
+					$where[] = ['a.belong_uid', '=', $param['uid']];
 				}
-				$cids = Db::name('Customer')
-				->where($map)
-				->where(function ($query) use($mapOr) {
-					if (!empty($mapOr)){
-						$query->whereOr($mapOr);
+				else{
+					if($auth == 0){
+						$whereOr[] = ['a.belong_uid','=',$uid];
+						$whereOr[] = ['a.belong_did','in',$dids_son];
+						$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',a.assist_ids)")];
 					}
-				})->column('id');	
-				$where[] = ['a.cid', 'in',$cids];
+				}
+			}
+			//我的机会
+			if($tab == 1){
+				$where[] = ['a.belong_uid', '=', $uid];
+			}
+			//下属机会
+			if($tab == 2){
+				$where[] = ['a.belong_did','in',$dids_son];
+				$where[] = ['a.belong_uid','<>',$uid];;
 			}
             $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         }
         else{
-			View::assign('is_auth', isAuth($uid,'customer_admin','conf_1'));
+			View::assign('leader', isLeader($uid));
+			View::assign('auth', $auth);
             return view();
         }
     }
