@@ -40,9 +40,11 @@ class Expense extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_1');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$uid = $this->uid;
+			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
 			$where[]=['delete_time','=',0];
@@ -54,12 +56,7 @@ class Expense extends BaseController
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
-					}
+					$whereOr[] = ['did','in',$dids_son];
 				}
 			}
 			if($tab == 1){
@@ -77,20 +74,6 @@ class Expense extends BaseController
 			if($tab == 4){
 				//抄送给我的
 				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
-			}
-			if($tab == 5){
-				//已打款的
-				$where[] = ['pay_status', '=', 1];
-				$auth = isAuthExpense($uid);
-				if($auth == 0){
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
-					}
-					$whereOr[] = ['admin_id', '=', $this->uid];
-				}
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
@@ -247,13 +230,15 @@ class Expense extends BaseController
 	//报销记录
     public function record()
     {
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_1');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
-			if(isAuthExpense($this->uid)==0){
-				$where[] = ['admin_id', '=', $this->uid];
+			if($auth==0){
+				$where[] = ['admin_id', '=', $uid];
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
@@ -269,7 +254,7 @@ class Expense extends BaseController
 			$totalRow['cost'] = sprintf("%.2f",$cost);
             return table_assign(0, '', $list);
         } else {
-			View::assign('authExpense',isAuthExpense($this->uid));
+			View::assign('auth',$auth);
             return view();
         }
     }

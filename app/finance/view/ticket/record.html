@@ -2,17 +2,16 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
-		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
-			<ul class="layui-tab-title">
-				<li class="layui-this">正常</li>
-				<li>已作废</li>
-			</ul>
-		</div>
-	</div>
 	<form class="layui-form gg-form-bar border-x" id="barsearchform">
 		<div class="layui-input-inline" style="width:175px;">
 			<input type="text" class="layui-input" id="diff_time" placeholder="选择时间区间" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:120px">
+			<select name="open_status">
+				<option value="">请选择状态</option>
+				<option value="1">正常</option>
+				<option value="2">作废</option>
+			</select>
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<input type="hidden" name="tab" value="0"/>
@@ -33,7 +32,7 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const auth = {$authInvoice};
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
 		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;

@@ -40,9 +40,11 @@ class Ticket extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_2');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$uid=$this->uid;
+			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
 			$where[]=['delete_time','=',0];
@@ -54,12 +56,7 @@ class Ticket extends BaseController
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
-					}
+					$whereOr[] = ['did','in',$dids_son];
 				}
 			}
 			if($tab == 1){
@@ -183,7 +180,7 @@ class Ticket extends BaseController
     public function record()
     {
 		$uid = $this->uid;
-		$auth = isAuthInvoice($uid);
+		$auth = isAuth($uid,'finance_admin','conf_2');
         if (request()->isAjax()) {
 			$param = get_params();
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
@@ -191,21 +188,8 @@ class Ticket extends BaseController
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
 			$where[]=['invoice_type','>',0];
-			if($auth == 0){
-				$dids_a = get_leader_departments($uid);	
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$whereOr[] = ['did','in',$dids];
-				}
-			}
-			if($tab == 0){
-				//正常的
-				$where[] = ['open_status', '<', 2];
-			}
-			if($tab == 1){
-				//已作废的
-				$where[] = ['open_status', '=', 2];
+			if($auth==0){
+				$where[] = ['admin_id', '=', $uid];
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
@@ -221,7 +205,7 @@ class Ticket extends BaseController
 			$totalRow['amount'] = sprintf("%.2f",$amount);
             return table_assign(0, '', $list);
         } else {
-			View::assign('authInvoice',$auth);
+			View::assign('auth',$auth);
             return view();
         }
     }

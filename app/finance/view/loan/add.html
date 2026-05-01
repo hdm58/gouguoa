@@ -23,7 +23,14 @@
 			<td class="layui-td-gray">借支员工</td>
 			<td>{$user.name} ({$user.department})</td>
 			<td class="layui-td-gray">借支编号<font>*</font></td>
-			<td><input type="text" name="code" value="{$codeno}" lay-verify="required" {eq name="$is_codeno" value="1"}readonly{/eq} placeholder="请输入借支编号" lay-reqText="请填写借支编号" class="layui-input"></td>
+			<td>
+				<div class="layui-input-group" style="width:100%;">
+					<input type="text" name="code" class="layui-input" placeholder="请输入借支编号" lay-verify="required" lay-reqText="请输入凭证编号" value="">
+					<div class="layui-input-split layui-input-suffix" style="width:120px;">
+						<input type="checkbox" name="setcode" title="自动生成" lay-skin="tag" lay-filter="code-filter">
+					</div>
+				</div>	
+			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">借支类型<font>*</font></td>
@@ -47,7 +54,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div>
 			</td>
 			<td colspan="5">
@@ -87,7 +94,22 @@
 			check_name:'loan',
 			check_btn:0
 		});
-
+		//自动生成编码
+		form.on('checkbox(code-filter)', function(data){
+			var elem = data.elem; // 获得 checkbox 原始 DOM 对象
+			var checked = elem.checked; // 获得 checkbox 选中状态
+			var othis = data.othis; // 获得 checkbox 元素被替换后的 jQuery 对象
+			if(elem.checked==true){				
+				tool.post("/api/index/get_codeno", {'prefix':'L'},function(e){
+					if (e.code == 0) {
+						$('[name="code"]').val(e.data);
+					}
+				});
+			}
+			else{
+				$('[name="code"]').val('');
+			}
+	    });
 		//监听提交
 		form.on('submit(webform)', function(data){
 			if(data.field.types==2 && data.field.ptname==''){

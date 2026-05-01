@@ -40,26 +40,22 @@ class Loan extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_5');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$uid = $this->uid;
+			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
 			$where[]=['delete_time','=',0];
 			if($tab == 0){
 				//全部
-				$auth = isAuthLoan($uid);
 				if($auth == 0){
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
-					}
+					$whereOr[] = ['did','in',$dids_son];
 				}
 			}
 			if($tab == 1){
@@ -78,20 +74,6 @@ class Loan extends BaseController
 				//抄送给我的
 				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
 			}
-			if($tab == 5){
-				//已打款的
-				$where[] = ['pay_status', '=', 1];
-				$auth = isAuthLoan($uid);
-				if($auth == 0){
-					$dids_a = get_leader_departments($uid);	
-					$dids_b = get_role_departments($uid);
-					$dids = array_merge($dids_a, $dids_b);
-					if(!empty($dids)){
-						$whereOr[] = ['did','in',$dids];
-					}
-					$whereOr[] = ['admin_id', '=', $this->uid];
-				}
-			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
 				$diff_time =explode('~', $param['diff_time']);
@@ -107,6 +89,7 @@ class Loan extends BaseController
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('auth',$auth);
             return view();
         }
     }
@@ -141,8 +124,6 @@ class Loan extends BaseController
             }	 
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
-			$is_codeno = Db::name('DataAuth')->where('name','finance_admin')->value('conf_9');
-			View::assign('is_codeno', $is_codeno);
 			View::assign('user', get_admin($this->uid));
 			if ($id>0) {
 				$detail = $this->model->getById($id);
@@ -152,11 +133,6 @@ class Loan extends BaseController
 				}
 				return view('edit');
 			}
-			$codeno='';
-			if($is_codeno==1){
-				$codeno = get_codeno(4);
-			}
-            View::assign('codeno', $codeno);
 			if(is_mobile()){
 				return view('qiye@/finance/add_loan');
 			}
@@ -201,13 +177,15 @@ class Loan extends BaseController
 	//借支记录
     public function record()
     {
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_5');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
-			if(isAuthLoan($this->uid)==0){
-				$where[] = ['admin_id', '=', $this->uid];
+			if($auth==0){
+				$where[] = ['admin_id', '=', $uid];
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
@@ -223,7 +201,7 @@ class Loan extends BaseController
 			$totalRow['cost'] = sprintf("%.2f",$cost);
             return table_assign(0, '', $list);
         } else {
-			View::assign('isAuthLoan',isAuthLoan($this->uid));
+			View::assign('auth',$auth);
             return view();
         }
     }

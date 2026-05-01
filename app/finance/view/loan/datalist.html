@@ -9,18 +9,17 @@
 
 <div class="p-page">
 	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
-		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
-			<ul class="layui-tab-title">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
 				<li class="layui-this">全部</li>
 				<li>我申请的</li>
 				<li>待我审批</li>
 				<li>我已审批</li>
 				<li>抄送我的</li>
-				<li>已打款</li>
 			</ul>
 		</div>
 	</div>
-	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:175px;">
 			<input type="text" class="layui-input" id="diff_time" placeholder="选择申请时间区间" readonly name="diff_time">
 		</div>
@@ -60,15 +59,17 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, tabs = layui.tabs, form = layui.form;
 		//tab切换
-		element.on('tab(tab)', function(data){
-			$('[name="tab"]').val(data.index);
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
 			$("#barsearchform")[0].reset();
 			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
 			return false;
 		});
 		
@@ -82,7 +83,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-154'
+			,height: 'full-155'
 			,cols: [[
 				{
 						field: 'id',
@@ -93,7 +94,7 @@
 						field: 'cost',
 						title: '借支金额(元)',
 						align: 'right',
-						width: 110,
+						width: 100,
 					},{
 						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
 							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
@@ -150,7 +151,7 @@
 						field: 'admin_name',
 						title: '借支员工',
 						align: 'center',
-						width: 90
+						width: 80
 					},{
 						field: 'department',
 						title: '借支部门',
@@ -205,16 +206,24 @@
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 130,
+						width: 120,
 						align: 'center',
 						templet:function(d){
 							var html='<div class="layui-btn-group">';
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
 							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
 							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+							var btn4='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记打款</span>';
+							var btn5='<span class="layui-btn layui-bg-red layui-btn-xs" lay-event="back">标记归还</span>';
 							html+=btn1;
 							if((d.check_status==0 || d.check_status==4) && d.admin_id==login_admin){
 								html+=btn2+btn3;
+							}
+							if(d.pay_status==0 && auth==1 && d.check_status==2){
+								html+=btn4;
+							}
+							if(d.pay_status == 1 && d.balance_status<2 && d.back_status==0 && auth==1){
+								html+=btn5;
 							}
 							html+='</div>';
 							return html;
@@ -234,6 +243,36 @@
 			if (obj.event === 'edit') {
 				tool.side("/finance/loan/add?id="+data.id);
 				return;
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定标记为已打款？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/finance/api/topay2", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'back'){
+				layer.confirm('确定标记为已归还？', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/finance/api/topay3", {id: data.id}, callback);
+					layer.close(index);
+				});
 			}
 			if (obj.event === 'del') {
 				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {

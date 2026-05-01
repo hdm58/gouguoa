@@ -4,8 +4,8 @@
 
 <div class="p-page">
 	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
-		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
-			<ul class="layui-tab-title">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
 				<li class="layui-this">全部</li>
 				<li>我申请的</li>
 				<li>待我审批</li>
@@ -14,7 +14,7 @@
 			</ul>
 		</div>
 	</div>
-	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
+	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:175px;">
 			<input type="text" class="layui-input" id="diff_time" placeholder="选择发票时间区间" readonly name="diff_time">
 		</div>
@@ -56,12 +56,14 @@
 <script>
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, tabs = layui.tabs, form = layui.form;
 		//tab切换
-		element.on('tab(tab)', function(data){
-			$('[name="tab"]').val(data.index);
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
 			$("#barsearchform")[0].reset();
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
 			return false;
 		});
 		
@@ -75,7 +77,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-154'
+			,height: 'full-155'
 			,cols: [[
 				{
 						field: 'id',

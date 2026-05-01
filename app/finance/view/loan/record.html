@@ -35,7 +35,7 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const auth = {$isAuthLoan};
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
 	function gouguInit() {
 		var form = layui.form,table = layui.tablePlus,tool=layui.tool, laydatePlus = layui.laydatePlus;
@@ -155,13 +155,13 @@
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 136,
+						width: 120,
 						align: 'center',
 						templet:function(d){
 							var html='<div class="layui-btn-group">';
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
-							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为已打款</span>';
-							var btn3='<span class="layui-btn layui-bg-red layui-btn-xs" lay-event="back">标记为已归还</span>';
+							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记打款</span>';
+							var btn3='<span class="layui-btn layui-bg-red layui-btn-xs" lay-event="back">标记归还</span>';
 							html+=btn1;
 							if(d.pay_status==0 && auth==1){
 								html+=btn2;

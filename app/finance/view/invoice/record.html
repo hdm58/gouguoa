@@ -1,29 +1,17 @@
 {extend name="../../base/view/common/base" /}
-{block name="style"}
-<style>
-.tab-1 .search-item{display:none;}
-</style>
-{/block}
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
-		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
-			<ul class="layui-tab-title">
-				<li class="layui-this">正常</li>
-				<li>已作废</li>
-			</ul>
-		</div>
-	</div>
 	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
 		<div class="layui-input-inline" style="width:175px;">
 			<input type="text" class="layui-input" id="diff_time" placeholder="选择时间区间" readonly name="diff_time">
 		</div>
-		<div class="layui-input-inline search-item">
+		<div class="layui-input-inline" style="width:120px">
 			<select name="open_status">
 				<option value="">请选择状态</option>
 				<option value="0">待开具</option>
 				<option value="1">已开具</option>
+				<option value="2">已作废</option>
 			</select>
 		</div>
 		<div class="layui-input-inline" style="width:150px">
@@ -36,7 +24,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
 <div class="layui-btn-container">
-    <h3 class="h3-title" style="height:32px;">发票列表</h3>
+    <h3 class="h3-title" style="height:32px;">销项发票记录</h3>
 </div>
 </script>
 {/block}
@@ -45,18 +33,10 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const auth = {$authInvoice};
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
-		//tab切换
-		element.on('tab(tab)', function(data){
-			$('[name="tab"]').val(data.index);
-			$("#barsearchform")[0].reset();
-			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
-			return false;
-		});
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus;
 		
 		//日期范围
 		var diff_time = new laydatePlus({'target':'diff_time'});
@@ -69,7 +49,7 @@
 			cellMinWidth: 80,			
 			page: true, //开启分页
 			limit: 20,
-			height: 'full-154',
+			height: 'full-114',
 			totalRow: true,
 			cols: [[
 				{

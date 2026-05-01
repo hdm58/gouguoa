@@ -131,7 +131,7 @@
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 136,
+						width: 120
 						align: 'center',
 						templet:function(d){
 							var status = '打款';
@@ -140,7 +140,7 @@
 							}
 							var html='<div class="layui-btn-group">';
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
-							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为已'+status+'</span>';
+							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记'+status+'</span>';
 							html+=btn1;
 							if(d.pay_status==0 && auth==1){
 								html+=btn2;
