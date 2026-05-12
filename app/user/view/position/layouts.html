@@ -1,0 +1,199 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.container {display: flex; gap: 20px; margin: 0 auto;}
+.component-library { width: 150px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
+.component-item { padding: 10px; margin-bottom: 8px; background: #f3f3f3; border: 1px dashed #dddddd;color:#999999; user-select: none; text-align: center;}
+.draggable-true{cursor: grab;color:#333333;background: #e9ecef;border: 1px dashed #999999;}
+.draggable-true:hover{color:#1e9fff;border-color:#1e9fff;}
+
+/* 画布区域 */
+.canvas-area { flex: 1; display: flex; gap: 16px;}
+.column { flex: 1; min-height: 600px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);}
+#column1 {flex: 2;}
+.module {padding: 12px; margin-bottom: 16px; background: #D7F1F6; border: 1px solid #bee5eb; position: relative; user-select: none; border-radius: 6px; }
+.module-title {height:42px; cursor: grab;}
+.delete-btn {position: absolute; top:12px; right: 12px; background: #ff5722; color: #ffffff; border: none;border-radius: 4px; width: 24px; height: 24px; line-height:24px; font-size: 20px; cursor: pointer;}
+.placeholder { border: 2px dashed #ccc; min-height: 40px;margin-bottom: 10px; border-radius: 4px; display: flex; align-items: center;justify-content: center; color: #999;}
+	
+/* 骨架信息 */
+.gradient-skeleton { width: 100%;}
+.gradient-item {margin-bottom: 12px; position: relative;overflow: hidden;}
+.gradient-item::after { content: ''; position: absolute; top: 0;left: -100%;width: 100%; height: 100%;background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+.image { width: 100%;height: 36px; border-radius: 8px; background: #f8f8f8; background-size: 200% 100%;}
+.title { width: 72%; height: 20px; background:#fafafa;background-size: 200% 100%; border-radius: 6px;}
+.text { width: 100%; height: 16px; background:#fafafa; background-size: 200% 100%; border-radius: 4px;}
+.text:nth-child(3) { width: 85%;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="container">
+		<!-- 左侧：组件库 -->
+		<div class="component-library">
+			<h3 class="pb-2">功能模块</h3>
+			<div id="component-library"></div>
+			<div class="pt-2">
+				<button class="layui-btn layui-btn-normal" style="width:100%" id="save">提交保存</button>
+			</div>
+		</div>
+		<!-- 右侧：画布（两列） -->
+		<div class="canvas-area">
+			<div class="column" id="column1">
+				<div class="placeholder">左列（可拖入模块）</div>
+			</div>
+			<div class="column" id="column2">
+				<div class="placeholder">右列（可拖入模块）</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/sortable/Sortable.min.js"></script>
+<script>
+	var layouts = {:json_encode($layouts,JSON_UNESCAPED_UNICODE)};
+	var draggable=false;
+	const id = {$id};
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;	
+
+		// 初始化按 sort 排序
+		const sortedArray = [...layouts].sort((a, b) => a.sort - b.sort);
+		for(let i=0;i<sortedArray.length;i++){
+			if(sortedArray[i].column>0){
+				const $module = $('<div class="module" data-id="'+sortedArray[i].id+'"><h3 class="module-title">'+sortedArray[i].title+'</h3><button class="delete-btn" title="删除">×</button><div class="gradient-skeleton"><div class="gradient-item image"></div><div class="gradient-item title"></div><div class="gradient-item text"></div><div class="gradient-item text"></div></div></div>');
+				// 删除功能
+				$module.find('.delete-btn').on('click', function () {
+					$(this).closest('.module').remove();
+					layouts[sortedArray[i].id]['draggable']=true;
+					layouts[sortedArray[i].id]['column']=0;
+					checkPlaceholder();
+				});
+				$('#column'+sortedArray[i].column).append($module[0]);
+			}
+		}		
+		
+		// 创建模块元素（带删除按钮）
+		function createModule(idx) {
+			const $module = $('<div class="module" data-id="'+layouts[idx].id+'"><h3 class="module-title">'+layouts[idx].title+'</h3><button class="delete-btn" title="删除">×</button><div class="gradient-skeleton"><div class="gradient-item image"></div><div class="gradient-item title"></div><div class="gradient-item text"></div><div class="gradient-item text"></div></div></div>');
+			// 删除功能
+			$module.find('.delete-btn').on('click', function () {
+				$(this).closest('.module').remove();
+				layouts[layouts[idx].id]['draggable']=true;
+				layouts[layouts[idx].id]['column']=0;
+				checkPlaceholder();
+			});
+			return $module[0];
+		}
+
+		// 检查是否需要显示 placeholder
+		function checkPlaceholder() {
+			let layout='';
+			for(let i=0;i<layouts.length;i++){
+				layout+='<div class="component-item draggable-'+layouts[i].draggable+'" data-index="'+i+'">'+layouts[i].title+'</div>';
+			}
+			$('#component-library').html(layout);
+			$('.column').each(function () {
+				const $col = $(this);
+				if ($col.find('.module').length === 0) {
+					if ($col.find('.placeholder').length === 0) {
+						$col.append('<div class="placeholder">拖入模块到这里</div>');
+					}
+					} else {
+						$col.find('.placeholder').remove();
+					}
+			});
+		}
+
+		// 初始化组件库（只允许拖出，克隆）
+		Sortable.create(document.getElementById('component-library'), {
+			group: {
+				name: 'shared',
+				pull: 'clone', // 允许克隆拖出
+				put: false     // 不允许放回
+			},
+			draggable: '.draggable-true',
+			onStart:function(){
+				draggable=true;
+			},
+			onEnd:function(){
+				draggable=false;
+			},
+			sort: false, // 组件库内部不可排序
+			animation: 150
+		});
+
+		// 初始化左右列（可互相拖拽，也可接收组件库的克隆）
+		const columnOptions = {
+			group: {
+				name: 'shared',
+				pull: true,
+				put: true
+			},
+			animation: 150,
+			ghostClass: 'sortable-ghost',
+			onAdd: function (evt) {
+				// 新增的元素是克隆自组件库的 .component-item
+				//console.log(evt.oldIndex);
+				console.log(evt.newIndex);
+				if(draggable==true){
+					layouts[evt.oldIndex]['draggable']=false;
+				}				
+				const item = evt.item;
+				if ($(item).hasClass('component-item')) {
+					const index = item.getAttribute('data-index');
+					const newModule = createModule(index);
+					// 替换 .component-item 为真正的 .module
+					item.replaceWith(newModule);
+					checkPlaceholder();
+				}
+			},
+			onUpdate: function (evt) {
+				checkPlaceholder();
+			},
+			onRemove: function (a) {
+				checkPlaceholder();
+			}
+		};
+
+		Sortable.create(document.getElementById('column1'), columnOptions);
+		Sortable.create(document.getElementById('column2'), columnOptions);
+		// 初始状态
+		checkPlaceholder();
+		
+		$('#save').on('click',function(){
+			let module_left = $('#column1').find('.module');
+			let module_right = $('#column2').find('.module');
+			module_left.each(function(index){
+				let id = $(this).data('id');
+				layouts[id]['sort']=index;
+				layouts[id]['column']=1;
+			})
+			module_right.each(function(index){
+				let id = $(this).data('id');
+				layouts[id]['sort']=index;
+				layouts[id]['column']=2;
+			})
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			//console.log(layouts);
+			//return false;
+			let clickbtn = $(this);
+			tool.post("/user/position/layouts", {'id':id,layouts:layouts}, callback,clickbtn);
+			return false;
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

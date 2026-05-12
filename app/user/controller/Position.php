@@ -88,16 +88,16 @@ class Position extends BaseController
                 // 启动事务
                 Db::startTrans();
                 try {
-                    $uid = Db::name('Position')->strict(false)->field(true)->insertGetId($param);
+                    $pid = Db::name('Position')->strict(false)->field(true)->insertGetId($param);
                     foreach ($param['group_id'] as $k => $v) {
                         $data[$k] = [
-                            'pid' => $uid,
+                            'pid' => $pid,
                             'group_id' => $v,
                             'create_time' => time(),
                         ];
                     }
                     Db::name('PositionGroup')->strict(false)->field(true)->insertAll($data);
-                    add_log('add', $uid, $param);
+                    add_log('add', $pid, $param);
                     // 提交事务
                     Db::commit();
                 } catch (\Exception $e) {
@@ -181,6 +181,32 @@ class Position extends BaseController
             return to_assign(0, "删除岗位成功");
         } else {
             return to_assign(1, "删除失败");
+        }
+    }
+	
+	
+    public function layouts()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$layouts = serialize($param['layouts']);
+			$res = Db::name('Position')->where(['id' => $param['id']])->strict(false)->field(true)->update(['layouts'=>$layouts,'update_time'=>time()]);
+			if($res!=false){
+				add_log('edit', $param['id'], $param);
+				return to_assign();
+			}
+			else{
+				return to_assign(1, "操作失败");
+			}
+        } else {
+			$layouts_array = get_config('layout');
+			$layouts= Db::name('Position')->where(['id' => $param['id']])->value('layouts');
+			if(!empty($layouts)){
+				$layouts_array = unserialize($layouts);
+			}
+			View::assign('layouts',$layouts_array);
+			View::assign('id', $param['id']);
+            return view();
         }
     }
 }

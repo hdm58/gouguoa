@@ -291,25 +291,23 @@ class Index extends BaseController
             'url' => '/project/task/datalist',
         );
 		
+		$links = Db::name('Links')->where('delete_time',0)->order('sort desc')->select();
+		
+		$position_id = $this->pid;
+		$layouts_array = get_config('layout');
 		$position_id = Db::name('Admin')->where('id',$uid)->value('position_id');
-		$adminGroup = Db::name('PositionGroup')->where(['pid' => $position_id])->column('group_id');
-		$adminLayout = Db::name('AdminGroup')->where('id', 'in', $adminGroup)->column('layouts');
-		$adminLayouts = [];
-		foreach ($adminLayout as $k => $v) {
-			$v = explode(',', $v);
-			$adminLayouts = array_merge($adminLayouts, $v);
+		$layouts= Db::name('Position')->where(['id' => $position_id])->value('layouts');
+		if(!empty($layouts)){
+			$layouts_array = unserialize($layouts);
+			usort($layouts_array, function($a, $b) {
+				return intval($a['sort']) - intval($b['sort']);
+			});
 		}
-		$layouts = get_config('layout');
-		$layout_selected = [];
-		foreach ($layouts as $key =>$vo) {
-			if (!empty($adminLayouts) and in_array($vo['id'], $adminLayouts)) {
-				$layout_selected[] = $vo;
-			}
-		}
-		View::assign('layout_selected',$layout_selected);
+		View::assign('layouts',$layouts_array);
         View::assign('total', $total);
         View::assign('handle', $handle);
         View::assign('todue', $todue);
+        View::assign('links', $links);
         View::assign('install', $install);
         View::assign('TP_VERSION', \think\facade\App::version());
         return View();

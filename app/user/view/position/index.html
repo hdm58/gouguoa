@@ -14,7 +14,7 @@
 	</div>
 </script>
 <script type="text/html" id="barDemo">
-<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</button><button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>
+<div class="layui-btn-group"><button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="view">详情</button><button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button><button class="layui-btn layui-bg-orange layui-btn-xs" lay-event="layouts">设置模块</button><button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button></div>
 </script>
 
 {/block}
@@ -26,6 +26,7 @@
 	const moduleInit = ['tool'];
 	function gouguInit() {
 		var table = layui.table, tool = layui.tool;
+		
 		layui.pageTable = table.render({
 			elem: '#test',
 			title: '岗位列表',
@@ -66,7 +67,7 @@
 						field: 'right',
 						title: '操作',
 						toolbar: '#barDemo',
-						width: 120,
+						width: 180,
 						align: 'center'
 					}
 				]
@@ -89,6 +90,10 @@
 			}
 			if(obj.event === 'edit'){
 				tool.side('/user/position/add?id='+data.id);
+				return;
+			}
+			if(obj.event === 'layouts'){
+				tool.side('/user/position/layouts?id='+data.id);
 				return;
 			}
 			if (obj.event === 'del') {

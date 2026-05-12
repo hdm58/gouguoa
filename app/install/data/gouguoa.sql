@@ -758,6 +758,8 @@ INSERT INTO `oa_admin_rule` VALUES (428, 7, 'customer/follow/datalist', '线索�
 INSERT INTO `oa_admin_rule` VALUES (429, 428, 'customer/follow/add', '新建/编辑', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (430, 428, 'customer/follow/view', '查看', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (431, 428, 'customer/follow/del', '删除', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (432, 93, 'user/position/layouts', '布局', '布局', 'user', '', 2, 0, 1, 1656143065, 0);
 -- ----------------------------
 -- Table structure for oa_admin_group
 -- ----------------------------
@@ -2037,6 +2039,7 @@ DROP TABLE IF EXISTS `oa_position`;
 CREATE TABLE `oa_position`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '岗位名称',
+  `layouts` mediumtext  NULL COMMENT '首页展示模块',
   `work_price` int(10) NOT NULL DEFAULT 0 COMMENT '工时单价',
   `remark` varchar(1000) NULL DEFAULT '' COMMENT '备注',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
@@ -2048,7 +2051,7 @@ CREATE TABLE `oa_position`  (
 -- ----------------------------
 -- Records of oa_position
 -- ----------------------------
-INSERT INTO `oa_position` VALUES (1, '超级岗位', 1000, '超级岗位，不能轻易修改权限', 1, 0, 0);
+INSERT INTO `oa_position` VALUES (1, '超级岗位', 's:1:"7";s:4:"name";s:9:"chartyear";s:5:"title";s:18:"员工年活跃度";s:9:"draggable";s:5:"false";s:6:"column";s:1:"1";s:4:"sort";s:1:"7";}i:8;a:6:{s:2:"id";s:1:"8";s:4:"name";s:9:"fastentry";s:5:"title";s:12:"快捷入口";s:9:"draggable";s:5:"false";s:6:"column";s:1:"2";s:4:"sort";s:1:"4";}i:9;a:6:{s:2:"id";s:1:"9";s:4:"name";s:5:"links";s:5:"title";s:12:"书签链接";s:9:"draggable";s:5:"false";s:6:"column";s:1:"2";s:4:"sort";s:1:"3";}i:10;a:6:{s:2:"id";s:2:"10";s:4:"name";s:6:"system";s:5:"title";s:12:"系统信息";s:9:"draggable";s:5:"false";s:6:"column";s:1:"2";s:4:"sort";s:1:"0";}i:11;a:6:{s:2:"id";s:2:"11";s:4:"name";s:7:"ranking";s:5:"title";s:12:"活跃员工";s:9:"draggable";s:5:"false";s:6:"column";s:1:"2";s:4:"sort";s:1:"1";}i:12;a:6:{s:2:"id";s:2:"12";s:4:"name";s:6:"action";s:5:"title";s:12:"员工动态";s:9:"draggable";s:5:"false";s:6:"column";s:1:"2";s:4:"sort";s:1:"2";}}',1000, '超级岗位，不能轻易修改权限', 1, 0, 0);
 INSERT INTO `oa_position` VALUES (2, '人事总监', 1000, '人事部的最大领导', 1, 0, 0);
 INSERT INTO `oa_position` VALUES (3, '普通员工', 500, '普通员工', 1, 0, 0);
 
