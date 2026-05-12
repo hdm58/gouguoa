@@ -84,17 +84,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-3" style="vertical-align: top;">PC工作台展示模块</td>
-			<td colspan="3">
-				{volist name="layout" id="vo"}
-					<div class="layui-input-inline" style="margin-right:10px;">
-						<input type="checkbox" data-rule="{$vo.id}" name="layout[]" value="{$vo.id}" lay-skin="primary" title="{$vo.title}" {eq name="$vo.checked" value="true" }checked{/eq}>
-					</div>
-				{/volist}
-			</td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray-3" style="vertical-align: top;">手机工作台展示模块</td>
+			<td class="layui-td-gray-3" style="vertical-align: top;">移动端工作台展示模块</td>
 			<td colspan="3">
 				{volist name="mobile_menu" id="v"}
 					<dl>

@@ -45,17 +45,12 @@ class Role extends BaseController
         $param = get_params();
         if (request()->isAjax()) {
             $ruleData = isset($param['rule']) ? $param['rule'] : '';
-            $layoutData = isset($param['layout']) ? $param['layout'] : '';
             $menuData = isset($param['mobile_menu']) ? $param['mobile_menu'] : '';
             $barData = isset($param['mobile_bar']) ? $param['mobile_bar'] : '';
 			if($ruleData==0){
 				return to_assign(1, '权限节点至少选择一个');
 			}
-			if($layoutData==0){
-				return to_assign(1, '首页展示模块至少选择一个');
-			}
             $param['rules'] = implode(',', $ruleData);
-            $param['layouts'] = implode(',', $layoutData);
 			if(empty($menuData)){
 				$param['mobile_menu'] = '';
 			}
@@ -98,7 +93,6 @@ class Role extends BaseController
         } else {
             $id = isset($param['id']) ? $param['id'] : 0;
             $rule = admin_rule();
-			$layouts = get_config('layout');
 			$mobile_bar = Db::name('MobileBar')->where([['status','=',1]])->field('id,url,title,icon')->select()->toArray();
 			$mobile_menu = Db::name('MobileTypes')->where(['status'=>1])->select()->toArray();		
 
@@ -108,15 +102,6 @@ class Role extends BaseController
                 $role_rule = create_tree_list(0, $rule, $rules);
                 $role = Db::name('AdminGroup')->where(['id' => $id])->find();				
                 View::assign('role', $role);
-				
-				$layout_selected = explode(',', $role['layouts']);
-				foreach ($layouts as $key =>&$vo) {
-					if (!empty($layout_selected) and in_array($vo['id'], $layout_selected)) {
-						$vo['checked'] = true;
-					} else {
-						$vo['checked'] = false;
-					}
-				}
 				
 				$mobile_bar_selected = explode(',', $role['mobile_bar']);
 				foreach ($mobile_bar as $key =>&$vo) {
@@ -158,8 +143,7 @@ class Role extends BaseController
 					$row['list'] = $list;
 				}
             }	
-            View::assign('role_rule', $role_rule);			
-            View::assign('layout', $layouts);
+            View::assign('role_rule', $role_rule);
             View::assign('mobile_bar', $mobile_bar);
             View::assign('mobile_menu', $mobile_menu);
             View::assign('id', $id);
