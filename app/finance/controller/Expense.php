@@ -50,7 +50,6 @@ class Expense extends BaseController
 			$where[]=['delete_time','=',0];
 			if($tab == 0){
 				//全部
-				$auth = isAuthExpense($uid);
 				if($auth == 0){
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
@@ -90,6 +89,7 @@ class Expense extends BaseController
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('auth', $auth);
             return view();
         }
     }

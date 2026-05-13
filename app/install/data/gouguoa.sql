@@ -1745,6 +1745,7 @@ CREATE TABLE `oa_expense`  (
   `balance_cost` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '冲账金额',
   `pay_amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '需打款金额',
   `project_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联项目ID',
+  `contract_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联合同ID',
   `file_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '附件ID，如:1,2,3',
   `pay_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '打款状态 0待打款,1已打款',
   `pay_admin_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '打款人ID',
