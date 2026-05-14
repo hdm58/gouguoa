@@ -50,6 +50,15 @@ class Trace extends BaseController
             if (!empty($param['keywords'])) {
                 $where[] = ['a.content|c.name', 'like', '%' . $param['keywords'] . '%'];
             }
+			if (!empty($param['types'])) {
+                $where[] = ['a.types', '=', $param['types']];
+            }
+			if (!empty($param['stage'])) {
+                $where[] = ['a.stage', '=', $param['stage']];
+            }
+			if (!empty($param['chance_id'])) {
+                $where[] = ['a.chance_id', '=', $param['chance_id']];
+            }
 			if (!empty($param['follow_time'])) {
 				$follow_time =explode('~', $param['follow_time']);
 				$where[] = ['a.follow_time', 'between',[strtotime($follow_time[0]),strtotime($follow_time[1].' 23:59:59')]];

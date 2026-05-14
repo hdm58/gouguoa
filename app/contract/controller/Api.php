@@ -32,6 +32,9 @@ class Api extends BaseController
 		if (!empty($param['keywords'])) {
 			$where[] = ['id|name|code', 'like', '%' . $param['keywords'] . '%'];
 		}
+		if(!empty($param['cid'])){
+			$where[] = ['customer_id', '=', $param['cid']];
+		}
 		$where[] = ['delete_time', '=', 0];
 		$where[] = ['check_status', '=', 2];		
 		//是否是合同管理员

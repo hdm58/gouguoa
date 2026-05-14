@@ -1,17 +1,12 @@
 <div class="p-3">
 	<button class="layui-btn layui-btn-sm add-chance">+ 新建销售机会</button>
 </div>
-<div>
+<div class="px-3 pb-3">
 	<table class="layui-hide" id="chance" lay-filter="chance"></table>
 </div>
 <script>
 function chance(){
-	if($('#customerTab').find('li').eq(4).data('load') =='true'){
-		return false;
-	}
-	$('#customerTab').find('li').eq(4).data('load','true');
 	let tool = layui.tool, table = layui.table;
-	//项目任务
 	layui.chanceTable = table.render({
 		elem: '#chance',
 		title: '销售机会列表',

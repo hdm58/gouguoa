@@ -21,11 +21,31 @@
 			<input type="text" name="uid" value="" style="display:none" />	
 		</div>
 		{/gt}
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="types">
+				<option value="">跟进方式</option>
+				{volist name=":get_base_type_data('basic_customer',3)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="stage">
+				<option value="">当前阶段</option>
+				{volist name=":get_base_type_data('basic_customer',4)" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			  </select>
+		</div>
 		<div class="layui-input-inline" style="width:175px;">
 			<input type="text" class="layui-input" id="follow_time" placeholder="下次跟进日期" readonly name="follow_time">
 		</div>
+		<div class="layui-input-inline" style="width:200px;">
+			<input type="text" class="layui-input picker-oa" data-types="chance" placeholder="销售机会" readonly>
+			<input type="text" class="layui-input" style="display:none;" readonly name="chance_id">
+		</div>
 		<div class="layui-input-inline" style="width:300px">
-			<input type="text" name="keywords" placeholder="关键字,沟通内容/销售机会/客户名称" class="layui-input" autocomplete="off" />
+			<input type="text" name="keywords" placeholder="关键字，沟通内容/客户名称" class="layui-input" autocomplete="off" />
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<input type="hidden" name="tab" value="0" />

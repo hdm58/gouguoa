@@ -61,6 +61,12 @@ layui.define(['tool'], function (exports) {
 			add:'/customer/customer/add',
 			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'name',title:'客户名称'}]
 		},
+		'chance':{
+			title:'选择销售机会',
+			url:'/customer/api/get_chance',
+			area: ['600px', '568px'],
+			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'机会主题'},{field:'belong_name',title:'归属人',width:80,align:'center'},{field:'stage_name',title:'当前阶段',width:100,align:'center'},{field:'discovery_time',title:'发现时间',width:100,align:'center'}]
+		},
 		'supplier':{
 			title:'选择供应商',
 			url:'/contract/api/get_supplier',

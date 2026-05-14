@@ -1,0 +1,93 @@
+<div class="p-3">
+	<table class="layui-hide" id="contract" lay-filter="contract"></table>
+</div>
+<script>
+function contract(){
+	let tool = layui.tool, table = layui.table;
+	layui.contractTable = table.render({
+		elem: '#contract',
+		title: '客户合同列表',
+		cellMinWidth:80,
+		url: "/contract/api/get_contract",
+		where:{'cid':customer_id},
+		page: true, //开启分页
+		limit: 20,
+		cols: [[ //表头
+				{
+					field: 'id',
+					title: 'ID号',
+					align: 'center',
+					width: 80
+				},{ field: 'check_status', title: '审批状态', align: 'center', width: 110, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.check_status + '">『' + d.status_name + '』</span>';
+					return html;
+					}
+				},{
+					field: 'code',
+					title: '合同编号',
+					align: 'center',
+					width: 150
+				},{
+					field: 'name',
+					title: '合同名称',
+					minWidth:240
+				},{
+					field: 'cate_title',
+					title: '合同类别',
+					align: 'center',
+					width: 100
+				},{
+					field: 'types_name',
+					title: '合同性质',
+					align: 'center',
+					width: 80,
+					templet: function (d) {
+						var html = '<span class="layui-color-' + d.types + '">' + d.types_name + '</span>';
+						return html;
+					}
+				},{
+					field: 'end_time',
+					title: '合同有效时间',
+					align: 'center',
+					width: 268,
+					templet: function (d) {
+						var html = d.interval_time;
+						return html;
+					}
+				},{
+					field: 'cost',
+					title: '合同金额(元)',
+					align: 'right',
+					width: 100
+				},{
+					field: 'sign_name',
+					title: '签定人',
+					align: 'center',
+					width: 80
+				},{
+					field: 'keeper_name',
+					title: '保管人',
+					align: 'center',
+					width: 80
+				},{
+					field: 'sign_time',
+					title: '签订日期',
+					align: 'center',
+					width: 100
+				},{fixed:'right',width:80,title: '操作', align:'center',templet: function(d){
+					return '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</a>';
+				}}			
+		]]
+	});
+	
+	table.on('tool(contract)', function(obj){
+		var data = obj.data; //获得当前行数据
+		var layEvent = obj.event;		 
+		if(layEvent === 'view'){ //查看
+			let url = '/contract/contract/view/id/'+data.id;
+			tool.side(url);
+		}
+		return false;
+	})
+}
+</script>

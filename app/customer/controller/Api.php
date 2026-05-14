@@ -145,7 +145,9 @@ class Api extends BaseController
 		$param = get_params();
 		$where = array();
 		$where[] = ['a.delete_time', '=', 0];
-		$where[] = ['a.cid', '=', $param['cid']];
+		if(!empty($param['cid'])){
+			$where[] = ['a.cid', '=', $param['cid']];
+		}
 		$model = new CustomerTrace();
 		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);
@@ -155,14 +157,28 @@ class Api extends BaseController
 	public function get_chance()
     {
 		$param = get_params();
+		$uid=$this->uid;
+		//是否是客户管理员
+		$auth = isAuth($uid,'customer_admin','conf_1');
+		$dids_son = get_leader_departments($uid);
 		$where = array();
+		$whereOr = [];
 		$where[] = ['a.delete_time', '=', 0];
-		$where[] = ['a.cid', '=', $param['cid']];
-		if (!empty($param['keywords'])) {
-			$where[] = ['a.title|a.content', 'like', '%' . $param['keywords'] . '%'];
+		if(!empty($param['cid'])){
+			$where[] = ['a.cid', '=', $param['cid']];
+		}
+		else{
+			if (!empty($param['keywords'])) {
+				$where[] = ['a.title|a.content', 'like', '%' . $param['keywords'] . '%'];
+			}
+			if($auth == 0){
+				$whereOr[] = ['a.belong_uid','=',$uid];
+				$whereOr[] = ['a.belong_did','in',$dids_son];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',a.assist_ids)")];
+			}
 		}
 		$model = new CustomerChance();
-		$list = $model->datalist($param,$where);
+		$list = $model->datalist($param,$where,$whereOr);
 		return table_assign(0, '', $list);
     }
 	

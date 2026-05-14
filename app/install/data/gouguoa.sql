@@ -2456,17 +2456,18 @@ INSERT INTO `oa_basic_customer` VALUES (5, '1', '成交客户', 1, 1732606311, 0
 INSERT INTO `oa_basic_customer` VALUES (6, '2', '意向不明', 1, 1732606331, 0);
 INSERT INTO `oa_basic_customer` VALUES (7, '2', '意向一般', 1, 1732606346, 0);
 INSERT INTO `oa_basic_customer` VALUES (8, '2', '意向强烈', 1, 1732606354, 0);
-INSERT INTO `oa_basic_customer` VALUES (9, '3', '电话', 1, 1732606405, 0);
-INSERT INTO `oa_basic_customer` VALUES (10, '3', '微信', 1, 1732606409, 0);
-INSERT INTO `oa_basic_customer` VALUES (11, '3', '上门', 1, 1732606413, 0);
-INSERT INTO `oa_basic_customer` VALUES (12, '3', '其他', 1, 1732606418, 0);
-INSERT INTO `oa_basic_customer` VALUES (13, '4', '立项评估', 1, 1732606467, 0);
-INSERT INTO `oa_basic_customer` VALUES (14, '4', '初期沟通', 1, 1732606475, 0);
-INSERT INTO `oa_basic_customer` VALUES (15, '4', '需求分析', 1, 1732606483, 0);
-INSERT INTO `oa_basic_customer` VALUES (16, '4', '商务谈判', 1, 1732606490, 0);
-INSERT INTO `oa_basic_customer` VALUES (17, '4', '方案制定', 1, 1732606499, 0);
-INSERT INTO `oa_basic_customer` VALUES (18, '4', '合同签订', 1, 1732606506, 0);
-INSERT INTO `oa_basic_customer` VALUES (19, '4', '丢单失单', 1, 1732607018, 0);
+INSERT INTO `oa_basic_customer` VALUES (9, '3', '上门拜访', 1, 1732606405, 0);
+INSERT INTO `oa_basic_customer` VALUES (10, '3', '电话沟通', 1, 1732606409, 0);
+INSERT INTO `oa_basic_customer` VALUES (11, '3', '微信联系', 1, 1732606413, 0);
+INSERT INTO `oa_basic_customer` VALUES (12, '3', '发送邮件', 1, 1732606418, 0);
+INSERT INTO `oa_basic_customer` VALUES (13, '3', '其他', 1, 1732606418, 0);
+INSERT INTO `oa_basic_customer` VALUES (14, '4', '立项评估', 1, 1732606467, 0);
+INSERT INTO `oa_basic_customer` VALUES (15, '4', '初期沟通', 1, 1732606475, 0);
+INSERT INTO `oa_basic_customer` VALUES (16, '4', '需求分析', 1, 1732606483, 0);
+INSERT INTO `oa_basic_customer` VALUES (17, '4', '商务谈判', 1, 1732606490, 0);
+INSERT INTO `oa_basic_customer` VALUES (18, '4', '方案制定', 1, 1732606499, 0);
+INSERT INTO `oa_basic_customer` VALUES (19, '4', '合同签订', 1, 1732606506, 0);
+INSERT INTO `oa_basic_customer` VALUES (20, '4', '丢单失单', 1, 1732607018, 0);
 
 -- ----------------------------
 -- Table structure for oa_customer

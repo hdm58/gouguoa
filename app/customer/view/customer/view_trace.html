@@ -1,15 +1,11 @@
 <div class="p-3">
    <span class="layui-btn layui-btn-sm add-trace">+ 新建跟进记录</span>
 </div>
-<div>
+<div class="px-3 pb-3">
 	<table class="layui-hide" id="trace" lay-filter="trace"></table>
 </div>
 <script>
 function trace(){
-	if($('#customerTab').find('li').eq(0).data('load') =='true'){
-		return false;
-	}
-	$('#customerTab').find('li').eq(0).data('load','true');
 	let tool = layui.tool, table = layui.table;
 	layui.traceTable = table.render({
 		elem: '#trace',

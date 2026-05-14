@@ -1,17 +1,12 @@
 <div class="p-3">
 	<button class="layui-btn layui-btn-sm add-contact">+ 新增联系人</button>
 </div>
-<div>
+<div class="px-3 pb-3">
 	<table class="layui-hide" id="contact" lay-filter="contact"></table>
 </div>
 <script>
 function contact(){
-	if($('#customerTab').find('li').eq(2).data('load') =='true'){
-		return false;
-	}
-	$('#customerTab').find('li').eq(2).data('load','true');
 	let tool = layui.tool, table = layui.table;
-	//项目任务
 	layui.contactTable = table.render({
 		elem: '#contact',
 		title: '联系人列表',
