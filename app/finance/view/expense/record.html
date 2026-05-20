@@ -35,7 +35,7 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const auth = {$authExpense};
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
 	function gouguInit() {
 		var form = layui.form,table = layui.tablePlus,tool=layui.tool, laydatePlus = layui.laydatePlus;
@@ -131,7 +131,7 @@
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 120
+						width: 120,
 						align: 'center',
 						templet:function(d){
 							var status = '打款';

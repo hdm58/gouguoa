@@ -35,8 +35,10 @@ class Api extends BaseController
 		if(!empty($param['cid'])){
 			$where[] = ['customer_id', '=', $param['cid']];
 		}
-		$where[] = ['delete_time', '=', 0];
-		$where[] = ['check_status', '=', 2];		
+		else{
+			$where[] = ['check_status', '=', 2];	
+		}
+		$where[] = ['delete_time', '=', 0];	
 		//是否是合同管理员
 		$auth = isAuth($uid,'contract_admin','conf_1');
 		if($auth == 0){
