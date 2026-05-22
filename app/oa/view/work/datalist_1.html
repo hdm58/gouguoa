@@ -2,11 +2,13 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<div class="layui-tab layui-tab-brief border" lay-filter="tab" style="background-color:#fff; margin:0; border-bottom:0">
-		<ul class="layui-tab-title">
-			<li class="layui-this"><a href="/oa/work/datalist?send=1">发送的汇报</a></li>
-			<li><a href="/oa/work/datalist?send=2">接受的汇报</a></li>
-		</ul>
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this"><a href="/oa/work/datalist?send=1">发送的汇报</a></li>
+				<li><a href="/oa/work/datalist?send=2">接受的汇报</a></li>
+			</ul>
+		</div>
 	</div>
 	<form class="layui-form gg-form-bar border-x" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:180px">

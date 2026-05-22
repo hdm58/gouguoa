@@ -60,6 +60,7 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
 		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, tabs = layui.tabs, form = layui.form;
@@ -192,9 +193,24 @@
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
 							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
 							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
+							var btn4='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记为开票</span>';
+							var btn5='<span class="layui-btn layui-btn-xs" lay-event="open">修改开票信息</span>';
+							var btn6='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="tovoid">作废</span>';
+							var btn7='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="novoid">反作废</span>';
 							html+=btn1;
 							if((d.check_status==0 ||d.check_status==4) && d.admin_id==login_admin){
 								html+=btn2+btn3;
+							}
+							if(d.check_status==2 && auth==1){
+								if(d.open_status==0){
+									html+=btn4;
+								}
+								if(d.open_status==1){
+									html+=btn5+btn6;
+								}
+								if(d.open_status==2){
+									html+=btn7;
+								}
 							}
 							html+='</div>';
 							return html;

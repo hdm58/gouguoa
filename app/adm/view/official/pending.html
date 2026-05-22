@@ -15,6 +15,11 @@
 	<table class="layui-hide" id="table_official" lay-filter="table_official"></table>
 </div>
 
+<script type="text/html" id="toolbarDemo">
+  <div>
+  	<h3>待审公文</h3>
+  </div>
+</script>
 {/block}
 <!-- /主体 -->
 
@@ -27,7 +32,7 @@
 		
 		layui.pageTable = table.render({
 			elem: "#table_official"
-			,toolbar: false
+			,toolbar: "#toolbarDemo"
 			,url: "/adm/official/pending"
 			,page: true
 			,limit: 20

@@ -16,7 +16,6 @@ declare (strict_types = 1);
 namespace app\finance\controller;
 
 use app\base\BaseController;
-use app\finance\model\Invoice as InvoiceModel;
 use app\finance\model\InvoiceIncome;
 use think\exception\ValidateException;
 use think\facade\Db;
@@ -31,7 +30,7 @@ class Income extends BaseController
     public function __construct()
     {
 		parent::__construct(); // 调用父类构造函数
-        $this->model = new InvoiceModel();
+        $this->model = new InvoiceIncome();
     }
 	
     public function datalist()
