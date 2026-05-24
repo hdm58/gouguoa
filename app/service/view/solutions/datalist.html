@@ -1,0 +1,134 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="status">
+				<option value="">审批状态</option>
+				{volist name=":get_solutions_status()" id="vo"}
+					{gt name="$key" value="0"}
+					<option value="{$key}">{$vo}</option>
+					{/gt}
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:100px;">
+			<select name="types">
+				<option value="">方案类型</option>
+					<option value="1">解决方案</option>
+					<option value="2">变通方法</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:320px">
+			<input type="text" name="keywords" placeholder="关键字，标题名称" class="layui-input" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="cate_id" value="0" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_solutions" lay-filter="table_solutions"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-group">
+		<button class="layui-btn layui-btn-sm" lay-event="add">+ 解决方案</button>
+	</div>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = {$auth|default=0};
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus,tool = layui.tool,form = layui.form;			
+		
+		layui.pageTable = table.render({
+			elem: "#table_solutions"
+			, toolbar: "#toolbarDemo"
+			,url: "/service/solutions/datalist"
+			,excel_auth:auth
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-114'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{ field: 'status', title: '状态', align: 'center', width: 90, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					return html;
+					}
+				}
+				,{field:'title',title: '方案名称',minWidth:200}
+				,{field:'types',title: '方案类型', align: 'center', width: 90, templet: function (d) {
+					let types = d.types==1?'解决方案':'变通方法';
+					return types;
+				}}
+				,{field:'cate',title: '所属分类',width:120}
+				,{field:'cost',title: '所需费用',width:80,align:'center'}
+				,{field:'hours',title: '所需工时',width:80,align:'center'}
+				,{field:'director_name',title: '所有者',width:80,align:'center'}
+				,{field:'update_name',title: '最后编辑人',width:90,align:'center'}
+				,{field:'update_time', title: '最后编辑时间',width:150,align:'center'}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					if(d.status==2){
+						html = '<div class="layui-btn-group">'+btn1+'</div>';
+					}
+					else{
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					}					
+					return html;
+				}}
+			]]
+		});
+		
+		//表头工具栏事件
+		table.on('toolbar(table_solutions)', function(obj){
+			if (obj.event === 'add') {
+				tool.side("/service/solutions/add?cid="+$('[name="cate_id"]').val());
+				return;
+			}
+		});
+			
+		table.on('tool(table_solutions)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/service/solutions/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/service/solutions/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/service/solutions/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

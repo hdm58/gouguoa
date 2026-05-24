@@ -1,0 +1,91 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="layui-form p-page">
+	<h3 class="pb-2">服务记录</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">名称主题</td>
+			<td colspan="3">{$detail.title|default='-'}</td>
+			<td class="layui-td-gray">服务人员</td>
+			<td>{$detail.director_name|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">开始日期</td>
+			<td>{$detail.start_time_str|default=''}</td>
+			<td class="layui-td-gray">结束日期</td>
+			<td>{$detail.end_time_str|default=''}</td>
+			<td class="layui-td-gray">所需工时</td>
+			<td>{$detail.hours|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工时费用</td>
+			<td>{$detail.work_total|default='-'}</td>
+			<td class="layui-td-gray">其他费用</td>
+			<td>{$detail.fee|default='-'}</td>
+			<td class="layui-td-gray">总 费 用</td>
+			<td>{$detail.amount|default='-'}</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">方案内容</td>
+			<td colspan="5"><pre style="font-family:inherit">{$detail.content}</pre></td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var id = {$detail.id|default=0};
+	var moduleInit = ['tool'];
+	function gouguInit() {
+		let tool = layui.tool;
+		$('body').on('click','.check',function(){
+			let status = $(this).data('status');
+			if(status==1){
+				tool.ask('确认要反审批该方案？',function(){
+					let callback=function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							parent.layui.pageTable.reload();
+							location.reload();
+						}
+					}
+					tool.post("/service/api/solutions_check", {id:id,status:status}, callback);
+				});
+			}
+			if(status>1){
+				layer.prompt({
+					formType: 2,
+					title: '请输入审批理由',
+					area: ['360px', '100px'] //自定义文本域宽高
+				}, function(value, index, elem){
+					let callback=function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							parent.layui.pageTable.reload();
+							location.reload();
+						}
+					}
+					tool.post("/service/api/solutions_check", {id:id,status:status,status_remark:value}, callback);
+				});
+			}
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

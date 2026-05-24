@@ -1,0 +1,88 @@
+<div>
+	<table class="layui-hide" id="table_task" lay-filter="table_task"></table>
+</div>
+<script type="text/html" id="toolbarTask">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm" type="button" lay-event="add">+ 添加任务</button>
+  </div>
+</script>
+<script>
+	function view_task() {
+		var form = layui.form, tool = layui.tool,table = layui.tablePlus,element=layui.element;
+		layui.taskTable = table.render({
+			elem: "#table_task"
+			, toolbar: "#toolbarTask"
+			,url: "/task/index/datalist"
+			,page: true
+			,limit: 20
+			,where:{problems_id:problems_id}
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{ field: 'status', title: '状态', align: 'center', width: 90, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					return html;
+					}
+				}
+				,{field:'title',title: '主题名称',minWidth:240}
+				,{field:'cate',title: '任务类别',width:100,align:'center'}
+				,{field:'director_name',title: '指派人',width:80,align:'center'}
+				,{field:'priority_name',title: '优先级',width:80,align:'center'}
+				,{field:'open_time',title: '计划周期',width:180,align:'center',templet: function(d){
+					html = d.start_time+'至'+d.end_time;
+					return html;
+				}}
+				,{field:'hours',title: '估计工作量',width:90,align:'center'}
+				,{field:'rate',title: '完成进度(%)',width:120,align:'center', templet: function (d) {
+					var html = '<div style="padding-top:15px"><span style="display:none">'+d.rate+'%</span><div class="layui-progress" lay-filter="ratio" lay-showpercent="true"><div class="layui-progress-bar" lay-percent="'+d.rate+'%"></div></div></div>';
+					return html;
+				}}
+				,{field:'open_time',title: '实际开始日期',width:100,align:'center'}
+				,{field:'over_time',title: '实际结束日期',width:100,align:'center'}
+				,{field:'cost',title: '附加成本(元)',width:100,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					return html;
+				}}
+			]],
+			done:function(){
+				element.render('progress', 'ratio')
+			}
+		});
+			
+		table.on('toolbar(table_task)',function (obj) {
+			if (obj.event === 'add') {
+				tool.side("/task/index/add?problems_id="+problems_id);	
+			}
+		});	 	
+		table.on('tool(table_task)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/task/index/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/task/index/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/task/index/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>

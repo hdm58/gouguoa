@@ -1,0 +1,151 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-tab-title .layui-this{background-color:#fff;}
+.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0;}
+.layui-card-tips {color: #969696;}
+.layui-card-value {padding: 4px 0 16px;font-size: 18px;color: #1E9FFF;}
+.layui-tab.layui-tab-card{margin:0;}
+.layui-tab-content{background-color:#fff;}
+.table-content img{max-width:100%;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3><span class="font20">{$detail.title}</span></h3>
+	<div class="py-3">
+		{$detail.admin_name} 创建于{$detail.create_time}
+	</div>
+	<div class="layui-tabs layui-tab-brief" id="projectTab">
+		<ul class="layui-tabs-header border-t border-x bg-white">
+			<li class="layui-this">详细信息</li>
+			<li data-load="">解决方案</li>
+			<li data-load="">服务记录</li>
+		</ul>
+		<div class="layui-tabs-body" style="padding:0">
+			<div class="layui-tabs-item layui-show">
+				<table class="layui-table layui-table-form">
+					<tr>
+						<td class="layui-td-gray">所属分类</td>
+						<td>{$detail.cate}</td>
+						<td class="layui-td-gray">关联客户</td>
+						<td colspan="3">{$detail.customer|default='-'}</td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">指 派 人</td>
+						<td>{$detail.director_name|default='-'}</td>
+						<td class="layui-td-gray">关联合同</td>
+						<td colspan="3">{$detail.contract|default='-'}</td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">紧 急 度</td>
+						<td>{$detail.emergent_name}</td>
+						<td class="layui-td-gray">关联项目</td>
+						<td colspan="3">{$detail.project|default='-'}</td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">优 先 级</td>
+						<td>{$detail.priority_name}</td>
+						<td class="layui-td-gray">项目状态</td>
+						<td>{$detail.status_name}</td>
+						{eq name="$detail.status" value="4"}
+						<td class="layui-td-gray">完成日期</td>
+						<td>{$detail.finish_time|default=''}</td>
+						{/eq}
+						{eq name="$detail.status" value="5"}
+						<td class="layui-td-gray">关闭日期</td>
+						<td>{$detail.over_time|default=''}</td>
+						{/eq}
+					</tr>
+					{notempty name="$detail.file_ids"}
+					<tr>
+						<td colspan="6" style="background-color:#FAFAFA"><strong>相关附件</strong></td>
+					</tr>
+					<tr>
+						<td class="layui-td-gray">相关附件</td>
+						<td colspan="5" style="line-height:inherit">
+							<div class="layui-row">
+								{volist name="$detail.file_array" id="vo"}
+								<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+								{/volist}
+							</div>
+						</td>
+					</tr>
+					{/notempty}
+					<tr>
+						<td colspan="6" style="background-color:#FAFAFA"><strong>问题描述</strong></td>
+					</tr>
+					<tr>
+						<td colspan="6" id="content" class="table-content">{$detail.content|raw}</td>
+					</tr>
+				</table>
+			</div>
+			
+			<div class="layui-tabs-item">
+				<table class="layui-table layui-table-form">
+					{empty name="$methods"}
+					<tr>
+						<td style="background-color:#FAFAFA">
+							<strong>变通方法</strong>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding:10px; text-align:center; color:#999">暂无方法 <span class="layui-btn layui-btn-xs side-a" data-href="/service/solutions/add?problems_id={$detail.id}&types=2"><i class="layui-icon"></i>新增</span></td>						
+					</tr>
+					{else/}
+					<tr>
+						<td style="background-color:#FAFAFA">
+							<strong>变通方法</strong>
+							{neq name="$methods.status" value="2"}
+							<span class="blue side-a" style="cursor:pointer" data-href="/service/solutions/add?id={$methods.id}">[编辑]</span>
+							{/neq}
+						</td>
+					</tr>
+					<tr>						
+						<td class="table-content">{$methods.content|raw}</td>
+					</tr>
+					{/empty}
+					{empty name="$solutions"}
+					<tr>
+						<td style="background-color:#FAFAFA"><strong>解决方案</strong></td>
+					</tr>
+					<tr>						
+						<td style="padding:10px; text-align:center; color:#999">暂无方法 <span class="layui-btn layui-btn-xs side-a" data-href="/service/solutions/add?problems_id={$detail.id}&types=1"><i class="layui-icon"></i>新增</span></td>
+					</tr>
+					{else/}
+					<tr>
+						<td style="background-color:#FAFAFA">
+							<strong>解决方案</strong>
+							{neq name="$solutions.status" value="2"}
+							<span class="blue side-a" style="cursor:pointer" data-href="/service/solutions/add?id={$solutions.id}">[编辑]</span>
+							{/neq}
+						</td>
+					</tr>
+					<tr>						
+						<td class="table-content">{$solutions.content|raw}</td>
+					</tr>
+					{/empty}
+				</table>		
+			</div>
+			<div class="layui-tabs-item">
+				{include file="/problems/view_work" /}				
+			</div>
+			
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var problems_id = {$detail.id};
+	var moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,table = layui.tablePlus;
+		view_work();
+	}
+</script>
+{/block}
+<!-- /脚本 -->

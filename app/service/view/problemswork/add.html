@@ -1,0 +1,88 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page" lay-filter="solutionsform">
+	<h3 class="pb-2">服务记录</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">服务内容<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" placeholder="请输入服务内容" lay-verify="required" lay-reqText="请输入服务内容" class="layui-input" value="{$detail.title|default=''}"></td>
+			<td class="layui-td-gray">服务人员<font>*</font></td>
+			<td>
+				<input type="text" name="director_name" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善服务人员" class="layui-input picker-admin" value="{$detail.director_name|default=''}">
+				<input type="hidden" name="director_id" value="{$detail.director_id|default=0}">
+			</td>	
+		</tr>
+		<tr>
+			<td class="layui-td-gray">开始日期<font>*</font></td>
+			<td><input type="text" name="start_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善开始日期" class="layui-input tool-time" value="{$detail.start_time|default=''}"></td>
+			<td class="layui-td-gray">结束日期<font>*</font></td>
+			<td><input type="text" name="end_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善结束日期" class="layui-input tool-time" value="{$detail.end_time|default=''}"></td>
+			<td class="layui-td-gray">所需工时<font>*</font></td>
+			<td><input type="text" name="hours" placeholder="请输入" lay-verify="required|number" lay-reqText="请完善所需工时" class="layui-input" value="{$detail.hours|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工时费用</td>
+			<td><input type="text" name="work_total" placeholder="请输入" lay-verify="number" class="layui-input" value="{$detail.work_total|default=''}"></td>
+			<td class="layui-td-gray">其他费用</td>
+			<td><input type="text" name="fee" placeholder="请输入" lay-verify="number" class="layui-input" value="{$detail.fee|default=''}"></td>
+			<td class="layui-td-gray">总 费 用<font>*</font></td>
+			<td><input type="text" name="amount" placeholder="请输入" lay-verify="number" class="layui-input" value="{$detail.amount|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">补充描述</td>
+			<td colspan="5"><textarea name="content" placeholder="请输入内容" class="layui-textarea">{$detail.content|default=''}</textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<input type="hidden" name="problems_id" value="{$problems_id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','uploadPlus'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,uploadPlus = layui.uploadPlus;
+		//附件上传
+		var attachment = new uploadPlus({
+			"target":'uploadBtn',
+			"targetBox":'uploadBox'
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/service/problemswork/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

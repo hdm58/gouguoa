@@ -1,0 +1,110 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page" lay-filter="solutionsform">
+	<h3 class="pb-2">{$types==1?'解决方案':'变通方法'}</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">方案名称<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" placeholder="请输入方案名称" lay-verify="required" lay-reqText="请输入方案名称" class="layui-input" value="{$detail.title|default=''}"></td>
+			<td class="layui-td-gray">所属分类<font>*</font></td>
+			<td>
+				{eq name="$id" value="0"}
+				<select name="cate_id" lay-verify="required" lay-reqText="请选择所属分类">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('solutions_cate')" id="vo"}
+						<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+				{else/}
+				<select name="cate_id" lay-verify="required" lay-reqText="请选择所属分类">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('solutions_cate')" id="vo"}
+						<option value="{$vo.id}" {eq name="$detail.cate_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+				{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所有者<font>*</font></td>
+			<td>
+				<input type="text" name="director_name" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善所有者" class="layui-input picker-admin" value="{$detail.director_name|default=''}">
+				<input type="hidden" name="director_id" value="{$detail.director_id|default=0}">
+			</td>
+			<td class="layui-td-gray">所需工时<font>*</font></td>
+			<td><input type="text" name="hours" placeholder="请输入" lay-verify="required|number" lay-reqText="请完善所需工时" class="layui-input" value="{$detail.hours|default=''}"></td>
+			<td class="layui-td-gray">所需费用<font>*</font></td>
+			<td><input type="text" name="cost" placeholder="请输入" lay-verify="required|number" lay-reqText="请完善所需费用" class="layui-input" value="{$detail.cost|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
+			</td>
+			<td colspan="5" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">方案内容<font>*</font></td>
+			<td colspan="5"><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content|default=''}</textarea></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<input type="hidden" name="problems_id" value="{$problems_id|default=0}"/>
+		<input type="hidden" name="types" value="{$types|default=1}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','tinymce','uploadPlus'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,uploadPlus = layui.uploadPlus;
+		//编辑器初始化
+		var editor = layui.tinymce;
+		var edit = editor.render({
+			selector: "#container",
+			menubar:false,
+			images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+			height: 500
+		});
+		//附件上传
+		var attachment = new uploadPlus({
+			"target":'uploadBtn',
+			"targetBox":'uploadBox'
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			data.field.content = tinyMCE.editors['container'].getContent();
+			if (data.field.content == '') {
+				layer.msg('请完善方案内容');
+				return false;
+			}
+			tool.post("/service/solutions/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

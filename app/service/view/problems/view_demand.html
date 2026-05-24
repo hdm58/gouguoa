@@ -1,0 +1,93 @@
+<div>
+	<table class="layui-hide" id="table_demand" lay-filter="table_demand"></table>
+</div>
+<script type="text/html" id="toolbarDemand">
+	<div class="layui-btn-group">
+		<button class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe61f;</i>添加关联</button>
+		<button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del"><i class="layui-icon">&#x1006;</i>删除关联</button>
+	</div>
+</script>
+<script>
+	function view_demand() {
+		var form = layui.form, tool = layui.tool,table = layui.tablePlus,oaPicker = layui.oaPicker;
+		layui.demandTable = table.render({
+			elem: "#table_demand"
+			, toolbar: "#toolbarDemand"
+			,url: "/problems/api/get_problems_demand"
+			,page: true
+			,limit: 20
+			,where:{problems_id:problems_id}
+			,cellMinWidth: 60
+			,cols: [[
+				{type: 'checkbox', fixed: 'left'},
+				{field:'pcid',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '请求名称',minWidth:240}
+				,{field:'request_name',title: '请求人',width:80,align:'center'}
+				,{field:'director_name',title: '指派人',width:80,align:'center'}
+				,{field:'end_time',title: '逾期时间',width:100,align:'center'}
+				,{field:'cate',title: '关联分类',width:120,align:'center'}
+				,{field:'admin_name',title: '创建人',width:80,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:60,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					return btn1;
+				}}
+			]]
+		});
+		
+		table.on('toolbar(table_demand)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = checkStatus.data;			
+			if (obj.event === 'add') {
+				let types = 'demand',type = 2,map = {problems_id:problems_id},ids=[];
+				let setcallback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						layui.demandTable.reload();
+					}
+				}
+				
+				let callback = function(data){
+					layer.closeAll()
+					for ( var i = 0; i <data.length; i++){
+						ids.push(data[i].id);
+					}
+					tool.post("/problems/api/set", {problems_id:problems_id,ids:ids.join(',')}, setcallback);
+				}
+				oaPicker.picker(types,type,callback,map);
+			}
+			if (obj.event === 'del') {
+				if(data.length==0){
+					layer.msg('请选择要操作的请求');
+					return false;
+				}
+				var idsArray=[];
+				for(var i=0;i<data.length;i++){
+					idsArray.push(data[i].pcid);
+				}
+				layer.confirm('您确定要把选中的记录取消关联?', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.demandTable.reload();
+						}
+					}
+					tool.post("/problems/api/del", {ids: idsArray.join(',')}, callback);
+					layer.close(index);
+				});
+			}
+			return false;
+		});	  
+		table.on('tool(table_demand)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/demand/index/view?id="+data.id);
+			}
+			return false;
+		});
+	}
+</script>

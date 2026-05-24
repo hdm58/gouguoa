@@ -1,0 +1,98 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:320px">
+			<input type="text" name="keywords" placeholder="关键字，服务内容" class="layui-input" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="cate_id" value="0" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_solutions" lay-filter="table_solutions"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+	<h3>服务记录</h3>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = {$auth|default=0};
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus,tool = layui.tool,form = layui.form;			
+		
+		layui.pageTable = table.render({
+			elem: "#table_solutions"
+			, toolbar: "#toolbarDemo"
+			,url: "/service/problemswork/datalist"
+			,excel_auth:auth
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-114'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '工作内容',minWidth:240}
+				,{field: 'director_name', title: '所属人员', align:'center',width:80}
+				,{field: 'start_time', title: '工作时间范围', align:'center',width:200,templet:function(d){
+					var html=d.start_time_str+' 至 '+d.end_time_str;
+					return html;
+				}}
+				,{field: 'hours', title: '工时', align:'center',width:80}
+				,{field: 'work_total', title: '工时费用(元)', align:'center',width:100}
+				,{field: 'fee', title: '其它费用(元)', align:'center',width:100}
+				,{field: 'amount', title: '总计费用(元)', align:'center',width:100}
+				,{field:'admin_name', title: '创建人',width:90,align:'center'}
+				,{field:'create_time_str', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+'</div>';
+					if(d.admin_id == login_admin){
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+
+		table.on('tool(table_solutions)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/service/problemswork/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/service/problemswork/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/service/problemswork/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

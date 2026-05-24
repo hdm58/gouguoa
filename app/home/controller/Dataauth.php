@@ -95,6 +95,10 @@ class dataauth extends BaseController
 			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');
             $detail['conf_1_str'] = implode(',', $conf_1_str);
 		}
+		if($detail['name'] =='service_admin'){
+			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');
+            $detail['conf_1_str'] = implode(',', $conf_1_str);
+		}
 		if($detail['name'] =='disk_admin'){
 			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');
             $detail['conf_1_str'] = implode(',', $conf_1_str);

@@ -1,0 +1,184 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">售后问题</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">问题主题<font>*</font></td>
+			<td><input type="text" name="title" lay-verify="required" placeholder="请输入问题主题" lay-reqText="请输入问题主题" class="layui-input" value="{$detail.title|default=''}"></td>
+			<td class="layui-td-gray">关联客户<font>*</font></td>
+			<td>
+				<input type="text" name="customer" lay-verify="required" readonly placeholder="请选择" lay-reqText="请完善关联的客户" class="layui-input picker-oa" data-types="customer" value="{$detail.customer|default=''}">
+				<input type="hidden" name="customer_id" value="{$detail.customer_id|default=0}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">所属分类<font>*</font></td>
+			<td>
+				{eq name="$id" value="0"}
+				<select name="cate_id" lay-verify="required" lay-reqText="请选择所属分类">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('problems_cate')" id="vo"}
+						<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+				{else/}
+				<select name="cate_id" lay-verify="required" lay-reqText="请选择所属分类">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('problems_cate')" id="vo"}
+						<option value="{$vo.id}" {eq name="$detail.cate_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+				{/eq}
+			</td>
+			<td class="layui-td-gray">指派人</td>
+			<td>
+				<input type="text" name="director_name" readonly placeholder="请选择" class="layui-input picker-admin" value="{$detail.director_name|default=''}">
+				<input type="hidden" name="director_id" value="{$detail.director_id|default=0}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联合同</td>
+			<td>
+				<input type="text" name="contract" placeholder="请选择" readonly class="layui-input picker-oa" data-types="contract" value="{$detail.contract|default=''}">
+				<input type="hidden" name="contract_id" value="{$detail.contract_id|default=0}">
+			</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td>
+				<input type="text" name="project" readonly placeholder="请选择" class="layui-input picker-oa" data-types="project" value="{$detail.project|default=''}">
+				<input type="hidden" name="project_id" value="{$detail.project_id|default=0}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">紧急度<font>*</font></td>
+			<td>
+				{eq name="$id" value="0"}
+				<select name="emergent">
+					{volist name=":get_emergent()" id="vo"}
+						{gt name="$key" value="0"}
+						<option value="{$key}">{$vo}</option>
+						{/gt}
+					{/volist}
+				</select>
+				{else/}
+				<select name="emergent">
+					{volist name=":get_emergent()" id="vo"}
+						{gt name="$key" value="0"}
+						<option value="{$key}" {eq name="$detail.emergent" value="$key"} selected{/eq}>{$vo}</option>
+						{/gt}
+					{/volist}
+				</select>
+				{/eq}
+			</td>
+			<td class="layui-td-gray">优先级<font>*</font></td>
+			<td>
+				{eq name="$id" value="0"}
+				<select name="priority">
+					{volist name=":get_priority()" id="vo"}
+						{gt name="$key" value="0"}
+						<option value="{$key}">{$vo}</option>
+						{/gt}
+					{/volist}
+				</select>
+				{else/}
+				<select name="priority">
+					{volist name=":get_priority()" id="vo"}
+						{gt name="$key" value="0"}
+						<option value="{$key}" {eq name="$detail.priority" value="$key"} selected{/eq}>{$vo}</option>
+						{/gt}
+					{/volist}
+				</select>
+				{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">问题日期<font>*</font></td>
+			<td><input type="text" name="problem_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善问题日期" class="layui-input tool-time" value="{$detail.problem_time|default=''}"></td>
+			<td class="layui-td-gray">状态<font>*</font></td>
+			<td>
+				{eq name="$id" value="0"}
+				<select name="status">
+					{volist name=":get_status()" id="vo"}
+						{gt name="$key" value="0"}
+						<option value="{$key}">{$vo}</option>
+						{/gt}
+					{/volist}
+				</select>
+				{else/}
+				<select name="status">
+					{volist name=":get_status()" id="vo"}
+						{gt name="$key" value="0"}
+						<option value="{$key}" {eq name="$detail.status" value="$key"} selected{/eq}>{$vo}</option>
+						{/gt}
+					{/volist}
+				</select>
+				{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<button type="button" class="layui-btn layui-btn-sm" id="uploadBtn"><i class="layui-icon"></i>附件上传</button>
+			</td>
+			<td colspan="3" style="line-height:inherit">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadImg{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">问题描述<font>*</font></td>
+			<td colspan="3"><textarea name="content" class="layui-textarea"  id="container" style="border:0;padding:0">{$detail.content|default=''}</textarea></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','tinymce','uploadPlus'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,uploadPlus = layui.uploadPlus;
+		//附件上传
+		var attachment = new uploadPlus({
+			"target":'uploadBtn',
+			"targetBox":'uploadBox'
+		});
+		//编辑器初始化
+		var editor = layui.tinymce;
+		var edit = editor.render({
+			selector: "#container",
+			menubar:false,
+			images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+			height: 360
+		});
+		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			data.field.content = tinyMCE.editors['container'].getContent();
+			tool.post("/service/problems/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->
