@@ -14,12 +14,15 @@ declare (strict_types = 1);
 namespace app\finance\controller;
 
 use app\api\BaseController;
+use app\finance\model\Account;
 use app\finance\model\Loan;
 use app\finance\model\Expense;
 use app\finance\model\Invoice;
 use app\finance\model\InvoiceIncome;
 use app\finance\model\Ticket;
 use app\finance\model\TicketPayment;
+use app\finance\model\IncomeRefund;
+use app\api\model\FinanceLog;
 use think\facade\Db;
 use think\facade\View;
 
@@ -76,7 +79,22 @@ class Api extends BaseController
 		return table_assign(0, '', $list);
     }
 	
-    //获取销项发票
+    //获取资金账户
+    public function get_account()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['delete_time', '=', 0];
+		$where[] = ['status', '=', 1];
+		if(!empty($param['enterprise_id'])){
+			$where[] = ['enterprise_id', '=', $param['enterprise_id']];
+		}
+		$model = new Account();
+		$list = $model->datalist($param,$where);
+		return table_assign(0, '', $list);
+    }
+
+	//获取销项发票
     public function get_invoice()
     {
 		$param = get_params();
@@ -385,6 +403,178 @@ class Api extends BaseController
 			$param['update_time'] = time();
             $res = Ticket::where('id', $param['id'])->strict(false)->field('update_time,other_file_ids')->update($param);
             if ($res !== false) {
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+	
+    //确认收款
+    public function confirm_income()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthIncome($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有到账付款权限，请联系管理员或者HR");
+			}
+			$status = InvoiceIncome::where('id', $param['id'])->value('status');
+			if($status==2){
+				return to_assign(1, "该记录已确认，请勿重复操作");
+			}
+			$param['confirm_uid'] = $this->uid;
+			$param['confirm_time'] = time();
+			$param['status'] = 2;
+            $res = InvoiceIncome::where('id', $param['id'])->strict(false)->field('confirm_uid,confirm_time,status')->update($param);
+            if ($res !== false) {
+                add_log('confirm', $param['id'],$param,'付款');
+				$log=new FinanceLog();
+				$log->add('income',$param['id']);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+
+    //反确认收款
+    public function unconfirm_income()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthIncome($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有反确认付款权限，请联系管理员或者HR");
+			}
+			$status = InvoiceIncome::where('id', $param['id'])->value('status');
+			if($status==1){
+				return to_assign(1, "该记录已反确认，请勿重复操作");
+			}
+			$count = Db::name('IncomeRefund')->where([['income_id','=',$param['id']],['delete_time','=',0]])->count();
+			if($count>0){
+				return to_assign(1, "该记录已有退款记录，不支持反确认操作");
+			}
+			$param['confirm_uid'] = 0;
+			$param['confirm_time'] = 0;
+			$param['status'] = 1;
+            $res = InvoiceIncome::where('id', $param['id'])->strict(false)->field('confirm_uid,confirm_time,status')->update($param);
+            if ($res !== false) {
+                add_log('unconfirm', $param['id'],$param,'付款');
+				$log=new FinanceLog();
+				$log->del('income',$param['id']);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+	
+    //确认付款
+    public function confirm_payment()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthPayment($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有付款确认权限，请联系管理员或者HR");
+			}
+			$status = TicketPayment::where('id', $param['id'])->value('status');
+			if($status==2){
+				return to_assign(1, "该记录已确认，请勿重复操作");
+			}
+			$param['confirm_uid'] = $this->uid;
+			$param['confirm_time'] = time();
+			$param['status'] = 2;
+            $res = TicketPayment::where('id', $param['id'])->strict(false)->field('confirm_uid,confirm_time,status')->update($param);
+            if ($res !== false) {
+                add_log('confirm', $param['id'],$param,'付款');
+				$log=new FinanceLog();
+				$log->add('payment',$param['id']);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+
+    //反确认付款
+    public function unconfirm_payment()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthPayment($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有反确认付款权限，请联系管理员或者HR");
+			}
+			$status = TicketPayment::where('id', $param['id'])->value('status');
+			if($status==1){
+				return to_assign(1, "该记录已反确认，请勿重复操作");
+			}
+			$param['confirm_uid'] = 0;
+			$param['confirm_time'] = 0;
+			$param['status'] = 1;
+            $res = TicketPayment::where('id', $param['id'])->strict(false)->field('confirm_uid,confirm_time,status')->update($param);
+            if ($res !== false) {
+                add_log('unconfirm', $param['id'],$param,'付款');
+				$log=new FinanceLog();
+				$log->del('payment',$param['id']);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+	
+    //确认退款
+    public function confirm_refund()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthPayment($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有付款确认权限，请联系管理员或者HR");
+			}
+			$status = IncomeRefund::where('id', $param['id'])->value('status');
+			if($status==2){
+				return to_assign(1, "该记录已确认，请勿重复操作");
+			}
+			$param['confirm_uid'] = $this->uid;
+			$param['confirm_time'] = time();
+			$param['status'] = 2;
+            $res = IncomeRefund::where('id', $param['id'])->strict(false)->field('confirm_uid,confirm_time,status')->update($param);
+            if ($res !== false) {
+                add_log('confirm', $param['id'],$param,'退款');
+				$log=new FinanceLog();
+				$log->add('refund',$param['id']);
+                return to_assign();
+            } else {
+                return to_assign(1, "操作失败");
+            }
+        }
+    }
+
+    //反确认退款
+    public function unconfirm_refund()
+    {
+        $param = get_params();
+        if (request()->isAjax()) {
+			$auth = isAuthPayment($this->uid);
+			if($auth == 0){
+				return to_assign(1, "你没有反确认付款权限，请联系管理员或者HR");
+			}
+			$status = IncomeRefund::where('id', $param['id'])->value('status');
+			if($status==1){
+				return to_assign(1, "该记录已反确认，请勿重复操作");
+			}
+			$param['confirm_uid'] = 0;
+			$param['confirm_time'] = 0;
+			$param['status'] = 1;
+            $res = IncomeRefund::where('id', $param['id'])->strict(false)->field('confirm_uid,confirm_time,status')->update($param);
+            if ($res !== false) {
+                add_log('unconfirm', $param['id'],$param,'退款');
+				$log=new FinanceLog();
+				$log->del('refund',$param['id']);
                 return to_assign();
             } else {
                 return to_assign(1, "操作失败");

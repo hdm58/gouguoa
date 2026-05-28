@@ -16,7 +16,6 @@ declare (strict_types = 1);
 namespace app\finance\controller;
 
 use app\base\BaseController;
-use app\finance\model\Ticket as TicketModel;
 use app\finance\model\TicketPayment;
 use think\exception\ValidateException;
 use think\facade\Db;
@@ -31,31 +30,66 @@ class Payment extends BaseController
     public function __construct()
     {
 		parent::__construct(); // 调用父类构造函数
-        $this->model = new TicketModel();
+        $this->model = new TicketPayment();
     }
 	
     public function datalist()
     {
-		$auth = isAuthPayment($this->uid);
+		$uid = $this->uid;
+		$auth = isAuthPayment($uid);
         if (request()->isAjax()) {
             $param = get_params();
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
+			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
             $where[] = ['delete_time', '=', 0];
-            $where[] = ['check_status', '=', 2];
-            $where[] = ['open_status', '=', 1];
-			$where[] = ['invoice_type','>',0];
+			if($tab == 0){
+				if($auth == 0){
+					$whereOr[] = ['admin_id', '=', $this->uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+					$whereOr[] = ['did','in',$dids_son];
+				}
+			}
+			if($tab == 1){
+				//我创建的
+				$where[] = ['admin_id', '=', $this->uid];
+			}
+			if($tab == 2){
+				//待我审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+			}
+			if($tab == 3){
+				//我已审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+			}
+			if($tab == 4){
+				//抄送给我的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+			}
 			//按时间检索
-			if (!empty($param['diff_time'])) {
-				$diff_time =explode('~', $param['diff_time']);
-				$where[] = ['pay_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+			if (!empty($param['create_time'])) {
+				$create_time =explode('~', $param['create_time']);
+				$where[] = ['create_time', 'between', [strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
 			}
-            if (isset($param['pay_status']) && $param['pay_status']!='') {
-                $where[] = ['pay_status', '=', $param['pay_status']];
+			if (!empty($param['pay_time'])) {
+				$pay_time =explode('~', $param['pay_time']);
+				$where[] = ['pay_time', 'between', [strtotime(urldecode($pay_time[0])),strtotime(urldecode($pay_time[1].' 23:59:59'))]];
+			}
+			if (!empty($param['fundscate_id'])) {
+                $where[] = ['fundscate_id', '=', $param['fundscate_id']];
             }
-			if($auth == 0){
-				$where[] = ['admin_id','=',$this->uid];
-			}
+            if (!empty($param['paytype_id'])) {
+                $where[] = ['paytype_id', '=', $param['paytype_id']];
+            }
+			if (!empty($param['status'])) {
+                $where[] = ['status', '=', $param['status']];
+            }
+			if (isset($param['check_status']) && $param['check_status'] != "") {
+                $where[] = ['check_status', '=', $param['check_status']];
+            }
 			$list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         } else {
@@ -64,133 +98,41 @@ class Payment extends BaseController
         }
     }
 
-    //查看
+    //新增
     public function add()
     {
         $param = get_params();
-		$auth = isAuthPayment($this->uid);
         if (request()->isAjax()) {   
-			if($auth == 0){
-				return to_assign(1, "你没有付款管理权限，请联系管理员或者HR");
+			$id = isset($param['id']) ? $param['id'] : 0;
+            if($param['ticket_id']>0); {
+				//计算发票已付款的金额
+				$hasPayment = $this->model->where([['id','<>',$id],['ticket_id','=',$param['ticket_id']],['status','in',[1,2]]])->sum('amount');
+				//查询发票金额
+				$ticketAmount = Db::name('Ticket')->where(['id'=>$param['ticket_id']])->value('amount');
+				if(($param['amount']*10000 + $hasPayment*10000) > $ticketAmount*10000){
+					return to_assign(1,'付款金额大于关联发票金额，不允许保存，请核对');
+				}
 			}
-            $ticket_id = $param['ticket_id'];   
-            $admin_id = $this->uid;
-            //计算已付款的金额
-            $hasPay = TicketPayment::where(['ticket_id'=>$ticket_id,'status'=>1])->sum('amount');
-            //查询发票金额
-            $ticketAmount = $this->model->where(['id'=>$ticket_id])->value('amount');
-            if($param['pay_type']==1){ //单个付款记录
-                //相关内容多个数组
-                $payPriceData=isset($param['amount'])? $param['amount'] : '';
-                $payTimeData=isset($param['pay_time'])? $param['pay_time'] : '';
-                $remarksData=isset($param['remarks'])? $param['remarks'] : '';
-
-                //把合同协议关联的单个内容的发票入账明细重新添加
-                if($payPriceData){
-                    $pay_price = 0;
-                    $insert = [];
-		            $time = time();
-                    foreach ($payPriceData as $key => $value) {
-                        if (!$value ) continue;
-                        $insert[] = [
-                            'ticket_id' => $ticket_id,
-						    'amount' 	=> $value,
-						    'pay_time' => $payTimeData[$key]? strtotime($payTimeData[$key]) : 0,
-						    'remarks' 	    => $remarksData[$key],
-						    'admin_id' 	    => $admin_id,
-						    'create_time'		=> $time
-						];
-                        $pay_price += $value*100;
-                    }
-                    if(($pay_price + $hasPay*100)> $ticketAmount*100){
-                        return to_assign(1,'付款金额大于发票金额，不允许保存');
-                    }
-                    else{
-                        $res = TicketPayment::strict(false)->field(true)->insertAll($insert);
-                        if($res!==false){
-                            if(($pay_price + $hasPay*100) == $ticketAmount*100){
-                                //发票全部付款
-                                $this->model->where(['id'=>$ticket_id])->update(['pay_status'=>2,'pay_amount'=>$ticketAmount,'pay_time'=>time()]);
-                            }
-                            else if(($pay_price + $hasPay*100) < $ticketAmount*100){
-                                $payTotal=($pay_price + $hasPay*100)/100;
-                                //发票部分付款
-                                $this->model->where(['id'=>$ticket_id])->update(['pay_status'=>1,'pay_amount'=>$payTotal,'pay_time'=>time()]);
-                            }
-                            add_log('add',$ticket_id,$param);
-                            return to_assign();
-                        }
-                        else{
-                            return to_assign(1,'保存失败');
-                        }
-                    }
-                }
-                else{
-                    return to_assign(1,'提交的付款数据异常，请核对再提交');
-                }         
-            }
-            else if($param['pay_type']==2){ //全部付款记录
-                $pay_price = ($ticketAmount*100-$hasPay*100)/100;
-                $data = [
-                    'ticket_id' => $ticket_id,
-                    'amount' => $pay_price,
-                    'pay_time' => isset($param['pay_time'])? strtotime($param['pay_time']) : 0,
-                    'remarks' => '一次性全部付款',
-                    'admin_id' => $admin_id,
-                    'create_time' => time()
-                ];
-                $res = TicketPayment::strict(false)->field(true)->insertGetId($data);
-                if($res!==false){
-                    //设置发票全部付款
-                    $this->model->where(['id'=>$ticket_id])->update(['pay_status'=>2,'pay_amount'=>$ticketAmount,'pay_time'=>time()]);
-                    add_log('add',$ticket_id,$param);
-                    return to_assign();
-                }
-            }
-            else if ($param['pay_type']==3) {//全部反账记录
-                //作废初始化发票付款数据
-                $res = TicketPayment::where(['ticket_id'=>$ticket_id])->update(['status'=>'6','update_time'=>time()]);
-                if($res!==false){
-                    //设置发票全部没付款
-                    $this->model->where(['id'=>$ticket_id])->update(['pay_status'=>0,'pay_amount'=>0,'pay_time'=>0]);
-                    add_log('tovoid',$ticket_id,$param);
-                    return to_assign();
-                }                
-            }
-        }
+			if(!empty($param['pay_time'])){
+				$param['pay_time']=strtotime($param['pay_time']);
+			}
+			if($id==0){
+				$param['admin_id'] = $this->uid;
+				$param['did'] = $this->did;
+				$this->model->add($param);
+			}
+			else{
+				$this->model->edit($param);
+			}
+		}
         else{
-			if($auth == 0){
-				return view(EEEOR_REPORTING,['code'=>405,'warning'=>'无权限访问']);
-			}
             $id = isset($param['id']) ? $param['id']: 0 ;
-            $detail = $this->model->getById($id);
-			if(empty($detail)){
-				return view(EEEOR_REPORTING,['code'=>404,'warning'=>'找不到记录']);
+			if($id>0){
+				$detail = $this->model->getById($id);
+				View::assign('detail', $detail);
 			}
-			$detail['subject'] = Db::name('Enterprise')->where(['id' =>$detail['invoice_subject']])->value('title');
-			$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-			$detail['file_array'] = $file_array;
-			$other_file_array = Db::name('File')->where('id','in',$detail['other_file_ids'])->select();
-			$detail['other_file_array'] = $other_file_array;
-			if($detail['open_status']>0){
-				$detail['open_admin_name'] = Db::name('Admin')->where('id','=',$detail['open_admin_id'])->value('name');
-			}
-			$not_pay =  ($detail['amount']*100 - $detail['pay_amount']*100)/100;
-			$detail['not_pay'] = sprintf("%.2f",$not_pay);
-			//已付款的记录
-			$detail['payment'] = TicketPayment::field('i.*,a.name as admin')
-				->alias('i')
-				->join('Admin a', 'a.id = i.admin_id', 'LEFT')
-				->where(['i.ticket_id'=>$id,'i.status'=>1])
-				->order('i.pay_time desc')
-				->select();
-            View::assign('uid', $this->uid);
-            View::assign('id', $id);
-            View::assign('detail', $detail);
-			if($detail['invoice_type'] == 0){
-				return view('add_a');
-			}
-            return view();
+			View::assign('id', $id);
+			return view();
         }
     }
     //查看
@@ -201,24 +143,9 @@ class Payment extends BaseController
 		if(empty($detail)){
 			throw new \think\exception\HttpException(406, '找不到记录');
 		}
-		$detail['not_pay'] =  ($detail['amount']*100 - $detail['pay_amount']*100)/100;
-		//已付款的记录
-		$detail['payment'] = TicketPayment::field('i.*,a.name as admin')
-			->alias('i')
-			->join('Admin a', 'a.id = i.admin_id', 'LEFT')
-			->where(['i.ticket_id'=>$id,'i.status'=>1])
-			->order('i.pay_time desc')
-			->select();
-			
-		$detail['subject'] = Db::name('Enterprise')->where(['id' =>$detail['invoice_subject']])->value('title');
-		$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-		$detail['file_array'] = $file_array;
-		$other_file_array = Db::name('File')->where('id','in',$detail['other_file_ids'])->select();
-		$detail['other_file_array'] = $other_file_array;
-		if($detail['open_status']>0){
-			$detail['open_admin_name'] = Db::name('Admin')->where('id','=',$detail['open_admin_id'])->value('name');
+		if($detail['status']==2){
+			$detail['confirm_name'] = Db::name('Admin')->where('id','=',$detail['confirm_uid'])->value('name');
 		}
-        View::assign('uid', $this->uid);
         View::assign('detail', $detail);
 		if(is_mobile()){
 			return view('qiye@/finance/view_payment');
@@ -262,18 +189,23 @@ class Payment extends BaseController
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
-			$where[]=['status','=',1];
+			$whereOr = [];
+			$where[]=['check_status','=',2];
+			$where[]=['status','=',2];
+			$where[]=['delete_time','=',0];
 			//按时间检索
-			if (!empty($param['diff_time'])) {
-				$diff_time =explode('~', $param['diff_time']);
-				$where[] = ['pay_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+			if (!empty($param['create_time'])) {
+				$create_time =explode('~', $param['create_time']);
+				$where[] = ['create_time', 'between', [strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
 			}
-			$model = new TicketPayment();
-			$list = $model->datalist($param,$where);
-			
-			$amount = $model::where($where)->sum('amount');					
+			if (!empty($param['pay_time'])) {
+				$pay_time =explode('~', $param['pay_time']);
+				$where[] = ['pay_time', 'between', [strtotime(urldecode($pay_time[0])),strtotime(urldecode($pay_time[1].' 23:59:59'))]];
+			}
+			$list = $this->model->datalist($param,$where,$whereOr);
+			$amount = $this->model::where($where)->sum('amount');					
 			$totalRow['amount'] = sprintf("%.2f",$amount);
-            return table_assign(0, '', $list);
+            return table_assign(0, '', $list,$totalRow);
         } else {
             return view();
         }

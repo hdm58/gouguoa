@@ -2,17 +2,39 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-2">收款信息</h3>
+	<h3 class="pb-2">退款登记</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray-2">收款金额<font>*</font></td>
-			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入收款金额" lay-reqText="请输入收款金额" value="{$detail.amount|default=''}"></td>
-			<td class="layui-td-gray-2">收款交易单号<font>*</font></td>
-			<td><input type="text" class="layui-input" name="transaction_code" lay-verify="required" placeholder="请输入收款交易单号" lay-reqText="请完善收款交易单号" value="{$detail.transaction_code|default=''}"></td>
-			<td class="layui-td-gray">收款时间<font>*</font></td>
-			<td><input type="text" class="layui-input tool-time" data-type="datetime" data-format="yyyy-MM-dd HH:mm" name="enter_time" readonly lay-verify="required" placeholder="请选择收款具体时间" lay-reqText="请输入收款具体时间" value="{$detail.enter_time|default=''}"></td>
+			<td colspan="6"><strong>收款信息</strong></td>
 		</tr>
 		<tr>
+			<td class="layui-td-gray-2">收款金额</td>
+			<td class="blue">{$income.amount} 元</td>
+			<td class="layui-td-gray-2">收款交易单号</td>
+			<td>{$income.transaction_code}</td>
+			<td class="layui-td-gray">收款时间</td>
+			<td>{$income.enter_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">款项类型</td>
+			<td>{$income.fundscate}</td>
+			<td class="layui-td-gray">付款方式</td>
+			<td>{$income.paytype}</td>
+			<td class="layui-td-gray">收款主体</td>
+			<td>{$income.subject}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联销项发票</td>
+			<td>{$income.invoice|default='-'}</td>
+			<td class="layui-td-gray">关联客户</td>
+			<td>{$income.customer|default='-'}</td>
+			<td class="layui-td-gray">收款账户</td>
+			<td>{$income.account|default=''}</td>
+		</tr>
+		
+		<tr>
+			<td colspan="6"><strong>退款信息</strong></td>
+		</tr>
 			{empty name="$detail"}
 			<td class="layui-td-gray">款项类型<font>*</font></td>
 			<td>
@@ -22,22 +44,23 @@
 				<option value="{$vo.id}">{$vo.title}</option>
 				{/volist}			
 			</td>
-			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td class="layui-td-gray">退款方式<font>*</font></td>
 			<td>
-				<select name="paytype_id" lay-verify="required" lay-reqText="请选择付款方式">
+				<select name="paytype_id" lay-verify="required" lay-reqText="请选择退款方式">
 				<option value="">请选择付款方式</option>
 				{volist name=":get_base_data('pay_type')" id="vo"}
 				<option value="{$vo.id}">{$vo.title}</option>
 				{/volist}			
 			</td>
-			<td class="layui-td-gray">收款主体<font>*</font></td>
+			<td class="layui-td-gray">退款主体<font>*</font></td>
 			<td>
-				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择收款主体">
-					<option value="">请选择收款主体</option>
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择退款主体">
+					<option value="">请选择退款主体</option>
 					{volist name=":get_base_data('Enterprise')" id="vo"}
 					<option value="{$vo.id}">{$vo.title}</option>
 					{/volist}
 				</select>
+				<input type="hidden" name="customer_id" value="{$income.customer_id|default=0}"/>
 			</td>
 			{else/}
 			<td class="layui-td-gray">款项类型<font>*</font></td>
@@ -48,57 +71,43 @@
 				<option value="{$vo.id}" {eq name="$detail.fundscate_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
 				{/volist}			
 			</td>
-			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td class="layui-td-gray">退款方式<font>*</font></td>
 			<td>
-				<select name="paytype_id" lay-verify="required" lay-reqText="请选择付款方式">
-				<option value="">请选择付款方式</option>
+				<select name="paytype_id" lay-verify="required" lay-reqText="请选择退款方式">
+				<option value="">请选择退款方式</option>
 				{volist name=":get_base_data('pay_type')" id="vo"}
 				<option value="{$vo.id}" {eq name="$detail.paytype_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
 				{/volist}		
 			</td>
-			<td class="layui-td-gray">收款主体<font>*</font></td>
+			<td class="layui-td-gray">退款主体<font>*</font></td>
 			<td>
-				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择收款主体">
-					<option value="">请选择收款主体</option>
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择退款主体">
+					<option value="">请选择退款主体</option>
 					{volist name=":get_base_data('Enterprise')" id="vo"}
 					<option value="{$vo.id}" {eq name="$detail.enterprise_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
 					{/volist}
 				</select>
+				<input type="hidden" name="customer_id" value="{$detail.customer_id|default=0}"/>
 			</td>
 			{/empty}
-		</tr>
 		<tr>
-			<td class="layui-td-gray-2">关联销项发票</td>
-			<td>			
-				<input type="text" name="invoice" value="{$detail.invoice|default=''}" readonly placeholder="请选择销项发票" class="layui-input picker-oa" data-types="invoice" data-field="code">
-				<input type="hidden" name="invoice_id" value="{$detail.invoice_id|default=0}">
-			</td>
-			<td class="layui-td-gray-2">关联客户</td>
+			<td class="layui-td-gray">退款金额<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入退款金额" lay-reqText="请输入退款金额" value="{$detail.amount|default=''}"></td>
+			<td class="layui-td-gray">退款时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" data-type="datetime" data-format="yyyy-MM-dd HH:mm" name="back_time" readonly lay-verify="required" placeholder="请选择退款时间" lay-reqText="请输入退款时间" value="{$detail.back_time|default=''}"></td>
+			<td class="layui-td-gray">退款账户<font>*</font></td>
 			<td>
-				<input type="text" name="customer" value="{$detail.customer|default=''}" readonly placeholder="请选择客户" class="layui-input picker-oa" data-types="customer" data-field="name">
-				<input type="hidden" name="customer_id" value="{$detail.customer_id|default=0}">
-			</td>
-			<td class="layui-td-gray">收款账户<font>*</font></td>
-			<td>
-				<input type="text" name="account" autocomplete="off" value="{$detail.account|default=''}" readonly placeholder="请选择收款账户" lay-verify="required" lay-reqText="请选择收款账户" class="layui-input picker-account">
+				<input type="text" name="account" autocomplete="off" value="{$detail.account|default=''}" readonly placeholder="请选择退款账户" lay-verify="required" lay-reqText="请选择退款账户" class="layui-input picker-account">
 				<input type="hidden" name="account_id" value="{$detail.account_id|default=0}">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">关联销售合同</td>
-			<td colspan="3">			
-				<input type="text" name="contract" autocomplete="off" value="{$detail.contract|default=''}" readonly placeholder="请选择销售合同" class="layui-input picker-oa" data-types="contract"  data-field="name">
-				<input type="hidden" name="contract_id" value="{$detail.contract_id|default=0}">
-			</td>
-			<td class="layui-td-gray">关联项目</td>
-			<td>			
-				<input type="text" name="project" autocomplete="off" value="{$detail.project|default=''}" readonly placeholder="请选择项目" class="layui-input picker-oa" data-types="project">
-				<input type="hidden" name="project_id" value="{$detail.project_id|default=0}">
-			</td>
+			<td class="layui-td-gray">退款理由</td>
+			<td colspan="5"><textarea name="remarks" placeholder="请输入退款理由" class="layui-textarea">{$detail.remarks|default=''}</textarea></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
-				<div class="layui-input-inline">收款附件</div>
+				<div class="layui-input-inline">相关附件</div>
 				<div class="layui-input-inline">
 					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
 				</div>
@@ -108,20 +117,17 @@
 					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
 					{notempty name="$detail.file_ids"}
 					{volist name="$detail.file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}" value="$vo.id">{:file_card($vo)}</div>
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo)}</div>
 					{/volist}
 					{/notempty}
 				</div>
 			</td>
 		</tr>
-		<tr>
-			<td class="layui-td-gray">备注信息</td>
-			<td colspan="5"><textarea name="remarks" placeholder="请输入备注信息" class="layui-textarea">{$detail.remarks|default=''}</textarea></td>
-		</tr>
 	</table>
 	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
 	<div class="pt-4">
 		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<input type="hidden" name="income_id" value="{$income_id}"/>
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
 	</div>
@@ -138,7 +144,7 @@
 		$('body').on('click','.picker-account',function(){
 			let enterprise_id = $('[name="enterprise_id"]').val();
 			if(enterprise_id==0 || enterprise_id==''){
-				layer.msg('请先选择收款主体');
+				layer.msg('请先选择退款主体');
 				return false;
 			}
 			let that = $(this),ids = [],titles=[],map = {enterprise_id:enterprise_id},types = 'account',type = 1;
@@ -156,7 +162,7 @@
 		var attachment = new uploadPlus();
 		//审批相关
 		oaCheck.init({
-			check_name:'income',
+			check_name:'income_refund',
 			check_btn:0
 		});
 		//监听提交
@@ -171,12 +177,12 @@
 								tool.sideClose(1000);				
 							}
 						}
-						data.field.check_name = 'income';
+						data.field.check_name = 'income_refund';
 						data.field.action_id = e.data.return_id;
 						oaCheck.submit(data.field,checkCallback);
 					}
 				}
-				tool.post("/finance/income/add", data.field, callback);
+				tool.post("/finance/refund/add", data.field, callback);
 				layer.close(index);
 			});
 			return false;

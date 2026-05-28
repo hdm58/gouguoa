@@ -1,276 +1,187 @@
 {extend name="../../base/view/common/base" /}
-{block name="style"}
-<style>
-.layui-table-min th{font-size:13px; text-align:center; background-color:#f8f8f8;}
-.layui-table-min td{font-size:13px; padding:6px;text-align:center;}
-</style>
-{/block}
 <!-- 主体 -->
 {block name="body"}
-<div class="layui-form p-page">
-	<h3 class="pb-3">发票信息</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">付款信息</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray-2">发票金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
-			<td class="layui-td-gray">发票类型</td>
+			<td class="layui-td-gray-2">付款金额<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入付款金额" lay-reqText="请输入付款金额" value="{$detail.amount|default=''}"></td>
+			<td class="layui-td-gray-2">付款交易单号<font>*</font></td>
+			<td><input type="text" class="layui-input" name="transaction_code" lay-verify="required" placeholder="请输入付款交易单号" lay-reqText="请完善付款交易单号" value="{$detail.transaction_code|default=''}"></td>
+			<td class="layui-td-gray">付款时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" data-type="datetime" data-format="yyyy-MM-dd HH:mm" name="pay_time" readonly lay-verify="required" placeholder="请选择付款具体时间" lay-reqText="请输入付款具体时间" value="{$detail.pay_time|default=''}"></td>
+		</tr>
+		<tr>
+			{empty name="$detail"}
+			<td class="layui-td-gray">款项类型<font>*</font></td>
 			<td>
-			{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-			{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
-			{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
+				<select name="fundscate_id" lay-verify="required" lay-reqText="请选择款项类型">
+				<option value="">请选择款项类型</option>
+				{volist name=":get_base_data('funds_cate')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}			
+			</td>
+			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td>
+				<select name="paytype_id" lay-verify="required" lay-reqText="请选择付款方式">
+				<option value="">请选择付款方式</option>
+				{volist name=":get_base_data('pay_type')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}			
+			</td>
+			<td class="layui-td-gray">付款主体<font>*</font></td>
+			<td>
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择付款主体">
+					<option value="">请选择付款主体</option>
+					{volist name=":get_base_data('Enterprise')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			{else/}
+			<td class="layui-td-gray">款项类型<font>*</font></td>
+			<td>
+				<select name="fundscate_id" lay-verify="required" lay-reqText="请选择款项类型">
+				<option value="">请选择款项类型</option>
+				{volist name=":get_base_data('funds_cate')" id="vo"}
+				<option value="{$vo.id}" {eq name="$detail.fundscate_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+				{/volist}			
+			</td>
+			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td>
+				<select name="paytype_id" lay-verify="required" lay-reqText="请选择付款方式">
+				<option value="">请选择付款方式</option>
+				{volist name=":get_base_data('pay_type')" id="vo"}
+				<option value="{$vo.id}" {eq name="$detail.paytype_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+				{/volist}		
+			</td>
+			<td class="layui-td-gray">付款主体<font>*</font></td>
+			<td>
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择付款主体">
+					<option value="">请选择付款主体</option>
+					{volist name=":get_base_data('Enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$detail.enterprise_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			{/empty}
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">关联进项发票</td>
+			<td>			
+				<input type="text" name="ticket" value="{$detail.ticket|default=''}" readonly placeholder="请选择进项发票" class="layui-input picker-oa" data-types="ticket" data-field="code">
+				<input type="hidden" name="ticket_id" value="{$detail.ticket_id|default=0}">
+			</td>
+			<td class="layui-td-gray-2">关联供应商</td>
+			<td>
+				<input type="text" name="supplier" value="{$detail.supplier|default=''}" readonly placeholder="请选择供应商" class="layui-input picker-oa" data-types="supplier" data-field="name">
+				<input type="hidden" name="supplier_id" value="{$detail.supplier_id|default=0}">
+			</td>
+			<td class="layui-td-gray">付款账户<font>*</font></td>
+			<td>
+				<input type="text" name="account" autocomplete="off" value="{$detail.account|default=''}" readonly placeholder="请选择付款账户" lay-verify="required" lay-reqText="请选择付款账户" class="layui-input picker-account">
+				<input type="hidden" name="account_id" value="{$detail.account_id|default=0}">
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">发票抬头</td>
-			<td>{$detail.subject}</td>
-			<td class="layui-td-gray-3">开票主体(供应商)</td>
-			<td>{$detail.supplier_name}</td>
+			<td class="layui-td-gray-2">关联采购合同</td>
+			<td colspan="3">			
+				<input type="text" name="purchase" autocomplete="off" value="{$detail.purchase|default=''}" readonly placeholder="请选择采购合同" class="layui-input picker-oa" data-types="purchase"  data-field="name">
+				<input type="hidden" name="purchase_id" value="{$detail.purchase_id|default=0}">
+			</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td>			
+				<input type="text" name="project" autocomplete="off" value="{$detail.project|default=''}" readonly placeholder="请选择项目" class="layui-input picker-oa" data-types="project">
+				<input type="hidden" name="project_id" value="{$detail.project_id|default=0}">
+			</td>
 		</tr>
-		{notempty name="$detail.remark"}
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">付款附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="{$detail.file_ids|default=''}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadFile{$vo.id}" value="$vo.id">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
 		<tr>
 			<td class="layui-td-gray">备注信息</td>
-			<td colspan="5">{$detail.remark}</td>
+			<td colspan="5"><textarea name="remarks" placeholder="请输入备注信息" class="layui-textarea">{$detail.remarks|default=''}</textarea></td>
 		</tr>
-		{/notempty}
-		{notempty name="$detail.file_ids"}
-		<tr>
-			<td class="layui-td-gray">关联附件</td>
-			<td colspan="5">
-				<div class="layui-row">
-					{volist name="$detail.file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
-		{if condition="$detail.open_admin_id > 0"}
-		<tr>
-			<td class="layui-td-gray">发票号码</td>
-			<td>{$detail.code}</td>
-			<td class="layui-td-gray">开票时间</td>
-			<td>{$detail.open_time}</td>
-		</tr>
-		{/if}
-		{notempty name="$detail.other_file_ids"}
-		<tr>
-			<td class="layui-td-gray">发票附件</td>
-			<td colspan="5">
-				<div class="layui-row">
-					{volist name="$detail.other_file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
 	</table>
-	
-	<h3 class="py-3">付款信息</h3>
-	<form class="layui-form">
-		<table class="layui-table layui-table-form">
-			<tr>
-				<td class="layui-td-gray">付款状态</td>
-				<td>
-					{if condition="($detail.pay_status == 0)"}
-						<span class="red">未付款</span>
-					{elseif condition="($detail.pay_status == 1)"}
-						<span class="blue">部分付款</span>
-					{elseif condition="($detail.pay_status == 2)"}
-						<span  class="green">全部付款</span>
-					{/if}
-				</td>
-				<td class="layui-td-gray-2">未付款金额(元)</td>
-				<td style="color:#FF5722">{$detail.not_pay}</td>
-				<td class="layui-td-gray-2">已付款金额(元)</td>
-				<td style="color:#1E9FFF">{$detail.pay_amount}</td>
-			</tr>
-			<tr>
-				<td class="layui-td-gray">付款记录</td>
-				<td colspan="5">
-					<table id="interfix" class="layui-table layui-table-min" style="margin:0">
-						<tr>
-							<th style="width:200px;">付款日期</th>
-							<th style="width:200px;">付款金额(元)</th>
-							<th>备注</th>
-							<th style="width:100px;">操作</th>
-						</tr>
-						{empty name="$detail.payment"}
-						<tr class="none_interfix">
-							<td colspan="4" style="text-align: center;">暂无付款记录</td>
-						</tr>
-						{else/}
-						{volist name="$detail.payment" id="vo"}
-						<tr class="more_interfix">
-							<td>{$vo.pay_time | date='Y-m-d'}</td>
-							<td>{$vo.amount}</td>
-							<td style="text-align:left;">{$vo.remarks}</td>
-							<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove" data-id="{$vo.id}" data-tiid="{$id}">删除</a></td>
-						</tr>
-						{/volist}
-						{/empty}
-					</table>
-					{if condition="($detail.pay_status lt 2)"}
-					<div class="pt-3"><button class="layui-btn layui-btn-sm" type="button" id="addInterfix">+ 添加付款记录</button></div>
-					{/if}
-				</td>
-			</tr>
-		</table>
-		<div class="pt-3">
-			<input name="ticket_id" id="ticket_id" type="hidden" value="{$id}">
-			<input name="pay_type" id="pay_type" type="hidden" value="1">
-			{if condition="($detail.pay_status lt 2)"}
-			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">保存付款记录</button>
-			<button type="reset" class="layui-btn layui-btn-primary">重置</button>
-			{/if}
-			{if condition="($detail.pay_status eq 0)"}
-			<span class="layui-btn layui-btn-danger" lay-event="all">全部付款</span>
-			{/if}
-			{if condition="($detail.pay_status eq 1)"}
-			<span class="layui-btn layui-btn-danger" lay-event="all">剩余部分全部付款</span>
-			{/if}
-			{if condition="($detail.pay_status gt 0)"}
-			<span class="layui-btn layui-btn-warm" lay-event="refue">全部反付款</span>
-			{/if}
-		</div>
-	</form>
-	<input type="hidden" name="id" value="{$detail.id}">
-</div>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
 {/block}
 <!-- /主体 -->
 
 <!-- 脚本 -->
 {block name="script"}
 <script>
-const moduleInit = ['tool'];
-function gouguInit() {
-	var form = layui.form,tool=layui.tool,laydate = layui.laydate;
-	//添加表格行
-	$('#addInterfix').on('click',function(){
-		var html = '';
-		html += '<tr class="more_interfix">';
-		html += '<td><input type="text" class="layui-input tool-time" name="pay_time[]" readonly lay-verify="required" lay-reqText="请选择付款日期">';
-		html += '<td><input type="text" class="layui-input" name="amount[]" lay-verify="required|number" lay-reqText="请输入付款金额,数字"></td>';
-		html += '<td><input type="text" class="layui-input" name="remarks[]"></td>';
-		html += '<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>';
-		html += '</tr>';
-		$("#interfix").find('.none_interfix').remove();
-		$("#interfix").append(html);
-		form.render();
-	});
-	//删除表格
-	$('#interfix').on('click', '[lay-event="del"]', function() {
-		$(this).parents(".more_interfix").remove();
-		if($("#interfix").find('.more_interfix').length<1){
-			$("#interfix").append('<tr class="none_interfix"><td colspan="4" style="text-align: center;">暂无付款记录</td></tr>');				
-		}
-	});
-
-	//删除付款记录
-	$('#interfix').on('click', '[lay-event="remove"]', function() {
-		var that=$(this);
-		var id=that.data('id');
-		var ticket_id=that.data('tiid');
-		layer.confirm('确定要删除该付款记录?', {icon: 3, title:'提示'}, function(index){
-			$.ajax({
-				url: "/finance/payment/del",
-				type:'post',
-				data:{id:id,ticket_id:ticket_id},
-				success:function(res){
-					layer.msg(res.msg);
-					if(res.code==0){
-						parent.layui.pageTable.reload();
-						window.setTimeout(function(){
-							location.reload();
-						},1200)	
-					}
-				}
-			})
-		})
-	});
-
-	//监听提交
-	form.on('submit(webform)', function(data){
-		console.log(data.field);
-		if($("#interfix").find('.tool-time').length<1){
-			layer.msg('请添加付款记录');
-			return false;
-		}
-		$.ajax({
-			url: "/finance/payment/add",
-			type:'post',
-			data:data.field,
-			success:function(res){
-				layer.msg(res.msg);
-				if(res.code==0){
-					parent.layui.pageTable.reload();
-					window.setTimeout(function(){
-						location.reload();
-					},1200)	
-				}
+	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaCheck  = layui.oaCheck ,uploadPlus = layui.uploadPlus,oaPicker = layui.oaPicker;
+		$('body').on('click','.picker-account',function(){
+			let enterprise_id = $('[name="enterprise_id"]').val();
+			if(enterprise_id==0 || enterprise_id==''){
+				layer.msg('请先选择付款主体');
+				return false;
 			}
-		})
-		return false;
-	});
-	
-	$('.layui-form').on('click', '[lay-event="refue"]', function () {
-		var ticket_id=$('#ticket_id').val();
-		layer.confirm('确定要全部反付款?', {icon: 3, title:'提示'}, function(index){
-			$.ajax({
-				url: "/finance/payment/add",
-				type:'post',
-				data:{ticket_id:ticket_id,pay_type:3},
-				success:function(res){
-					layer.msg(res.msg);
-					if(res.code==0){
-						parent.layui.pageTable.reload();
-						window.setTimeout(function(){
-							location.reload();
-						},1200)	
-					}
+			let that = $(this),ids = [],titles=[],map = {enterprise_id:enterprise_id},types = 'account',type = 1;
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
 				}
-			})
-		})
-		return false;
-	})
-	$('.layui-form').on('click', '[lay-event="all"]', function () {
-		var ticket_id=$('#ticket_id').val();
-		layer.confirm('确定已经全部付款?', {icon: 3, title:'提示'}, function(idx){
-			layer.prompt({title: '选择付款日期', formType: 3,value :'',success: function(layero, index){
-				$('.layui-layer-input').attr('readonly',true);
-				lay('.layui-layer-input').each(function () {
-					laydate.render({
-						elem: this,
-						trigger: 'click',
-						showBottom:false
-					});
-				});
-				layer.close(idx);
+				that.val(titles.join(','));
+				that.next().val(ids.join(','));
 			}
-		}, function(pay_time, index){
-				if(pay_time ==''){
-					layer.msg('选择付款日期');
-					return false;
-				}
-				$.ajax({
-					url: "/finance/payment/add",
-					type:'post',
-					data:{ticket_id:ticket_id,pay_type:2,pay_time:pay_time},
-					success:function(res){
-						layer.msg(res.msg);
-						if(res.code==0){
-							parent.layui.pageTable.reload();
-							window.setTimeout(function(){
-								location.reload();
-							},1200)	
+			oaPicker.picker(types,type,callback,map);
+		})
+		//相关附件上传
+		var attachment = new uploadPlus();
+		//审批相关
+		oaCheck.init({
+			check_name:'payment',
+			check_btn:0
+		});
+		//监听提交
+		form.on('submit(webform)', function(data){
+			tool.ask('审核期间不能编辑修改，确定数据无误？', function(index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						let checkCallback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								tool.sideClose(1000);				
+							}
 						}
+						data.field.check_name = 'payment';
+						data.field.action_id = e.data.return_id;
+						oaCheck.submit(data.field,checkCallback);
 					}
-				})
-			})
-		})
-		return false;
-	})
-}
+				}
+				tool.post("/finance/payment/add", data.field, callback);
+				layer.close(index);
+			});
+			return false;
+		});
+	}
 </script>
 {/block}
 <!-- /脚本 -->

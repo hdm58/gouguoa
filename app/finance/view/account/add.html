@@ -1,0 +1,67 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">资金账户</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">账户名称<font>*</font></td>
+			<td><input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入资金账户名称" lay-reqText="请输入资金账户名称"class="layui-input" value="{$detail.title|default=''}"></td>
+			<td class="layui-td-gray-2">所属企业主体<font>*</font></td>
+			<td>
+				{empty name="$detail"}
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择企业主体">
+					<option value="">请选择所属企业主体</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+				{else/}
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择企业主体">
+					<option value="">请选择所属企业主体</option>
+					{volist name=":get_base_data('enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$detail.enterprise_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+				{/empty}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">具体账号</td>
+			<td><input type="text" name="account" placeholder="请输入具体账号" autocomplete="off" class="layui-input" value="{$detail.account|default=''}"></td>
+			<td class="layui-td-gray">初始资金</td>
+			<td><input type="text" name="initial_amount" placeholder="请输入初始资金，数字" autocomplete="off" class="layui-input" value="{$detail.initial_amount|default=''}"></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/finance/account/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

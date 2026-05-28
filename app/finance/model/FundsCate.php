@@ -13,48 +13,19 @@
 namespace app\finance\model;
 use think\model;
 use think\facade\Db;
-class Ticket extends Model
+class FundsCate extends Model
 {
     /**
     * 获取分页列表
     * @param $where
     * @param $param
     */
-    public function datalist($param=[],$where=[],$whereOr=[])
+    public function datalist($where, $param)
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$order = empty($param['order']) ? 'id desc' : $param['order'];
         try {
-            $list = self::where($where)
-			->where(function ($query) use($whereOr) {
-				if (!empty($whereOr)){
-					$query->whereOr($whereOr);
-				}
-			})
-			->order($order)
-			->paginate(['list_rows'=> $rows])
-			->each(function ($item, $key){
-				$item['check_status_str'] = check_status_name($item['check_status']);
-				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
-				$item['department'] = Db::name('Department')->where(['id' => $item['did']])->value('title');
-				$item['create_time'] = to_date($item['create_time']);
-				$item['enterprise'] = Db::name('Enterprise')->where(['id' => $item['invoice_subject']])->value('title');
-				$item['check_user'] = '-';
-				if($item['check_status']==1 && !empty($item['check_uids'])){
-					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
-					$item['check_user'] = implode(',',$check_user);
-				}
-				$item['open_time'] = date('Y-m-d', $item['open_time']);
-				if($item['pay_time']>0){
-					$item['pay_time'] = to_date($item['pay_time'],'Y-m-d');
-				}
-				else{
-					$item['pay_time']='-';
-				}
-				if($item['supplier_id']>0){
-					$item['invoice_title'] = Db::name('Supplier')->where(['id' => $item['supplier_id']])->value('title');
-				}
-			});
+            $list = self::where($where)->order($order)->paginate(['list_rows'=> $rows]);
 			return $list;
         } catch(\Exception $e) {
             return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];
@@ -101,28 +72,6 @@ class Ticket extends Model
     public function getById($id)
     {
         $info = self::find($id);
-		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
-		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
-		$info['subject'] = Db::name('Enterprise')->where(['id' =>$info['invoice_subject']])->value('title');
-		if($info['supplier_id']>0){
-			$info['invoice_title'] = Db::name('Supplier')->where(['id' => $info['supplier_id']])->value('title');
-		}
-		if($info['purchase_id']>0){
-			$info['purchase_name'] = Db::name('Purchase')->where('id',$info['purchase_id'])->value('name');
-		}
-		if($info['project_id']>0){
-			$info['project_name'] = Db::name('Project')->where('id',$info['project_id'])->value('name');
-		}
-		if($info['open_time']>0){
-			$info['open_time'] = date('Y-m-d',$info['open_time']);
-		}
-		else{
-			$info['open_time']='';
-		}
-		if(!empty($info['file_ids'])){
-			$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
-			$info['file_array'] = $file_array;
-		}
 		return $info;
     }
 

@@ -1,0 +1,93 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:128px;">
+			<select name="types">
+				<option value="">选择退款类型</option>
+				<option value="1">意向金</option>
+				<option value="2">定金</option>
+				<option value="3">补定金</option>
+			</select>
+		</div>
+		{gt name="$is_leader" value="0"}
+		<div class="layui-input-inline user-name" style="width:100px;">
+			<input type="text" name="username" placeholder="下属员工" class="layui-input picker-sub" readonly />
+			<input type="text" name="uid" value="" style="display:none" />	
+		</div>
+		{/gt}
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择退款日期" readonly name="diff_time">
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_refund" lay-filter="table_refund"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>退款记录</h3>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth={$auth};
+	const moduleInit = ['tool','tablePlus','oaPicker','laydatePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool,laydatePlus = layui.laydatePlus;
+		//日期范围
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		layui.pageTable = table.render({
+			elem: "#table_refund"
+			,title: '退款记录列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/finance/refund/record"
+			,excel_auth:auth
+			,height: 'full-114'
+			,totalRow: true
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'status_name',title: '审批状态',width:110,align:'center',templet: function(d){
+					return '<span class="check-status-color-' + d.check_status + '">『'+d.status_name+'』</span>';
+				},
+				totalRowText: '<div style="text-align:right">合计</div>'
+				}
+				,{field:'amount',title: '退款金额',width:110,align:'right',totalRow: function (d) {return d.TOTAL_ROW.amount}}
+				,{field:'income_types_name',title: '退款类型',width:90,align:'center'}
+				,{field:'account',title: '退款账户',width:136}
+				,{field:'back_time',title: '退款时间',width:132,align:'center'}
+				,{field:'customer',title: '退款客户'}
+				,{field:'admin_name',title: '退款登记人',width:90,align:'center'}
+				,{field:'create_time', title: '登记时间',width:150,align:'center'}
+				,{field:'order',title: '关联销售订单'}
+				,{width:80,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet:function(d){
+						var html='<div class="layui-btn-group">';
+						var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+						html+=btn1;
+						html+='</div>';
+						return html;
+					}
+				}
+			]]
+		});
+			
+		table.on('tool(table_refund)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/finance/refund/view?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

@@ -33,10 +33,13 @@
 					{/volist}
 				</select>
 			</td>
-			<td class="layui-td-gray-3">开票主体(供应商)<font>*</font></td>
+			<td class="layui-td-gray">开票主体<font>*</font></td>
 			<td>
-				<input type="text" name="supplier_name" class="layui-input picker-oa" data-types="supplier" value="" placeholder="请选择" readonly lay-verify="required" lay-reqText="开票主体(供应商)">
-				<input type="hidden" name="supplier_id" value=0>
+				<div class="layui-input-group" style="width:100%">
+					<input type="text" name="invoice_title" value="" placeholder="请输入开票主体，若是个人输入姓名" class="layui-input" lay-verify="required" lay-reqText="请完善开票主体">
+					<input type="hidden" name="supplier_id" value=0>
+					<div class="layui-input-split layui-input-suffix invoice-qiye supplier-picker" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i></div>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -91,6 +94,19 @@
 		oaCheck.init({
 			check_name:'ticket',
 			check_btn:0
+		});
+		
+		$('.supplier-picker').on('click',function(){
+			let that = $(this),ids = [],titles=[];
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				$('[name="invoice_title"]').val(titles.join(','));
+				$('[name="supplier_id"]').val(ids.join(','));
+			}
+			oaPicker.picker('supplier',1,callback,{});
 		});
 		
 		//监听提交

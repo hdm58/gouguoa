@@ -3,11 +3,29 @@
 {block name="body"}
 <div class="p-page">
 	<form class="layui-form gg-form-bar border-x border-t" id="barsearchform">
+		<div class="layui-input-inline search-item" style="width:136px;">
+			<select name="fundscate_id">
+				<option value="">收款类型</option>
+				{volist name=":get_base_data('funds_cate')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline search-item" style="width:100px;">
+			<select name="paytype_id">
+				<option value="">收款方式</option>
+				{volist name=":get_base_data('pay_type')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}	
+			</select>
+		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="diff_time" placeholder="选择回款时间区间" readonly name="diff_time">
+			<input type="text" class="layui-input" id="create_time" placeholder="选择申请时间区间" readonly name="create_time">
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="enter_time" placeholder="选择收款时间区间" readonly name="enter_time">
 		</div>
 		<div class="layui-input-inline" style="width:150px">
-			<input type="hidden" name="tab" value="0"/>
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
 		</div>
@@ -16,7 +34,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
 <div class="layui-btn-container">
-    <h3 class="h3-title" style="height:32px;">回款列表</h3>
+    <h3 class="h3-title" style="height:32px;">收款列表</h3>
 </div>
 </script>
 {/block}
@@ -27,17 +45,13 @@
 <script>
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
-		//tab切换
-		element.on('tab(tab)', function(data){
-			$('[name="tab"]').val(data.index);
-			$("#barsearchform")[0].reset();
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
-			return false;
-		});
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus;
 		
 		//日期范围
-		var diff_time = new laydatePlus({'target':'diff_time'});
+		//日期范围
+		var create_time = new laydatePlus({'target':'create_time'});
+		var enter_time = new laydatePlus({'target':'enter_time'});
+		
 		layui.pageTable = table.render({
 			elem: "#test"
 			,toolbar: "#toolbarDemo"
@@ -60,42 +74,82 @@
 						totalRowText: '<div style="text-align:right">合计</div>'
 					},{
 						field: 'amount',
-						title: '回款金额(元)',
+						title: '收款金额(元)',
 						style: 'color:#16b777',
 						align: 'right',
 						width: 120,
 						totalRow: function (d) {return d.TOTAL_ROW.amount}
 					},{
 						field: 'enter_time',
-						title: '回款时间',
+						title: '收款时间',
 						align: 'center',
-						width: 110
+						width: 130
 					},{
 						field: 'remarks',
-						title: '回款备注'
+						title: '收款备注',
+						minWidth: 200,
+					},{
+						field: 'fundscate',
+						title: '收款类型',
+						align: 'center',
+						width: 80
+					},{
+						field: 'paytype',
+						title: '收款方式',
+						align: 'center',
+						width: 90
+					},{
+						field: 'subject',
+						title: '收款主体',
+						minWidth: 200
+					},{
+						field: 'enter_time',
+						title: '收款时间',
+						align: 'center',
+						width: 136
+					},{
+						field: 'transaction_code',
+						minWidth: 200,	
+						title: '收款交易单号'
+					},{
+						field: 'invoice',
+						minWidth: 200,	
+						title: '关联发票号'
+					},{
+						field: 'contract',
+						title: '关联销售合同',
+						minWidth: 200
+					},{
+						field: 'customer',
+						title: '关联客户',
+						minWidth: 200
+					},{
+						field: 'project',
+						title: '关联项目',
+						minWidth: 200
 					},{
 						field: 'admin_name',
 						title: '登记人',
 						align: 'center',
-						width: 90
+						width: 80
+					},{
+						field: 'department',
+						title: '所属部门',
+						align: 'center',
+						width: 100
 					},{
 						field: 'create_time',
 						title: '登记时间',
 						align: 'center',
 						width: 150
 					},{
-						field: 'code',
-						title: '关联发票号',
-						align: 'center',
-						width: 150
-					},{
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 90,
+						width: 80,
 						align: 'center',
 						templet:function(d){
-							var html='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">回款详情</span>';
+							var html='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
 							return html;
 						}
 					}
@@ -107,7 +161,7 @@
 		table.on('tool(test)', function(obj) {
 			var data = obj.data;
 			if (obj.event === 'view') {
-				tool.side("/finance/income/view?id="+data.invoice_id);
+				tool.side("/finance/income/view?id="+data.id);
 				return;
 			}
 		});

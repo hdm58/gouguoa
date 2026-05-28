@@ -76,9 +76,13 @@ class Ticket extends BaseController
 				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
 			}
 			//按时间检索
-			if (!empty($param['diff_time'])) {
-				$diff_time =explode('~', $param['diff_time']);
-				$where[] = ['open_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+			if (!empty($param['create_time'])) {
+				$create_time =explode('~', $param['create_time']);
+				$where[] = ['create_time', 'between', [strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
+			}
+			if (!empty($param['open_time'])) {
+				$open_time =explode('~', $param['open_time']);
+				$where[] = ['open_time', 'between', [strtotime(urldecode($open_time[0])),strtotime(urldecode($open_time[1].' 23:59:59'))]];
 			}
             if (isset($param['open_status']) && $param['open_status'] != "") {
                 $where[] = ['open_status', '=', $param['open_status']];
@@ -89,10 +93,14 @@ class Ticket extends BaseController
 			if (isset($param['check_status']) && $param['check_status'] != "") {
                 $where[] = ['check_status', '=', $param['check_status']];
             }
+			if (!empty($param['keywords'])) {
+                $where[] = ['invoice_title|code', 'like', '%' . $param['keywords'] . '%'];
+            }
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('auth',$auth);
             return view();
         }
     }

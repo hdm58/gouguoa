@@ -84,6 +84,8 @@ return [
 		'tosea'      => '公海移入',
 		'totrash'    => '废弃池移入',
 		'reset'      => '重新设置',
+		'confirm'    => '确认',
+		'unconfirm'  => '反确认',
 		'install'    => '安装',
 		'uninstall'  => '卸载',
     ],

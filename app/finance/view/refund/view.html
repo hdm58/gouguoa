@@ -1,0 +1,66 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">退款详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">退款金额</td>
+			<td>{$detail.amount|default=''}</td>
+			<td class="layui-td-gray">退款时间</td>
+			<td>{$detail.back_time|default=''}</td>
+			<td class="layui-td-gray">退款类型</td>
+			<td>{$detail.fundscate}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">退款主体</td>
+			<td>{$detail.subject|default=''}</td>
+			<td class="layui-td-gray">退款账户</td>
+			<td>{$detail.account|default=''}</td>
+			<td class="layui-td-gray">退款方式</td>
+			<td>{$detail.paytype|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联收款</td>
+			<td colspan="3"><a class="side-a" data-href="/finance/income/view?id={$detail.income_id|default=''}">{$detail.income|default=''}</a></td>
+			<td class="layui-td-gray">退款客户</td>
+			<td>{$detail.customer|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">退款理由</td>
+			<td colspan="5">{$detail.remarks|default='-'}</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">退款附件</td>
+			<td colspan="5">
+				<div class="layui-row" id="uploadBox">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}" class="pt-3"></div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','oaCheck'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaCheck = layui.oaCheck;
+		oaCheck.init({
+			check_name:'income_refund',
+			check_reversed :function(){
+			
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

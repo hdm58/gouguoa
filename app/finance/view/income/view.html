@@ -2,110 +2,44 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="layui-form p-page">
-	{eq name="$detail.invoice_type" value="0"}
-	<h3 class="pb-3">无发票回款信息</h3>
+	<h3 class="pb-2">收款详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray">预回款金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
+			<td class="layui-td-gray-2">收款金额</td>
+			<td class="blue">{$detail.amount} 元</td>
+			<td class="layui-td-gray-2">收款交易单号</td>
+			<td>{$detail.transaction_code}</td>
+			<td class="layui-td-gray">收款时间</td>
+			<td>{$detail.enter_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">款项类型</td>
+			<td>{$detail.fundscate}</td>
+			<td class="layui-td-gray">付款方式</td>
+			<td>{$detail.paytype}</td>
 			<td class="layui-td-gray">收款主体</td>
-			<td colspan="3">{$detail.subject}</td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray">付款主体</td>
-			<td>
-				{eq name="$detail.types" value="1"}企业{/eq}
-				{eq name="$detail.types" value="2"}个人{/eq}
-			</td>
-			<td class="layui-td-gray-2">付款方名称</td>
-			<td>{$detail.invoice_title}</td>
-			<td class="layui-td-gray">电话号码</td>
-			<td>{$detail.invoice_phone}</td>
-		</tr>
-		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
-			<td class="layui-td-gray-2">纳税人识别号</td>
-			<td>{$detail.invoice_tax}</td>
-			<td class="layui-td-gray">开户行</td>
-			<td>{$detail.invoice_bank}</td>
-			<td class="layui-td-gray">银行账号</td>
-			<td>{$detail.invoice_account}</td>
-		</tr>
-		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
-			<td class="layui-td-gray-2">银行营业网点</td>
-			<td>{$detail.invoice_banking}</td>
-			<td class="layui-td-gray">地址</td>
-			<td colspan="3">{$detail.invoice_address}</td>
-		</tr>
-		{notempty name="$detail.remark"}
-		<tr>
-			<td class="layui-td-gray">备注信息</td>
-			<td colspan="5">{$detail.remark}</td>
-		</tr>
-		{/notempty}
-		{notempty name="$detail.file_ids"}
-		<tr>
-			<td class="layui-td-gray">关联附件</td>
-			<td colspan="5">
-				<div class="layui-row">
-					{volist name="$detail.file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
-		{notempty name="$detail.other_file_ids"}
-		<tr>
-			<td class="layui-td-gray">发票附件</td>
-			<td colspan="5">
-				<div class="layui-row">
-					{volist name="$detail.other_file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
-	</table>
-	{else/}
-	<h3 class="pb-3">发票信息</h3>
-	<table class="layui-table layui-table-form">
-		<tr>
-			<td class="layui-td-gray">发票金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
-			<td class="layui-td-gray">发票类型</td>
-			<td>
-			{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-			{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
-			{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
-			</td>
-			<td class="layui-td-gray">发票主体</td>
 			<td>{$detail.subject}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">抬头类型</td>
-			<td>
-				{eq name="$detail.types" value="1"}企业{/eq}
-				{eq name="$detail.types" value="2"}个人{/eq}
+			<td class="layui-td-gray">确认状态</td>
+			<td colspan="3">
+				{eq name="$detail.status" value="1"}<span class="red">未确认</span>{/eq}
+				{eq name="$detail.status" value="2"}<span class="green">已确认</span>，确认人：{$detail.confirm_name}，确认时间：{$detail.confirm_time|to_date}{/eq}
 			</td>
-			<td class="layui-td-gray">发票抬头</td>
-			<td>{$detail.invoice_title}</td>
-			<td class="layui-td-gray">电话号码</td>
-			<td>{$detail.invoice_phone}</td>
+			<td class="layui-td-gray">收款账户</td>
+			<td>{$detail.account|default=''}</td>
 		</tr>
-		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
-			<td class="layui-td-gray-2">纳税人识别号</td>
-			<td>{$detail.invoice_tax}</td>
-			<td class="layui-td-gray">开户行</td>
-			<td>{$detail.invoice_bank}</td>
-			<td class="layui-td-gray">银行账号</td>
-			<td>{$detail.invoice_account}</td>
+		<tr>
+			<td class="layui-td-gray">关联销项发票</td>
+			<td colspan="3">{$detail.invoice|default='-'}</td>
+			<td class="layui-td-gray">关联客户</td>
+			<td>{$detail.customer|default='-'}</td>
 		</tr>
-		<tr class="invoice-type" {eq name="$detail.type" value="2"}style="display:none"{/eq}>
-			<td class="layui-td-gray-2">银行营业网点</td>
-			<td>{$detail.invoice_banking}</td>
-			<td class="layui-td-gray">地址</td>
-			<td colspan="3">{$detail.invoice_address}</td>
+		<tr>
+			<td class="layui-td-gray">关联销售合同</td>
+			<td colspan="3">{$detail.contract|default='-'}</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td>{$detail.project|default='-'}</td>
 		</tr>
 		{notempty name="$detail.remark"}
 		<tr>
@@ -115,8 +49,8 @@
 		{/notempty}
 		{notempty name="$detail.file_ids"}
 		<tr>
-			<td class="layui-td-gray">关联附件</td>
-			<td colspan="5">
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
@@ -125,81 +59,8 @@
 			</td>
 		</tr>
 		{/notempty}
-		{if condition="$detail.open_admin_id > 0"}
-		<tr>
-			<td class="layui-td-gray">发票号码</td>
-			<td>{$detail.code}</td>
-			<td class="layui-td-gray">开票人</td>
-			<td>{$detail.open_admin_name}</td>
-			<td class="layui-td-gray">开票时间</td>
-			<td>{$detail.open_time|date='Y-m-d'}</td>
-		</tr>
-		{/if}
-		{notempty name="$detail.other_file_ids"}
-		<tr>
-			<td class="layui-td-gray">发票附件</td>
-			<td colspan="5">
-				<div class="layui-row">
-					{volist name="$detail.other_file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
 	</table>
-	{/eq}
-	<h3 class="py-3">回款信息</h3>
-	<form class="layui-form">
-		<table class="layui-table layui-table-form">
-			<tr>
-				<td class="layui-td-gray">回款状态</td>
-				<td>
-					{if condition="($detail.enter_status == 0)"}
-						<span class="red">未回款</span>
-					{elseif condition="($detail.enter_status == 1)"}
-						<span class="blue">部分回款</span>
-					{elseif condition="($detail.enter_status == 2)"}
-						<span  class="green">全部回款</span>
-					{/if}
-				</td>
-				<td class="layui-td-gray-2">未回款金额(元)</td>
-				<td class="red">{$detail.not_income}</td>
-				<td class="layui-td-gray-2">已回款金额(元)</td>
-				<td class="green">{$detail.enter_amount}</td>
-			</tr>
-			<tr>
-				<td class="layui-td-gray">回款记录</td>
-				<td colspan="5">
-					<table class="layui-table layui-table-min" style="margin:0">
-						<tr>
-							<th style="width:150px;">回款日期</th>
-							<th style="width:150px;">回款金额(元)</th>
-							<th>备注</th>
-							<th style="width:100px;">登记人</th>
-							<th style="width:150px;">登记时间</th>
-						</tr>
-						{empty name="$detail.income"}
-						<tr class="none_interfix">
-							<td colspan="5" style="text-align: center;">暂无回款记录</td>
-						</tr>
-						{else/}
-						{volist name="$detail.income" id="vo"}
-						<tr class="more_interfix">
-							<td>{$vo.enter_time | date='Y-m-d'}</td>
-							<td>{$vo.amount}</td>
-							<td style="text-align:left;">{$vo.remarks}</td>
-							<td>{$vo.admin}</td>
-							<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
-						</tr>
-						{/volist}
-						{/empty}
-					</table>
-				</td>
-			</tr>
-		</table>
-	</form>
-	<input type="hidden" name="id" value="{$detail.id}">
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
 </div>
 {/block}
 <!-- /主体 -->
@@ -207,9 +68,13 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-const moduleInit = ['tool'];
+const invoice_id = {$detail.id};
+const moduleInit = ['tool','oaCheck','uploadPlus'];
 function gouguInit() {
-	var form = layui.form,tool=layui.tool;
+	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
+	oaCheck.init({
+		check_name:'income'
+	});
 }
 </script>
 {/block}

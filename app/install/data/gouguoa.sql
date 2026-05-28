@@ -185,11 +185,12 @@ INSERT INTO `oa_admin_module` VALUES (1, '系统模块', 'home','', 1, 1,1, 1639
 INSERT INTO `oa_admin_module` VALUES (2, '人事模块', 'user','', 1, 1,1, 1639562910, 0);
 INSERT INTO `oa_admin_module` VALUES (3, '行政模块', 'adm','', 1, 1,1, 1639562910, 0);
 INSERT INTO `oa_admin_module` VALUES (4, '办公模块', 'office','', 1, 1,1, 1639562910, 0);
-INSERT INTO `oa_admin_module` VALUES (5, '财务模块', 'finance','', 1, 1,1, 1639562910, 0);
-INSERT INTO `oa_admin_module` VALUES (6, '客户模块', 'customer','', 2, 1,1, 1639562910, 0);
-INSERT INTO `oa_admin_module` VALUES (7, '合同模块', 'contract','', 2, 1,1, 1656142368, 0);
-INSERT INTO `oa_admin_module` VALUES (8, '项目模块', 'project','', 2, 1,1, 1656142368, 0);
-INSERT INTO `oa_admin_module` VALUES (9, '网盘模块', 'disk','', 2, 1,1, 1656143065, 0);
+INSERT INTO `oa_admin_module` VALUES (5, '客户模块', 'customer','', 2, 1,1, 1639562910, 0);
+INSERT INTO `oa_admin_module` VALUES (6, '合同模块', 'contract','', 2, 1,1, 1656142368, 0);
+INSERT INTO `oa_admin_module` VALUES (7, '项目模块', 'project','', 2, 1,1, 1656142368, 0);
+INSERT INTO `oa_admin_module` VALUES (8, '售后模块', 'service','', 2, 1,1, 1656142368, 0);
+INSERT INTO `oa_admin_module` VALUES (9, '财务模块', 'finance','', 1, 1,1, 1639562910, 0);
+INSERT INTO `oa_admin_module` VALUES (10, '网盘模块', 'disk','', 2, 1,1, 1656143065, 0);
 
 -- ----------------------------
 -- Table structure for oa_admin_rule
@@ -219,117 +220,124 @@ INSERT INTO `oa_admin_rule` VALUES (2, 0, '', '基础数据', '基础数据', 'b
 INSERT INTO `oa_admin_rule` VALUES (3, 0, '', '人事管理', '人事管理', 'user', 'icon-renshishezhi', 1, 3, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (4, 0, '', '行政办公', '行政办公', 'adm', 'icon-banjiguanli', 1, 4, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (5, 0, '', '个人办公', '个人办公', 'office', 'icon-kaoshijihua', 1, 5, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (6, 0, '', '财务管理', '财务管理', 'finance', 'icon-yuangongtidian', 1, 6, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (7, 0, '', '客户管理', '客户管理', 'customer', 'icon-kehuguanli', 1, 7, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (8, 0, '', '合同管理', '合同管理', 'contract', 'icon-hetongyidong', 1, 8, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (9, 0, '', '项目管理', '项目管理', 'project', 'icon-xiangmuguanli', 1, 9, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (10, 0, '', '知识网盘', '知识网盘', 'disk', 'icon-tikuguanli', 1, 10, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (6, 0, '', '客户管理', '客户管理', 'customer', 'icon-kehuguanli', 1, 6, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (7, 0, '', '合同管理', '合同管理', 'contract', 'icon-hetongyidong', 1, 7, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (8, 0, '', '项目管理', '项目管理', 'project', 'icon-xiangmuguanli', 1, 8, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (9, 0, '', '售后管理', '售后管理', 'service', 'icon-biaoxingyuangong', 1, 9, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (10, 0, '', '财务管理', '财务管理', 'finance', 'icon-yuangongtidian', 1, 10, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (11, 0, '', '数据分析', '数据分析', 'analysis', 'icon-bingtutongji', 1, 11, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (12, 0, '', '知识网盘', '知识网盘', 'disk', 'icon-tikuguanli', 1, 12, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (11, 1, 'home/conf/index', '系统配置', '系统配置', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (12, 11, 'home/conf/add', '新建/编辑', '配置项', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (13, 11, 'home/conf/delete', '删除', '配置项', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (14, 11, 'home/conf/edit', '编辑', '配置详情', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (13, 1, 'home/conf/index', '系统配置', '系统配置', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (14, 13, 'home/conf/add', '新建/编辑', '配置项', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (15, 13, 'home/conf/delete', '删除', '配置项', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (16, 13, 'home/conf/edit', '编辑', '配置详情', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (15, 1, 'home/module/index', '功能模块', '功能模块', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (16, 15, 'home/module/add', '新建/编辑', '功能模块', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (17, 15, 'home/module/del', '删除', '功能模块', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (18, 15, 'home/module/recovery', '恢复', '功能模块', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (19, 15, 'home/module/install', '安装', '功能模块', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (17, 1, 'home/module/index', '功能模块', '功能模块', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (18, 17, 'home/module/add', '新建/编辑', '功能模块', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (19, 17, 'home/module/del', '删除', '功能模块', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (20, 17, 'home/module/recovery', '恢复', '功能模块', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (21, 17, 'home/module/install', '安装', '功能模块', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (20, 1, 'home/dataauth/index', '模块配置', '模块配置', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (21, 20, 'home/dataauth/edit', '编辑', '模块配置', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (22, 1, 'home/dataauth/index', '模块配置', '模块配置', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (23, 22, 'home/dataauth/edit', '编辑', '模块配置', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (22, 1, 'home/rule/index', '功能节点', '功能节点', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (23, 22, 'home/rule/add', '新建/编辑', '功能节点', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (24, 22, 'home/rule/delete', '删除', '功能节点', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (24, 1, 'home/rule/index', '功能节点', '功能节点', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (25, 24, 'home/rule/add', '新建/编辑', '功能节点', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (26, 24, 'home/rule/delete', '删除', '功能节点', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (25, 1, 'mobile/bar/datalist', '移动端配置', '移动端配置', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (27, 1, 'mobile/bar/datalist', '移动端配置', '移动端配置', 'home', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (26, 25, 'mobile/bar/datalist', 'BAR菜单', 'BAR菜单', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (27, 26, 'mobile/bar/add', '新建/编辑', 'BAR菜单', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (28, 26, 'mobile/bar/set', '设置', 'BAR菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (28, 27, 'mobile/bar/datalist', 'BAR菜单', 'BAR菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (29, 28, 'mobile/bar/add', '新建/编辑', 'BAR菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (30, 28, 'mobile/bar/set', '设置', 'BAR菜单', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (29, 25, 'mobile/types/datalist', '工作台菜单类型', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (30, 29, 'mobile/types/add', '新建/编辑', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (31, 29, 'mobile/types/del', '删除', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (32, 29, 'mobile/types/set', '设置', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (31, 27, 'mobile/types/datalist', '工作台菜单类型', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (32, 31, 'mobile/types/add', '新建/编辑', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (33, 31, 'mobile/types/del', '删除', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (34, 31, 'mobile/types/set', '设置', '工作台菜单类型', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (33, 25, 'mobile/menu/datalist', '工作台菜单', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (34, 33, 'mobile/menu/add', '新建/编辑', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (35, 33, 'mobile/menu/del', '删除', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (36, 33, 'mobile/menu/set', '设置', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (35, 27, 'mobile/menu/datalist', '工作台菜单', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (36, 35, 'mobile/menu/add', '新建/编辑', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (37, 35, 'mobile/menu/del', '删除', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (38, 35, 'mobile/menu/set', '设置', '工作台菜单', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (37, 1, 'home/role/index', '角色权限', '角色权限', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (38, 37, 'home/role/add', '新建/编辑', '角色权限', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (39, 37, 'home/role/delete', '删除', '角色权限', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (39, 1, 'home/role/index', '角色权限', '角色权限', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (40, 39, 'home/role/add', '新建/编辑', '角色权限', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (41, 39, 'home/role/delete', '删除', '角色权限', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (40, 1, 'home/log/index', '操作日志', '操作日志', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (42, 1, 'home/log/index', '操作日志', '操作日志', 'home', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (41, 1, 'home/files/index', '附件管理','附件管理', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (42, 41, 'home/files/edit', '编辑附件','附件', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (43, 41, 'home/files/move', '移动附件','附件', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (44, 41, 'home/files/delete', '删除附件','附件', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (45, 41, 'home/files/get_group', '附件分组','附件分组', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (46, 41, 'home/files/add_group', '新建/编辑','附件分组', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (47, 41, 'home/files/del_group', '删除附件分组','附件分组', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (43, 1, 'home/files/index', '附件管理','附件管理', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (44, 43, 'home/files/edit', '编辑附件','附件', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (45, 43, 'home/files/move', '移动附件','附件', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (46, 43, 'home/files/delete', '删除附件','附件', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (47, 43, 'home/files/get_group', '附件分组','附件分组', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (48, 43, 'home/files/add_group', '新建/编辑','附件分组', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (49, 43, 'home/files/del_group', '删除附件分组','附件分组', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (48, 1, 'home/database/database', '备份数据', '数据备份', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (49, 48, 'home/database/backup', '备份数据表', '数据', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (50, 1, 'home/database/database', '备份数据', '数据备份', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (51, 50, 'home/database/backup', '备份数据表', '数据', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (56, 1, 'home/task/index', '定时任务', '定时任务', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (57, 56, 'home/task/add', '新建/编辑', '定时任务', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (58, 56, 'home/task/delete', '删除', '定时任务', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (52, 1, 'home/task/index', '定时任务', '定时任务', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (53, 52, 'home/task/add', '新建/编辑', '定时任务', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (54, 52, 'home/task/delete', '删除', '定时任务', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (59, 2, '', '公共模块', '公共模块', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (55, 2, '', '公共模块', '公共模块', 'home', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (60, 59, 'home/template/datalist', '消息模板', '消息模板', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (61, 60, 'home/template/add', '新建/编辑', '消息模板', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (62, 60, 'home/template/set', '设置', '消息模板', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (63, 60, 'home/template/view', '查看', '消息模板', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (56, 55, 'home/template/datalist', '消息模板', '消息模板', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (57, 56, 'home/template/add', '新建/编辑', '消息模板', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (58, 56, 'home/template/set', '设置', '消息模板', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (59, 56, 'home/template/view', '查看', '消息模板', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (64, 59, 'adm/flow/modulelist', '审批模块', '审批模块', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (65, 64, 'adm/flow/module_add', '新建/编辑', '审批模块', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (66, 64, 'adm/flow/module_check', '设置', '审批模块', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (60, 55, 'adm/flow/modulelist', '审批模块', '审批模块', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (61, 60, 'adm/flow/module_add', '新建/编辑', '审批模块', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (62, 60, 'adm/flow/module_check', '设置', '审批模块', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (67, 59, 'adm/flow/catelist', '审批类型', '审批类型', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (68, 67, 'adm/flow/cate_add', '新建/编辑', '审批类型', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (69, 67, 'adm/flow/cate_check', '设置', '审批类型', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (63, 55, 'adm/flow/catelist', '审批类型', '审批类型', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (64, 63, 'adm/flow/cate_add', '新建/编辑', '审批类型', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (65, 63, 'adm/flow/cate_check', '设置', '审批类型', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (70, 59, 'adm/flow/datalist', '审批流程', '审批流程', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (71, 70, 'adm/flow/add', '新建/编辑', '审批流程', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (72, 70, 'adm/flow/del', '删除', '审批流程', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (73, 70, 'adm/flow/check', '设置', '审批流程', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (66, 55, 'adm/flow/datalist', '审批流程', '审批流程', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (67, 66, 'adm/flow/add', '新建/编辑', '审批流程', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (68, 66, 'adm/flow/del', '删除', '审批流程', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (69, 66, 'adm/flow/check', '设置', '审批流程', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (74, 59, 'home/cate/enterprise', '企业主体', '企业主体', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (75, 74, 'home/cate/enterprise_add', '新建/编辑', '企业主体', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (76, 74, 'home/cate/enterprise_check', '设置', '企业主体', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (70, 55, 'home/cate/enterprise', '企业主体', '企业主体', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (71, 70, 'home/cate/enterprise_add', '新建/编辑', '企业主体', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (72, 70, 'home/cate/enterprise_check', '设置', '企业主体', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (77, 59, 'home/area/datalist', '全国省市', '全国省市', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (78, 77, 'home/area/add', '新建/编辑', '全国省市', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (79, 77, 'home/area/set', '设置', '全国省市', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (73, 55, 'home/area/datalist', '全国省市', '全国省市', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (74, 73, 'home/area/add', '新建/编辑', '全国省市', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (75, 73, 'home/area/set', '设置', '全国省市', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (80, 2, '', '人事模块', '人事模块', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (76, 55, 'home/cate/links', '办公工具', '办公工具', 'home', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (77, 76, 'home/cate/links_add', '新建/编辑', '办公工具', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (78, 76, 'home/cate/links_del', '删除', '办公工具', 'home', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (81, 80, 'user/rewardscate/datalist', '奖罚项目', '奖罚项目', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (82, 81, 'user/rewardscate/add', '新建/编辑', '奖罚项目', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (83, 81, 'user/rewardscate/set', '设置', '奖罚项目', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (79, 2, '', '人事模块', '人事模块', 'user', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (84, 80, 'user/carecate/datalist', '关怀项目', '关怀项目', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (85, 84, 'user/carecate/add', '新建/编辑', '关怀项目', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (86, 84, 'user/carecate/set', '设置', '关怀项目', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (80, 79, 'user/rewardscate/datalist', '奖罚项目', '奖罚项目', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (81, 80, 'user/rewardscate/add', '新建/编辑', '奖罚项目', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (82, 80, 'user/rewardscate/set', '设置', '奖罚项目', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (87, 80, 'user/basic/datalist', '常规数据', '常规数据', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (88, 87, 'user/basic/add', '新建/编辑', '常规数据', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (89, 87, 'user/basic/set', '设置', '常规数据', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (83, 79, 'user/carecate/datalist', '关怀项目', '关怀项目', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (84, 83, 'user/carecate/add', '新建/编辑', '关怀项目', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (85, 83, 'user/carecate/set', '设置', '关怀项目', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (90, 3, 'user/department/index', '部门架构', '部门', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (91, 90, 'user/department/add', '新建/编辑', '部门', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (92, 90, 'user/department/delete', '删除', '部门', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (86, 79, 'user/basic/datalist', '常规数据', '常规数据', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (87, 86, 'user/basic/add', '新建/编辑', '常规数据', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (88, 86, 'user/basic/set', '设置', '常规数据', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (93, 3, 'user/position/index', '岗位职称', '岗位职称', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (94, 93, 'user/position/add', '新建/编辑', '岗位职称', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (95, 93, 'user/position/delete', '删除', '岗位职称', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (96, 93, 'user/position/view', '查看', '岗位职称', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (89, 3, 'user/department/index', '部门架构', '部门', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (90, 89, 'user/department/add', '新建/编辑', '部门', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (91, 89, 'user/department/delete', '删除', '部门', 'user', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (92, 3, 'user/position/index', '岗位职称', '岗位职称', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (93, 92, 'user/position/add', '新建/编辑', '岗位职称', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (94, 92, 'user/position/delete', '删除', '岗位职称', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (95, 92, 'user/position/view', '查看', '岗位职称', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (96, 92, 'user/position/layouts', '工作台布局', '工作台布局', 'user', '', 2, 0, 1, 1656143065, 0);
 
 INSERT INTO `oa_admin_rule` VALUES (97, 3, 'user/user/index', '企业员工', '员工', 'user', '', 1, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (98, 97, 'user/user/add', '新建/编辑', '员工', 'user', '', 2, 1, 1, 0, 0);
@@ -342,424 +350,459 @@ INSERT INTO `oa_admin_rule` VALUES (103, 3, 'user/files/datalist', '员工档案
 INSERT INTO `oa_admin_rule` VALUES (104, 103, 'user/files/add', '编辑', '员工档案', 'user', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (105, 103, 'user/files/view', '查看', '员工档案', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (106, 3, 'user/personal/change', '人事调动', '人事调动', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (107, 106, 'user/personal/change_add', '新建/编辑', '人事调动', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (106, 3, 'user/talent/datalist', '入职申请', '入职申请', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (107, 106, 'user/talent/add', '新增/编辑', '入职申请', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (108, 106, 'user/talent/view', '查看', '入职申请', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (109, 106, 'user/talent/del', '删除', '入职申请', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (110, 106, 'user/talent/set', '入职', '新员工', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (108, 3, 'user/personal/leave', '离职申请', '离职申请', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (109, 108, 'user/personal/leave_add', '新建/编辑', '离职申请', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (110, 108, 'user/personal/leave_delete', '删除', '离职申请', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (111, 108, 'user/personal/leave_view', '查看', '离职申请', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (111, 3, 'user/personal/change', '人事调动', '人事调动', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (112, 111, 'user/personal/change_add', '新建/编辑', '人事调动', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (113, 111, 'user/personal/change_view', '查看', '人事调动', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (114, 111, 'user/personal/change_delete', '删除', '人事调动', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (112, 3, 'user/rewards/datalist', '奖罚管理', '奖罚管理', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (113, 112, 'user/rewards/add', '新建/编辑', '奖罚管理', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (114, 112, 'user/rewards/view', '查看', '奖罚管理', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (115, 112, 'user/rewards/del', '删除', '奖罚管理', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (115, 3, 'user/personal/leave', '离职申请', '离职申请', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (116, 115, 'user/personal/leave_add', '新建/编辑', '离职申请', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (117, 115, 'user/personal/leave_delete', '删除', '离职申请', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (118, 115, 'user/personal/leave_view', '查看', '离职申请', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (116, 3, 'user/care/datalist', '员工关怀', '员工关怀', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (117, 116, 'user/care/add', '新建/编辑', '员工关怀', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (118, 116, 'user/care/view', '查看', '员工关怀', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (119, 116, 'user/care/del', '删除', '员工关怀', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (119, 3, 'user/rewards/datalist', '奖罚管理', '奖罚管理', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (120, 119, 'user/rewards/add', '新建/编辑', '奖罚管理', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (121, 119, 'user/rewards/view', '查看', '奖罚管理', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (122, 119, 'user/rewards/del', '删除', '奖罚管理', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (120, 3, 'user/laborcontract/datalist', '员工合同', '员工合同', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (121, 120, 'user/laborcontract/add', '新建/编辑', '员工合同', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (122, 120, 'user/laborcontract/add_renewal', '续签', '员工合同', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (123, 120, 'user/laborcontract/add_change', '变更', '员工合同', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (124, 120, 'user/laborcontract/view', '查看', '员工合同', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (125, 120, 'user/laborcontract/del', '删除', '员工合同', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (126, 120, 'user/laborcontract/set', '设置', '员工合同', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (123, 3, 'user/care/datalist', '员工关怀', '员工关怀', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (124, 123, 'user/care/add', '新建/编辑', '员工关怀', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (125, 123, 'user/care/view', '查看', '员工关怀', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (126, 123, 'user/care/del', '删除', '员工关怀', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (127, 2, '', '行政模块', '行政模块', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (127, 3, 'user/laborcontract/datalist', '员工合同', '员工合同', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (128, 127, 'user/laborcontract/add', '新建/编辑', '员工合同', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (129, 127, 'user/laborcontract/add_renewal', '续签', '员工合同', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (130, 127, 'user/laborcontract/add_change', '变更', '员工合同', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (131, 127, 'user/laborcontract/view', '查看', '员工合同', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (132, 127, 'user/laborcontract/del', '删除', '员工合同', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (133, 127, 'user/laborcontract/set', '设置', '员工合同', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (128, 127, 'adm/propertycate/datalist', '资产分类', '资产分类', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (129, 128, 'adm/propertycate/add', '新建/编辑', '资产分类', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (130, 128, 'adm/propertycate/del', '删除', '资产分类', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (134, 3, 'user/blacklist/datalist', '人员黑名单', '黑名单', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (135, 134, 'user/blacklist/add', '编辑', '黑名单', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (136, 134, 'user/blacklist/del', '删除', '黑名单', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (131, 127, 'adm/propertybrand/datalist', '资产品牌', '资产品牌', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (132, 131, 'adm/propertybrand/add', '新建/编辑', '资产品牌', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (133, 131, 'adm/propertybrand/check', '设置', '资产品牌', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (137, 2, '', '行政模块', '行政模块', 'adm', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (134, 127, 'adm/propertyunit/datalist', '资产单位', '资产单位', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (135, 134, 'adm/propertyunit/add', '新建/编辑', '资产单位', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (136, 134, 'adm/propertyunit/check', '设置', '资产单位', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (138, 137, 'adm/propertycate/datalist', '资产分类', '资产分类', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (139, 138, 'adm/propertycate/add', '新建/编辑', '资产分类', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (140, 138, 'adm/propertycate/del', '删除', '资产分类', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (137, 127, 'adm/sealcate/datalist', '印章管理', '印章', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (138, 137, 'adm/sealcate/add', '新建/编辑', '印章', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (139, 137, 'adm/sealcate/check', '设置', '印章', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (141, 137, 'adm/propertybrand/datalist', '资产品牌', '资产品牌', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (142, 141, 'adm/propertybrand/add', '新建/编辑', '资产品牌', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (143, 141, 'adm/propertybrand/check', '设置', '资产品牌', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (140, 127, 'adm/basic/datalist', '常规数据', '常规数据', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (141, 140, 'adm/basic/add', '新建/编辑', '常规数据', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (142, 140, 'adm/basic/set', '设置', '常规数据', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (144, 137, 'adm/propertyunit/datalist', '资产单位', '资产单位', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (145, 144, 'adm/propertyunit/add', '新建/编辑', '资产单位', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (146, 144, 'adm/propertyunit/check', '设置', '资产单位', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (143, 4, '', '固定资产', '固定资产', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (144, 143, 'adm/property/datalist', '资产信息', '固定资产', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (145, 144, 'adm/property/add', '新建/编辑', '固定资产', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (146, 144, 'adm/property/check', '设置', '固定资产', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (147, 144, 'adm/property/view', '查看', '固定资产', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (147, 137, 'adm/sealcate/datalist', '印章管理', '印章', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (148, 147, 'adm/sealcate/add', '新建/编辑', '印章', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (149, 147, 'adm/sealcate/check', '设置', '印章', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (148, 143, 'adm/property/repair_list', '报修记录', '资产报修记录', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (149, 148, 'adm/property/repair_add', '新建/编辑', '资产报修记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (150, 148, 'adm/property/repair_view', '查看', '资产报修记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (151, 148, 'adm/property/repair_del', '删除', '资产报修记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (150, 137, 'adm/basic/datalist', '常规数据', '常规数据', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (151, 150, 'adm/basic/add', '新建/编辑', '常规数据', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (152, 150, 'adm/basic/set', '设置', '常规数据', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (152, 4, '', '车辆管理', '车辆', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (153, 152, 'adm/car/datalist', '车辆信息', '车辆', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (154, 153, 'adm/car/add', '新建/编辑', '车辆', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (155, 153, 'adm/car/check', '设置', '车辆', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (156, 153, 'adm/car/view', '查看', '车辆', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (153, 4, '', '固定资产', '固定资产', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (154, 153, 'adm/property/datalist', '资产信息', '固定资产', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (155, 154, 'adm/property/add', '新建/编辑', '固定资产', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (156, 154, 'adm/property/check', '设置', '固定资产', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (157, 154, 'adm/property/view', '查看', '固定资产', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (157, 152, 'adm/car/repair_list', '车辆维修', '车辆维修记录', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (158, 157, 'adm/car/repair_add', '新建/编辑', '车辆维修记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (159, 157, 'adm/car/repair_view', '查看', '车辆维修记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (160, 157, 'adm/car/repair_del', '删除', '车辆维修记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (158, 153, 'adm/property/repair_list', '报修记录', '资产报修记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (159, 158, 'adm/property/repair_add', '新建/编辑', '资产报修记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (160, 158, 'adm/property/repair_view', '查看', '资产报修记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (161, 158, 'adm/property/repair_del', '删除', '资产报修记录', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (161, 152, 'adm/car/protect_list', '车辆保养', '车辆保养记录', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (162, 161, 'adm/car/protect_add', '新建/编辑', '车辆保养记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (163, 161, 'adm/car/protect_view', '查看', '车辆保养记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (164, 161, 'adm/car/protect_del', '删除', '车辆保养记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (162, 4, '', '车辆管理', '车辆', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (163, 162, 'adm/car/datalist', '车辆信息', '车辆', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (164, 163, 'adm/car/add', '新建/编辑', '车辆', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (165, 163, 'adm/car/check', '设置', '车辆', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (166, 163, 'adm/car/view', '查看', '车辆', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (165, 152, 'adm/car/mileage_list', '车辆里程', '车辆里程记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (166, 165, 'adm/car/mileage_add', '新建/编辑', '车辆里程记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (167, 165, 'adm/car/mileage_del', '删除', '车辆里程记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (167, 162, 'adm/car/repair_list', '车辆维修', '车辆维修记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (168, 167, 'adm/car/repair_add', '新建/编辑', '车辆维修记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (169, 167, 'adm/car/repair_view', '查看', '车辆维修记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (170, 167, 'adm/car/repair_del', '删除', '车辆维修记录', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (168, 152, 'adm/car/fee_list', '车辆费用', '车辆费用记录', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (169, 168, 'adm/car/fee_add', '新建/编辑', '车辆费用记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (170, 168, 'adm/car/fee_view', '查看', '车辆费用记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (171, 168, 'adm/car/fee_del', '删除', '车辆费用记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (171, 162, 'adm/car/protect_list', '车辆保养', '车辆保养记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (172, 171, 'adm/car/protect_add', '新建/编辑', '车辆保养记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (173, 171, 'adm/car/protect_view', '查看', '车辆保养记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (174, 171, 'adm/car/protect_del', '删除', '车辆保养记录', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (172, 4, '', '会议管理', '会议管理', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (173, 172, 'adm/meeting/room', '会议室管理', '会议室', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (174, 173, 'adm/meeting/room_add', '新建/编辑', '会议室', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (175, 173, 'adm/meeting/room_view', '查看', '会议纪要', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (176, 173, 'adm/meeting/room_check', '设置', '会议室', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (175, 162, 'adm/car/mileage_list', '车辆里程', '车辆里程记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (176, 175, 'adm/car/mileage_add', '新建/编辑', '车辆里程记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (177, 175, 'adm/car/mileage_del', '删除', '车辆里程记录', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (177, 172, 'adm/meeting/records', '会议记录', '会议记录', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (178, 177, 'adm/meeting/records_add', '新建/编辑', '会议记录', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (179, 177, 'adm/meeting/records_view', '查看', '会议纪要', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (180, 177, 'adm/meeting/records_del', '删除', '会议纪要', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (178, 162, 'adm/car/fee_list', '车辆费用', '车辆费用记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (179, 178, 'adm/car/fee_add', '新建/编辑', '车辆费用记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (180, 178, 'adm/car/fee_view', '查看', '车辆费用记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (181, 178, 'adm/car/fee_del', '删除', '车辆费用记录', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (181, 4, '', '公文管理', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (182, 181, 'adm/official/datalist', '公文列表', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (183, 182, 'adm/official/add', '新建/编辑', '公文管理', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (184, 182, 'adm/official/view', '查看', '公文管理', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (185, 182, 'adm/official/del', '删除', '公文管理', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (182, 4, '', '会议管理', '会议管理', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (183, 182, 'adm/meeting/room', '会议室管理', '会议室', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (184, 183, 'adm/meeting/room_add', '新建/编辑', '会议室', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (185, 183, 'adm/meeting/room_view', '查看', '会议纪要', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (186, 183, 'adm/meeting/room_check', '设置', '会议室', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (186, 181, 'adm/official/pending', '待审公文', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (187, 181, 'adm/official/reviewed', '已审公文', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (187, 182, 'adm/meeting/datalist', '会议室预定', '会议室预定', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (188, 187, 'adm/meeting/add', '新增/编辑', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (189, 187, 'adm/meeting/view', '查看', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (190, 187, 'adm/meeting/del', '删除', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (191, 187, 'adm/meeting/room_use', '会议室使用情况', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (188, 4, '', '用章管理', '用章管理', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (189, 188, 'adm/seal/datalist', '用章申请', '用章申请', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (190, 189, 'adm/seal/add', '新建/编辑', '用章申请', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (191, 189, 'adm/seal/view', '查看', '用章申请', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (192, 189, 'adm/seal/del', '删除', '用章申请', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (192, 182, 'adm/meeting/records', '会议记录', '会议记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (193, 192, 'adm/meeting/records_add', '新建/编辑', '会议记录', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (194, 192, 'adm/meeting/records_view', '查看', '会议纪要', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (195, 192, 'adm/meeting/records_del', '删除', '会议纪要', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (193, 188, 'adm/seal/record', '用章记录', '用章记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (196, 4, '', '公文管理', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (197, 196, 'adm/official/datalist', '公文列表', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (198, 196, 'adm/official/add', '新建/编辑', '公文管理', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (199, 196, 'adm/official/view', '查看', '公文管理', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (200, 196, 'adm/official/del', '删除', '公文管理', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (201, 196, 'adm/official/pending', '待审公文', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (202, 196, 'adm/official/reviewed', '已审公文', '公文管理', 'adm', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (194, 127, 'adm/notecate/datalist', '公告类型', '公告类型', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (195, 194, 'adm/notecate/add', '新建/编辑', '公告类型', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (196, 194, 'adm/notecate/set', '设置', '公告类型', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (203, 4, '', '用章管理', '用章管理', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (204, 203, 'adm/seal/datalist', '用章申请', '用章申请', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (205, 203, 'adm/seal/add', '新建/编辑', '用章申请', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (206, 203, 'adm/seal/view', '查看', '用章申请', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (207, 203, 'adm/seal/del', '删除', '用章申请', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (208, 203, 'adm/seal/record', '用章记录', '用章记录', 'adm', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (197, 4, 'adm/note/datalist', '公告列表', '公告', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (198, 197, 'adm/note/add', '新建/编辑', '公告', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (199, 197, 'adm/note/del', '删除', '公告', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (200, 197, 'adm/note/view', '查看', '公告', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (209, 137, 'adm/notecate/datalist', '公告类型', '公告类型', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (210, 209, 'adm/notecate/add', '新建/编辑', '公告类型', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (211, 209, 'adm/notecate/set', '设置', '公告类型', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (201, 4, 'adm/news/datalist', '公司新闻', '公司新闻', 'adm', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (202, 201, 'adm/news/add', '新建/编辑', '公司新闻', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (203, 201, 'adm/news/del', '删除', '公司新闻', 'adm', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (204, 201, 'adm/news/view', '查看', '公司新闻', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (212, 4, 'adm/note/datalist', '公告列表', '公告', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (213, 212, 'adm/note/add', '新建/编辑', '公告', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (214, 212, 'adm/note/del', '删除', '公告', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (215, 212, 'adm/note/view', '查看', '公告', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (205, 5, 'oa/plan/datalist', '日程安排', '日程安排', 'oa', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (206, 205, 'oa/plan/add', '新建/编辑', '日程安排', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (207, 205, 'oa/plan/view', '查看', '日程安排', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (208, 205, 'oa/plan/del', '删除', '日程安排', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (216, 4, 'adm/news/datalist', '公司新闻', '公司新闻', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (217, 216, 'adm/news/add', '新建/编辑', '公司新闻', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (218, 216, 'adm/news/del', '删除', '公司新闻', 'adm', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (219, 216, 'adm/news/view', '查看', '公司新闻', 'adm', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (209, 5, 'oa/plan/calendar', '日程日历', '日程安排', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (220, 5, 'oa/plan/datalist', '日程安排', '日程安排', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (221, 220, 'oa/plan/add', '新建/编辑', '日程安排', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (222, 220, 'oa/plan/view', '查看', '日程安排', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (223, 220, 'oa/plan/del', '删除', '日程安排', 'oa', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (210, 5, 'oa/schedule/datalist', '工作记录', '工作记录', 'oa', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (211, 210, 'oa/schedule/add', '新建/编辑', '工作记录', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (212, 210, 'oa/schedule/view', '查看', '工作记录', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (213, 210, 'oa/schedule/del', '删除', '工作记录', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (224, 5, 'oa/plan/calendar', '日程日历', '日程安排', 'oa', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (214, 5, 'oa/schedule/calendar', '工作日历', '工作日历', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (225, 5, 'oa/schedule/datalist', '工作记录', '工作记录', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (226, 225, 'oa/schedule/add', '新建/编辑', '工作记录', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (227, 225, 'oa/schedule/view', '查看', '工作记录', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (228, 225, 'oa/schedule/del', '删除', '工作记录', 'oa', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (215, 5, 'oa/work/datalist', '工作汇报', '工作汇报', 'oa', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (216, 215, 'oa/work/add', '新建/编辑', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (217, 215, 'oa/work/send', '发送', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (218, 215, 'oa/work/view', '查看', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (219, 215, 'oa/work/del', '删除', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (229, 5, 'oa/schedule/calendar', '工作日历', '工作日历', 'oa', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (220, 5, 'oa/note/datalist', '公告通知', '公告通知', 'oa', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (221, 220, 'oa/note/view', '查看', '公告通知', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (230, 5, 'oa/work/datalist', '工作汇报', '工作汇报', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (231, 230, 'oa/work/add', '新建/编辑', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (232, 230, 'oa/work/send', '发送', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (233, 230, 'oa/work/view', '查看', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (234, 230, 'oa/work/del', '删除', '工作汇报', 'oa', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (222, 5, 'oa/news/datalist', '公司新闻', '公司新闻', 'oa', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (223, 222, 'oa/news/view', '查看', '公司新闻', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (235, 5, 'oa/note/datalist', '公告通知', '公告通知', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (236, 235, 'oa/note/view', '查看', '公告通知', 'oa', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (224, 5, 'oa/meeting/datalist', '会议纪要', '会议纪要', 'oa', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (225, 224, 'oa/meeting/view', '查看', '会议纪要', 'oa', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (237, 5, 'oa/news/datalist', '公司新闻', '公司新闻', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (238, 237, 'oa/news/view', '查看', '公司新闻', 'oa', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (226, 2, '', '财务模块', '财务模块', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (239, 5, 'oa/meeting/datalist', '会议纪要', '会议纪要', 'oa', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (240, 239, 'oa/meeting/view', '查看', '会议纪要', 'oa', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (227, 226, 'finance/expensecate/datalist', '报销类型', '报销类型', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (228, 227, 'finance/expensecate/add', '新建/编辑', '报销类型', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (229, 227, 'finance/expensecate/set', '设置', '报销类型', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (241, 2, '', '客户模块', '客户模块', 'customer', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (230, 226, 'finance/costcate/datalist', '费用类型', '费用类型', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (231, 230, 'finance/costcate/add', '新建/编辑', '费用类型', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (233, 230, 'finance/costcate/set', '设置', '费用类型', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (234, 6, 'finance/expense/datalist', '报销管理', '报销', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (235, 234, 'finance/expense/add', '新建/编辑', '报销', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (236, 234, 'finance/expense/del', '删除', '报销', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (237, 234, 'finance/expense/view', '查看', '报销', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (238, 6, 'finance/invoice/datalist', '销项发票', '发票', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (239, 238, 'finance/invoice/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (240, 238, 'finance/invoice/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (241, 238, 'finance/invoice/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (242, 6, 'finance/ticket/datalist', '进项打票', '发票', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (243, 242, 'finance/ticket/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (244, 242, 'finance/ticket/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (245, 242, 'finance/ticket/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (246, 6, 'finance/income/datalist', '回款管理', '回款记录', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (247, 246, 'finance/income/add', '新建/编辑', '回款记录', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (248, 246, 'finance/income/view', '查看', '回款记录', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (249, 246, 'finance/income/del', '删除', '回款记录', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (250, 6, 'finance/invoice/datalist_a', '无发票回款', '无发票回款', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (251, 250, 'finance/invoice/add_a', '新建/编辑', '无发票回款', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (252, 250, 'finance/invoice/del_a', '删除', '无发票回款', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (253, 250, 'finance/invoice/view_a', '查看', '无发票回款', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (254, 6, 'finance/payment/datalist', '付款管理', '付款记录', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (255, 254, 'finance/payment/add', '新建/编辑', '付款记录', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (256, 254, 'finance/payment/view', '查看', '付款记录', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (257, 254, 'finance/payment/del', '删除', '付款记录', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (258, 6, 'finance/ticket/datalist_a', '无发票付款', '无发票付款', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (259, 258, 'finance/ticket/add_a', '新建/编辑', '无发票付款', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (260, 258, 'finance/ticket/del_a', '删除', '无发票付款', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (261, 258, 'finance/ticket/view_a', '查看', '无发票付款', 'finance', '', 2, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (262, 6, '', '财务统计', '财务统计', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (263, 262, 'finance/expense/record', '报销记录', '报销记录', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (264, 262, 'finance/invoice/record', '开票记录', '开票记录', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (265, 262, 'finance/ticket/record', '收票记录', '收票记录', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (266, 262, 'finance/income/record', '回款记录', '回款记录', 'finance', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (267, 262, 'finance/payment/record', '付款记录', '付款记录', 'finance', '', 1, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (268, 2, '', '客户模块', '客户模块', 'customer', '', 1, 1, 1, 0, 0);
-
-INSERT INTO `oa_admin_rule` VALUES (269, 268, 'customer/industry/datalist', '行业类型', '行业类型', 'home', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (269, 241, 'customer/industry/datalist', '行业类型', '行业类型', 'home', '', 1, 0, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (270, 269, 'customer/industry/add', '新建/编辑', '行业类型', 'home', '', 2, 0, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (271, 269, 'customer/industry/set', '设置', '行业类型', 'home', '', 2, 0, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (272, 268, 'customer/grade/datalist', '客户等级', '客户等级', 'customer', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (272, 241, 'customer/grade/datalist', '客户等级', '客户等级', 'customer', '', 1, 0, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (273, 272, 'customer/grade/add', '新建/编辑', '客户等级', 'customer', '', 2, 0, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (274, 272, 'customer/grade/set', '设置', '客户等级', 'customer', '', 2,0, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (275, 268, 'customer/source/datalist', '客户渠道', '客户渠道', 'customer', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (275, 241, 'customer/source/datalist', '客户渠道', '客户渠道', 'customer', '', 1, 0, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (276, 275, 'customer/source/add', '新建/编辑', '客户渠道', 'customer', '', 2, 0, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (277, 275, 'customer/source/set', '设置', '客户渠道', 'customer', '', 2,0, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (278, 268, 'customer/basic/datalist', '常规数据', '常规数据', 'user', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (278, 241, 'customer/basic/datalist', '常规数据', '常规数据', 'user', '', 1, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (279, 278, 'customer/basic/add', '新建/编辑', '常规数据', 'user', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (280, 278, 'customer/basic/set', '设置', '常规数据', 'user', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (281, 7, 'customer/customer/datalist', '客户列表', '客户列表', 'customer', '', 1, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (281, 6, 'customer/customer/datalist', '客户列表', '客户列表', 'customer', '', 1, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (282, 281, 'customer/customer/add', '新建/编辑', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (283, 281, 'customer/customer/view', '查看', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (284, 281, 'customer/customer/del', '删除', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (285, 7, 'customer/index/rush', '抢 客 宝', '抢客宝', 'customer', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (285, 6, 'customer/index/rush', '抢 客 宝', '抢客宝', 'customer', '', 1, 0, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (286, 7, 'customer/index/sea', '公海客户', '客户', 'customer', '', 1, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (286, 6, 'customer/index/sea', '公海客户', '客户', 'customer', '', 1, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (287, 286, 'customer/index/to_get', '获取', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (288, 286, 'customer/index/to_divide', '分配客户', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (289, 286, 'customer/index/to_sea', '转入公海', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (290, 286, 'customer/index/to_trash', '转入废弃池', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (291, 286, 'customer/index/to_revert', '恢复客户', '客户', 'customer', '', 2, 0, 1, 1556143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (292, 7, 'customer/index/trash', '废弃客户', '客户', 'customer', '', 1, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (292, 6, 'customer/index/trash', '废弃客户', '客户', 'customer', '', 1, 0, 1, 1556143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (293, 7, 'customer/contact/datalist', '客户联系人', '联系人', 'customer', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (294, 286, 'customer/contact/add', '新建/编辑', '联系人', 'customer', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (295, 286, 'customer/contact/del', '删除', '联系人', 'customer', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (296, 286, 'customer/contact/view', '查看', '客户联系人', 'customer', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (293, 6, 'customer/contact/datalist', '客户联系人', '联系人', 'customer', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (294, 293, 'customer/contact/add', '新建/编辑', '联系人', 'customer', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (295, 293, 'customer/contact/del', '删除', '联系人', 'customer', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (296, 293, 'customer/contact/view', '查看', '客户联系人', 'customer', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (297, 7, 'customer/chance/datalist', '销售机会', '销售机会', 'customer', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (297, 6, 'customer/chance/datalist', '销售机会', '销售机会', 'customer', '', 1, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (298, 297, 'customer/chance/add', '新建/编辑', '销售机会', 'customer', '', 2, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (299, 297, 'customer/chance/view', '查看', '销售机会', 'customer', '', 2, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (300, 297, 'customer/chance/del', '删除', '销售机会', 'customer', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (301, 7, 'customer/trace/datalist', '客户跟进', '客户跟进', 'customer', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (301, 6, 'customer/trace/datalist', '客户跟进', '客户跟进', 'customer', '', 1, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (302, 301, 'customer/trace/add', '新建/编辑', '客户跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (303, 301, 'customer/trace/view', '查看', '客户跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (304, 301, 'customer/trace/del', '删除', '客户跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (305, 2, '', '合同模块', '合同模块', 'contract', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (305, 6, 'customer/clue/datalist', '线索列表', '线索列表', 'customer', '', 1, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (306, 305, 'customer/clue/add', '新建/编辑', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (307, 305, 'customer/clue/view', '查看', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (308, 305, 'customer/clue/del', '删除', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (306, 305, 'contract/cate/datalist', '合同分类', '合同分类', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (307, 306, 'contract/cate/add', '新建/编辑', '合同分类', 'contract', '', 2, 1, 1, 0, 1656143065);
-INSERT INTO `oa_admin_rule` VALUES (308, 306, 'contract/cate/set', '设置', '合同分类', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (309, 6, 'customer/clue/sealist', '公海线索', '线索', 'customer', '', 1, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (310, 309, 'customer/clue/to_get', '获取', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (311, 309, 'customer/clue/to_sea', '转出', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (312, 309, 'customer/clue/to_transfer', '转移', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (313, 309, 'customer/clue/to_allot', '分配', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (314, 309, 'customer/clue/to_customer', '转为客户', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (309, 305, 'contract/productcate/datalist', '产品分类', '产品分类', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (310, 309, 'contract/productcate/add', '新建/编辑', '产品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (311, 309, 'contract/productcate/del', '删除', '产品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (315, 6, 'customer/follow/datalist', '线索跟进', '线索跟进', 'customer', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (316, 315, 'customer/follow/add', '新建/编辑', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (317, 315, 'customer/follow/view', '查看', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (318, 315, 'customer/follow/del', '删除', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (312, 305, 'contract/product/datalist', '产品列表', '产品', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (313, 312, 'contract/product/add', '新建/编辑', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (314, 312, 'contract/product/view', '查看', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (315, 312, 'contract/product/del', '删除', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (316, 312, 'contract/product/set', '设置', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (319, 2, '', '合同模块', '合同模块', 'contract', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (317, 305, 'contract/services/datalist', '服务内容', '服务内容', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (318, 317, 'contract/services/add', '新建/编辑', '服务内容', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (319, 317, 'contract/services/set', '设置', '服务内容', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (320, 319, 'contract/cate/datalist', '合同分类', '合同分类', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (321, 320, 'contract/cate/add', '新建/编辑', '合同分类', 'contract', '', 2, 1, 1, 0, 1656143065);
+INSERT INTO `oa_admin_rule` VALUES (322, 320, 'contract/cate/set', '设置', '合同分类', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (320, 305, 'contract/supplier/datalist', '供应商列表', '供应商', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (321, 320, 'contract/supplier/add', '新建/编辑', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (322, 320, 'contract/supplier/set', '设置', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (323, 320, 'contract/supplier/view', '查看', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (324, 320, 'contract/supplier/del', '删除', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (325, 320, 'contract/supplier/contact_add', '新建/编辑', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (326, 320, 'contract/supplier/contact_del', '删除', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (323, 319, 'contract/productcate/datalist', '产品分类', '产品分类', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (324, 323, 'contract/productcate/add', '新建/编辑', '产品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (325, 323, 'contract/productcate/del', '删除', '产品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (327, 305, 'contract/purchasedcate/datalist', '采购品分类', '采购品分类', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (328, 327, 'contract/purchasedcate/add', '新建/编辑', '采购品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (329, 327, 'contract/purchasedcate/del', '删除', '采购品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (326, 319, 'contract/product/datalist', '产品列表', '产品', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (327, 326, 'contract/product/add', '新建/编辑', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (328, 326, 'contract/product/view', '查看', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (329, 326, 'contract/product/del', '删除', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (330, 326, 'contract/product/set', '设置', '产品', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (330, 305, 'contract/purchased/datalist', '采购品列表', '采购品', 'contract', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (331, 330, 'contract/purchased/add', '新建/编辑', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (332, 330, 'contract/purchased/view', '查看', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (333, 330, 'contract/purchased/del', '删除', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (334, 330, 'contract/purchased/set', '设置', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (331, 319, 'contract/services/datalist', '服务内容', '服务内容', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (332, 331, 'contract/services/add', '新建/编辑', '服务内容', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (333, 331, 'contract/services/set', '设置', '服务内容', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (335, 8, 'contract/contract/datalist', '销售合同', '销售合同', 'contract', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (336, 335, 'contract/contract/add', '新建/编辑', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (337, 335, 'contract/contract/view', '查看', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (338, 335, 'contract/contract/del', '删除', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (334, 319, 'contract/supplier/datalist', '供应商列表', '供应商', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (335, 334, 'contract/supplier/add', '新建/编辑', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (336, 334, 'contract/supplier/set', '设置', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (337, 334, 'contract/supplier/view', '查看', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (338, 334, 'contract/supplier/del', '删除', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (339, 334, 'contract/supplier/contact_add', '新建/编辑', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (340, 334, 'contract/supplier/contact_del', '删除', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (339, 8, 'contract/purchase/datalist', '采购合同', '采购合同', 'contract', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (340, 339, 'contract/purchase/add', '新建/编辑', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (341, 339, 'contract/purchase/view', '查看', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (342, 339, 'contract/purchase/del', '删除', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (341, 319, 'contract/purchasedcate/datalist', '采购品分类', '采购品分类', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (342, 341, 'contract/purchasedcate/add', '新建/编辑', '采购品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (343, 341, 'contract/purchasedcate/del', '删除', '采购品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (343, 8, 'contract/contract/archivelist', '合同归档', '合同归档', 'contract', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (344, 343, 'contract/purchase/archivelist', '采购合同归档', '采购合同归档', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (344, 319, 'contract/purchased/datalist', '采购品列表', '采购品', 'contract', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (345, 344, 'contract/purchased/add', '新建/编辑', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (346, 344, 'contract/purchased/view', '查看', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (347, 344, 'contract/purchased/del', '删除', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (348, 344, 'contract/purchased/set', '设置', '采购品', 'contract', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (345, 8, 'contract/contract/stoplist', '中止合同', '中止合同', 'contract', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (346, 345, 'contract/purchase/stoplist', '中止采购合同', '中止采购合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (349, 7, 'contract/contract/datalist', '销售合同', '销售合同', 'contract', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (350, 349, 'contract/contract/add', '新建/编辑', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (351, 349, 'contract/contract/view', '查看', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (352, 349, 'contract/contract/del', '删除', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (347, 8, 'contract/contract/voidlist', '作废合同', '作废合同', 'contract', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (348, 347, 'contract/purchase/voidlist', '作废合同归档', '作废采购合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (353, 7, 'contract/purchase/datalist', '采购合同', '采购合同', 'contract', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (354, 353, 'contract/purchase/add', '新建/编辑', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (355, 353, 'contract/purchase/view', '查看', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (356, 353, 'contract/purchase/del', '删除', '合同', 'contract', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (349, 2, '', '项目模块', '项目模块', 'project', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (357, 7, 'contract/contract/archivelist', '合同归档', '合同归档', 'contract', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (358, 357, 'contract/purchase/archivelist', '采购合同归档', '采购合同归档', 'contract', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (350, 349, 'project/step/datalist', '项目阶段', '项目阶段', 'project', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (351, 350, 'project/step/add', '新建/编辑', '项目阶段', 'project', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (352, 350, 'project/step/set', '设置', '项目阶段', 'project', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (359, 7, 'contract/contract/stoplist', '中止合同', '中止合同', 'contract', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (360, 359, 'contract/purchase/stoplist', '中止采购合同', '中止采购合同', 'contract', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (353, 349, 'project/cate/datalist', '项目分类', '项目分类', 'project', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (354, 353, 'project/cate/add', '新建/编辑', '项目分类', 'project', '', 2, 1, 1, 0, 1656143065);
-INSERT INTO `oa_admin_rule` VALUES (355, 353, 'project/cate/set', '设置', '项目分类', 'project', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (361, 7, 'contract/contract/voidlist', '作废合同', '作废合同', 'contract', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (362, 361, 'contract/purchase/voidlist', '作废合同归档', '作废采购合同', 'contract', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (356, 349, 'project/work/datalist', '工作类别', '工作类别', 'project', '', 1, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (357, 356, 'project/work/add', '新建/编辑', '工作类别', 'project', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (358, 356, 'project/work/set', '设置', '工作类别', 'project', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (363, 2, '', '项目模块', '项目模块', 'project', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (359, 9, 'project/index/datalist', '项目列表', '项目', 'project', '', 1, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (360, 359, 'project/index/add', '新建', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (361, 359, 'project/index/edit', '编辑', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (362, 359, 'project/index/view', '查看', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (363, 359, 'project/index/del', '删除', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (364, 363, 'project/step/datalist', '项目阶段', '项目阶段', 'project', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (365, 364, 'project/step/add', '新建/编辑', '项目阶段', 'project', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (366, 364, 'project/step/set', '设置', '项目阶段', 'project', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (364, 9, 'project/task/datalist', '任务列表', '任务', 'project', '', 1, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (365, 364, 'project/task/add', '新建', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (366, 364, 'project/task/edit', '编辑', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (367, 364, 'project/task/view', '查看', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (368, 364, 'project/task/del', '删除', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (367, 363, 'project/cate/datalist', '项目分类', '项目分类', 'project', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (368, 367, 'project/cate/add', '新建/编辑', '项目分类', 'project', '', 2, 1, 1, 0, 1656143065);
+INSERT INTO `oa_admin_rule` VALUES (369, 367, 'project/cate/set', '设置', '项目分类', 'project', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (369, 9, 'project/task/hour', '任务工时', '工时', 'project', '', 1, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (370, 363, 'project/work/datalist', '工作类别', '工作类别', 'project', '', 1, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (371, 370, 'project/work/add', '新建/编辑', '工作类别', 'project', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (372, 370, 'project/work/set', '设置', '工作类别', 'project', '', 2, 1, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (370, 9, 'project/document/datalist', '文档列表', '文档', 'project', '', 1, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (371, 370, 'project/document/add', '新建/编辑', '文档', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (372, 370, 'project/document/view', '查看', '文档', 'project', '', 2, 0, 1, 1656142368, 0);
-INSERT INTO `oa_admin_rule` VALUES (373, 370, 'project/document/delete', '删除', '文档', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (373, 8, 'project/index/datalist', '项目列表', '项目', 'project', '', 1, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (374, 373, 'project/index/add', '新建', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (375, 373, 'project/index/edit', '编辑', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (376, 373, 'project/index/view', '查看', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (377, 373, 'project/index/del', '删除', '项目', 'project', '', 2, 0, 1, 1656142368, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (374, 10, 'disk/index/datalist', '个人空间', '个人空间', 'disk', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (375, 374, 'disk/index/add_upload', '新增', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (376, 374, 'disk/index/add_folder', '新增', '文件夹', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (377, 374, 'disk/index/add_article', '新增/编辑', '在线文档', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (378, 374, 'disk/index/view_article', '查看', '在线文档', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (379, 374, 'disk/index/del', '删除', '文件/文件夹/在线文档', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (380, 374, 'disk/index/rename', '重命名', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (381, 374, 'disk/index/move', '移动', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (382, 374, 'disk/index/star', '标星', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (383, 374, 'disk/index/unstar', '取消标星', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (384, 374, 'disk/index/back', '还原', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (385, 374, 'disk/index/clear', '清除', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (378, 8, 'project/task/datalist', '任务列表', '任务', 'project', '', 1, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (379, 378, 'project/task/add', '新建', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (380, 378, 'project/task/edit', '编辑', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (381, 378, 'project/task/view', '查看', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (382, 378, 'project/task/del', '删除', '任务', 'project', '', 2, 0, 1, 1656142368, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (386, 10, 'disk/index/sharelist', '共享空间', '共享空间', 'disk', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (387, 386, 'disk/index/add_group', '新建/编辑','共享空间', 'disk', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (388, 386, 'disk/index/del_group', '删除','共享空间', 'disk', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (383, 8, 'project/task/hour', '任务工时', '工时', 'project', '', 1, 0, 1, 1656142368, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (389, 10, 'disk/index/clearlist', '回 收 站', '回收站文件', 'disk', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (384, 8, 'project/document/datalist', '文档列表', '文档', 'project', '', 1, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (385, 384, 'project/document/add', '新建/编辑', '文档', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (386, 384, 'project/document/view', '查看', '文档', 'project', '', 2, 0, 1, 1656142368, 0);
+INSERT INTO `oa_admin_rule` VALUES (387, 384, 'project/document/delete', '删除', '文档', 'project', '', 2, 0, 1, 1656142368, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (390, 6, 'finance/loan/datalist', '借支管理', '借支', 'finance', '', 1, 0, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (391, 390, 'finance/loan/add', '新建/编辑', '借支', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (392, 390, 'finance/loan/del', '删除', '借支', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (393, 390, 'finance/loan/view', '查看', '借支', 'finance', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (394, 262, 'finance/loan/record', '借支记录', '借支记录', 'finance', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (388, 2, '', '售后模块', '售后模块', 'service', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (395, 3, 'user/talent/datalist', '入职申请', '入职申请', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (396, 395, 'user/talent/add', '新增/编辑', '入职申请', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (397, 395, 'user/talent/view', '查看', '入职申请', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (398, 395, 'user/talent/del', '删除', '入职申请', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (399, 395, 'user/talent/set', '入职', '新员工', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (389, 388, 'service/problemscate/datalist', '问题类型', '问题类型', 'service', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (390, 389, 'service/problemscate/add', '新建/编辑', '问题类型', 'service', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (391, 389, 'service/problemscate/set', '设置', '问题类型', 'service', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (400, 3, 'user/blacklist/datalist', '人员黑名单', '黑名单', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (401, 400, 'user/blacklist/add', '编辑', '黑名单', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (402, 400, 'user/blacklist/del', '删除', '黑名单', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (392, 388, 'service/solutionscate/datalist', '方案类型', '方案类型', 'service', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (393, 392, 'service/solutionscate/add', '新建/编辑', '方案类型', 'service', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (394, 392, 'service/solutionscate/set', '设置', '方案类型', 'service', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (403, 106, 'user/personal/change_view', '查看', '人事调动', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (404, 106, 'user/personal/change_delete', '删除', '人事调动', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (395, 9, 'service/problems/datalist', '售后问题', '售后问题', 'service', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (396, 395, 'service/problems/add', '新建/编辑', '售后问题', 'service', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (397, 395, 'service/problems/view', '查看', '售后问题', 'service', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (398, 395, 'service/problems/del', '删除', '售后问题', 'service', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (405, 172, 'adm/meeting/datalist', '会议室预定', '会议室预定', 'user', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (406, 405, 'adm/meeting/add', '新增/编辑', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (407, 405, 'adm/meeting/view', '查看', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (408, 405, 'adm/meeting/del', '删除', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (409, 405, 'adm/meeting/room_use', '会议室使用情况', '会议室预定', 'user', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (399, 9, 'service/solutions/datalist', '解决方案', '解决方案', 'service', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (400, 399, 'service/solutions/add', '新建/编辑', '解决方案', 'service', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (401, 399, 'service/solutions/view', '查看', '解决方案', 'service', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (402, 399, 'service/solutions/del', '删除', '解决方案', 'service', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (410, 59, 'home/cate/links', '办公工具', '办公工具', 'home', '', 1, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (411, 410, 'home/cate/links_add', '新建/编辑', '办公工具', 'home', '', 2, 1, 1, 0, 0);
-INSERT INTO `oa_admin_rule` VALUES (412, 410, 'home/cate/links_del', '删除', '办公工具', 'home', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (403, 9, 'service/problemswork/datalist', '服务记录', '服务记录', 'service', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (404, 403, 'service/problemswork/add', '新建/编辑', '服务记录', 'service', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (405, 403, 'service/problemswork/view', '查看', '服务记录', 'service', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (406, 403, 'service/problemswork/del', '删除', '服务记录', 'service', '', 2, 0, 1, 1656143065, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (413, 374, 'disk/index/share', '分享', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (414, 374, 'disk/index/unshare', '取消分享', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (415, 374, 'disk/index/starlist', '标星文件', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (416, 374, 'disk/index/mysharelist', '我分享的文件', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (417, 374, 'disk/index/tosharelist', '别人分享的文件', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (407, 2, '', '财务模块', '财务模块', 'finance', '', 1, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (418, 7, 'customer/clue/datalist', '线索列表', '线索列表', 'customer', '', 1, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (419, 418, 'customer/clue/add', '新建/编辑', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (420, 418, 'customer/clue/view', '查看', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (421, 418, 'customer/clue/del', '删除', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (408, 407, 'finance/expensecate/datalist', '报销类型', '报销类型', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (409, 408, 'finance/expensecate/add', '新建/编辑', '报销类型', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (410, 408, 'finance/expensecate/set', '设置', '报销类型', 'finance', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (422, 7, 'customer/clue/sealist', '公海线索', '线索', 'customer', '', 1, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (423, 422, 'customer/clue/to_get', '获取', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (424, 422, 'customer/clue/to_sea', '转出', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (425, 422, 'customer/clue/to_transfer', '转移', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (426, 422, 'customer/clue/to_allot', '分配', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (427, 422, 'customer/clue/to_customer', '转为客户', '线索', 'customer', '', 2, 0, 1, 1556143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (411, 407, 'finance/costcate/datalist', '费用类型', '费用类型', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (412, 411, 'finance/costcate/add', '新建/编辑', '费用类型', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (413, 411, 'finance/costcate/set', '设置', '费用类型', 'finance', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (428, 7, 'customer/follow/datalist', '线索跟进', '线索跟进', 'customer', '', 1, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (429, 428, 'customer/follow/add', '新建/编辑', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (430, 428, 'customer/follow/view', '查看', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (431, 428, 'customer/follow/del', '删除', '线索跟进', 'customer', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (414, 407, 'finance/account/datalist', '资金账户', '资金账户', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (415, 414, 'finance/account/add', '新建/编辑', '资金账户', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (416, 414, 'finance/account/set', '设置', '资金账户', 'finance', '', 2, 1, 1, 0, 0);
 
-INSERT INTO `oa_admin_rule` VALUES (432, 93, 'user/position/layouts', '布局', '布局', 'user', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (417, 407, 'finance/fundscate/datalist', '资金类型', '资金类型', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (418, 417, 'finance/fundscate/add', '新建/编辑', '资金类型', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (419, 417, 'finance/fundscate/set', '设置', '资金类型', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (420, 407, 'finance/paytype/datalist', '付款方式', '付款方式', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (421, 420, 'finance/paytype/add', '新建/编辑', '付款方式', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (422, 420, 'finance/paytype/set', '设置', '付款方式', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (423, 10, 'finance/expense/datalist', '报销管理', '报销', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (424, 423, 'finance/expense/add', '新建/编辑', '报销', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (425, 423, 'finance/expense/del', '删除', '报销', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (426, 423, 'finance/expense/view', '查看', '报销', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (427, 10, 'finance/loan/datalist', '借支管理', '借支', 'finance', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (428, 427, 'finance/loan/add', '新建/编辑', '借支', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (429, 427, 'finance/loan/del', '删除', '借支', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (430, 427, 'finance/loan/view', '查看', '借支', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (431, 10, 'finance/invoice/datalist', '销项发票', '发票', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (432, 431, 'finance/invoice/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (433, 431, 'finance/invoice/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (434, 431, 'finance/invoice/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (435, 10, 'finance/ticket/datalist', '进项发票', '发票', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (436, 435, 'finance/ticket/add', '新建/编辑', '发票', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (437, 435, 'finance/ticket/del', '删除', '发票', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (438, 435, 'finance/ticket/view', '查看', '发票', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (439, 10, 'finance/income/datalist', '收款管理', '收款记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (440, 439, 'finance/income/add', '新建/编辑', '收款记录', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (441, 439, 'finance/income/view', '查看', '收款记录', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (442, 439, 'finance/income/del', '删除', '收款记录', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (443, 10, 'finance/payment/datalist', '付款管理', '付款记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (444, 443, 'finance/payment/add', '新建/编辑', '付款记录', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (445, 443, 'finance/payment/view', '查看', '付款记录', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (446, 443, 'finance/payment/del', '删除', '付款记录', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (447, 10, 'finance/refund/datalist', '退款管理', '退款', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (448, 447, 'finance/refund/add', '新建/编辑', '退款', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (449, 447, 'finance/refund/view', '查看', '退款', 'finance', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (450, 447, 'finance/refund/del', '删除', '退款', 'finance', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (451, 10, '', '财务统计', '财务统计', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (452, 451, 'finance/expense/record', '报销记录', '报销记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (453, 451, 'finance/loan/record', '借支记录', '借支记录', 'finance', '', 1, 0, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (454, 451, 'finance/invoice/record', '销项发票记录', '开票记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (455, 451, 'finance/ticket/record', '进项发票记录', '收票记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (456, 451, 'finance/income/record', '收款记录', '收款记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (457, 451, 'finance/payment/record', '付款记录', '付款记录', 'finance', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (458, 451, 'finance/refund/record', '退款记录', '退款记录', 'finance', '', 1, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (459, 11, 'analysis/customer/datalist', '客户属性分析', '客户属性分析', 'analysis', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (460, 11, 'analysis/customer/followlist', '客户跟进分析', '客户跟进分析', 'analysis', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (461, 11, 'analysis/order/datalist', '销售订单分析', '销售订单分析', 'analysis', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (462, 11, 'analysis/order/salelist', '销售订单排行', '销售订单排行', 'analysis', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (463, 11, 'analysis/order/incomelist', '销售收款排行', '销售收款排行', 'analysis', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (464, 11, 'analysis/order/incomelist', '发票数据分析', '发票数据分析', 'analysis', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (465, 11, 'analysis/order/incomelist', '收付款数据分析', '收付款数据分析', 'analysis', '', 1, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (466, 12, 'disk/index/datalist', '个人空间', '个人空间', 'disk', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (467, 466, 'disk/index/add_upload', '新增', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (468, 466, 'disk/index/add_folder', '新增', '文件夹', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (469, 466, 'disk/index/add_article', '新增/编辑', '在线文档', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (470, 466, 'disk/index/view_article', '查看', '在线文档', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (472, 466, 'disk/index/del', '删除', '文件/文件夹/在线文档', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (473, 466, 'disk/index/rename', '重命名', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (474, 466, 'disk/index/move', '移动', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (475, 466, 'disk/index/star', '标星', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (476, 466, 'disk/index/unstar', '取消标星', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (478, 466, 'disk/index/back', '还原', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (479, 466, 'disk/index/clear', '清除', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (480, 466, 'disk/index/share', '分享', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (481, 466, 'disk/index/unshare', '取消分享', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (482, 466, 'disk/index/starlist', '标星文件', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (483, 466, 'disk/index/mysharelist', '我分享的文件', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (484, 466, 'disk/index/tosharelist', '别人分享的文件', '文件', 'disk', '', 2, 0, 1, 1656143065, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (485, 12, 'disk/index/sharelist', '共享空间', '共享空间', 'disk', '', 1, 0, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (486, 485, 'disk/index/add_group', '新建/编辑','共享空间', 'disk', '', 2, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (487, 485, 'disk/index/del_group', '删除','共享空间', 'disk', '', 2, 1, 1, 0, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (488, 12, 'disk/index/clearlist', '回 收 站', '回收站文件', 'disk', '', 1, 0, 1, 1656143065, 0);
+
+INSERT INTO `oa_admin_rule` VALUES (489, 4, 'adm/attendance/datalist', '假勤记录', '假勤记录', 'adm', '', 1, 1, 1, 0, 0);
+INSERT INTO `oa_admin_rule` VALUES (490, 5, 'oa/attendance/datalist', '假勤记录', '假勤记录', 'oa', '', 1, 1, 1, 0, 0);
+
 -- ----------------------------
 -- Table structure for oa_admin_group
 -- ----------------------------
@@ -782,7 +825,7 @@ CREATE TABLE `oa_admin_group`  (
 -- ----------------------------
 -- Records of oa_admin_group
 -- ----------------------------
-INSERT INTO `oa_admin_group` VALUES (1, '超级权限角色', 1, '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436', '1,2,3,4,5,6,7,8,9,10,11,12,13','1,2,3,4,5','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,5,17,18,19,20','超级权限角色，拥有系统的最高权限，主要用于系统初始化数据而设，不可修改，不可删除。', 0, 0);
+INSERT INTO `oa_admin_group` VALUES (1, '超级权限角色', 1, '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417,418,419,420,421,422,423,424,425,426,427,428,429,430,431,432,433,434,435,436,437,438,439,440,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,463,464,465,466,467,468,469,470,471,472,473,474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500', '1,2,3,4,5,6,7,8,9,10,11,12,13','1,2,3,4,5','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,5,17,18,19,20','超级权限角色，拥有系统的最高权限，主要用于系统初始化数据而设，不可修改，不可删除。', 0, 0);
 INSERT INTO `oa_admin_group` VALUES (2, '管理岗角色', 1, '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403','1,2,3,4,5,6,7,8,9,10,11,12,13','1,2,3,4,5','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,5,17,18,19,20', '管理岗角色权限，可根据公司的具体需求调整。', 0, 0);
 INSERT INTO `oa_admin_group` VALUES (3, '业务岗角色', 1, '4,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,197,198,199,200,201,202,203,204,5,205,206,207,208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,224,225,6,390,391,392,393,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,394,263,264,265,266,267,7,281,282,283,284,285,286,287,288,289,290,291,294,295,296,292,293,297,298,299,300,301,302,303,304,8,335,336,337,338,339,340,341,342,343,344,345,346,347,348,9,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,10,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389','1,2,3,4,5,6,7,8,9,10,11,12,13','1,2,3,4,5','1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,5,17,18,19,20', '业务岗角色权限，可根据公司的具体需求调整。', 0, 0);
 
@@ -816,11 +859,12 @@ CREATE TABLE `oa_data_auth`  (
 -- Records of  oa_data_auth
 -- ----------------------------
 INSERT INTO `oa_data_auth` VALUES (1, '日常办公', 'office_admin', '日常办公相关数据权限配置。', 'office', '', '', '3', '', '', '', '', '', '', '', '', 1656143065, 1724830718);
-INSERT INTO `oa_data_auth` VALUES (2, '财务模块', 'finance_admin', '财务到账相关数据权限配置。', 'finance', '', '', '', '', '', '', '', '', '', '', '', 1656143065, 0);
-INSERT INTO `oa_data_auth` VALUES (3, '客户模块', 'customer_admin', '客户模块相关数据权限配置。', 'customer', '', '', '10', '1000', '100', '', '', '', '', '', '', 1656143065, 1724830738);
-INSERT INTO `oa_data_auth` VALUES (4, '合同模块', 'contract_admin', '合同模块相关数据权限配置。', 'contract', '', '', '1', '1', '1', '1', '1', '1', '', '', '30', 1656143065, 1724830772);
-INSERT INTO `oa_data_auth` VALUES (5, '项目模块', 'project_admin', '项目模块相关数据权限配置。', 'project', '', '', '', '', '', '', '', '', '', '', '3', 1656143065, 0);
-INSERT INTO `oa_data_auth` VALUES (6, '网盘模块', 'disk_admin', '网盘模块相关数据权限配置。', 'disk', '', '', '', '', '', '', '', '', '', '', '', 1656143065, 0);
+INSERT INTO `oa_data_auth` VALUES (2, '客户模块', 'customer_admin', '客户模块相关数据权限配置。', 'customer', '', '', '10', '1000', '100', '', '', '', '', '', '', 1656143065, 1724830738);
+INSERT INTO `oa_data_auth` VALUES (3, '合同模块', 'contract_admin', '合同模块相关数据权限配置。', 'contract', '', '', '1', '1', '1', '1', '1', '1', '', '', '30', 1656143065, 1724830772);
+INSERT INTO `oa_data_auth` VALUES (4, '项目模块', 'project_admin', '项目模块相关数据权限配置。', 'project', '', '', '', '', '', '', '', '', '', '', '3', 1656143065, 0);
+INSERT INTO `oa_data_auth` VALUES (5, '售后模块', 'service_admin', '售后模块相关数据权限配置。', 'service', '', '', '', '', '', '', '', '', '', '', '3', 1656143065, 0);
+INSERT INTO `oa_data_auth` VALUES (6, '财务模块', 'finance_admin', '财务到账相关数据权限配置。', 'finance', '', '', '', '', '', '', '', '', '', '', '', 1656143065, 0);
+INSERT INTO `oa_data_auth` VALUES (7, '网盘模块', 'disk_admin', '网盘模块相关数据权限配置。', 'disk', '', '', '', '', '', '', '', '', '', '', '', 1656143065, 0);
 
 -- ----------------------------
 -- Table structure for oa_config
@@ -1180,8 +1224,8 @@ INSERT INTO `oa_template` VALUES (7, '公文审批', 'official', 2, 0, '', '/adm
 INSERT INTO `oa_template` VALUES (8, '报销审批', 'expense', 2, 0, '', '/finance/expense/view/id/{action_id}', '{from_user}提交了一个『报销申请』，请及时审批', '您有一个新的『报销申请』需要处理。', '您提交的『报销申请』已被审批通过', '您在{create_time}提交的『报销申请』已于{date}被审批通过。', '您提交的『报销申请』已被驳回拒绝', '您在{create_time}提交的『报销申请』已于{date}被驳回拒绝。', '{from_user}提交的『报销审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『报销审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733313169, 1733313253, 0);
 INSERT INTO `oa_template` VALUES (9, '发票审批', 'invoice', 2, 0, '', '/finance/invoice/view/id/{action_id}', '{from_user}提交了一个『发票申请』，请及时审批', '您有一个新的『发票申请』需要处理。', '您提交的『发票申请』已被审批通过', '您在{create_time}提交的『发票申请』已于{date}被审批通过。', '您提交的『发票申请』已被驳回拒绝', '您在{create_time}提交的『发票申请』已于{date}被驳回拒绝。', '{from_user}提交的『发票审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『发票审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733313245, 0, 0);
 INSERT INTO `oa_template` VALUES (10, '收票审批', 'ticket', 2, 0, '', '/finance/ticket/view/id/{action_id}', '{from_user}提交了一个『收票申请』，请及时审批', '您有一个新的『收票申请』需要处理。', '您提交的『收票申请』已被审批通过', '您在{create_time}提交的『收票申请』已于{date}被审批通过。', '您提交的『收票申请』已被驳回拒绝', '您在{create_time}提交的『收票申请』已于{date}被驳回拒绝。', '{from_user}提交的『收票审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『收票审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733313341, 0, 0);
-INSERT INTO `oa_template` VALUES (11, '无发票回款审批', 'invoicea', 2, 0, '', '/finance/invoice/view_a/id/{action_id}', '{from_user}提交了一个『无发票回款申请』，请及时审批', '您有一个新的『无发票回款申请』需要处理。', '您提交的『无发票回款申请』已被审批通过', '您在{create_time}提交的『无发票回款申请』已于{date}被审批通过。', '您提交的『无发票回款申请』已被驳回拒绝', '您在{create_time}提交的『无发票回款申请』已于{date}被驳回拒绝。', '{from_user}提交的『无发票回款审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『无发票回款审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314549, 0, 0);
-INSERT INTO `oa_template` VALUES (12, '无发票付款审批', 'ticketa', 2, 0, '', '/finance/ticket/view_a/id/{action_id}', '{from_user}提交了一个『无发票付款申请』，请及时审批', '您有一个新的『无发票付款申请』需要处理。', '您提交的『无发票付款申请』已被审批通过', '您在{create_time}提交的『无发票付款申请』已于{date}被审批通过。', '您提交的『无发票付款申请』已被驳回拒绝', '您在{create_time}提交的『无发票付款申请』已于{date}被驳回拒绝。', '{from_user}提交的『无发票付款审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『无发票付款审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314607, 0, 0);
+INSERT INTO `oa_template` VALUES (11, '收款审批', 'income', 2, 0, '', '/finance/invoice/income/id/{action_id}', '{from_user}提交了一个『收款申请』，请及时审批', '您有一个新的『收款申请』需要处理。', '您提交的『收款申请』已被审批通过', '您在{create_time}提交的『收款申请』已于{date}被审批通过。', '您提交的『收款申请』已被驳回拒绝', '您在{create_time}提交的『无发票收款申请』已于{date}被驳回拒绝。', '{from_user}提交的『收款审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『收款审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314549, 0, 0);
+INSERT INTO `oa_template` VALUES (12, '付款审批', 'payment', 2, 0, '', '/finance/ticket/payment/id/{action_id}', '{from_user}提交了一个『付款申请』，请及时审批', '您有一个新的『付款申请』需要处理。', '您提交的『付款申请』已被审批通过', '您在{create_time}提交的『付款申请』已于{date}被审批通过。', '您提交的『付款申请』已被驳回拒绝', '您在{create_time}提交的『付款申请』已于{date}被驳回拒绝。', '{from_user}提交的『付款审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『付款审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314607, 0, 0);
 INSERT INTO `oa_template` VALUES (13, '销售合同审批', 'contract', 2, 0, '', '/contract/contract/view/id/{action_id}', '{from_user}提交了一个『销售合同审批』，请及时审批', '您有一个新的『销售合同审批』需要处理。', '您提交的『销售合同审批』已被审批通过', '您在{create_time}提交的『销售合同审批』已于{date}被审批通过。', '您提交的『销售合同审批』已被驳回拒绝', '您在{create_time}提交的『销售合同审批』已于{date}被驳回拒绝。', '{from_user}提交的『销售合同审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『销售合同审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314701, 0, 0);
 INSERT INTO `oa_template` VALUES (14, '采购合同审批', 'purchase', 2, 0, '', '/contract/purchase/view/id/{action_id}', '{from_user}提交了一个『采购合同审批』，请及时审批', '您有一个新的『采购合同审批』需要处理。', '您提交的『采购合同审批』已被审批通过', '您在{create_time}提交的『采购合同审批』已于{date}被审批通过。', '您提交的『采购合同审批』已被驳回拒绝', '您在{create_time}提交的『采购合同审批』已于{date}被驳回拒绝。', '{from_user}提交的『采购合同审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『采购合同审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314789, 1753284351, 0);
 INSERT INTO `oa_template` VALUES (15, '借支审批', 'loan', 2, 0, '', '/finance/loan/view/id/{action_id}', '{from_user}提交了一个『借支审批』，请及时审批', '您有一个新的『借支审批』需要处理。', '您提交的『借支审批』已被审批通过', '您在{create_time}提交的『借支审批』已于{date}被审批通过。', '您提交的『借支审批』已被驳回拒绝', '您在{create_time}提交的『借支审批』已于{date}被驳回拒绝。', '{from_user}提交的『借支审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『借支审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314789, 1753284351, 0);
@@ -1190,7 +1234,7 @@ INSERT INTO `oa_template` VALUES (17, '离职审批', 'personal_quit', 2, 0, '',
 INSERT INTO `oa_template` VALUES (18, '人事调动审批', 'department_change', 2, 0, '', '/user/personal/change_view/id/{action_id}', '{from_user}提交了一个『人事调动审批』，请及时审批', '您有一个新的『人事调动审批』需要处理。', '您提交的『人事调动审批』已被审批通过', '您在{create_time}提交的『人事调动审批』已于{date}被审批通过。', '您提交的『人事调动审批』已被驳回拒绝', '您在{create_time}提交的『人事调动审批』已于{date}被驳回拒绝。', '{from_user}提交的『人事调动审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『人事调动审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314789, 1753284351, 0);
 INSERT INTO `oa_template` VALUES (19, '会议室预定审批', 'meeting_order', 2, 0, '', '/adm/meeting/view/id/{action_id}', '{from_user}提交了一个『会议室预定审批』，请及时审批', '您有一个新的『会议室预定审批』需要处理。', '您提交的『会议室预定审批』已被审批通过', '您在{create_time}提交的『会议室预定审批』已于{date}被审批通过。', '您提交的『会议室预定审批』已被驳回拒绝', '您在{create_time}提交的『会议室预定审批』已于{date}被驳回拒绝。', '{from_user}提交的『会议室预定审批』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『会议室预定审批』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1758550842, 1758582833, 0);
 INSERT INTO `oa_template` VALUES (20, '工作汇报通知', 'work', 1, 0, '', '/oa/work/view/id/{action_id}', '{from_user}给您发了一份『工作汇报』，请及时查看', '您有一份新的工作汇报待查看。', '', '', '', '', '', '', '', 1, 1, 1760576534, 1760577087, 0);
-
+INSERT INTO `oa_template` VALUES (21, '退款审批', 'income_refund', 2, 0, '', '/finance/refund/view_a/id/{action_id}', '{from_user}提交了一个『退款申请』，请及时审批', '您有一个新的『退款申请』需要处理。', '您提交的『退款申请』已被审批通过', '您在{create_time}提交的『退款申请』已于{date}被审批通过。', '您提交的『退款申请』已被驳回拒绝', '您在{create_time}提交的『退款申请』已于{date}被驳回拒绝。', '{from_user}提交的『退款申请』已被审批通过并抄送给你', '{from_user}在{create_time}提交的『退款申请』已被审批通过并抄送给你，请及时查看详情。', '', 1, 1, 1733314607, 0, 0);
 -- ----------------------------
 -- Table structure for oa_industry
 -- ----------------------------
@@ -1395,8 +1439,8 @@ INSERT INTO `oa_flow_cate` VALUES (6, '公文', 'official_docs', 2, 'official_do
 INSERT INTO `oa_flow_cate` VALUES (7, '报销', 'expense', 4, 'expense', 'icon-jizhang', '', 0, 1, 0, 0, 1, 0, 1, '/finance/expense/add', '/finance/expense/view', 0, 1, 1, 8, 1723469732, 0);
 INSERT INTO `oa_flow_cate` VALUES (8, '发票', 'invoice', 4, 'invoice', 'icon-duizhangdan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/invoice/add', '/finance/invoice/view', 0, 1, 1, 9, 1723469814, 0);
 INSERT INTO `oa_flow_cate` VALUES (9, '收票', 'ticket', 4, 'ticket', 'icon-yingjiaoqingdan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/ticket/add', '/finance/ticket/view', 0, 1, 1, 10, 1724749856, 0);
-INSERT INTO `oa_flow_cate` VALUES (10, '无发票回款', 'invoicea', 4, 'invoice', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/invoice/add_a', '/finance/invoice/view_a', 0, 1, 1, 11, 1725856435, 0);
-INSERT INTO `oa_flow_cate` VALUES (11, '无发票付款', 'ticketa', 4, 'ticket', 'icon-bulujiesuan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/ticket/add_a', '/finance/ticket/view_a', 0, 1, 1, 12, 1725856613, 0);
+INSERT INTO `oa_flow_cate` VALUES (10, '收款', 'income', 4, 'invoice', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/income/add', '/finance/income/view', 0, 1, 1, 11, 1725856435, 0);
+INSERT INTO `oa_flow_cate` VALUES (11, '付款', 'payment', 4, 'ticket', 'icon-bulujiesuan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/payment/add', '/finance/payment/view', 0, 1, 1, 12, 1725856613, 0);
 INSERT INTO `oa_flow_cate` VALUES (12, '销售合同', 'contract', 3, 'contract', 'icon-hetongguanli', '', 0, 0, 0, 0, 1, 0, 1, '/contract/contract/add', '/contract/contract/view', 0, 1, 1, 13, 1723469917, 0);
 INSERT INTO `oa_flow_cate` VALUES (13, '采购合同', 'purchase', 3, 'purchase', 'icon-dianshang', '', 0, 0, 0, 0, 1, 0, 1, '/contract/purchase/add', '/contract/purchase/view', 0, 1, 1, 14, 1723470017, 0);
 INSERT INTO `oa_flow_cate` VALUES (14, '借支', 'loan', 4, 'loan', 'icon-zhangbuguanli', '', 0, 1, 0, 1, 1, 0, 1, '/finance/loan/add', '/finance/loan/view', 0, 1, 1, 15, 1723470017, 0);
@@ -1404,7 +1448,7 @@ INSERT INTO `oa_flow_cate` VALUES (15, '入职', 'talent', 5, 'talent', 'icon-yu
 INSERT INTO `oa_flow_cate` VALUES (16, '离职', 'personal_quit', 5, 'personal_quit', 'icon-yuangongtongji2', '', 0, 1, 0, 1, 1, 0, 1, '/user/personal/leave_add', '/user/personal/leave_view', 0, 1, 1, 17, 1729490152, 0);
 INSERT INTO `oa_flow_cate` VALUES (17, '人事调动', 'department_change', 5, 'department_change', 'icon-yuangongbiandong', '', 0, 1, 0, 1, 1, 0, 1, '/user/personal/change_add', '/user/personal/change_view', 0, 1, 1, 18, 1729490152, 0);
 INSERT INTO `oa_flow_cate` VALUES (18, '会议室预定审批', 'meeting_order', 2, 'meeting_order', 'icon-xuetangguanli', '', 0, 1, 0, 1, 1, 0, 1, '/adm/meeting/add', '/adm/meeting/view', 0, 1, 1, 19, 1758544152, 1758582877);
-
+INSERT INTO `oa_flow_cate` VALUES (19, '退款', 'income_refund', 4, 'income_refund', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/refund/add', '/finance/refund/view', 0, 1, 1, 21, 1725856435, 0);
 
 -- ----------------------------
 -- Table structure for oa_flow
@@ -1428,7 +1472,7 @@ CREATE TABLE `oa_flow`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '审批流程表';
 
 -- ----------------------------
--- Records of oa_flow_cate
+-- Records of oa_flow
 -- ----------------------------
 INSERT INTO `oa_flow` VALUES (1, '请假审批', 1, 1, '', '', '', 1, '', 1, 1723791655, 0, 0);
 INSERT INTO `oa_flow` VALUES (2, '出差审批', 2, 1, '', '', '', 1, '', 1, 1723799665, 0, 0);
@@ -1439,8 +1483,8 @@ INSERT INTO `oa_flow` VALUES (6, '公文审批', 6, 1, '', '', '', 1, '', 1, 172
 INSERT INTO `oa_flow` VALUES (7, '报销审批', 7, 1, '', '', '', 1, '', 1, 1723470468, 0, 0);
 INSERT INTO `oa_flow` VALUES (8, '发票审批', 8, 1, '', '', '', 1, '', 1, 1723470482, 0, 0);
 INSERT INTO `oa_flow` VALUES (9, '收票审批', 9, 1, '', '', '', 1, '', 1, 1723470482, 0, 0);
-INSERT INTO `oa_flow` VALUES (10, '无发票回款', 10, 1, '', '', '', 1, '', 1, 1725935073, 0, 0);
-INSERT INTO `oa_flow` VALUES (11, '无发票付款', 11, 1, '', '', '', 1, '', 1, 1725935159, 0, 0);
+INSERT INTO `oa_flow` VALUES (10, '收款审批', 10, 1, '', '', '', 1, '', 1, 1725935073, 0, 0);
+INSERT INTO `oa_flow` VALUES (11, '付款审批', 11, 1, '', '', '', 1, '', 1, 1725935159, 0, 0);
 INSERT INTO `oa_flow` VALUES (12, '销售合同审批', 12, 1, '', '', '', 1, '', 1, 1723470490, 0, 0);
 INSERT INTO `oa_flow` VALUES (13, '采购合同审批', 13, 1, '', '', '', 1, '', 1, 1723470501, 0, 0);
 INSERT INTO `oa_flow` VALUES (14, '借支审批', 14, 1, '', '', '', 1, '', 1, 1723470501, 0, 0);
@@ -1448,7 +1492,7 @@ INSERT INTO `oa_flow` VALUES (15, '入职审批', 15, 1, '', '', '', 1, '', 1, 1
 INSERT INTO `oa_flow` VALUES (16, '离职审批', 16, 1, '', '', '', 1, '', 1, 1723470501, 0, 0);
 INSERT INTO `oa_flow` VALUES (17, '离职审批', 17, 1, '', '', '', 1, '', 1, 1723470501, 0, 0);
 INSERT INTO `oa_flow` VALUES (18, '会议室预定审批', 18, 1, '', '', '', 1, '', 1, 1758550919, 0, 0);
-
+INSERT INTO `oa_flow` VALUES (19, '退款审批', 19, 1, '', '', '', 1, '', 1, 1723470482, 0, 0);
 -- ----------------------------
 -- Table structure for oa_flow_step
 -- ----------------------------
@@ -1812,8 +1856,8 @@ CREATE TABLE `oa_invoice`  (
   `other_file_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '其他附件ID，如:1,2,3',
   `remark` mediumtext  NULL COMMENT '备注',
   `enter_amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '已到账金额',
-  `enter_status` tinyint(1) UNSIGNED NULL DEFAULT 0 COMMENT '回款状态：0未回款 1部分回款 2全部回款',
-  `enter_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '最新回款时间',
+  `enter_status` tinyint(1) UNSIGNED NULL DEFAULT 0 COMMENT '收款状态：0未收款 1部分收款 2全部收款',
+  `enter_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '最新收款时间',
   `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
   `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
@@ -1835,15 +1879,38 @@ DROP TABLE IF EXISTS `oa_invoice_income`;
 CREATE TABLE `oa_invoice_income`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `invoice_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '发票ID',
-  `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '到账金额',
-  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '到账登记人',
-  `enter_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '到账时间',
+  `customer_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联客户ID',
+  `contract_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联销售合同ID',
+  `project_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联项目ID',
+  `enterprise_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '收款主体ID',
+  `account_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '收款账户ID',
+  `fundscate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '款项类型',
+  `paytype_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '支付方式',
+  `transaction_code` varchar(100) NOT NULL DEFAULT '' COMMENT '交易单号',
+  `file_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '附件ID，如:1,2,3',
+  `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '收款金额',
+  `enter_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '收款时间',
+  `confirm_uid` bigint(11) NOT NULL DEFAULT 0 COMMENT '到账确认人',
+  `confirm_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '到账确认时间',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0无效,1未确认,2已确认',
+  `back_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '退款状态：0未退款,1部分退款,2已退款',
+  `back_amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '退款金额',
   `remarks` mediumtext  NULL COMMENT '备注',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '申请人',
+  `did` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '申请部门',
   `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
-  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1正常 6作废',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  `check_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '审核状态:0待审核,1审核中,2审核通过,3审核不通过,4撤销审核',
+  `check_flow_id` int(11) NOT NULL DEFAULT 0 COMMENT '审核流程id',
+  `check_step_sort` int(11) NOT NULL DEFAULT 0 COMMENT '当前审批步骤',
+  `check_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '当前审批人ID，如:1,2,3',
+  `check_last_uid` varchar(500) NOT NULL DEFAULT '' COMMENT '上一审批人',
+  `check_history_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '历史审批人ID，如:1,2,3',
+  `check_copy_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '抄送人ID，如:1,2,3',
+  `check_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '审核通过时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '发票到账记录表';
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '收款记录表';
 
 -- ----------------------------
 -- Table structure for oa_ticket
@@ -1874,9 +1941,8 @@ CREATE TABLE `oa_ticket`  (
   `other_file_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '其他附件ID，如:1,2,3',
   `remark` mediumtext  NULL COMMENT '备注',
   `pay_amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '已付款金额',
-  `cash_type` int(11) UNSIGNED NULL DEFAULT 1 COMMENT '付款类型：1银行,2现金,3支付宝,4微信,5汇票,6支票,7托收,8其他',
   `pay_status` tinyint(1) UNSIGNED NULL DEFAULT 0 COMMENT '付款状态：0未付款 1部分付款 2全部付款',
-  `pay_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '最新回款时间',
+  `pay_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '最新付款时间',
   `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
   `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
@@ -1898,15 +1964,36 @@ DROP TABLE IF EXISTS `oa_ticket_payment`;
 CREATE TABLE `oa_ticket_payment`  (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `ticket_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '发票ID',
+  `supplier_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联供应商ID',
+  `purchase_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联采购合同ID',
+  `project_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联项目ID',
+  `enterprise_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '付款主体ID',
+  `account_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '付款账户ID',
+  `fundscate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '款项类型',
+  `paytype_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '支付方式',
+  `transaction_code` varchar(100) NOT NULL DEFAULT '' COMMENT '交易单号',
+  `file_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '附件ID，如:1,2,3',
   `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '付款金额',
-  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '付款登记人',
-  `pay_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '到账时间',
+  `pay_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '付款时间',
+  `confirm_uid` bigint(11) NOT NULL DEFAULT 0 COMMENT '付款确认人',
+  `confirm_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '付款确认时间',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0无效,1未确认,2已确认',
   `remarks` mediumtext  NULL COMMENT '备注',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '付款登记人',
+  `did` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '申请部门',
   `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
-  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1正常 6作废',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  `check_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '审核状态:0待审核,1审核中,2审核通过,3审核不通过,4撤销审核',
+  `check_flow_id` int(11) NOT NULL DEFAULT 0 COMMENT '审核流程id',
+  `check_step_sort` int(11) NOT NULL DEFAULT 0 COMMENT '当前审批步骤',
+  `check_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '当前审批人ID，如:1,2,3',
+  `check_last_uid` varchar(500) NOT NULL DEFAULT '' COMMENT '上一审批人',
+  `check_history_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '历史审批人ID，如:1,2,3',
+  `check_copy_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '抄送人ID，如:1,2,3',
+  `check_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '审核通过时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '收票付款记录表';
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '付款记录表';
 
 -- ----------------------------
 -- Table structure for oa_third_message
@@ -2586,7 +2673,7 @@ CREATE TABLE `oa_customer_chance`  (
   `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
   `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '客户线索机会表';
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '客户销售机会表';
 
 -- ----------------------------
 -- Table structure for oa_customer_file
@@ -3106,6 +3193,45 @@ CREATE TABLE `oa_contract`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '销售合同表';
 
 -- ----------------------------
+-- Table structure for oa_contract_product
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_contract_product`;
+CREATE TABLE `oa_contract_product`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `contract_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '合同id',
+  `product_price_type` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '执行价格方式',
+  `product_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '商品id',
+  `product_price` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '商品单价',
+  `product_num` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '商品数量',
+  `product_total` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '商品小计',
+  `product_remark` varchar(500) NOT NULL DEFAULT '' COMMENT '商品备注',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '销售合同产品表';
+
+-- ----------------------------
+-- Table structure for oa_contract_service
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_contract_service`;
+CREATE TABLE `oa_contract_service`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `contract_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '合同id',
+  `service_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '服务id',
+  `service_price` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '服务单价',
+  `service_num` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '服务次数',
+  `service_total` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '服务小计',
+  `service_remark` varchar(500) NOT NULL DEFAULT '' COMMENT '服务备注',
+  `start_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '服务开始时间',
+  `end_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '服务结束时间',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '销售合同服务表';
+
+-- ----------------------------
 -- Table structure for oa_purchase
 -- ----------------------------
 DROP TABLE IF EXISTS `oa_purchase`;
@@ -3157,6 +3283,45 @@ CREATE TABLE `oa_purchase`  (
   `check_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '审核通过时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '采购合同表';
+
+-- ----------------------------
+-- Table structure for oa_purchase_product
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_purchase_product`;
+CREATE TABLE `oa_purchase_product`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `purchase_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '合同id',
+  `product_price_type` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '执行价格方式',
+  `product_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '商品id',
+  `product_price` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '商品单价',
+  `product_num` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '商品数量',
+  `product_total` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '商品小计',
+  `product_remark` varchar(500) NOT NULL DEFAULT '' COMMENT '商品备注',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '采购合同产品表';
+
+-- ----------------------------
+-- Table structure for oa_purchase_service
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_purchase_service`;
+CREATE TABLE `oa_purchase_service`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `purchase_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '合同id',
+  `service_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '服务id',
+  `service_price` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '服务单价',
+  `service_num` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '服务次数',
+  `service_total` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '服务小计',
+  `service_remark` varchar(500) NOT NULL DEFAULT '' COMMENT '服务备注',
+  `start_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '服务开始时间',
+  `end_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '服务结束时间',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '采购合同服务表';
 
 -- ----------------------------
 -- Table structure for oa_step
@@ -3581,7 +3746,7 @@ INSERT INTO `oa_mobile_menu` VALUES (10, '会议纪要', 'icon-huiyijiyao','yell
 INSERT INTO `oa_mobile_menu` VALUES (11, '报销管理', 'icon-a-baoxiao3','purple', '/qiye/finance/expense', 4, 0, 1, 1733153019, 0, 0);
 INSERT INTO `oa_mobile_menu` VALUES (12, '开票管理', 'icon-kaipiao','purple', '/qiye/finance/invoice', 4, 0, 1, 1733153047, 0, 0);
 INSERT INTO `oa_mobile_menu` VALUES (13, '收票管理', 'icon-shoupiao','purple', '/qiye/finance/ticket', 4, 0, 1, 1733153077, 0, 0);
-INSERT INTO `oa_mobile_menu` VALUES (14, '回款管理', 'icon-huikuan','purple', '/qiye/finance/income', 4, 0, 1, 1733153106, 0, 0);
+INSERT INTO `oa_mobile_menu` VALUES (14, '收款管理', 'icon-huikuan','purple', '/qiye/finance/income', 4, 0, 1, 1733153106, 0, 0);
 INSERT INTO `oa_mobile_menu` VALUES (15, '付款管理', 'icon-fukuan','purple', '/qiye/finance/payment', 4, 0, 1, 1733153131, 0, 0);
 INSERT INTO `oa_mobile_menu` VALUES (16, '借支管理', 'icon-a-baoxiao2','purple', '/qiye/finance/loan', 4, 0, 1, 1733153131, 0, 0);
 INSERT INTO `oa_mobile_menu` VALUES (17, '企业人员', 'icon-kehu', 'cyan', '/qiye/index/admin', 5, 0, 1, 1754539422, 0, 0);
@@ -3647,3 +3812,256 @@ INSERT INTO `oa_links` VALUES (3, '文心一言', 0, 'https://yiyan.baidu.com/',
 INSERT INTO `oa_links` VALUES (4, '通义千问', 0, 'https://www.tongyi.com/', 1, 0, 1760141705, 0, 0);
 INSERT INTO `oa_links` VALUES (5, 'AIPPT', 0, 'https://www.aippt.cn/', 1, 0, 1760144331, 0, 0);
 INSERT INTO `oa_links` VALUES (6, 'ProcessOn', 0, 'https://www.processon.com/', 1, 0, 1760144601, 0, 0);
+
+-- ----------------------------
+-- Table structure for oa_problems_cate
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_problems_cate`;
+CREATE TABLE `oa_problems_cate`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '类别名称',
+  `pid` int(10) NOT NULL DEFAULT 0 COMMENT '父ID',
+  `sort` int(10) NOT NULL DEFAULT 0 COMMENT '排序',
+  `content` mediumtext  NULL COMMENT '描述',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '问题类别';
+
+
+-- ----------------------------
+-- Table structure for oa_problems
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_problems`;
+CREATE TABLE `oa_problems`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '问题主题',
+  `cate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所属分类ID',
+  `project_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联项目ID',
+  `contract_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联合同ID',
+  `customer_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联客户ID',
+  `problem_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '问题日期',
+  `finish_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '完成日期',
+  `over_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关闭日期',
+  `admin_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建人员',
+  `director_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '负责人员',
+  `emergent` tinyint(1) NOT NULL DEFAULT 1 COMMENT '紧急度：1低,2中,3高',
+  `priority` tinyint(1) NOT NULL DEFAULT 1 COMMENT '优先级：1低,2中,3高',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：1进行中,2已分配,3已解决,4已关闭',
+  `file_ids` varchar(255) NOT NULL DEFAULT '' COMMENT '附件ids',
+  `content` mediumtext  NULL COMMENT '问题描述',
+  `create_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '修改时间',
+  `delete_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '问题表';
+
+-- ----------------------------
+-- Table structure for oa_problems_work
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_problems_work`;
+CREATE TABLE `oa_problems_work`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '服务记录主题',
+  `problems_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联问题',
+  `task_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联任务',
+  `director_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '负责人员',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建员工ID',
+  `did` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所属部门',
+  `start_time` int(11) NOT NULL DEFAULT 0 COMMENT '开始时间',
+  `end_time` int(11) NOT NULL DEFAULT 0 COMMENT '结束时间',
+  `hours` decimal(15, 1) NOT NULL DEFAULT 0.0 COMMENT '工时',
+  `work_price` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '所有者的每小时费用',
+  `work_total` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '工时总费用',
+  `fee` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '其他费用',
+  `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '总费用',
+  `content` mediumtext NOT NULL COMMENT '描述',
+  `delete_time` int(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  `create_time` int(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` int(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '问题服务记录';
+
+-- ----------------------------
+-- Table structure for oa_solutions_cate
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_solutions_cate`;
+CREATE TABLE `oa_solutions_cate`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '方案类别名称',
+  `pid` int(10) NOT NULL DEFAULT 0 COMMENT '父ID',
+  `sort` int(10) NOT NULL DEFAULT 0 COMMENT '排序',
+  `content` mediumtext  NULL COMMENT '描述',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '方案类别表';
+
+-- ----------------------------
+-- Table structure for oa_solutions
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_solutions`;
+CREATE TABLE `oa_solutions`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '方案标题',
+  `types` int(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '类型:1解决方案,2变通方法',
+  `cate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所属分类ID',
+  `problems_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联问题',
+  `director_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所有者	',
+  `hours` decimal(15, 1) NOT NULL DEFAULT 0.0 COMMENT '所需工时',
+  `cost` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '所需费用',
+  `content` mediumtext  NULL COMMENT '方案内容',
+  `file_ids` varchar(255) NOT NULL DEFAULT '' COMMENT '附件ids',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：1待批准,2已批准,3未批准',
+  `status_remark` mediumtext  NULL COMMENT '批准备注',
+  `check_id` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '批准人',
+  `check_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '批准时间',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建人',
+  `update_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '最后编辑人',
+  `create_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '修改时间',
+  `delete_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '解决方案表';
+
+-- ----------------------------
+-- Table structure for oa_account
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_account`;
+CREATE TABLE `oa_account`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `enterprise_id` int(11) NOT NULL DEFAULT 0 COMMENT '企业主体id',
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '资金账户名称',
+  `account` varchar(100) NOT NULL DEFAULT '' COMMENT '具体账号',
+  `initial_amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '初始资金',
+  `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '当前资金',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '资金账户';
+
+-- ----------------------------
+-- Records of oa_account
+-- ----------------------------
+INSERT INTO `oa_account` VALUES (1, 1, '现金账户', '',0.00,0.00, 1, 1764388690, 0, 0);
+INSERT INTO `oa_account` VALUES (2, 1, '支付宝账户', '',0.00,0.00, 1, 1764388722, 1764388758, 0);
+INSERT INTO `oa_account` VALUES (3, 1, '微信支付账户', '',0.00,0.00, 1, 1764388736, 1764388764, 0);
+INSERT INTO `oa_account` VALUES (4, 1, '招商银行账户', '',0.00,0.00, 1, 1764388747, 0, 0);
+INSERT INTO `oa_account` VALUES (5, 1, '建设银行账户', '', 0.00,0.00,1, 1764388777, 0, 0);
+
+-- ----------------------------
+-- Table structure for oa_funds_cate
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_funds_cate`;
+CREATE TABLE `oa_funds_cate`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '资金类型名称',
+  `pid` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分类id',
+  `sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序：越大越靠前',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
+  `admin_id` int(11) NOT NULL DEFAULT 0 COMMENT '创建人',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '资金类型';
+
+-- ----------------------------
+-- Records of oa_funds_cate
+-- ----------------------------
+INSERT INTO `oa_funds_cate` VALUES (1, '意向金', 0, 0, 1, 0, 1779630684, 1779630778, 0);
+INSERT INTO `oa_funds_cate` VALUES (2, '定金', 0, 0, 1, 0, 1779630690, 1779630782, 0);
+INSERT INTO `oa_funds_cate` VALUES (3, '尾款', 0, 0, 1, 0, 1779630699, 1779630820, 0);
+INSERT INTO `oa_funds_cate` VALUES (4, '全款', 0, 0, 1, 0, 1779630823, 0, 0);
+
+-- ----------------------------
+-- Table structure for oa_pay_type
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_pay_type`;
+CREATE TABLE `oa_pay_type`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '付款方式名称',
+  `pid` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '分类id',
+  `sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序：越大越靠前',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
+  `admin_id` int(11) NOT NULL DEFAULT 0 COMMENT '创建人',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '付款方式';
+
+-- ----------------------------
+-- Records of oa_pay_type
+-- ----------------------------
+INSERT INTO `oa_pay_type` VALUES (1, '银行转账', 0, 0, 1, 0, 1779631152, 1779631180, 0);
+INSERT INTO `oa_pay_type` VALUES (2, '现金交易', 0, 0, 1, 0, 1779631159, 1779631185, 0);
+INSERT INTO `oa_pay_type` VALUES (3, '支付宝', 0, 0, 1, 0, 1779631165, 0, 0);
+INSERT INTO `oa_pay_type` VALUES (4, '微信支付', 0, 0, 1, 0, 1779631173, 0, 0);
+INSERT INTO `oa_pay_type` VALUES (5, '汇票交易', 0, 0, 1, 0, 1779631200, 0, 0);
+INSERT INTO `oa_pay_type` VALUES (6, '支票交易', 0, 0, 1, 0, 1779631205, 1779631211, 0);
+INSERT INTO `oa_pay_type` VALUES (7, '托收', 0, 0, 1, 0, 1779631216, 0, 0);
+INSERT INTO `oa_pay_type` VALUES (8, '其他', 0, 0, 1, 0, 1779631219, 0, 0);
+
+-- ----------------------------
+-- Table structure for oa_income_refund
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_income_refund`;
+CREATE TABLE `oa_income_refund`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '金额',
+  `income_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '收款ID',
+  `customer_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '关联客户ID',
+  `enterprise_id` int(11) NOT NULL DEFAULT 0 COMMENT '企业主体id',
+  `account_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '资金账户ID',
+  `fundscate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '款项类型',
+  `paytype_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '支付方式',
+  `back_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '退还时间',
+  `file_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '附件ID，如:1,2,3',
+  `remarks` mediumtext  NULL COMMENT '备注',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '退款打款状态 1待打款,2已打款',
+  `confirm_uid` bigint(11) NOT NULL DEFAULT 0 COMMENT '打款确认人',
+  `confirm_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '打款确认时间',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '退款登记人',
+  `did` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所属部门',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  `check_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '审核状态:0待审核,1审核中,2审核通过,3审核不通过,4撤销审核',
+  `check_flow_id` int(11) NOT NULL DEFAULT 0 COMMENT '审核流程id',
+  `check_step_sort` int(11) NOT NULL DEFAULT 0 COMMENT '当前审批步骤',
+  `check_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '当前审批人ID，如:1,2,3',
+  `check_last_uid` varchar(500) NOT NULL DEFAULT '' COMMENT '上一审批人',
+  `check_history_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '历史审批人ID，如:1,2,3',
+  `check_copy_uids` varchar(500) NOT NULL DEFAULT '' COMMENT '抄送人ID，如:1,2,3',
+  `check_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '审核通过时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '到账退还记录表';
+
+-- ----------------------------
+-- Table structure for oa_finance_log
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_finance_log`;
+CREATE TABLE `oa_finance_log`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL COMMENT '交易标识',
+  `amount` decimal(15, 2) NOT NULL DEFAULT 0.00 COMMENT '交易金额',
+  `types` tinyint(4) NOT NULL DEFAULT 0 COMMENT '流水类型 1收入,2支出',
+  `action_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '业务ID',
+  `transaction_no` varchar(32) NOT NULL UNIQUE COMMENT '交易流水编号',
+  `enterprise_id` int(11) NOT NULL DEFAULT 0 COMMENT '企业主体id',
+  `account_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '资金账户ID',
+  `fundscate_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '款项类型',
+  `paytype_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '支付方式',
+  `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建人',
+  `create_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `delete_time` bigint(11) NOT NULL DEFAULT 0 COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8mb4 COMMENT = '财务流水表';

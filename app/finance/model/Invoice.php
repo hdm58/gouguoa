@@ -34,29 +34,30 @@ class Invoice extends Model
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
-				$item->check_status_str = check_status_name($item->check_status);
-				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
-				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
-				$item->create_time = to_date($item->create_time);
+				$item['check_status_str'] = check_status_name($item['check_status']);
+				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
+				$item['department'] = Db::name('Department')->where(['id' => $item['did']])->value('title');
+				$item['create_time'] = to_date($item['create_time']);
+				$item['enterprise'] = Db::name('Enterprise')->where(['id' => $item['invoice_subject']])->value('title');
 				$item['check_user'] = '-';
 				if($item['check_status']==1 && !empty($item['check_uids'])){
 					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
 					$item['check_user'] = implode(',',$check_user);
 				}
-				if($item->open_admin_id>0){
-					$item->open_name = Db::name('Admin')->where(['id' => $item->open_admin_id])->value('name');
-					$item->open_time = date('Y-m-d', $item->open_time);
+				if($item['open_admin_id']>0){
+					$item['open_name'] = Db::name('Admin')->where(['id' => $item['open_admin_id']])->value('name');
+					$item['open_time'] = date('Y-m-d', $item['open_time']);
 				}
 				else{
-					$item->open_name='-';
-					$item->open_time='';
-					$item->code='';
+					$item['open_name']='-';
+					$item['open_time']='';
+					$item['code']='';
 				}
-				if($item->enter_time>0){
-					$item->enter_time = date('Y-m-d', $item->enter_time);
+				if($item['enter_time']>0){
+					$item['enter_time'] = to_date($item['enter_time'],'Y-m-d');
 				}
 				else{
-					$item->enter_time='-';
+					$item['enter_time']='-';
 				}
 			});
 			return $list;

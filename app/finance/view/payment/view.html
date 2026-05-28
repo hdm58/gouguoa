@@ -2,29 +2,55 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="layui-form p-page">
-	{eq name="$detail.invoice_type" value="0"}
-	<h3 class="pb-3">无发票付款详情</h3>
+	<h3 class="pb-2">付款详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
-			<td class="layui-td-gray-2">预付款金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
-			<td class="layui-td-gray">付款方</td>
+			<td class="layui-td-gray-2">付款金额</td>
+			<td class="blue">{$detail.amount} 元</td>
+			<td class="layui-td-gray-2">付款交易单号</td>
+			<td>{$detail.transaction_code}</td>
+			<td class="layui-td-gray">付款时间</td>
+			<td>{$detail.pay_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">款项类型</td>
+			<td>{$detail.fundscate}</td>
+			<td class="layui-td-gray">付款方式</td>
+			<td>{$detail.paytype}</td>
+			<td class="layui-td-gray">付款主体</td>
 			<td>{$detail.subject}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-3">收款方(供应商)</td>
-			<td colspan="3">{$detail.supplier_name}</td>
+			<td class="layui-td-gray">确认状态</td>
+			<td colspan="3">
+				{eq name="$detail.status" value="1"}<span class="red">未确认</span>{/eq}
+				{eq name="$detail.status" value="2"}<span class="green">已确认</span>，确认人：{$detail.confirm_name}，确认时间：{$detail.confirm_time|to_date}{/eq}
+			</td>
+			<td class="layui-td-gray">付款账户</td>
+			<td>{$detail.account|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联进项发票</td>
+			<td colspan="3">{$detail.ticket|default='-'}</td>
+			<td class="layui-td-gray-2">关联供应商</td>
+			<td>{$detail.supplier|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联采购合同</td>
+			<td colspan="3">{$detail.purchase|default='-'}</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td>{$detail.project|default='-'}</td>
 		</tr>
 		{notempty name="$detail.remark"}
 		<tr>
 			<td class="layui-td-gray">备注信息</td>
-			<td colspan="3">{$detail.remark}</td>
+			<td colspan="5">{$detail.remark}</td>
 		</tr>
 		{/notempty}
 		{notempty name="$detail.file_ids"}
 		<tr>
-			<td class="layui-td-gray">关联附件</td>
-			<td colspan="3">
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="5" style="padding:4px 2px;">
 				<div class="layui-row">
 					{volist name="$detail.file_array" id="vo"}
 					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
@@ -34,115 +60,7 @@
 		</tr>
 		{/notempty}
 	</table>
-	{else/}
-	<h3 class="pb-3">发票信息</h3>
-	<table class="layui-table layui-table-form">
-		<tr>
-			<td class="layui-td-gray-2">发票金额(元)</td>
-			<td class="blue">{$detail.amount}</td>
-			<td class="layui-td-gray">发票类型</td>
-			<td>
-			{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-			{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
-			{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
-			</td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray">发票抬头</td>
-			<td>{$detail.subject}</td>
-			<td class="layui-td-gray-3">开票主体(供应商)</td>
-			<td>{$detail.supplier_name}</td>
-		</tr>
-		{notempty name="$detail.remark"}
-		<tr>
-			<td class="layui-td-gray">备注信息</td>
-			<td colspan="3">{$detail.remark}</td>
-		</tr>
-		{/notempty}
-		{notempty name="$detail.file_ids"}
-		<tr>
-			<td class="layui-td-gray">关联附件</td>
-			<td colspan="3">
-				<div class="layui-row">
-					{volist name="$detail.file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
-		<tr>
-			<td class="layui-td-gray">发票号码</td>
-			<td>{$detail.code}</td>
-			<td class="layui-td-gray">开票时间</td>
-			<td>{$detail.open_time|date='Y-m-d'}</td>
-		</tr>
-		{notempty name="$detail.other_file_ids"}
-		<tr>
-			<td class="layui-td-gray">发票附件</td>
-			<td colspan="3">
-				<div class="layui-row">
-					{volist name="$detail.other_file_array" id="vo"}
-					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-					{/volist}
-				</div>
-			</td>
-		</tr>
-		{/notempty}
-	</table>
-	{/eq}
-	
-	<h3 class="py-3">付款信息</h3>
-	<form class="layui-form">
-		<table class="layui-table layui-table-form">
-			<tr>
-				<td class="layui-td-gray">付款状态</td>
-				<td>
-					{if condition="($detail.pay_status == 0)"}
-						<span class="red">未付款</span>
-					{elseif condition="($detail.pay_status == 1)"}
-						<span class="blue">部分付款</span>
-					{elseif condition="($detail.pay_status == 2)"}
-						<span  class="green">全部付款</span>
-					{/if}
-				</td>
-				<td class="layui-td-gray-2">未付款金额(元)</td>
-				<td class="red">{$detail.not_pay}</td>
-				<td class="layui-td-gray-2">已付款金额(元)</td>
-				<td class="green">{$detail.pay_amount}</td>
-			</tr>
-			<tr>
-				<td class="layui-td-gray">付款记录</td>
-				<td colspan="5">
-					<table class="layui-table layui-table-min" style="margin:0">
-						<tr>
-							<th style="width:150px;">付款日期</th>
-							<th style="width:150px;">付款金额(元)</th>
-							<th>备注</th>
-							<th style="width:100px;">登记人</th>
-							<th style="width:150px;">登记时间</th>
-						</tr>
-						{empty name="$detail.payment"}
-						<tr class="none_interfix">
-							<td colspan="5" style="text-align: center;">暂无付款记录</td>
-						</tr>
-						{else/}
-						{volist name="$detail.payment" id="vo"}
-						<tr class="more_interfix">
-							<td>{$vo.pay_time | date='Y-m-d'}</td>
-							<td>{$vo.amount}</td>
-							<td style="text-align:left;">{$vo.remarks}</td>
-							<td>{$vo.admin}</td>
-							<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
-						</tr>
-						{/volist}
-						{/empty}
-					</table>
-				</td>
-			</tr>
-		</table>
-	</form>
-	<input type="hidden" name="id" value="{$detail.id}">
+	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
 </div>
 {/block}
 <!-- /主体 -->
@@ -150,9 +68,13 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-const moduleInit = ['tool'];
+const invoice_id = {$detail.id};
+const moduleInit = ['tool','oaCheck','uploadPlus'];
 function gouguInit() {
-	var form = layui.form,tool=layui.tool;
+	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
+	oaCheck.init({
+		check_name:'payment'
+	});
 }
 </script>
 {/block}

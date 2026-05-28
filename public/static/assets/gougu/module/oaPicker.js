@@ -8,7 +8,7 @@ layui.define(['tool'], function (exports) {
 			area: ['400px', '524px'],
 			searchbar:'',
 			page:false,
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'部门名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'部门名称'}]
 		},
 		'position':{
 			title:'选择岗位',
@@ -16,7 +16,7 @@ layui.define(['tool'], function (exports) {
 			area: ['400px', '524px'],
 			searchbar:'',
 			page:false,
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'岗位名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'岗位名称'}]
 		},
 		'services':{
 			title:'选择服务类型',
@@ -24,13 +24,13 @@ layui.define(['tool'], function (exports) {
 			area: ['400px', '524px'],
 			searchbar:'',
 			page:false,
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'服务名称'},{field:'price',title:'服务单价'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'服务名称'},{field:'price',title:'服务单价'}]
 		},
 		'template':{
 			title:'选择消息模板',
 			url:'/api/index/get_template',
 			area: ['600px', '568px'],
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'消息模板名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'消息模板名称'}]
 		},
 		'workcate':{
 			title:'选择工作类型',
@@ -38,40 +38,40 @@ layui.define(['tool'], function (exports) {
 			area: ['400px', '524px'],
 			searchbar:'',
 			page:false,
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'工作类型名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'工作类型名称'}]
 		},
 		'property':{
 			title:'选择固定资产',
 			url:'/adm/api/get_property',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'资产名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'资产名称'}]
 		},
 		'car':{
 			title:'选择车辆信息',
 			url:'/adm/api/get_car',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'车辆名称'},{field:'name',width:100,title:'车牌号码',align:'center'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'车辆名称'},{field:'name',width:100,title:'车牌号码',align:'center'}]
 		},
 		'room':{
 			title:'选择会议室',
 			url:'/adm/api/get_meeting_room',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'会议室名称'},{field:'num',width:100,title:'可容纳人数',align:'center'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'会议室名称'},{field:'num',width:100,title:'可容纳人数',align:'center'}]
 		},
 		'customer':{
 			title:'选择客户',
 			url:'/customer/api/get_customer',
 			add:'/customer/customer/add',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'name',title:'客户名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'name',title:'客户名称'}]
 		},
 		'chance':{
 			title:'选择销售机会',
 			url:'/customer/api/get_chance',
 			area: ['600px', '568px'],
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'机会主题'},{field:'belong_name',title:'归属人',width:80,align:'center'},{field:'stage_name',title:'当前阶段',width:100,align:'center'},{field:'discovery_time',title:'发现时间',width:100,align:'center'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'机会主题'},{field:'belong_name',title:'归属人',width:80,align:'center'},{field:'stage_name',title:'当前阶段',width:100,align:'center'},{field:'discovery_time',title:'发现时间',width:100,align:'center'}]
 		},
 		'supplier':{
 			title:'选择供应商',
 			url:'/contract/api/get_supplier',
 			add:'/contract/supplier/add',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'供应商名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'供应商名称'}]
 		},
 		'contract':{
 			title:'选择销售合同',
@@ -82,7 +82,8 @@ layui.define(['tool'], function (exports) {
 		'product':{
 			title:'选择产品',
 			url:'/contract/api/get_product',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'产品名称'},{field:'sale_price',title:'销售单价',width: 120,align:'center'}]
+			area: ['960px', '568px'],
+			cols:[{field:'id',width:80,title:'ID号',align:'center'},{field:'code',title:'产品编码',width: 150},{field:'title',title:'产品名称'},{field:'specs',title:'产品规格'},{field:'sale_price',title:'市场指导价',width: 90,align:'center'},{field:'project_price',title:'工程商价',width: 80,align:'center'},{field:'retail_price',title:'分销商价',width: 80,align:'center'},{field:'finance_price',title:'最低财务控价',width: 100,align:'center'}]
 		},
 		'purchase':{
 			title:'选择采购合同',
@@ -93,24 +94,44 @@ layui.define(['tool'], function (exports) {
 		'purchased':{
 			title:'选择采购物品',
 			url:'/contract/api/get_purchased',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'采购物品名称'},{field:'purchase_price',title:'采购单价',width: 120,align:'center'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'采购物品名称'},{field:'purchase_price',title:'采购单价',width: 120,align:'center'}]
 		},
 		'project':{
 			title:'选择项目',
 			url:'/project/api/get_project',
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'项目名称'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'项目名称'}]
 		},
 		'task':{
 			title:'选择任务',
 			url:'/project/api/get_task',
 			area: ['800px', '568px'],
-			cols:[{field:'id',width:90,title:'序号',align:'center'},{ field:'title',title:'任务主题'},{field:'project',width:240,title:'关联项目'}]
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{ field:'title',title:'任务主题'},{field:'project',width:240,title:'关联项目'}]
 		},
 		'loan':{
 			title:'选择借支冲抵',
 			url:'/finance/api/get_loan',
 			area: ['800px', '568px'],
-			cols:[{field: 'id',width: 80,title:'序号',align:'center'},{field:'cost',title:'借款金额(元)',width: 100},{field:'un_balance_cost',title:'未冲账金额(元)',width: 110},{field:'balance_cost',title:'已冲账金额(元)',width: 110},{field:'title',title:'借支主题',minWidth:200}]
+			cols:[{field: 'id',width: 80,title:'ID号',align:'center'},{field:'cost',title:'借款金额(元)',width: 100},{field:'un_balance_cost',title:'未冲账金额(元)',width: 110},{field:'balance_cost',title:'已冲账金额(元)',width: 110},{field:'title',title:'借支主题',minWidth:200}]
+		},
+		'invoice':{
+			title:'选择销项发票',
+			url:'/finance/api/get_invoice',
+			area: ['800px', '568px'],
+			cols:[{ field: 'code',width:200,title:'发票号码',align:'center'},{field:'invoice_title',title:'发票抬头'},{ field:'enterprise',title:'开票主体',width: 240}]
+		},
+		'ticket':{
+			title:'选择进项发票',
+			url:'/finance/api/get_ticket',
+			area: ['800px', '568px'],
+			cols:[{ field: 'code',width:200,title:'发票号码',align:'center'},{field:'enterprise',title:'发票抬头'},{ field:'invoice_title',title:'开票主体',width: 240}]
+		},
+		'account':{
+			title:'选择资金账户',
+			url:'/finance/api/get_account',
+			area: ['600px', '524px'],
+			searchbar:'',
+			page:false,
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'账户名称'},{field:'enterprise',title:'所属企业主体'}]
 		}
 	}
 
@@ -344,7 +365,7 @@ layui.define(['tool'], function (exports) {
 				"titles":"",
 				"where":map,
 				"area": ['600px', '568px'],
-				"cols":[{field: 'id',width: 80,title:'序号',align:'center'},{field:'title',title:'名称'}],
+				"cols":[{field: 'id',width: 80,title:'ID号',align:'center'},{field:'title',title:'名称'}],
 				"searchbar":'<form class="layui-form pb-2"><div class="layui-input-inline" style="width:420px; margin-right:5px;"><input type="text" name="keywords" placeholder="请输入关键字" class="layui-input" autocomplete="off" /></div><button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="picker">提交搜索</button><button type="reset" class="layui-btn layui-btn-reset" lay-filter="picker-reset">清空</button></form>',
 				"page":true,
 				"type":type,//1单选择,2多选
@@ -510,6 +531,7 @@ layui.define(['tool'], function (exports) {
 		let that = $(this),ids = [],titles=[],map = {};
 		let types = that.data('types');
 		let type = that.data('type');
+		let field = that.data('field');
 		let where = that.data('where');
 		if (typeof(types) == "undefined" || types == '') {
 			layer.msg('请设置【picker】的类型');
@@ -517,6 +539,9 @@ layui.define(['tool'], function (exports) {
 		}
 		if (typeof(type) == "undefined" || type == '') {
 			type = 1;
+		}
+		if (typeof(field) == "undefined" || field == '') {
+			field = 'title';
 		}
 		if (typeof(where) == "undefined" || where == '') {
 			map = {};
@@ -528,10 +553,10 @@ layui.define(['tool'], function (exports) {
 		let callback = function(data){
 			for ( var i = 0; i <data.length; i++){
 				ids.push(data[i].id);
-				if(!data[i].title){
-					titles.push(data[i].name);
-				}else{
+				if(!data[i][field]){
 					titles.push(data[i].title);
+				}else{
+					titles.push(data[i][field]);
 				}				
 			}
 			that.val(titles.join(','));
