@@ -1,0 +1,212 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form id="analysisForm" class="layui-form gg-form-bar mb-2" style="box-shadow: 0 1px 3px 0 rgb(5 32 96 / 10%);">
+		<div class="layui-input-inline" style="width:100px;">
+			<input type="text" class="layui-input tool-time" data-type="year" placeholder="选择年度" readonly name="year" id="year" value="{:date('Y')}">
+		</div>
+		<div class="layui-input-inline" style="width: 150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交查询</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">重置</button>
+		</div>
+	</form>
+	<div class="layui-row layui-col-space12">
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div id="calendarA" class="chart-box" style="width: 100%;height:300px;" data-type="calendar" data-url="/analysis/api/customer_calendar"></div>
+			</div>
+		</div>
+		
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div id="customers" class="chart-box" style="height: 500px;" data-type="bar" data-url="/analysis/api/customer_month"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>年度客户统计</h3>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/echart/echarts.min.js"></script>
+<script>
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
+	var chartsData={
+		"title": {
+			"text": "客户数量"
+		},
+		"legend": [
+			"客户数量"
+		],
+		"yAxis": [],
+		"series": []
+	};
+	
+	//加载有数据
+    function initBoxData() {
+		var index = layer.load(0, {shade: false});
+		  setTimeout(function(){
+			layer.close(index);
+		}, 1000);
+        $('.chart-box').each(function(){
+            var id  =$(this).attr("id");
+            ajaxCharts(id);
+        });
+    }
+	
+    function ajaxCharts(id) {
+        var that=$('#'+id+'');
+        var type=that.data('type');
+        var target=that.attr('data-url');
+        var searchData=$('#analysisForm').serialize();
+        $.ajax({
+            type: "POST",
+            url: target,
+            data: searchData,
+            dataType: "json",
+            async: false,
+            success: function (e) {
+				if(e.code==0){
+					chartsData=e.data;
+				}
+            },
+            complete: function () {
+
+            }
+        });
+		// 基于准备好的dom，初始化echarts实例
+		var myChart = echarts.init(document.getElementById(id));
+		switch (type) {
+            case 'bar':
+                option = {
+                    title: {
+                        text: chartsData.title.text
+                    },
+					grid: {
+						top: '80px',
+						left: '1%',
+						right: '1%',
+						bottom: '3%',
+						containLabel: true
+					},
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#999'
+                            }
+                        }
+                    },
+                    legend: {
+                        data: chartsData.legend
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: chartsData.xaxis,
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        }
+                    ],
+                    yAxis:chartsData.yaxis,
+                    series:chartsData.series
+                };
+
+             // 使用刚指定的配置项和数据显示图表。
+             myChart.setOption(option);
+             break;
+			case 'calendar':
+			 option = {
+                  title: {
+					top: 12,
+					left: 12,
+					text: '年度客户统计'
+				  },
+				  tooltip: {
+						padding: 6,
+						formatter: function (obj) {
+							var value = obj.value;
+							return '<div style="font-size: 12px;">' + value[0] + '，客户数量：' + value[1] + '</div>';
+						}
+				  },
+				  visualMap: {
+						min: 0,
+						max: 100,
+						show: false,
+						inRange: {
+							color: ['#fafafa','#1AAD19']
+						}
+					},
+				  calendar: {
+					top: 72,
+					left: 40,
+					right: 20,
+					cellSize: ['auto', 29],
+					range: $('#year').val(),
+					itemStyle: {
+					  borderWidth: 0.5
+					},
+					yearLabel: { show: false }
+				  },
+				  series: {
+					type: 'heatmap',
+					coordinateSystem: 'calendar',
+					data: getCalendarData(chartsData)
+				  }
+			}
+             // 使用刚指定的配置项和数据显示图表。
+             myChart.setOption(option);
+             break;
+		}//end switch
+
+	}	
+	
+	function getCalendarData(arr) {
+		var rangeArray = [];
+		for (var property in arr) {
+			rangeArray.push(property);
+		}
+		var rangeArray = [rangeArray[0], rangeArray[rangeArray.length - 1]];
+		var start = +echarts.number.parseDate(rangeArray[0]);
+		var end = +echarts.number.parseDate(rangeArray[1]);
+		if (start + 7776000000 > end) {
+			end = start + 8640000000;
+			rangeArray[1] = echarts.format.formatTime('yyyy-MM-dd', end);
+		}
+		var dayTime = 3600 * 24 * 1000;
+		var data = [];
+		for (var time = start; time < end; time += dayTime) {
+			var this_date = echarts.format.formatTime('yyyy-MM-dd', time);
+			if (arr[this_date]) {
+				data.push([this_date, arr[this_date]]);
+			} else {
+				data.push([this_date, 0]);
+			}
+		}
+		var res = { 'range': rangeArray, 'data': data };
+		return data;
+	}
+	
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, form  = layui.form;
+		initBoxData();
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			initBoxData();
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

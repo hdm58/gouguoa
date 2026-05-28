@@ -1,0 +1,195 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form id="analysisForm" class="layui-form gg-form-bar mb-2" style="box-shadow: 0 1px 3px 0 rgb(5 32 96 / 10%);">
+		<div class="layui-input-inline" style="width:180px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="选择日期" readonly name="diff_time" id="diff_time" value="{:date('Y')}-01-01 ~ {:date('Y')}-12-31">
+		</div>
+		<div class="layui-input-inline" style="width: 180px;">
+			<input type="text" value="" readonly placeholder="选择部门" class="layui-input picker-oa" data-types="department" />
+			<input type="text" name="did" value="0" readonly style="display:none;"/>
+		</div>
+		<div class="layui-input-inline" style="width: 120px;">
+			<input type="text" value="" readonly placeholder="选择员工" class="layui-input picker-admin"/>
+			<input type="text" name="uid" value="0" readonly style="display:none;"/>
+		</div>
+		<div class="layui-input-inline" style="width: 150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交查询</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">重置</button>
+		</div>
+	</form>
+	<div class="layui-row layui-col-space12">
+		<div class="layui-col-md12">
+			<div class="layui-row">
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div id="customerA" class="chart-box" style="width: 100%; height:480px" data-type="pie" data-url="/analysis/api/customer_industry"></div>
+					</div>
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div id="customerB" class="chart-box" style="width: 100%; height:480px" data-type="pie" data-url="/analysis/api/customer_source"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="layui-row layui-col-space12">
+		<div class="layui-col-md12">
+			<div class="layui-row">
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div id="customerC" class="chart-box" style="width: 100%; height:480px" data-type="pie" data-url="/analysis/api/customer_status"></div>
+					</div>
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div id="customerD" class="chart-box" style="width: 100%; height:480px" data-type="pie" data-url="/analysis/api/customer_grade"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/echart/echarts.min.js"></script>
+<script>
+	const moduleInit = ['tool','laydatePlus','oaPicker'];
+	
+	//加载有数据
+    function initBoxData() {
+		var index = layer.load(0, {shade: false});
+		  setTimeout(function(){
+			layer.close(index);
+		}, 1000);
+        $('.chart-box').each(function(){
+            var id  =$(this).attr("id");
+            ajaxCharts(id);
+        });
+    }
+
+	var chartsData={
+		"title": {
+			"text": "客户行业"
+		},
+		"series": {}
+	};
+	
+    function ajaxCharts(id) {
+        var that=$('#'+id+'');
+        var type=that.data('type');
+        var target=that.attr('data-url');
+        var searchData=$('#analysisForm').serialize();
+        $.ajax({
+            type: "POST",
+            url: target,
+            data: searchData,
+            dataType: "json",
+            async: false,
+            success: function (e) {
+				if(e.code==0){
+					chartsData=e.data;
+				}
+            },
+            complete: function () {
+
+            }
+        });
+
+		// 基于准备好的dom，初始化echarts实例
+		var myChart = echarts.init(document.getElementById(id));
+		switch (type) {
+			case 'line':
+				var option = {
+					title: {
+						text: chartsData.title.text
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+
+					legend: {
+						data: chartsData.legend
+					},
+					grid: {
+						top: '12px',
+						left: '3%',
+						right: '3%',
+						bottom: '3%',
+						containLabel: true
+					},
+					xAxis: {
+						type: 'category',
+						boundaryGap: false,
+						data: chartsData.xaxis
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series:chartsData.series
+				};
+
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+
+				break;
+			case 'pie':
+				option = {
+					title: {
+						text: chartsData.title.text,
+						left: '10px',
+						top:'12px'
+					},
+					tooltip: {
+						trigger: 'item'
+					},
+					legend: {
+						orient: 'vertical',
+						top: '36px',
+					    right: '12px',
+					},
+					series: [
+						{
+							// name: 'Access From',
+							type: 'pie',
+							radius: '50%',
+							data:chartsData.series.data,
+							emphasis: {
+								itemStyle: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+				};
+
+				if (option && typeof option === 'object') {
+					myChart.setOption(option);
+				}
+				break;
+		}
+
+	}
+	
+	function gouguInit() {
+		var tool = layui.tool,form  = layui.form, laydatePlus = layui.laydatePlus;
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		initBoxData();
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			initBoxData();
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

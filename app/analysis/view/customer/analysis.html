@@ -1,0 +1,216 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form id="analysisForm" class="layui-form gg-form-bar mb-2" style="box-shadow: 0 1px 3px 0 rgb(5 32 96 / 10%);">
+		<div class="layui-input-inline" style="width:180px;">
+			<input type="text" class="layui-input" data-range="~" placeholder="选择日期" readonly name="diff_time" id="diff_time" value="{:date('Y')}-01-01 ~ {:date('Y')}-12-31">
+		</div>
+		<div class="layui-input-inline" style="width: 180px;">
+			<input type="text" value="" readonly placeholder="选择部门" class="layui-input picker-oa" data-types="department" />
+			<input type="text" name="did" value="0" readonly style="display:none;"/>
+		</div>
+		<div class="layui-input-inline" style="width: 150px;">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交查询</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">重置</button>
+		</div>
+	</form>
+	<div class="layui-row layui-col-space12">
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<table class="layui-hide" id="test" lay-filter="test"></table>
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div id="customers" class="chart-box" style="height: 1000px;" data-type="barVertical" data-url="/analysis/api/customer_number"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>员工客户量</h3>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/echart/echarts.min.js"></script>
+<script>
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
+	
+	var chartsData={
+		"title": {
+			"text": "客户数量"
+		},
+		"legend": [
+			"客户数量"
+		],
+		"yAxis": [],
+		"series": []
+	};
+	
+	//加载有数据
+    function initBoxData() {
+		var index = layer.load(0, {shade: false});
+		  setTimeout(function(){
+			layer.close(index);
+		}, 1000);
+        $('.chart-box').each(function(){
+            var id  =$(this).attr("id");
+            ajaxCharts(id);
+        });
+    }
+	
+    function ajaxCharts(id) {
+        var that=$('#'+id+'');
+        var type=that.data('type');
+        var target=that.attr('data-url');
+        var searchData=$('#analysisForm').serialize();
+        $.ajax({
+            type: "POST",
+            url: target,
+            data: searchData,
+            dataType: "json",
+            async: false,
+            success: function (e) {
+				if(e.code==0){
+					chartsData=e.data;
+				}
+            },
+            complete: function () {
+
+            }
+        });
+		// 基于准备好的dom，初始化echarts实例
+		var myChart = echarts.init(document.getElementById(id));
+		switch (type) {
+			case 'barVertical2':
+				option = {
+					title: {
+						text: chartsData.title.text
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'shadow'
+						}
+					},
+					legend: {},
+					grid: {
+						left: '3%',
+						right: '3%',
+						bottom: '3%',
+						containLabel: true
+					},
+					xAxis: {
+						type: 'value'
+					},
+					yAxis: {
+						type: 'category',
+						data: chartsData.yAxis
+					},
+					series:chartsData.series
+				};
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+				break;
+			case "barVertical":
+				option = {
+					title: {
+						text: chartsData.title.text
+					},
+					tooltip: {
+						trigger: 'axis',
+						axisPointer: {
+							type: 'shadow'
+						}
+					},
+					legend: {},
+					grid: {
+						left: '3%',
+						right: '4%',
+						bottom: '3%',
+						containLabel: true
+					},
+					xAxis: {
+						type: 'value',
+						boundaryGap: [0, 0.01]
+					},
+					yAxis: {
+						type: 'category',
+						data: chartsData.yAxis
+					},
+					series:chartsData.series
+				};
+				// 使用刚指定的配置项和数据显示图表。
+				myChart.setOption(option);
+				break;
+		}//end switch
+
+	}	
+	
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, form  = layui.form, laydatePlus = layui.laydatePlus;
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		//initBoxData();
+		//监听搜索提交
+		form.on('submit(webform)', function(data){
+			initBoxData();
+			let f=data.field;
+			f['types']=1;
+			layui.pageTable.reload({where:f,page:{curr:1}});
+			return false;
+		});
+		layui.pageTable = table.render({
+			elem: '#test',
+			title: '员工客户量',
+			toolbar: '#toolbarDemo',	
+			url: "/analysis/api/customer_number", //数据接口
+			cellMinWidth: 80,
+			page: false, //开启分页
+			defaultToolbar: false,
+			where:{'diff_time':$('#diff_time').val(),types:1},
+			limit: 999,
+			done:function(){
+				ajaxCharts('customers');
+			},
+			cols: [
+				[ //表头
+					{
+						field: 'name',
+						title: '员工',
+						align: 'center'
+					},{
+						field: 'title',
+						title: '所在部门'
+					},{
+						field: 'total_num',
+						title: '客户数量',
+						align: 'center'
+					},{
+						field: 'sale_num',
+						title: '成交数量',
+						align: 'center',
+						style: 'color:#1e9fff'
+					},{
+						field: 'persent',
+						title: '成交率',
+						align: 'center',
+						style: 'color:#a233c6'
+					}
+				]
+			]
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->
