@@ -1,0 +1,98 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li><a href="/adm/attendance/datalist?tab=1">请假申请</a></li>
+				<li><a href="/adm/attendance/datalist?tab=2">出差申请</a></li>
+				<li class="layui-this"><a href="/adm/attendance/datalist?tab=3">外出申请</a></li>
+				<li><a href="/adm/attendance/datalist?tab=4">加班申请</a></li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x" id="barsearchform">
+		<div class="layui-input-inline" style="width:122px;">
+			<select name="check_status">
+				<option value="">选择审批状态</option>
+				<option value="0">待提交审批</option>
+				<option value="1">审批中</option>
+				<option value="2">审批通过</option>
+				<option value="3">审批不通过</option>
+				<option value="4">已撤回</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="create_time" placeholder="选择申请时间区间" readonly name="create_time">
+		</div>
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="3" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_official" lay-filter="table_official"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>请假申请</h3>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, form = layui.form;
+		//日期范围
+		var create_time = new laydatePlus({'target':'create_time'});
+		layui.pageTable = table.render({
+			elem: "#table_official"
+			, toolbar: "#toolbarDemo"
+			,url: "/adm/attendance/datalist"
+			,page: true
+			,limit: 20
+			,where:{tab:3}
+			,cellMinWidth: 60
+			,height: 'full-154'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'check_status',title: '审核状态',width:110, align:'center',templet: function(d){
+					var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+					return html;
+				}}
+				,{field:'start_date',title: '开始时间',width:130, align:'center'}
+				,{field:'end_date',title: '结束时间',width:130, align:'center'}
+				,{field:'duration',title: '外出天数',width:80, align:'center'}
+				,{field:'reason',title: '外出事由',minWidth:200}
+				,{field: 'admin_name',title: '申请员工',align: 'center',width: 80}
+				,{field: 'department',title: '申请部门',align: 'center',width: 100}
+				,{field: 'create_time',title: '申请时间',align: 'center',width: 150}
+				,{field: 'check_user',title: '当前审核人',minWidth: 100}
+				,{width:120,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_official)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/home/outs/view?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

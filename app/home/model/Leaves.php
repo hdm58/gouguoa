@@ -20,7 +20,7 @@ class Leaves extends Model
     * @param $where
     * @param $param
     */
-    public function datalist($where, $param)
+    public function datalist($param,$where)
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$order = empty($param['order']) ? 'id desc' : $param['order'];
@@ -29,7 +29,29 @@ class Leaves extends Model
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
-				//$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
+				$item['check_status_str'] = check_status_name($item['check_status']);
+				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
+				$item['department'] = Db::name('Department')->where(['id' => $item['did']])->value('title');
+				$item['create_time'] = to_date($item['create_time']);
+				$item['check_user'] = '-';
+				if($item['check_status']==1 && !empty($item['check_uids'])){
+					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
+					$item['check_user'] = implode(',',$check_user);
+				}
+				if($item['start_date']>0){
+					$item['start_date'] = to_date($item['start_date'],'Y-m-d H:i');
+				}
+				else{
+					$item['start_date']='-';
+				}
+				if($item['end_date']>0){
+					$item['end_date'] = to_date($item['end_date'],'Y-m-d H:i');
+				}
+				else{
+					$item['end_date']='-';
+				}
+				$arr = ['-','事假','年假','调休假','病假','婚假','丧假','产假','陪产假','其他'];
+				$item['types_str']=$arr[$item['types']];
 			});
 			return $list;
         } catch(\Exception $e) {
