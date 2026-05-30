@@ -104,49 +104,73 @@ class Index extends BaseController
         $handle[] = array(
             'name' => '待审公文',
             'num' =>  Db::name('OfficialDocs')->where($whereHandle)->count(),
-            'id' => 182,
+            'id' => 197,
             'url' => '/adm/official/datalist',
         );
         $handle[] = array(
             'name' => '待审用章',
             'num' => Db::name('Seal')->where($whereHandle)->count(),
-            'id' => 176,
+            'id' => 204,
             'url' => '/adm/seal/datalist',
         );
         $handle[] = array(
             'name' => '待审销售合同',
             'num' => Db::name('Contract')->where($whereHandle)->count(),
-            'id' => 319,
+            'id' => 349,
             'url' => '/contract/contract/datalist',
         );
 		$handle[] = array(
             'name' => '待审采购合同',
             'num' => Db::name('Purchase')->where($whereHandle)->count(),
-            'id' => 323,
+            'id' => 353,
             'url' => '/contract/purchase/datalist',
         );
 		$handle[] = array(
             'name' => '待审报销',
             'num' => Db::name('Expense')->where($whereHandle)->count(),
-            'id' => 218,
+            'id' => 423,
             'url' => '/finance/expense/datalist',
         );
 		$handle[] = array(
-            'name' => '待审发票',
+            'name' => '待审借支',
+            'num' => Db::name('Loan')->where($whereHandle)->count(),
+            'id' => 427,
+            'url' => '/finance/loan/datalist',
+        );
+		$handle[] = array(
+            'name' => '待审销项发票',
             'num' => Db::name('Invoice')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
-            'id' => 238,
+            'id' => 431,
             'url' => '/finance/invoice/datalist',
         );
 		$handle[] = array(
-            'name' => '待审收票',
-            'num' => Db::name('ticket')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
-            'id' => 242,
+            'name' => '待审进项收票',
+            'num' => Db::name('Ticket')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
+            'id' => 435,
             'url' => '/finance/ticket/datalist',
+        );
+		$handle[] = array(
+            'name' => '待审收款',
+            'num' => Db::name('InvoiceIncome')->where($whereHandle)->count(),
+            'id' => 439,
+            'url' => '/finance/income/datalist',
+        );
+		$handle[] = array(
+            'name' => '待审付款',
+            'num' => Db::name('TicketPayment')->where($whereHandle)->count(),
+            'id' => 443,
+            'url' => '/finance/payment/datalist',
+        );
+		$handle[] = array(
+            'name' => '待审退款',
+            'num' => Db::name('IncomeRefund')->where($whereHandle)->count(),
+            'id' => 447,
+            'url' => '/finance/refund/datalist',
         );
 		$handle[] = array(
             'name' => '待完成任务',
             'num' => Db::name('ProjectTask')->where([['director_uid', '=', $uid],['status', '<', 3],['delete_time', '=', 0]])->count(),
-            'id' => 348,
+            'id' => 378,
             'url' => '/project/task/datalist',
         );
 				
@@ -256,7 +280,7 @@ class Index extends BaseController
 						->where(function ($query) use($mapContractOr) {
 							$query->whereOr($mapContractOr);
 						})->count(),
-            'id' => 319,
+            'id' => 349,
             'url' => '/contract/contract/datalist',
         );
         $todue[] = array(
@@ -265,7 +289,7 @@ class Index extends BaseController
 						->where(function ($query) use($mapContractOr) {
 							$query->whereOr($mapContractOr);
 						})->count(),
-            'id' => 323,
+            'id' => 353,
             'url' => '/contract/purchase/datalist',
         );
 		$delay_day_b = valueAuth('project_admin','conf_10');
@@ -287,7 +311,7 @@ class Index extends BaseController
 					$query->whereOr($whereOr);
 				})
 			->where([['delete_time', '=', 0],['status','<',3],['end_time','<',$delay_day_b_time]])->count(),
-            'id' => 348,
+            'id' => 378,
             'url' => '/project/task/datalist',
         );
 		
