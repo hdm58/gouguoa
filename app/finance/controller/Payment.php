@@ -106,11 +106,20 @@ class Payment extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
             if($param['ticket_id']>0); {
 				//计算发票已付款的金额
-				$hasPayment = $this->model->where([['id','<>',$id],['ticket_id','=',$param['ticket_id']],['status','in',[1,2]]])->sum('amount');
+				$hasPayment = $this->model->where([['id','<>',$id],['ticket_id','=',$param['ticket_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
 				//查询发票金额
 				$ticketAmount = Db::name('Ticket')->where(['id'=>$param['ticket_id']])->value('amount');
 				if(($param['amount']*10000 + $hasPayment*10000) > $ticketAmount*10000){
 					return to_assign(1,'付款金额大于关联发票金额，不允许保存，请核对');
+				}
+			}
+			if($param['purchase_id']>0){
+				//计算合同已付款的金额
+				$hasPayment = $this->model->where([['id','<>',$id],['purchase_id','=',$param['purchase_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
+				//查询合同金额
+				$purchaseAmount = Db::name('Purchase')->where(['id'=>$param['purchase_id']])->value('cost');
+				if(($param['amount']*10000 + $hasPayment*10000) > $purchaseAmount*10000){
+					return to_assign(1,'付款金额大于关联采购合同金额，不允许保存，请核对');
 				}
 			}
 			if(!empty($param['pay_time'])){

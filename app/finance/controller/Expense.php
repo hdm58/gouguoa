@@ -252,7 +252,7 @@ class Expense extends BaseController
 			
 			$cost = $this->model::where($where)->sum('cost');					
 			$totalRow['cost'] = sprintf("%.2f",$cost);
-            return table_assign(0, '', $list);
+            return table_assign(0, '', $list,$totalRow);
         } else {
 			View::assign('auth',$auth);
             return view();

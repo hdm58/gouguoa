@@ -126,11 +126,7 @@ class Role extends BaseController
 				}
 
             } else {
-                $role_rule = create_tree_list(0, $rule, []);
-				foreach ($layouts as $key =>&$vo) {
-					$vo['checked'] = false;
-				}
-				
+                $role_rule = create_tree_list(0, $rule, []);				
 				foreach ($mobile_bar as $key =>&$vo) {
 					$vo['checked'] = false;
 				}

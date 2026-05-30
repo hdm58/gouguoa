@@ -114,6 +114,16 @@ class Ticket extends BaseController
         if (request()->isAjax()) {
 			$param['admin_id'] = $this->uid;
 			$param['did'] = $this->did;
+			$id = isset($param['id']) ? $param['id'] : 0;
+			if($param['purchase_id']>0){
+				//计算合同已开票的金额
+				$hasTicket = $this->model->where([['id','<>',$id],['purchase_id','=',$param['purchase_id']],['open_status','<',2],['delete_time','=',0]])->sum('amount');
+				//查询合同金额
+				$purchaseAmount = Db::name('Purchase')->where(['id'=>$param['purchase_id']])->value('cost');
+				if(($param['amount']*10000 + $hasTicket*10000) > $purchaseAmount*10000){
+					return to_assign(1,'收票金额大于关联采购合同金额，不允许保存，请核对');
+				}
+			}
 			if (!empty($param['open_time'])) {
 				$param['open_time'] = strtotime(urldecode($param['open_time']));
 			}
@@ -211,7 +221,7 @@ class Ticket extends BaseController
 			
 			$amount = $this->model::where($where)->sum('amount');					
 			$totalRow['amount'] = sprintf("%.2f",$amount);
-            return table_assign(0, '', $list);
+            return table_assign(0, '', $list,$totalRow);
         } else {
 			View::assign('auth',$auth);
             return view();
