@@ -216,6 +216,25 @@
 				});
 				return;
 			}
+			if(obj.event === 'open'){
+				let tips = '确定标记为已打款？';
+				if(data.pay_amount==0){
+					tips = '确定标记为已确认？';
+				}
+				layer.confirm(tips, {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/finance/api/topay", {id: data.id}, callback);
+					layer.close(index);
+				});
+			}
 		});
 	}
 </script>
