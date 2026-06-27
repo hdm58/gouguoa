@@ -699,22 +699,31 @@ function get_cate_son($table='',$id=0,$is_self = 1)
  */
 function get_file($id)
 {
+	$filepath='/static/home/images/nonepic360x360.jpg';
     if ($id) {
         $geturl = Db::name("file")->where(['id' => $id])->find();
         if ($geturl['status'] == 1) {
             //审核通过
-            //获取签名的URL
-            $url = $geturl['filepath'];
-            return $url;
-        } elseif ($geturl['status'] == 0) {
-            //待审核
-            return '/static/home/images/none_pic.jpg';
-        } else {
-            //不通过
-            return '/static/home/images/none_pic.jpg';
+            $filepath = $geturl['filepath'];
         }
     }
-    return false;
+    return $filepath;
+}
+
+function get_file_thumb($id)
+{
+	$filepath='/static/home/images/nonepic360x360.jpg';
+    if ($id) {
+        $geturl = Db::name("file")->where(['id' => $id])->find();
+        if ($geturl['status'] == 1) {
+            //审核通过
+            $filepath = $geturl['filepath'];
+			if(!empty($geturl['thumbpath'])){
+				$filepath = $geturl['thumbpath'];
+			}
+        }
+    }
+    return $filepath;
 }
 
 /***************************************************工具函数相关*****************************************************/
@@ -989,7 +998,10 @@ function file_item($file,$view=''){
 
 	}
 	if(in_array($file['fileext'], $image)){
-		$fileshow='<div class="mbui-file-icon file-img"><img src="'.$file['filepath'].'" alt="'.$file['name'].'"></div>';
+		if(empty($file['thumbpath'])){
+			$file['thumbpath'] = $file['filepath'];
+		}
+		$fileshow='<div class="mbui-file-icon file-img"><img src="'.$file['thumbpath'].'" data-src="'.$file['filepath'].'" alt="'.$file['name'].'"></div>';
 	}
 	$file_del='';
 	if(empty($view)){
