@@ -2,17 +2,17 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<div class="body-table layui-tab layui-tab-brief border" lay-filter="tab" style="background-color:#fff; margin:0; border-bottom:0">
-		<ul class="layui-tab-title" style="border:none;">
+	<div class="body-table layui-tabs layui-tab-brief border" id="tab" style="background-color:#fff; margin:0; border-bottom:0">
+		<ul class="layui-tabs-header" style="border:none;">
 			<li class="layui-this">全部</li>
 			<li>待审批</li>
 			<li>审批通过</li>
 			<li>审批拒绝</li>
 		</ul>				
 	</div>
-	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+	<form class="layui-form gg-form-bar border-t border-x" id="barsearchform" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:200px">
-			<input type="text" name="uname" value="" placeholder="请选择员工" readonly class="layui-input picker-admin" autocomplete="off" />
+			<input type="text" value="" placeholder="请选择员工" readonly class="layui-input picker-admin" autocomplete="off" />
 			<input type="text" name="uid" value="0" style="display:none" />
 			<input type="hidden" name="status" value="0" />
 		</div>
@@ -24,7 +24,7 @@
 	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 <script type="text/html" id="toolbarDemo">
-<h3 class="h3-title" style="height:28px;">我申请的审批</h3>
+<h3>我申请的审批</h3>
 </script>						
 {/block}
 <!-- /主体 -->
@@ -34,13 +34,16 @@
 	<script>
 	const moduleInit = ['tool','oaPicker','tablePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool ,element=layui.element;
+		var table = layui.table, form = layui.form, tool = layui.tool ,tabs=layui.tabs;
 			
-		element.on('tab(tab)', function(data){
-			$('[name="status"]').val(data.index);
-			$('[lay-filter="table-search"]').click();
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="status"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
 			return false;
-		});
+		})
 			
 		layui.pageTable = table.render({
 			elem: '#test'

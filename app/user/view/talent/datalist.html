@@ -9,8 +9,8 @@
 
 <div class="p-page">
 	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
-		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
-			<ul class="layui-tab-title">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
 				<li class="layui-this">全部</li>
 				<li>我申请的</li>
 				<li>待我审批</li>
@@ -65,11 +65,11 @@
 	const is_auth = {$is_auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus','oaPicker'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool,form = layui.form,element = layui.element,laydatePlus = layui.laydatePlus;
+		var table = layui.tablePlus, tool = layui.tool,form = layui.form,tabs = layui.tabs,laydatePlus = layui.laydatePlus;
 		//日期范围
 		var entry_time = new laydatePlus({'target':'entry_time'});
 		//tab切换
-		element.on('tab(tab)', function(data){
+		tabs.on('afterChange(tab)', function(data) {
 			$('[name="tab"]').val(data.index);
 			$("#barsearchform")[0].reset();
 			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});

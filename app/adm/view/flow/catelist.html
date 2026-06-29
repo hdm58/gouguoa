@@ -27,6 +27,7 @@
 			,limit: 20
 			,page: true
 			,cellMinWidth: 60
+			,height: 'full-55'
 			,cols: [[
 					{field:'id',width:80, title: 'ID号', align:'center'}
 					,{field:'icon',title: '审批类型名称',width: 150,templet: function(d){
@@ -60,16 +61,17 @@
 							return html2;
 						}
 					}}
-					,{width:90,fixed:'right',title: '操作', align:'center',templet: function(d){
+					,{width:120,fixed:'right',title: '操作', align:'center',templet: function(d){
 						var html='';
 						var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
 						var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
 						var btn2='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+						var btn3='<a class="layui-btn layui-btn-xs" lay-event="copy">复制</a>';
 						if(d.status==1){
-							html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
+							html = '<div class="layui-btn-group">'+btn+btn1+btn3+'</div>';
 						}
 						else{
-							html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
+							html = '<div class="layui-btn-group">'+btn+btn2+btn3+'</div>';
 						}
 						return html;
 					}}
@@ -79,6 +81,9 @@
 			table.on('tool(test)',function (obj) {
 				if(obj.event === 'edit'){					
 					tool.side('/adm/flow/cate_add?id='+obj.data.id);
+				}
+				if (obj.event === 'copy') {
+					tool.side('/adm/flow/cate_add?copyid='+obj.data.id);
 				}
 				if(obj.event === 'disable'){
 					layer.confirm('确定要禁用该审批类型吗?', {icon: 3, title:'提示'}, function(index){
@@ -105,6 +110,7 @@
 					});
 				}
 			});
+			return false;
 		}
 	</script>
 {/block}

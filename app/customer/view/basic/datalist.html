@@ -1,20 +1,18 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="p-3">
-    <div class="layui-card">
-		<div class="body-table layui-tab layui-tab-brief" lay-filter="tab">
-			<ul class="layui-tab-title" style="border-bottom:none;">
+<div class="p-page">
+    <div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
 				<li class="layui-this" data-index="1">客户状态</li>
 				<li data-index="2">客户意向</li>
 				<li data-index="3">跟进方式</li>
 				<li data-index="4">销售阶段</li>
 			</ul>
-			<div class="layui-tab-content" style="padding:0">
-				<table class="layui-hide" id="test" lay-filter="test"></table>
-			</div>
 		</div> 
 	</div> 
+	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
@@ -29,9 +27,10 @@
 	<script>
 	const moduleInit = ['tool'];
 	function gouguInit() {
-		var table = layui.table, tool = layui.tool, element = layui.element,form = layui.form;
+		var table = layui.table, tool = layui.tool,tabs = layui.tabs,form = layui.form;
 		var data_type=1;
-		element.on('tab(tab)', function(data){
+		//tab切换
+		tabs.on('afterChange(tab)', function(data) {
 			data_type = data.index+1;
 			layui.pageTable.reload({where:{types:data_type},page:{curr:1}});
 			return false;

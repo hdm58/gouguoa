@@ -103,16 +103,14 @@
 			}
 			if (obj.event === 'edit') {
 				tool.side("/home/template/add?id="+data.id);
-				return;
 			}
 			if (obj.event === 'copy') {
 				tool.side("/home/template/add?copyid="+data.id);
-				return;
 			}
 			if (obj.event === 'view') {
 				tool.side("/home/template/view?id="+data.id);
-				return;
 			}
+			return false;
 		});
 	}
 </script>

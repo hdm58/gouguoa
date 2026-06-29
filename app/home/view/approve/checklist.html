@@ -2,8 +2,8 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<div class="body-table layui-tab layui-tab-brief border" lay-filter="tab" style="background-color:#fff; margin:0; border-bottom:0">
-		<ul class="layui-tab-title" style="border:none;">
+	<div class="body-table layui-tabs layui-tab-brief border" id="tab" style="background-color:#fff; margin:0; border-bottom:0">
+		<ul class="layui-tabs-header" style="border:none;">
 			<li class="layui-this">全部</li>
 			<li>待我审批</li>
 			<li>我已审批</li>
@@ -12,7 +12,7 @@
 	<table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 <script type="text/html" id="toolbarDemo">
-<h3 class="h3-title" style="height:28px;">我处理的审批</h3>
+<h3>我处理的审批</h3>
 </script>						
 {/block}
 <!-- /主体 -->
@@ -22,12 +22,13 @@
 	<script>
 	const moduleInit = ['tool'];
 	function gouguInit() {
-		var table = layui.table, tool = layui.tool ,element=layui.element;
+		var table = layui.table, tool = layui.tool ,tabs=layui.tabs;
 			
-		element.on('tab(tab)', function(data){
-			layui.pageTable.reload({where:{status:data.index},page:{curr:1}});
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		   layui.pageTable.reload({where:{status:data.index},page:{curr:1}});
 			return false;
-		});			
+		})		
 			
 		layui.pageTable = table.render({
 			elem: '#test'
@@ -38,7 +39,7 @@
 			,page: true //开启分页
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-92'
+			,height: 'full-95'
 			,cols: [[
 					{field:'types_name',title: '审批类型',width:100, align:'center'}
 					,{field:'check_status',title: '审核状态',width:110, align:'center',templet: function(d){

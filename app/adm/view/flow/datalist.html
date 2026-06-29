@@ -1,7 +1,7 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<div class="p-3">
+<div class="p-page">
     <table class="layui-hide" id="test" lay-filter="test"></table>
 </div>
 <script type="text/html" id="toolbarDemo">
@@ -27,6 +27,7 @@
 			,page: true //开启分页
 			,limit: 20
 			,cellMinWidth: 80
+			,height: 'full-55'
 			,cols: [[
 					{field:'id',width:80, title: 'ID号', align:'center'}
 					,{field:'title',title: '流程名称',width:150}

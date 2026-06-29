@@ -1,9 +1,9 @@
 {extend name="../../base/view/common/base" /}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-1">编辑资产</h3>
-	<table class="layui-table">
+<form class="layui-form p-page">
+	<h3 class="pb-2">编辑资产</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">资产名称<font>*</font></td>
 			<td colspan="3">
@@ -125,7 +125,7 @@
 			</td>
 		</tr>
 	</table>
-	<div class="pt-2">
+	<div class="pt-4">
 		<input type="hidden" name="id" value="{$detail.id}">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
 		<button type="reset" class="layui-btn layui-btn-primary">重置</button>

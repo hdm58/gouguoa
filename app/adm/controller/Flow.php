@@ -314,6 +314,10 @@ class Flow extends BaseController
             }
         }else {
             $id = isset($param['id']) ? $param['id'] : 0;
+			$copyid = isset($param['copyid']) ? $param['copyid'] : 0;
+			if($copyid>0){
+				$id = $copyid;
+			}
             if ($id > 0) {
                 $detail = Db::name('FlowCate')->find($id);
 				if(!empty($detail['department_ids'])){
@@ -327,6 +331,7 @@ class Flow extends BaseController
 				}
                 View::assign('detail', $detail);
             }
+            View::assign('copyid', $copyid);
             View::assign('id', $id);
             return view();
         }
