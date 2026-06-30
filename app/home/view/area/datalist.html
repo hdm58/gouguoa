@@ -121,7 +121,7 @@
 					let callback = function (e) {
 						layer.msg(e.msg);
 						if (e.code == 0) {
-							location.reload();
+							tool.reload(1000);
 						}
 					}
 					tool.delete("/home/area/set", { id: obj.data.id,status:0}, callback);
@@ -133,7 +133,7 @@
 					let callback = function (e) {
 						layer.msg(e.msg);
 						if (e.code == 0) {
-							location.reload();
+							tool.reload(1000);
 						}
 					}
 					tool.delete("/home/area/set", { id: obj.data.id,status:1}, callback);
@@ -146,7 +146,7 @@
 			let callback = function (e) {
 				layer.msg(e.msg);
 				if (e.code == 0) {
-					//location.reload();
+					tool.reload(1000);
 				}
 			}
 			tool.post("/home/area/set", {id:0}, callback);

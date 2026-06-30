@@ -82,8 +82,7 @@ layui.define(['tool'], function (exports) {
 		'product':{
 			title:'选择产品',
 			url:'/contract/api/get_product',
-			area: ['960px', '568px'],
-			cols:[{field:'id',width:80,title:'ID号',align:'center'},{field:'code',title:'产品编码',width: 150},{field:'title',title:'产品名称'},{field:'specs',title:'产品规格'},{field:'sale_price',title:'市场指导价',width: 90,align:'center'},{field:'project_price',title:'工程商价',width: 80,align:'center'},{field:'retail_price',title:'分销商价',width: 80,align:'center'},{field:'finance_price',title:'最低财务控价',width: 100,align:'center'}]
+			cols:[{field:'id',width:90,title:'序号',align:'center'},{field:'title',title:'产品名称'},{field:'sale_price',title:'销售单价',width: 120,align:'center'}]
 		},
 		'purchase':{
 			title:'选择采购合同',
@@ -357,7 +356,8 @@ layui.define(['tool'], function (exports) {
 		},
 		picker:function(types,type,callback,map){
 			let pickerIndex = new Date().getTime();
-			let pickerTable,options;
+			let pickerTable,options,tableId = "demoTable"+pickerIndex;
+			const selectedMap = new Map();
 			const opts={
 				"title":"选择",
 				"url": "",
@@ -394,7 +394,7 @@ layui.define(['tool'], function (exports) {
 				area: settings.area,
 				type: 1,
 				skin: 'gougu-picker',
-				content: '<div class="picker-table" id="pickerBox'+pickerIndex+'">'+settings.searchbar+'<div id="pickerTable'+pickerIndex+'"></div></div>',
+				content: '<div class="picker-table" id="pickerBox'+pickerIndex+'">'+settings.searchbar+'<div id="pickerTable'+pickerIndex+'" lay-filter="pickerTable'+pickerIndex+'"></div></div>',
 				end: function(){
 					$(parent.$('.express-close')).removeClass('parent-colse');
 				},
@@ -408,11 +408,23 @@ layui.define(['tool'], function (exports) {
 					}
 					pickerTable = table.render({
 						elem: '#pickerTable'+pickerIndex,
+						id: tableId,
 						url: settings.url,
 						where:settings.where,
 						page: settings.page, //开启分页
 						limit: 10,
 						height: '407',
+						// 渲染完成回调：恢复当前页勾选状态
+						done: function(res){
+							if(settings.type==2){
+								var data = res.data;
+								res.data.forEach(row => {
+									if(selectedMap.has(row['id'])){
+										table.setRowChecked(tableId, {index:row.LAY_INDEX});
+									}
+								})
+							}
+						},
 						cols: [cols]
 					});
 					//请求分类
@@ -441,13 +453,39 @@ layui.define(['tool'], function (exports) {
 								prev.click();
 							}, 10)
 						}
-					});	
+					});
+					//监听复选框切换事件（单选+全选）
+					table.on('checkbox(pickerTable'+pickerIndex+')', function(obj){
+						if(obj.type === 'all'){
+							const pageList = table.cache[tableId];
+							pageList.forEach(item => {
+								if(obj.checked){
+									selectedMap.set(item['id'], item);
+								}else{
+									selectedMap.delete(item['id']);
+								}
+							})
+						}else{
+							const row = obj.data;
+							const id = row['id'];
+							if(obj.checked){
+								selectedMap.set(id, row);
+							}else{
+								selectedMap.delete(id);
+							}
+						}
+						//console.log(selectedMap);
+					 });
 				},
 				btn: btn,
 				btnAlign: 'c',
 				btn1: function (idx) {
-					var checkStatus = table.checkStatus(pickerTable.config.id);
-					var data = checkStatus.data;
+					let data = Array.from(selectedMap.values());
+					if(settings.type==1){
+						var checkStatus = table.checkStatus(pickerTable.config.id);
+						data = checkStatus.data;
+					}
+					console.log(data);
 					if (data.length > 0) {
 						callback(data);
 						layer.close(idx);

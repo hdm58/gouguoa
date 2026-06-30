@@ -104,8 +104,8 @@ class Index extends BaseController
         $handle[] = array(
             'name' => '待审公文',
             'num' =>  Db::name('OfficialDocs')->where($whereHandle)->count(),
-            'id' => 197,
-            'url' => '/adm/official/datalist',
+            'id' => 201,
+            'url' => '/adm/official/pending',
         );
         $handle[] = array(
             'name' => '待审用章',

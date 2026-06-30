@@ -8,7 +8,7 @@
 
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-container">
-  	<button class="layui-btn layui-btn-sm add-new" type="button">+ 添加项目步骤</button>
+  	<button class="layui-btn layui-btn-sm add-new" type="button">+ 添加项目阶段</button>
   </div>
 </script>
 
@@ -31,7 +31,7 @@
 			,cellMinWidth: 80
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
-				,{field:'title',title: '类型名称'}
+				,{field:'title',title: '阶段名称'}
 				,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
 					var html1='<span class="green">正常</span>';
 					var html2='<span class="yellow">禁用</span>';
@@ -93,9 +93,9 @@
 		});
 		
 		function add_cate(id,val){
-			var title = '新增类型';
+			var title = '新增项目阶段';
 			if(id>0){
-				title = '编辑类型';
+				title = '编辑项目阶段';
 			}
 			layer.prompt({
 				title: title,
@@ -113,7 +113,7 @@
 						tool.post("/project/step/add", {id: id,title: value}, callback);
 						layer.close(index);
 					} else {
-						layer.msg('请填写类型名称');
+						layer.msg('请填写项目阶段名称');
 					}
 				}
 			})
