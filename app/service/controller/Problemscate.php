@@ -16,7 +16,7 @@ declare (strict_types = 1);
 namespace app\service\controller;
 
 use app\base\BaseController;
-use app\service\model\Problemscate as ProblemsCateModel;
+use app\service\model\ProblemsCate as ProblemsCateModel;
 use app\service\validate\ProblemsCateValidate;
 use think\exception\ValidateException;
 use think\facade\Db;

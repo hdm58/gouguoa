@@ -12,10 +12,10 @@ require __DIR__ . '/../vendor/autoload.php';
 define('CMS_VERSION','6.0.1');
 
 // 定义手机端当前版本号
-define('MB_VERSION','1.5');
+define('MB_VERSION','2.0');
 
 // 定义Layui版本号
-define('LAYUI_VERSION','2.13.6');
+define('LAYUI_VERSION','2.13.8');
 
 // 定义项目目录
 define('CMS_ROOT', __DIR__ . '/../');
