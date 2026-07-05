@@ -69,6 +69,11 @@ class InvoiceIncome extends Model
 					$item['check_user'] = implode(',',$check_user);
 				}
 				$item['create_time'] = to_date($item['create_time']);
+				$item['confirm_time'] = to_date($item['confirm_time']);
+				$item['confirm_admin'] = '-';
+				if($item['confirm_uid']>0){
+					$item['confirm_admin'] = Db::name('Admin')->where('id',$item['confirm_uid'])->value('name');
+				}
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -128,7 +133,11 @@ class InvoiceIncome extends Model
 		$info['account'] = Db::name('Account')->where('id',$info['account_id'])->value('title');
 		$info['fundscate'] = Db::name('FundsCate')->where('id',$info['fundscate_id'])->value('title');
 		$info['paytype'] = Db::name('PayType')->where('id',$info['paytype_id'])->value('title');
-		
+		$info['confirm_admin'] = '-';
+		if($info['confirm_uid']>0){
+			$info['confirm_admin'] = Db::name('Admin')->where('id',$info['confirm_uid'])->value('name');
+		}
+		$info['confirm_time'] = to_date($info['confirm_time']);
 		$info['check_status_str'] = check_status_name($info['check_status']);
 		return $info;
     }

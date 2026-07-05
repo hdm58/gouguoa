@@ -41,7 +41,8 @@ class Expense extends BaseController
     {
 		$param = get_params();
 		$uid = $this->uid;
-		$auth = isAuth($uid,'finance_admin','conf_1');
+		$auth = isAuth($uid,'finance_admin','conf_2');
+		$income_auth = isAuth($uid,'finance_admin','conf_6');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$dids_son = get_leader_departments($uid);
@@ -90,6 +91,7 @@ class Expense extends BaseController
         }
         else{
 			View::assign('auth', $auth);
+			View::assign('income_auth', $income_auth);
             return view();
         }
     }
@@ -200,9 +202,8 @@ class Expense extends BaseController
     public function view($id)
     {
 		$detail = $this->model->getById($id);
-		if (!empty($detail)) {
+		if (!empty($detail)) {			
 			View::assign('detail', $detail);
-			View::assign('create_user', get_admin($detail['admin_id']));
 			if(is_mobile()){
 				return view('qiye@/finance/view_expense');
 			}
@@ -231,23 +232,28 @@ class Expense extends BaseController
     public function record()
     {
 		$uid = $this->uid;
-		$auth = isAuth($uid,'finance_admin','conf_1');
+		$auth = isAuth($uid,'finance_admin','conf_2');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
-			if($auth==0){
-				$where[] = ['admin_id', '=', $uid];
+			$where[]=['status','=',2];
+			if (!empty($param['uid'])) {
+				$where[] = ['admin_id', '=', $param['uid']];
+			}
+			else{
+				if($auth==0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $uid];
+					$whereOr[] = ['did','in',$dids_son];
+				}
 			}
 			//按时间检索
-			if (!empty($param['diff_time'])) {
-				$diff_time =explode('~', $param['diff_time']);
-				$where[] = ['expense_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+			if (!empty($param['expense_time'])) {
+				$expense_time =explode('~', $param['expense_time']);
+				$where[] = ['expense_time', 'between', [strtotime(urldecode($expense_time[0])),strtotime(urldecode($expense_time[1].' 23:59:59'))]];
 			}
-            if (isset($param['pay_status']) && $param['pay_status'] != "") {
-                $where[] = ['pay_status', '=', $param['pay_status']];
-            }
 			$list = $this->model->datalist($param,$where);
 			
 			$cost = $this->model::where($where)->sum('cost');					

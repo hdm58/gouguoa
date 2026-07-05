@@ -29,15 +29,18 @@
 			,page: false
 			,totalRow: true
 			,limit: 999
-			,cellMinWidth: 80
+			,cellMinWidth: 60
 			,cols: [[
-				{field:'id',width:80, title: 'ID号', align:'center'}
-				,{field:'enterprise',title: '所属企业主体'}
-				,{field:'title',title: '资金账户名称'}
-				,{field:'account',title: '具体账号',totalRowText: '<div style="text-align:right">合计</div>'}
-				,{field:'initial_amount',title: '初始资金(人民币：元)', align:'right','style':'color:#16b777',width:180,totalRow: true}
-				,{field:'amount',title: '当前资金(人民币：元)', align:'right','style':'color:#1e9fff',width:180,totalRow: true}
-				,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+				{field:'id',width:60, title: 'ID号', align:'center'}
+				,{field:'enterprise',title: '所属企业主体',width:200}
+				,{field:'title',title: '资金账户名称',width:200}
+				,{field:'account',title: '具体账号',minWidth:240,totalRowText: '<div style="text-align:right">合计</div>'}
+				,{field:'amount',title: '当前资金(元)', align:'right','style':'color:#16b777',width:150,totalRow: true}
+				,{field:'initial_amount',title: '初始资金(元)', align:'right',width:130,totalRow: true}
+				,{field:'injection_amount',title: '注资(元)', align:'right','style':'color:#a233c6',width:130,totalRow: true}
+				,{field:'income_amount',title: '收入(元)', align:'right','style':'color:#1e9fff',width:130,totalRow: true}
+				,{field:'payout_amount',title: '支出(元)', align:'right','style':'color:#ff5722',width:130,totalRow: true}
+				,{field:'status', title: '状态',width:60,align:'center',templet: function(d){
 					var html1='<span class="green">正常</span>';
 					var html2='<span class="yellow">禁用</span>';
 					if(d.status==1){
@@ -47,16 +50,19 @@
 						return html2;
 					}
 				}}
-				,{width:100,fixed:'right', title: '操作', align:'center',ignoreExport:true,templet: function(d){
+				,{width:192,fixed:'right', title: '操作', align:'center',ignoreExport:true,templet: function(d){
 					var html='';
-					var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>';
-					var btn1='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
-					var btn2='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn2='<a class="layui-btn layui-bg-orange layui-btn-xs" lay-event="disable">禁用</a>';
+					var btn3='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+					var btn4='<a class="layui-btn layui-bg-purple layui-btn-xs" lay-event="injection">注资</a>';
+					var btn5='<a class="layui-btn layui-bg-blue layui-btn-xs" lay-event="income">收入</a>';
+					var btn6='<a class="layui-btn layui-bg-red layui-btn-xs" lay-event="payout">支出</a>';
 					if(d.status==1){
-						html = '<div class="layui-btn-group">'+btn+btn1+'</div>';
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn4+btn5+btn6+'</div>';
 					}
 					else{
-						html = '<div class="layui-btn-group">'+btn+btn2+'</div>';
+						html = '<div class="layui-btn-group">'+btn1+btn3+btn4+btn5+btn6+'</div>';
 					}
 					return html;
 				}}
@@ -71,6 +77,18 @@
 			}
 			if (obj.event === 'edit') {
 				tool.side("/finance/account/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'injection') {
+				tool.side("/finance/account/injection?account_id="+data.id);
+				return;
+			}
+			if (obj.event === 'income') {
+				tool.side("/finance/account/income?account_id="+data.id);
+				return;
+			}
+			if (obj.event === 'payout') {
+				tool.side("/finance/account/payout?account_id="+data.id);
 				return;
 			}
 			if(obj.event === 'disable'){

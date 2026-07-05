@@ -82,7 +82,7 @@
 				<input type="radio" name="type" value="3" title="实习">
 			</td>
 		</tr>
-		<tr>
+		<tr style="display:none">
 			<td class="layui-td-gray">数据权限<font>*</font></td>
 			<td colspan="5">
 				<input type="radio" name="auth_did" value="0" title="仅自己关联的数据" checked>
@@ -192,7 +192,7 @@
 				<input type="radio" name="is_hide" value="1" title="是" {eq name="$detail.is_hide" value="1"}checked{/eq}>
 			</td>
 		</tr>
-		<tr>
+		<tr style="display:none">
 			<td class="layui-td-gray">数据权限<font>*</font></td>
 			<td colspan="5">
 				<input type="radio" name="auth_did" value="0" title="仅自己关联的数据" {eq name="$detail.auth_did" value="0"}checked{/eq}>

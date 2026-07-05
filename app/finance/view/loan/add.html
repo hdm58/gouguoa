@@ -9,7 +9,7 @@
 			<td colspan="3"><input type="text" name="title" value="" lay-verify="required" placeholder="请输入借支主题" lay-reqText="请填写借支主题" class="layui-input"></td>
 			<td class="layui-td-gray">借支企业主体</td>
 			<td>
-				<select name="subject_id" lay-verify="required" lay-reqText="请选择借支企业主体">
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择借支企业主体">
 					<option value="">请选择借支企业主体</option>
 					{volist name=":get_base_data('enterprise')" id="vo"}
 					<option value="{$vo.id}">{$vo.title}</option>

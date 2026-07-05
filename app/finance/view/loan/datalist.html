@@ -60,6 +60,8 @@
 {block name="script"}
 <script>
 	const auth = {$auth};
+	const pay_auth = {$pay_auth};
+	const income_auth = {$income_auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
 		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, tabs = layui.tabs, form = layui.form;
@@ -90,16 +92,16 @@
 						title: 'ID号',
 						align: 'center',
 						width: 80
-					}, {
-						field: 'cost',
-						title: '借支金额(元)',
-						align: 'right',
-						width: 100,
 					},{
 						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
 							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
 							return html;
 						}
+					}, {
+						field: 'cost',
+						title: '借支金额(元)',
+						align: 'right',
+						width: 100,
 					},
 					{
 						field: 'balance_cost',
@@ -175,30 +177,27 @@
 						title: '当前审核人',
 						minWidth: 120
 					},{
-						field: 'pay_status',
+						field: 'status',
 						title: '打款状态',
 						align: 'center',
 						width: 90,
 						templet:function(d){
-							var html='';
-							if(d.check_status==2){
-								html = '<span class="red">『未打款』</span>';
-								if(d.pay_status==1){
-									html = '<span class="green">『已打款』</span>';
-								}
+							var html='-';
+							if(d.status==1){
+								html = '<span class="red">未打款</span>';
 							}
-							else{
-								html='-';
+							if(d.status==2){
+								html = '<span class="green">已打款</span>';
 							}
 							return html;
 						}
 					},{
-						field: 'pay_name',
+						field: 'confirm_admin',
 						title: '打款人',
 						align: 'center',
 						width: 80
 					},{
-						field: 'pay_time',
+						field: 'confirm_time',
 						title: '打款时间',
 						align: 'center',
 						width: 150
@@ -213,16 +212,16 @@
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
 							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
 							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
-							var btn4='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记打款</span>';
+							var btn4='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="confirm">标记打款</span>';
 							var btn5='<span class="layui-btn layui-bg-red layui-btn-xs" lay-event="back">标记归还</span>';
 							html+=btn1;
 							if((d.check_status==0 || d.check_status==4) && d.admin_id==login_admin){
 								html+=btn2+btn3;
 							}
-							if(d.pay_status==0 && auth==1 && d.check_status==2){
+							if(d.status==1 && pay_auth==1 && d.check_status==2){
 								html+=btn4;
 							}
-							if(d.pay_status == 1 && d.balance_status<2 && d.back_status==0 && auth==1){
+							if(d.status == 2 && d.balance_status<2 && d.back_status==0 && income_auth==1){
 								html+=btn5;
 							}
 							html+='</div>';
@@ -244,20 +243,8 @@
 				tool.side("/finance/loan/add?id="+data.id);
 				return;
 			}
-			if(obj.event === 'open'){
-				layer.confirm('确定标记为已打款？', {
-					icon: 3,
-					title: '提示'
-				}, function(index) {
-					let callback = function (e) {
-						layer.msg(e.msg);
-						if (e.code == 0) {
-							layui.pageTable.reload();
-						}
-					}
-					tool.post("/finance/api/topay2", {id: data.id}, callback);
-					layer.close(index);
-				});
+			if(obj.event === 'confirm'){
+				tool.side("/finance/api/confirm_payment?table=loan&id="+data.id);
 			}
 			if(obj.event === 'back'){
 				layer.confirm('确定标记为已归还？', {
@@ -270,7 +257,7 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.post("/finance/api/topay3", {id: data.id}, callback);
+					tool.post("/finance/api/loan_back", {id: data.id}, callback);
 					layer.close(index);
 				});
 			}

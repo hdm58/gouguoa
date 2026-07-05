@@ -20,9 +20,6 @@
 		</div>
 	</div>
 	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform" lay-filter="barsearchform">
-		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="diff_time" placeholder="选择时间区间" readonly name="diff_time">
-		</div>
 		<div class="layui-input-inline search-item" style="width:120px;">
 			<select name="check_status">
 				<option value="">选择审批状态</option>
@@ -37,6 +34,9 @@
 				<option value="0">未打款</option>
 				<option value="1">已打款</option>
 			</select>
+		</div>
+		<div class="layui-input-inline" style="width:175px;">
+			<input type="text" class="layui-input" id="expense_time" placeholder="选择入账月份区间" readonly name="expense_time">
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<input type="hidden" name="tab" value="0"/>
@@ -60,6 +60,7 @@
 {block name="script"}
 <script>
 	const auth = {$auth};
+	const income_auth = {$income_auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
 		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, tabs = layui.tabs, form = layui.form;
@@ -74,7 +75,7 @@
 		});
 		
 		//日期范围
-		var diff_time = new laydatePlus({'target':'diff_time'});
+		var expense_time = new laydatePlus({'target':'expense_time'});
 		layui.pageTable = table.render({
 			elem: "#table_expense"
 			,toolbar: "#toolbarDemo"
@@ -137,28 +138,25 @@
 						field: 'pay_status',
 						title: '打款状态',
 						align: 'center',
-						width: 90,
+						width: 80,
 						templet:function(d){
-							var html='';
-							if(d.check_status==2){
-								html = '<span class="red">『未打款』</span>';
-								if(d.pay_status==1){
-									html = '<span class="green">『已打款』</span>';
-								}
+							var html='-';
+							if(d.status==1){
+								html = '<span class="red">未打款</span>';
 							}
-							else{
-								html='-';
+							if(d.status==2){
+								html = '<span class="green">已打款</span>';
 							}
 							return html;
 						}
 					},{
-						field: 'pay_name',
-						title: '打款人',
+						field: 'confirm_admin',
+						title: '打款/确认人',
 						align: 'center',
 						width: 80
 					},{
-						field: 'pay_time',
-						title: '打款时间',
+						field: 'confirm_time',
+						title: '打款/确认时间',
 						align: 'center',
 						width: 150
 					}, {
@@ -170,19 +168,25 @@
 						templet:function(d){
 							var status = '打款';
 							if(d.pay_amount==0){
-								status = '确认';
+								status = '';
 							}
 							var html='<div class="layui-btn-group">';
 							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
 							var btn2='<span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>';
 							var btn3='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>';
-							var btn4='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记'+status+'</span>';
+							var btn4='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="confirm">确认'+status+'</span>';
+							var btn5='<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="noconfirm">反确认'+status+'</span>';
 							html+=btn1;
 							if((d.check_status==0 || d.check_status==4) && d.admin_id==login_admin){
 								html+=btn2+btn3;
 							}
-							if(d.pay_status==0 && auth==1 && d.check_status==2){
-								html+=btn4;
+							if(d.check_status==2 && income_auth==1){
+								if(d.status==1){
+									html+=btn4;
+								}
+								if(d.status==2){
+									html+=btn5;
+								}
 							}
 							html+='</div>';
 							return html;
@@ -216,24 +220,21 @@
 				});
 				return;
 			}
-			if(obj.event === 'open'){
-				let tips = '确定标记为已打款？';
-				if(data.pay_amount==0){
-					tips = '确定标记为已确认？';
-				}
-				layer.confirm(tips, {
-					icon: 3,
-					title: '提示'
-				}, function(index) {
+			if(obj.event === 'confirm'){
+				tool.side("/finance/api/confirm_payment?table=expense&id="+data.id);
+			}
+			if (obj.event === 'noconfirm') {
+				tool.ask('确定要执行打款反确认吗?', function (index) {
 					let callback = function (e) {
 						layer.msg(e.msg);
 						if (e.code == 0) {
 							layui.pageTable.reload();
 						}
 					}
-					tool.post("/finance/api/topay", {id: data.id}, callback);
+					tool.post("/finance/api/unconfirm_payment", {table:'Expense', id: data.id }, callback);
 					layer.close(index);
 				});
+				return;
 			}
 		});
 	}

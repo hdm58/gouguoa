@@ -8,14 +8,7 @@
 			<input type="hidden" name="uid" value="0">
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="diff_time" placeholder="选择入账月份区间" readonly name="diff_time">
-		</div>
-		<div class="layui-input-inline" style="width:120px;">
-			<select name="pay_status">
-				<option value="">打款状态</option>
-				<option value="0">未打款</option>
-				<option value="1">已打款</option>
-			</select>
+			<input type="text" class="layui-input" id="expense_time" placeholder="选择入账月份区间" readonly name="expense_time">
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
@@ -40,7 +33,7 @@
 	function gouguInit() {
 		var form = layui.form,table = layui.tablePlus,tool=layui.tool, laydatePlus = layui.laydatePlus;
 		//日期范围
-		var diff_time = new laydatePlus({'target':'diff_time'});
+		var expense_time = new laydatePlus({'target':'expense_time'});
 
 		layui.pageTable = table.render({
 			elem: '#test',
@@ -50,7 +43,7 @@
 			cellMinWidth: 80,			
 			page: true, //开启分页
 			limit: 20,
-			height: 'full-114',
+			height: 'full-115',
 			totalRow: true,
 			cols: [
 				[
@@ -70,24 +63,7 @@
 						field: 'pay_amount',
 						title: '需打款金额(元)',
 						align: 'right',
-						width: 110,
-						totalRow: function (d) {return d.TOTAL_ROW.cost}
-					},{
-						field: 'pay_status',
-						title: '打款/确认状态',
-						align: 'center',
-						width: 110,
-						templet:function(d){
-							var status = '打款';
-							if(d.pay_amount==0){
-								status = '确认';
-							}
-							var html='<span class="red">『未'+status+'』</span>';
-							if(d.pay_status==1){
-								html='<span class="yellow">『已'+status+'』</span>';
-							}
-							return html;
-						}
+						width: 110
 					},{
 						field: 'admin_name',
 						title: '报销人员',
@@ -118,12 +94,12 @@
 						align: 'center',
 						width: 150
 					},{
-						field: 'pay_name',
+						field: 'confirm_admin',
 						title: '打款/确认人',
 						align: 'center',
 						width: 110
 					},{
-						field: 'pay_time',
+						field: 'confirm_time',
 						title: '打款/确认时间',
 						align: 'center',
 						width: 150
@@ -131,22 +107,11 @@
 						field: 'right',
 						fixed: 'right',
 						title: '操作',
-						width: 120,
+						width: 60,
 						align: 'center',
 						templet:function(d){
-							var status = '打款';
-							if(d.pay_amount==0){
-								status = '确认';
-							}
-							var html='<div class="layui-btn-group">';
-							var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
-							var btn2='<span class="layui-btn layui-btn-warm layui-btn-xs" lay-event="open">标记'+status+'</span>';
-							html+=btn1;
-							if(d.pay_status==0 && auth==1){
-								html+=btn2;
-							}
-							html+='</div>';
-							return html;
+							var btn='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
+							return btn;
 						}
 					}
 				]
@@ -159,25 +124,6 @@
 			if (obj.event === 'view') {
 				tool.side("/finance/expense/view?id="+data.id);
 				return;
-			}
-			if(obj.event === 'open'){
-				let tips = '确定标记为已打款？';
-				if(data.pay_amount==0){
-					tips = '确定标记为已确认？';
-				}
-				layer.confirm(tips, {
-					icon: 3,
-					title: '提示'
-				}, function(index) {
-					let callback = function (e) {
-						layer.msg(e.msg);
-						if (e.code == 0) {
-							layui.pageTable.reload();
-						}
-					}
-					tool.post("/finance/api/topay", {id: data.id}, callback);
-					layer.close(index);
-				});
 			}
 		});
 	}

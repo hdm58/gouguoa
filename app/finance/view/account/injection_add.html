@@ -1,0 +1,66 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">注资信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">账户名称</td>
+			<td>{$account.title|default=''}</td>
+			<td class="layui-td-gray-2">所属企业主体</td>
+			<td>{$account.enterprise|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">金额(元)<font>*</font></td>
+			<td><input type="text" name="amount" placeholder="请输入金额" lay-verify="required|number" lay-reqText="请输入金额" autocomplete="off" class="layui-input" value="{$detail.amount|default=''}"></td>
+			<td class="layui-td-gray">到账日期<font>*</font></td>
+			<td><input type="text" name="income_time" placeholder="请选择" lay-verify="required" lay-reqText="请完善到账日期" readonly class="layui-input tool-time" value="{$detail.income_time|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">经 手 人<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="handler_users" placeholder="请选择" lay-verify="required" lay-reqText="请完善经手人" autocomplete="off" readonly class="layui-input picker-admin" data-type="2" value="{$detail.handler_users|default=''}">
+				<input type="hidden" name="handler_ids" value="{$detail.handler_ids|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">注资说明<font>*</font></td>
+			<td colspan="3">
+				<textarea name="content" lay-verify="required" placeholder="请输入注资说明" lay-reqText="请完善注资说明" class="layui-textarea">{$detail.content|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<input type="hidden" name="account_id" value="{$account.id|default=0}"/>
+		<input type="hidden" name="enterprise_id" value="{$account.enterprise_id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/finance/account/injection_add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

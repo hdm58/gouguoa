@@ -41,17 +41,16 @@ class Ticket extends BaseController
     {
 		$param = get_params();
 		$uid = $this->uid;
-		$auth = isAuth($uid,'finance_admin','conf_2');
+		$auth = isAuth($uid,'finance_admin','conf_3');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
 			$where[]=['delete_time','=',0];
 			$where[]=['invoice_type','>',0];
 			if($tab == 0){
-				$auth = isAuthInvoice($uid);
 				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
@@ -198,7 +197,7 @@ class Ticket extends BaseController
     public function record()
     {
 		$uid = $this->uid;
-		$auth = isAuth($uid,'finance_admin','conf_2');
+		$auth = isAuth($uid,'finance_admin','conf_3');
         if (request()->isAjax()) {
 			$param = get_params();
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
@@ -206,8 +205,15 @@ class Ticket extends BaseController
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
 			$where[]=['invoice_type','>',0];
-			if($auth==0){
-				$where[] = ['admin_id', '=', $uid];
+			if (!empty($param['uid'])) {
+				$where[] = ['admin_id', '=', $param['uid']];
+			}
+			else{
+				if($auth==0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $uid];
+					$whereOr[] = ['did','in',$dids_son];
+				}
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
@@ -227,122 +233,5 @@ class Ticket extends BaseController
             return view();
         }
     }
-	
-    /**
-    * 无发票付款列表
-    */
-    public function datalist_a()
-    {
-		$param = get_params();
-        if (request()->isAjax()) {
-			$uid=$this->uid;
-            $where = array();
-            $whereOr = array();
-			$where[]=['delete_time','=',0];
-			$where[]=['invoice_type','=',0];
-			$whereOr[] = ['admin_id', '=', $this->uid];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
-			//按时间检索
-			if (!empty($param['diff_time'])) {
-				$diff_time =explode('~', $param['diff_time']);
-				$where[] = ['pay_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
-			}
-            if (isset($param['pay_status']) && $param['pay_status'] != "") {
-                $where[] = ['pay_status', '=', $param['pay_status']];
-            }
-			if (isset($param['check_status']) && $param['check_status'] != "") {
-                $where[] = ['check_status', '=', $param['check_status']];
-            }
-            $list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
-        }
-        else{
-			View::assign('auth', isAuthPayment($this->uid));
-            return view();
-        }
-    }
-	
-    /**
-    * 无发票付款添加/编辑
-    */
-    public function add_a()
-    {
-		$param = get_params();	
-        if (request()->isAjax()) {
-			$param['admin_id'] = $this->uid;
-			$param['did'] = $this->did;
-			if (!empty($param['open_time'])) {
-				$param['open_time'] = strtotime(urldecode($param['open_time']));
-			}
-            if (!empty($param['id']) && $param['id'] > 0) {
-                try {
-                    validate(TicketValidate::class)->scene('edit')->check($param);
-                } catch (ValidateException $e) {
-                    // 验证失败 输出错误信息
-                    return to_assign(1, $e->getError());
-                }
-				$this->model->edit($param);
-            } else {
-                try {
-                    validate(TicketValidate::class)->scene('add')->check($param);
-                } catch (ValidateException $e) {
-                    // 验证失败 输出错误信息
-                    return to_assign(1, $e->getError());
-                }
-                $this->model->add($param);
-            }	 
-        }else{
-			$id = isset($param['id']) ? $param['id'] : 0;
-			if ($id>0) {
-				$detail = $this->model->getById($id);
-				View::assign('detail', $detail);
-				if(is_mobile()){
-					return view('qiye@/finance/add_ticket_a');
-				}
-				return view('edit_a');
-			}
-			if(is_mobile()){
-				return view('qiye@/finance/add_ticket_a');
-			}
-			return view();
-		}
-    }
-	
-    /**
-    * 无发票付款查看
-    */
-    public function view_a($id)
-    {
-		$detail = $this->model->getById($id);
-		if (!empty($detail)) {
-			$detail['subject'] = Db::name('Enterprise')->where(['id' =>$detail['invoice_subject']])->value('title');
-			$other_file_array = Db::name('File')->where('id','in',$detail['other_file_ids'])->select();
-			$detail['other_file_array'] = $other_file_array;
-			View::assign('detail', $detail);
-			View::assign('create_user', get_admin($detail['admin_id']));
-			if(is_mobile()){
-				return view('qiye@/finance/view_ticket_a');
-			}
-			return view();
-		}
-		else{
-			return view(EEEOR_REPORTING,['code'=>404,'warning'=>'找不到页面']);
-		}
-    }
-	
-   /**
-    * 无发票付款删除
-    */
-    public function del_a()
-    {
-        $param = get_params();	
-		if (request()->isDelete()) {
-			$this->model->delById($param['id']);
-		} else {
-            return to_assign(1, "错误的请求");
-        }
-    }  
 
 }

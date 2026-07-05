@@ -1,0 +1,75 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<table class="layui-hide" id="table_injection" lay-filter="table_injection"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/finance/account/injection_add?account_id={$account_id}">+ 新增注资</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const account_id = {$account_id};
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_injection"
+			,toolbar: '#toolbarDemo'
+			,url: "/finance/account/injection"
+			,where:{account_id:account_id}
+			,page: false
+			,totalRow: true
+			,limit: 999
+			,cellMinWidth: 60
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'enterprise',title: '所属企业主体',width:200}
+				,{field:'account',title: '资金账户名称',minWidth:240,totalRowText: '<div style="text-align:right">合计</div>'}
+				,{field:'amount',title: '金额(元)', align:'right',width:120,totalRow: true}
+				,{field:'handler_users',title: '经手人'}
+				,{field:'admin_name',title: '登记人', align:'center', width:100}
+				,{field:'create_time',title: '登记时间', width:150, align:'center'}
+				,{width:90,fixed:'right', title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn2='<a class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+'</div>';
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_injection)',function (obj) {
+			let data = obj.data;
+			if (obj.event === 'edit') {
+				tool.side("/finance/account/injection_add?id="+data.id);
+				return;
+			}
+			if(obj.event === 'del'){
+				layer.confirm('确定要删除该注资记录吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/finance/account/injection_del", {id:obj.data.id,status: 0}, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

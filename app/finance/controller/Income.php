@@ -36,16 +36,16 @@ class Income extends BaseController
     public function datalist()
     {
 		$uid = $this->uid;
-		$auth = isAuthIncome($uid);
+		$auth = isAuth($uid,'finance_admin','conf_4');
         if (request()->isAjax()) {
             $param = get_params();
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
             $where[] = ['delete_time', '=', 0];
 			if($tab == 0){
 				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
@@ -91,7 +91,14 @@ class Income extends BaseController
                 $where[] = ['check_status', '=', $param['check_status']];
             }
 			$list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+			$amount = $this->model->where($where)
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         } else {
 			View::assign('auth', $auth);
             return view();
@@ -196,6 +203,8 @@ class Income extends BaseController
 	//回款记录
     public function record()
     {
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_4');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
@@ -203,20 +212,36 @@ class Income extends BaseController
 			$where[]=['check_status','=',2];
 			$where[]=['status','=',2];
 			$where[]=['delete_time','=',0];
+			if (!empty($param['uid'])) {
+				$where[] = ['admin_id', '=', $param['uid']];
+			}
+			else{
+				if($auth==0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $uid];
+					$whereOr[] = ['did','in',$dids_son];
+				}
+			}
 			//按时间检索
-			if (!empty($param['create_time'])) {
-				$create_time =explode('~', $param['create_time']);
-				$where[] = ['create_time', 'between', [strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
+			if (!empty($param['confirm_time'])) {
+				$confirm_time =explode('~', $param['confirm_time']);
+				$where[] = ['confirm_time', 'between', [strtotime(urldecode($confirm_time[0])),strtotime(urldecode($confirm_time[1].' 23:59:59'))]];
 			}
 			if (!empty($param['enter_time'])) {
 				$enter_time =explode('~', $param['enter_time']);
 				$where[] = ['enter_time', 'between', [strtotime(urldecode($enter_time[0])),strtotime(urldecode($enter_time[1].' 23:59:59'))]];
 			}
 			$list = $this->model->datalist($param,$where,$whereOr);
-			$amount = $this->model::where($where)->sum('amount');					
+			$amount = $this->model->where($where)
+				->where(function ($query) use($whereOr) {
+					if (!empty($whereOr)){
+						$query->whereOr($whereOr);
+					}
+				})->sum('amount');
 			$totalRow['amount'] = sprintf("%.2f",$amount);
             return table_assign(0, '', $list,$totalRow);
         } else {
+			View::assign('auth',$auth);
             return view();
         }
     }

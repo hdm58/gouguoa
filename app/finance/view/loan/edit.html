@@ -9,10 +9,10 @@
 			<td colspan="3"><input type="text" name="title" value="{$detail.title|default=''}" lay-verify="required" placeholder="请输入借支主题" lay-reqText="请填写借支主题" class="layui-input"></td>
 			<td class="layui-td-gray">借支企业主体</td>
 			<td>
-				<select name="subject_id" lay-verify="required" lay-reqText="请选择借支企业主体">
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择借支企业主体">
 					<option value="">请选择借支企业主体</option>
 					{volist name=":get_base_data('enterprise')" id="vo"}
-					<option value="{$vo.id}" {eq name="$detail.subject_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					<option value="{$vo.id}" {eq name="$detail.enterprise_id" value="$vo.id"} selected{/eq}>{$vo.title}</option>
 					{/volist}
 				</select>
 			</td>

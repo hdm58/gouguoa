@@ -13,72 +13,6 @@
 
 use think\facade\Db;
 
-//是否是报销打款管理员,count>1即有权限
-function isAuthExpense($uid)
-{
-	if($uid == 1){
-		return 1;
-	}
-	$map = [];
-	$map[] = ['name', '=', 'finance_admin'];
-	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_1)")];
-    $count = Db::name('DataAuth')->where($map)->count();
-    return $count;
-}
-
-//是否是发票管理员,count>1即有权限
-function isAuthInvoice($uid)
-{
-	if($uid == 1){
-		return 1;
-	}
-	$map = [];
-	$map[] = ['name', '=', 'finance_admin'];
-	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_2)")];
-    $count = Db::name('DataAuth')->where($map)->count();
-    return $count;
-}
-
-//是否是到账管理员,count>1即有权限
-function isAuthIncome($uid)
-{
-	if($uid == 1){
-		return 1;
-	}
-	$map = [];
-	$map[] = ['name', '=', 'finance_admin'];
-	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_3)")];
-    $count = Db::name('DataAuth')->where($map)->count();
-    return $count;
-}
-
-//是否是付款管理员,count>1即有权限
-function isAuthPayment($uid)
-{
-	if($uid == 1){
-		return 1;
-	}
-	$map = [];
-	$map[] = ['name', '=', 'finance_admin'];
-	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_4)")];
-    $count = Db::name('DataAuth')->where($map)->count();
-    return $count;
-}
-
-//是否是借支打款管理员,count>1即有权限
-function isAuthLoan($uid)
-{
-	if($uid == 1){
-		return 1;
-	}
-	$map = [];
-	$map[] = ['name', '=', 'finance_admin'];
-	$map[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',conf_5)")];
-    $count = Db::name('DataAuth')->where($map)->count();
-    return $count;
-}
-
-
 //设置开票回款状态
 function invoice_cash_status($invoice_id){
     $invoice_amount = Db::name('Invoice')->where(['id'=>$invoice_id])->value('amount');
@@ -97,8 +31,6 @@ function invoice_cash_status($invoice_id){
 		Db::name('Invoice')->where(['id'=>$invoice_id])->update(['cash_status'=>1,'enter_amount'=>$hasIncome,'enter_time'=>0]);
 	}
 }
-
-
 
 //设置收票付款状态
 function ticket_pay_status($ticket_id){

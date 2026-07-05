@@ -14,7 +14,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">报销主体</td>
-			<td colspan="5">{$detail.subject_name|default='-'}</td>
+			<td colspan="5">{$detail.enterprise_name|default='-'}</td>
 		</tr>
 		{if condition="$detail.project_id > 0"}
 		<tr>
@@ -72,27 +72,19 @@
 			</td>
 		</tr>
 		{/notempty}
-		{if ( $detail.check_status eq 2)}
-			{if ( $detail.pay_status eq 1)}
-				<tr>
-					<td class="layui-td-gray">打款状态</td>
-					<td><span class="yellow">已打款</span></td>
-					<td class="layui-td-gray">打款人</td>
-					<td>{$detail.pay_admin}</td>
-					<td class="layui-td-gray">打款时间</td>
-					<td>{$detail.pay_time}</td>
-				</tr>
-			{else/}
-				<tr>
-					<td class="layui-td-gray">打款状态</td>
-					<td><span class="red">未打款</span></td>
-					<td class="layui-td-gray">打款人</td>
-					<td>-</td>
-					<td class="layui-td-gray">打款时间</td>
-					<td>-</td>
-				</tr>
-			{/if}
-		{/if}
+		{eq name="$detail.check_status" value="2"}
+		<tr>
+			<td class="layui-td-gray">打款状态</td>
+			<td>
+				{eq name="$detail.status" value="1"}<span class="red">未打款</span>{/eq}
+				{eq name="$detail.status" value="2"}<span class="green">已打款</span>{/eq}
+			</td>
+			<td class="layui-td-gray">打款时间</td>
+			<td>{$detail.confirm_time|default='-'}</td>
+			<td class="layui-td-gray-2">打款人</td>
+			<td>{$detail.confirm_admin|default='-'}</td>
+		</tr>
+		{/eq}
 	</table>	
 
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>

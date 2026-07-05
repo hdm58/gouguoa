@@ -9,8 +9,8 @@
 {/block}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
-	<h3 class="pb-3">员工信息</h3>
+<form class="layui-form p-page">
+	<h3 class="pb-2">员工信息</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">登录账号</td>
@@ -91,7 +91,7 @@
 			<td class="layui-td-gray-2">累计登录次数</td>
 			<td colspan="3">{$detail.login_num}</td>
 		</tr>
-		<tr>
+		<tr style="display:none">
 			<td class="layui-td-gray">数据权限</td>
 			<td colspan="7">
 				<input type="radio" name="auth_did" value="0" disabled title="仅自己关联的数据" {eq name="$detail.auth_did" value="0"}checked{/eq}>

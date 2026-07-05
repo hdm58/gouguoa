@@ -41,16 +41,18 @@ class Loan extends BaseController
     {
 		$param = get_params();
 		$uid = $this->uid;
-		$auth = isAuth($uid,'finance_admin','conf_5');
+		$auth = isAuth($uid,'finance_admin','conf_1');
+		$income_auth = isAuth($uid,'finance_admin','conf_6');
+		$pay_auth = isAuth($uid,'finance_admin','conf_7');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
 			$where[]=['delete_time','=',0];
 			if($tab == 0){
 				//全部
 				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
@@ -90,6 +92,8 @@ class Loan extends BaseController
         }
         else{
 			View::assign('auth',$auth);
+			View::assign('pay_auth',$pay_auth);
+			View::assign('income_auth',$income_auth);
             return view();
         }
     }
@@ -178,14 +182,21 @@ class Loan extends BaseController
     public function record()
     {
 		$uid = $this->uid;
-		$auth = isAuth($uid,'finance_admin','conf_5');
+		$auth = isAuth($uid,'finance_admin','conf_1');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
-			if($auth==0){
-				$where[] = ['admin_id', '=', $uid];
+			if (!empty($param['uid'])) {
+				$where[] = ['admin_id', '=', $param['uid']];
+			}
+			else{
+				if($auth==0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $uid];
+					$whereOr[] = ['did','in',$dids_son];
+				}
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {

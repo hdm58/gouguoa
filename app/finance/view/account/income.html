@@ -1,0 +1,69 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<table class="layui-hide" id="table_income" lay-filter="table_income"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<h3>收入流水</h3>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const account_id = {$account_id};
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_income"
+			,toolbar: '#toolbarDemo'
+			,url: "/finance/account/income"
+			,where:{account_id:account_id}
+			,totalRow: true
+			,limit: 20
+			,cellMinWidth: 60
+			,cols: [[
+				{field:'transaction_no',width:160, title: '流水号', align:'center',totalRowText: '<div style="text-align:right">合计</div>'}
+				,{field:'amount',title: '金额(元)', align:'right',width:120,totalRow: true}
+				,{field:'name_str',title: '交易类型', align:'center', width:80}
+				,{field:'fundscate',title: '款项类型', align:'center', width:80}
+				,{field:'paytype',title: '支付方式', align:'center', width:90}
+				,{field:'enterprise',title: '所属企业主体',width:200}
+				,{field:'account',title: '资金账户名称',minWidth:240}
+				,{field:'admin_name',title: '登记人', align:'center', width:100}
+				,{field:'create_time',title: '登记时间', width:150, align:'center'}
+			]]
+		});
+			
+		table.on('tool(table_income)',function (obj) {
+			let data = obj.data;
+			if (obj.event === 'edit') {
+				tool.side("/finance/account/income_add?id="+data.id);
+				return;
+			}
+			if(obj.event === 'del'){
+				layer.confirm('确定要删除该注资记录吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.delete("/finance/account/income_del", {id:obj.data.id,status: 0}, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

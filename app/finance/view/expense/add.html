@@ -11,7 +11,7 @@
 			<td>{$user.department}</td>
 			<td class="layui-td-gray">报销主体</td>
 			<td>
-				<select name="subject_id" lay-verify="required" lay-reqText="请选择报销主体">
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择报销主体">
 					<option value="">请选择报销主体</option>
 					{volist name=":get_base_data('enterprise')" id="vo"}
 					<option value="{$vo.id}">{$vo.title}</option>

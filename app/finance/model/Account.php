@@ -77,6 +77,7 @@ class Account extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		$info['enterprise'] = Db::name('Enterprise')->where('id',$info['enterprise_id'])->value('title');
 		return $info;
     }
 

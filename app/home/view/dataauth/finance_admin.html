@@ -20,49 +20,67 @@
 			<td>{$detail.name}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">报销管理员</td>
+			<td class="layui-td-gray-2">借支管理员</td>
 			<td>
-				<input type="text" name="conf_1_str" value="{$detail.conf_1_str|default=''}" readonly placeholder="请选择报销管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="text" name="conf_1_str" value="{$detail.conf_1_str|default=''}" readonly placeholder="请选择借支管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_1" value="{$detail.conf_1}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_1</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">发票管理员</td>
+			<td class="layui-td-gray-2">报销管理员</td>
 			<td>
-				<input type="text" name="conf_2_str" value="{$detail.conf_2_str|default=''}" readonly placeholder="请选择发票管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="text" name="conf_2_str" value="{$detail.conf_2_str|default=''}" readonly placeholder="请选择报销管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_2" value="{$detail.conf_2}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_2</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">回款管理员</td>
+			<td class="layui-td-gray-2">发票管理员</td>
 			<td>
-				<input type="text" name="conf_3_str" value="{$detail.conf_3_str|default=''}" readonly placeholder="请选择到回款理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="text" name="conf_3_str" value="{$detail.conf_3_str|default=''}" readonly placeholder="请选择发票管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_3" value="{$detail.conf_3}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_3</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">付款管理员</td>
+			<td class="layui-td-gray-2">收款管理员</td>
 			<td>
-				<input type="text" name="conf_4_str" value="{$detail.conf_4_str|default=''}" readonly placeholder="请选择付款管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="text" name="conf_4_str" value="{$detail.conf_4_str|default=''}" readonly placeholder="请选择收款管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_4" value="{$detail.conf_4}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_4</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray-2">借支管理员</td>
+			<td class="layui-td-gray-2">付/退款管理员</td>
 			<td>
-				<input type="text" name="conf_5_str" value="{$detail.conf_5_str|default=''}" readonly placeholder="请选择借支管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="text" name="conf_5_str" value="{$detail.conf_5_str|default=''}" readonly placeholder="请选择付款管理员" autocomplete="off" class="layui-input picker-admin" data-type="2">
 				<input type="hidden" name="conf_5" value="{$detail.conf_5}">
 			</td>
 			<td class="layui-td-gray">权限标识</td>
 			<td style="width:100px;">conf_5</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">到账操作员</td>
+			<td>
+				<input type="text" name="conf_6_str" value="{$detail.conf_6_str|default=''}" readonly placeholder="请选择到账操作员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="conf_6" value="{$detail.conf_6}">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_6</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">付款操作员</td>
+			<td>
+				<input type="text" name="conf_7_str" value="{$detail.conf_7_str|default=''}" readonly placeholder="请选择付款操作员" autocomplete="off" class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="conf_7" value="{$detail.conf_7}">
+			</td>
+			<td class="layui-td-gray">权限标识</td>
+			<td style="width:100px;">conf_7</td>
 		</tr>
 	</table>
 	<div class="pt-4">

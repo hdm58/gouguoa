@@ -1,0 +1,75 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">报销信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">凭证编号</td>
+			<td>{$detail.code}</td>
+			<td class="layui-td-gray">入账月份</td>
+			<td>{$detail.income_month|to_date='Y-m'}</td>
+			<td class="layui-td-gray-2">原始单据日期</td>
+			<td>{$detail.expense_time|to_date='Y-m-d'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">报销总费用(元)</td>
+			<td><span style="color:#1E9FFF">{$detail.cost}</span></td>
+			<td class="layui-td-gray">冲抵借支</td>
+			<td><span style="color:#16b777">{$detail.balance_cost}</span></td>
+			<td class="layui-td-gray">需打款费用(元)</td>
+			<td><span style="color:#ff5722">{$detail.pay_amount}</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">借支企业主体</td>
+			<td>{$detail.enterprise|default='-'}</td>
+			<td class="layui-td-gray">收款主体<font>*</font></td>
+			<td>
+				<select name="account_id" lay-verify="required" lay-reqText="请选择借支账号">
+					<option value="">请选择借支账号</option>
+					{volist name="$account" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td>
+				<select name="paytype_id" lay-verify="required" lay-reqText="请选择付款方式">
+				<option value="">请选择付款方式</option>
+				{volist name=":get_base_data('pay_type')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}			
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="table" value="Expense">
+		<input type="hidden" name="id" value="{$detail.id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">确认提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);				
+				}
+			}
+			tool.post("/finance/api/confirm_payment", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

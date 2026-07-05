@@ -42,16 +42,16 @@ class Refund extends BaseController
 		$param = get_params();
 		$uid=$this->uid;
 		//是否付款管理员
-		$auth = isAuth($uid,'finance','conf_4');
+		$auth = isAuth($uid,'finance','conf_5');
         if (request()->isAjax()) {
 			$param = get_params();
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
             $where[] = ['delete_time', '=', 0];
 			if($tab == 0){
 				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
@@ -97,7 +97,14 @@ class Refund extends BaseController
                 $where[] = ['check_status', '=', $param['check_status']];
             }
 			$list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+			$amount = $this->model->where($where)
+ 			->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         }
         else{
 			View::assign('is_leader', isLeader($uid));
@@ -111,12 +118,13 @@ class Refund extends BaseController
 		$param = get_params();
 		$uid=$this->uid;
 		//是否付款管理员
-		$auth = isAuth($uid,'finance','conf_4');
+		$auth = isAuth($uid,'finance','conf_5');
         if (request()->isAjax()) {
 			$where=[];
 			$whereOr=[];
 			$where[]=['delete_time','=',0];
-			$where[] = ['check_status', '=', 2];			
+			$where[] = ['check_status', '=', 2];
+			$where[] = ['status', '=', 2];
 			if (!empty($param['diff_time'])) {
 				$diff_time =explode('~', $param['diff_time']);
 				$where[] = ['back_time', 'between',[strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
@@ -126,13 +134,32 @@ class Refund extends BaseController
 			}
 			else{
 				if($auth==0){
-					$whereOr[] = ['admin_id', '=', $uid];
 					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $uid];
 					$whereOr[] = ['did','in',$dids_son];
 				}
 			}
+			if (!empty($param['confirm_time'])) {
+				$confirm_time =explode('~', $param['confirm_time']);
+				$where[] = ['confirm_time', 'between', [strtotime(urldecode($confirm_time[0])),strtotime(urldecode($confirm_time[1].' 23:59:59'))]];
+			}
+			if (!empty($param['back_time'])) {
+				$back_time =explode('~', $param['back_time']);
+				$where[] = ['back_time', 'between', [strtotime(urldecode($back_time[0])),strtotime(urldecode($back_time[1].' 23:59:59'))]];
+			}
+			if (!empty($param['fundscate_id'])) {
+                $where[] = ['fundscate_id', '=', $param['fundscate_id']];
+            }
+            if (!empty($param['paytype_id'])) {
+                $where[] = ['paytype_id', '=', $param['paytype_id']];
+            }
             $list = $this->model->datalist($param,$where,$whereOr);
-			$amount = $this->model::where($where)->sum('amount');
+			$amount = $this->model->where($where)
+ 			->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');
 			$totalRow['amount'] = sprintf("%.2f",$amount);
             return table_assign(0, '', $list,$totalRow);
         }

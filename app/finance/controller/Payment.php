@@ -36,16 +36,16 @@ class Payment extends BaseController
     public function datalist()
     {
 		$uid = $this->uid;
-		$auth = isAuthPayment($uid);
+		$auth = isAuth($uid,'finance_admin','conf_5');
         if (request()->isAjax()) {
             $param = get_params();
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
-			$dids_son = get_leader_departments($uid);
             $where = array();
             $whereOr = array();
             $where[] = ['delete_time', '=', 0];
 			if($tab == 0){
 				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
@@ -91,7 +91,14 @@ class Payment extends BaseController
                 $where[] = ['check_status', '=', $param['check_status']];
             }
 			$list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+            $amount = $this->model->where($where)
+ 			->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         } else {
 			View::assign('auth', $auth);
             return view();
@@ -104,7 +111,7 @@ class Payment extends BaseController
         $param = get_params();
         if (request()->isAjax()) {   
 			$id = isset($param['id']) ? $param['id'] : 0;
-            if($param['ticket_id']>0); {
+            if(!empty($param['ticket_id'])) {
 				//计算发票已付款的金额
 				$hasPayment = $this->model->where([['id','<>',$id],['ticket_id','=',$param['ticket_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
 				//查询发票金额
@@ -113,7 +120,7 @@ class Payment extends BaseController
 					return to_assign(1,'付款金额大于关联发票金额，不允许保存，请核对');
 				}
 			}
-			if($param['purchase_id']>0){
+			if(!empty($param['purchase_id'])){
 				//计算合同已付款的金额
 				$hasPayment = $this->model->where([['id','<>',$id],['purchase_id','=',$param['purchase_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
 				//查询合同金额
@@ -195,6 +202,8 @@ class Payment extends BaseController
 	//回款记录
     public function record()
     {
+		$uid = $this->uid;
+		$auth = isAuth($uid,'finance_admin','conf_5');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
@@ -202,17 +211,38 @@ class Payment extends BaseController
 			$where[]=['check_status','=',2];
 			$where[]=['status','=',2];
 			$where[]=['delete_time','=',0];
+			if (!empty($param['uid'])) {
+				$where[] = ['admin_id', '=', $param['uid']];
+			}
+			else{
+				if($auth==0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $uid];
+					$whereOr[] = ['did','in',$dids_son];
+				}
+			}
 			//按时间检索
-			if (!empty($param['create_time'])) {
-				$create_time =explode('~', $param['create_time']);
-				$where[] = ['create_time', 'between', [strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
+			if (!empty($param['confirm_time'])) {
+				$confirm_time =explode('~', $param['confirm_time']);
+				$where[] = ['confirm_time', 'between', [strtotime(urldecode($confirm_time[0])),strtotime(urldecode($confirm_time[1].' 23:59:59'))]];
 			}
 			if (!empty($param['pay_time'])) {
 				$pay_time =explode('~', $param['pay_time']);
 				$where[] = ['pay_time', 'between', [strtotime(urldecode($pay_time[0])),strtotime(urldecode($pay_time[1].' 23:59:59'))]];
 			}
+			if (!empty($param['fundscate_id'])) {
+                $where[] = ['fundscate_id', '=', $param['fundscate_id']];
+            }
+            if (!empty($param['paytype_id'])) {
+                $where[] = ['paytype_id', '=', $param['paytype_id']];
+            }
 			$list = $this->model->datalist($param,$where,$whereOr);
-			$amount = $this->model::where($where)->sum('amount');					
+			$amount = $this->model->where($where)
+ 			->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');					
 			$totalRow['amount'] = sprintf("%.2f",$amount);
             return table_assign(0, '', $list,$totalRow);
         } else {

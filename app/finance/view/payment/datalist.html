@@ -38,10 +38,10 @@
 			</select>
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="create_time" placeholder="选择申请时间区间" readonly name="create_time">
+			<input type="text" class="layui-input" id="create_time" placeholder="选择申请时间" readonly name="create_time">
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="pay_time" placeholder="选择付款时间区间" readonly name="pay_time">
+			<input type="text" class="layui-input" id="pay_time" placeholder="选择付款时间" readonly name="pay_time">
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<input type="hidden" name="tab" value="0"/>
@@ -87,10 +87,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
-			,height: 'full-154'
-			,cellMinWidth: 80		
-			,page: true //开启分页
-			,limit: 20
+			,height: 'full-155'
 			,cols: [[
 					{
 						field: 'id',
@@ -146,11 +143,14 @@
 						field: 'status',
 						title: '确认状态',
 						align: 'center',
-						width: 90,
+						width: 80,
 						templet:function(d){
-							var html='<span class="red">『未确认』</span>';
+							var html='-';
+							if(d.status==1){
+								html='<span class="red">未确认</span>';
+							}
 							if(d.status==2){
-								html='<span class="green">『已确认』</span>';
+								html='<span class="green">已确认</span>';
 							}
 							return html;
 						}
@@ -237,7 +237,7 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.post("/finance/api/confirm_payment", { id: data.id }, callback);
+					tool.post("/finance/api/confirm_payment", {table:'TicketPayment', id: data.id }, callback);
 					layer.close(index);
 				});
 				return;
@@ -250,7 +250,7 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.post("/finance/api/unconfirm_payment", { id: data.id }, callback);
+					tool.post("/finance/api/unconfirm_payment", {table:'TicketPayment', id: data.id }, callback);
 					layer.close(index);
 				});
 				return;

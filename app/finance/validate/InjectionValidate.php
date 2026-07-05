@@ -15,28 +15,29 @@ namespace app\finance\validate;
 use think\Validate;
 use think\facade\Db;
 
-class LoanValidate extends Validate
+class Injection extends Validate
 {
 	// 自定义验证规则
 	protected function checkOne($value,$rule,$data=[])
 	{
 		$id = isset($data['id'])?$data['id']:0;
-		$count = Db::name('Loan')->where([['title','=',$data['title']],['id','<>',$id],['delete_time','=',0]])->count();
+		$count = Db::name('FinanceInjection')->where([['title','=',$data['title']],['id','<>',$id],['delete_time','=',0]])->count();
 		return $count == 0 ? true : false;
 	}
 	
     protected $rule = [
-		'title' => 'require',
+		'amount' => 'require|number',
 		'id' => 'require',
 	];
 
     protected $message = [
-		'title.require' => '名称不能为空',
+		'amount.require' => '金额不能为空',
+		'amount.number' => '金额必须是数字',
 		'id.require' => '缺少更新条件',
 	];
 	
     protected $scene = [
-        'add' => ['title'],
-        'edit' => ['title', 'id'],
+        'add' => ['amount'],
+        'edit' => ['amount', 'id'],
     ];
 }

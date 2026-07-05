@@ -34,25 +34,22 @@ class Loan extends Model
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
-				$item->check_status_str = check_status_name($item->check_status);
-				$item->loan_time = to_date($item->loan_time,'Y-m-d');
-				$item->admin_name = Db::name('Admin')->where(['id' => $item->admin_id])->value('name');
-				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
-				$item->create_time = to_date($item->create_time);
-				$item->plan_time = to_date($item->plan_time,'Y-m-d');
-				$item->delay = count_days(date("Y-m-d"),$item->plan_time);
+				$item['check_status_str'] = check_status_name($item['check_status']);
+				$item['admin_name'] = Db::name('Admin')->where(['id' => $item['admin_id']])->value('name');
+				$item['department'] = Db::name('Department')->where(['id' => $item['did']])->value('title');
+				$item['loan_time'] = to_date($item['loan_time'],'Y-m-d');
+				$item['create_time'] = to_date($item['create_time']);
+				$item['delay']= count_days(date("Y-m-d"),$item['plan_time']);
+				$item['plan_time'] = to_date($item['plan_time'],'Y-m-d');
 				$item['check_user'] = '-';
 				if($item['check_status']==1 && !empty($item['check_uids'])){
 					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
 					$item['check_user'] = implode(',',$check_user);
 				}
-				if($item->pay_admin_id>0){
-					$item->pay_name = Db::name('Admin')->where(['id' => $item->pay_admin_id])->value('name');
-					$item->pay_time = date('Y-m-d H:i', $item->pay_time);
-				}
-				else{
-					$item->pay_name='-';
-					$item->pay_time='-';
+				$item['confirm_time'] = to_date($item['confirm_time']);
+				$item['confirm_admin'] = '-';
+				if($item['confirm_uid']>0){
+					$item['confirm_admin'] = Db::name('Admin')->where('id',$item['confirm_uid'])->value('name');
 				}
 			});
 			return $list;
@@ -104,14 +101,6 @@ class Loan extends Model
 		$info['loan_time'] = empty($info['loan_time']) ? '-' : date('Y-m-d', $info['loan_time']);
 		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
 		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
-		if ($info['pay_time'] > 0) {
-			$info['pay_time'] = date('Y-m-d H:i:s', $info['pay_time']);
-			$info['pay_admin'] = Db::name('Admin')->where(['id' => $info['pay_admin_id']])->value('name');
-		}
-		else{
-			$info['pay_time'] = '-';
-			$info['pay_admin'] = '-';
-		}
 		if ($info['back_time'] > 0) {
 			$info['back_time'] = date('Y-m-d H:i:s', $info['back_time']);
 			$info['back_admin'] = Db::name('Admin')->where(['id' => $info['back_admin_id']])->value('name');
@@ -126,9 +115,14 @@ class Loan extends Model
 		else{
 			$info['ptname'] = '';
 		}
-		if ($info['subject_id'] > 0) {
-			$info['subject_name'] = Db::name('Enterprise')->where(['id' => $info['subject_id']])->value('title');
+		if ($info['enterprise_id'] > 0) {
+			$info['enterprise_name'] = Db::name('Enterprise')->where(['id' => $info['enterprise_id']])->value('title');
 		}
+		$info['confirm_admin'] = '-';
+		if($info['confirm_uid']>0){
+			$info['confirm_admin'] = Db::name('Admin')->where('id',$info['confirm_uid'])->value('name');
+		}
+		$info['confirm_time'] = to_date($info['confirm_time']);
 		$file_array = Db::name('File')->where('id','in',$info['file_ids'])->select();
 		$info['file_array'] = $file_array;	
 		return $info;

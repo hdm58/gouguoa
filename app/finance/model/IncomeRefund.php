@@ -39,6 +39,11 @@ class IncomeRefund extends Model
  				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
 				$item['back_time'] = to_date($item['back_time'],'Y-m-d H:i');
 				$item['create_time'] = to_date($item['create_time']);
+				$item['confirm_time'] = to_date($item['confirm_time']);
+				$item['confirm_admin'] = '-';
+				if($item['confirm_uid']>0){
+					$item['confirm_admin'] = Db::name('Admin')->where('id',$item['confirm_uid'])->value('name');
+				}
 				$item['customer'] = Db::name('Customer')->where('id',$item['customer_id'])->value('name');
 				$item['subject'] = Db::name('Enterprise')->where('id',$item['enterprise_id'])->value('title');
 				$item['fundscate'] = Db::name('FundsCate')->where('id',$item['fundscate_id'])->value('title');
@@ -109,7 +114,12 @@ class IncomeRefund extends Model
 		$info['account'] = Db::name('Account')->where('id',$info['account_id'])->value('title');
 		$info['fundscate'] = Db::name('FundsCate')->where('id',$info['fundscate_id'])->value('title');
 		$info['paytype'] = Db::name('PayType')->where('id',$info['paytype_id'])->value('title');
-		
+		$info['confirm_admin'] = '-';
+		if($info['confirm_uid']>0){
+			$info['confirm_admin'] = Db::name('Admin')->where('id',$info['confirm_uid'])->value('name');
+		}
+		$info['create_time'] = to_date($info['create_time']);
+		$info['confirm_time'] = to_date($info['confirm_time']);
 		$info['check_status_str'] = check_status_name($info['check_status']);
 		return $info;
     }

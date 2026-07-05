@@ -9,9 +9,9 @@
 {/block}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-4">
+<form class="layui-form p-page">
 	{if condition="$id eq 0"}
-	<h3 class="pb-3">新建消息</h3>
+	<h3 class="pb-2">新建消息</h3>
 	<table id="messageTable" class="layui-table layui-table-form layui-table-1">
 		<tr>
 			<td class="layui-td-gray-2">接收人类型</td>
@@ -68,7 +68,7 @@
 		</tr>
 	</table>
 	{else/}
-	<h3 class="pb-3">编辑消息</h3>
+	<h3 class="pb-2">编辑消息</h3>
 	<table id="messageTable" class="layui-table layui-table-form layui-table-{$detail.types}">
 		<tr>
 			<td class="layui-td-gray-2">接收人类型</td>

@@ -42,6 +42,19 @@
 			</td>
 		</tr>
 		{/notempty}
+		{eq name="$detail.check_status" value="2"}
+		<tr>
+			<td class="layui-td-gray">确认状态</td>
+			<td>
+				{eq name="$detail.status" value="1"}<span class="red">未确认退款</span>{/eq}
+				{eq name="$detail.status" value="2"}<span class="green">已确认退款</span>{/eq}
+			</td>
+			<td class="layui-td-gray">确认时间</td>
+			<td>{$detail.confirm_time|default='-'}</td>
+			<td class="layui-td-gray-2">退款确认人</td>
+			<td>{$detail.confirm_admin|default='-'}</td>
+		</tr>
+		{/eq}
 	</table>
 	<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}" class="pt-3"></div>
 </form>

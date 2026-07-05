@@ -5,27 +5,22 @@
 	<h3 class="pb-2">付款详情</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
+			<td class="layui-td-gray-2">付款交易单号</td>
+			<td colspan="3">{$detail.transaction_code}</td>
 			<td class="layui-td-gray-2">付款金额</td>
 			<td class="blue">{$detail.amount} 元</td>
-			<td class="layui-td-gray-2">付款交易单号</td>
-			<td>{$detail.transaction_code}</td>
-			<td class="layui-td-gray">付款时间</td>
-			<td>{$detail.pay_time}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">款项类型</td>
 			<td>{$detail.fundscate}</td>
 			<td class="layui-td-gray">付款方式</td>
 			<td>{$detail.paytype}</td>
-			<td class="layui-td-gray">付款主体</td>
-			<td>{$detail.subject}</td>
+			<td class="layui-td-gray">付款时间</td>
+			<td>{$detail.pay_time}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">确认状态</td>
-			<td colspan="3">
-				{eq name="$detail.status" value="1"}<span class="red">未确认</span>{/eq}
-				{eq name="$detail.status" value="2"}<span class="green">已确认</span>，确认人：{$detail.confirm_name}，确认时间：{$detail.confirm_time|to_date}{/eq}
-			</td>
+			<td class="layui-td-gray">付款主体</td>
+			<td colspan="3">{$detail.subject}</td>
 			<td class="layui-td-gray">付款账户</td>
 			<td>{$detail.account|default=''}</td>
 		</tr>
@@ -59,6 +54,19 @@
 			</td>
 		</tr>
 		{/notempty}
+		{eq name="$detail.check_status" value="2"}
+		<tr>
+			<td class="layui-td-gray">确认状态</td>
+			<td>
+				{eq name="$detail.status" value="1"}<span class="red">未确认付款</span>{/eq}
+				{eq name="$detail.status" value="2"}<span class="green">已确认付款</span>{/eq}
+			</td>
+			<td class="layui-td-gray">确认时间</td>
+			<td>{$detail.confirm_time|default='-'}</td>
+			<td class="layui-td-gray-2">退款确认人</td>
+			<td>{$detail.confirm_admin|default='-'}</td>
+		</tr>
+		{/eq}
 	</table>
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
 </div>

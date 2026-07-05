@@ -40,6 +40,11 @@ class Expense extends Model
 				$item->admin_name = Db::name('Admin')->where(['id' => $item->admin_id])->value('name');
 				$item->department = Db::name('Department')->where(['id' => $item->did])->value('title');
 				$item->create_time = to_date($item->create_time);
+				$item['confirm_time'] = to_date($item['confirm_time']);
+				$item['confirm_admin'] = '-';
+				if($item['confirm_uid']>0){
+					$item['confirm_admin'] = Db::name('Admin')->where('id',$item['confirm_uid'])->value('name');
+				}
 				$item['check_user'] = '-';
 				if($item['check_status']==1 && !empty($item['check_uids'])){
 					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');
@@ -182,22 +187,20 @@ class Expense extends Model
 		$info['expense_time'] = empty($info['expense_time']) ? '-' : date('Y-m-d', $info['expense_time']);
 		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
 		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
-		if ($info['pay_time'] > 0) {
-			$info['pay_time'] = date('Y-m-d H:i:s', $info['pay_time']);
-			$info['pay_admin'] = Db::name('Admin')->where(['id' => $info['pay_admin_id']])->value('name');
-		}
-		else{
-			$info['pay_time'] = '-';
-		}
 		if ($info['project_id'] > 0) {
 			$info['ptname'] = Db::name('Project')->where(['id' => $info['project_id']])->value('name');
 		}
 		else{
 			$info['ptname'] = '';
 		}
-		if ($info['subject_id'] > 0) {
-			$info['subject_name'] = Db::name('Enterprise')->where(['id' => $info['subject_id']])->value('title');
+		if ($info['enterprise_id'] > 0) {
+			$info['enterprise_name'] = Db::name('Enterprise')->where(['id' => $info['enterprise_id']])->value('title');
 		}
+		$info['confirm_admin'] = '-';
+		if($info['confirm_uid']>0){
+			$info['confirm_admin'] = Db::name('Admin')->where('id',$info['confirm_uid'])->value('name');
+		}
+		$info['confirm_time'] = to_date($info['confirm_time']);
 		$info['list'] = Db::name('ExpenseInterfix')
 			->field('a.*,c.title as cate_title')
 			->alias('a')

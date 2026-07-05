@@ -94,16 +94,16 @@
 			,toolbar: "#toolbarDemo"
 			,url: "/finance/refund/datalist"
 			,excel_auth:auth
-			,height: 'full-156'
+			,height: 'full-155'
 			,totalRow: true
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'status_name',title: '审批状态',width:110,align:'center',templet: function(d){
-					return '<span class="check-status-color-' + d.check_status + '">『'+d.status_name+'』</span>';
-				},
-				totalRowText: '<div style="text-align:right">合计</div>'
+						return '<span class="check-status-color-' + d.check_status + '">『'+d.status_name+'』</span>';
+					},
+					totalRowText: '<div style="text-align:right">合计</div>'
 				}
-				,{field:'amount',title: '退款金额',width:110,align:'right',totalRow: function (d) {return d.TOTAL_ROW.amount}}
+				,{field:'amount',title: '退款金额',width:100,align:'right',totalRow: function (d) {return d.TOTAL_ROW.amount}}
 				,{field:'fundscate',title: '退款类型',width:90,align:'center'}
 				,{field:'account',title: '退款账户',width:136}
 				,{field:'subject',title: '退款主体',width:200}
@@ -111,8 +111,20 @@
 				,{field:'customer',title: '退款客户'}
 				,{field:'admin_name',title: '退款登记人',width:90,align:'center'}
 				,{field:'create_time', title: '登记时间',width:150,align:'center'}
-				,{field:'income',title: '关联收款'}
+				,{field:'income',title: '关联收款',minWidth:160}
 				,{field:'check_user',title: '当前审核人',width:120}
+				,{field:'status_name',title: '确认状态',width:80,align:'center',templet: function(d){
+						var html='-';
+						if(d.status==1){
+							html='<span class="red">未确认</span>';
+						}
+						if(d.status==2){
+							html='<span class="green">已确认</span>';
+						}
+						return html;
+					},
+					totalRowText: '<div style="text-align:right">合计</div>'
+				}
 				,{width:130,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet:function(d){
 						var html='<div class="layui-btn-group">';
 						var btn1='<span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详情</span>';
@@ -171,7 +183,7 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.post("/finance/api/confirm_refund", { id: data.id }, callback);
+					tool.post("/finance/api/confirm_payment", {table:'IncomeRefund', id: data.id }, callback);
 					layer.close(index);
 				});
 				return;
@@ -184,7 +196,7 @@
 							layui.pageTable.reload();
 						}
 					}
-					tool.post("/finance/api/unconfirm_refund", { id: data.id }, callback);
+					tool.post("/finance/api/unconfirm_payment", {table:'IncomeRefund', id: data.id }, callback);
 					layer.close(index);
 				});
 				return;

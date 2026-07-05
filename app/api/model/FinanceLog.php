@@ -21,6 +21,9 @@ class FinanceLog extends Model
 		'income'=>['title'=>'业务收款','table'=>'InvoiceIncome','amount_field'=>'amount','types'=>"1",'code'=>'IN'],
 		'payment'=>['title'=>'业务付款','table'=>'TicketPayment','amount_field'=>'amount','types'=>"2",'code'=>'PA'],
 		'refund'=>['title'=>'业务退款','table'=>'IncomeRefund','amount_field'=>'amount','types'=>"2",'code'=>'RE'],
+		'loan'=>['title'=>'日常借支','table'=>'Loan','amount_field'=>'cost','types'=>"2",'code'=>'LO'],
+		'loan_back'=>['title'=>'借支归还','table'=>'Loan','amount_field'=>'cost','types'=>"1",'code'=>'LC'],
+		'expense'=>['title'=>'日常报销','table'=>'Expense','amount_field'=>'pay_amount','types'=>"2",'code'=>'EX'],
 	 ];
 
 	 
@@ -102,17 +105,20 @@ class FinanceLog extends Model
     }
 
     /**
-    * 插入财务日志
+    * 插入财务流水
     */
-	public function add($name,$action_id)
+	public function add($name='',$action_id=0,$amount=0)
 	{
-		//try {
+		try {
 			$session_admin = get_config('app.session_admin');
 			$uid = \think\facade\Session::get($session_admin);
 			$array = self::$COMPILE[$name];
 			if(!empty($array)){
 				$detail = Db::name($array['table'])->where('id',$action_id)->find();
 				$field = $array['amount_field'];
+				if($amount>0){
+					$detail[$field] = $amount;
+				}
 				$res=false;
 				if($array['types']==1){
 					$res=Db::name('Account')->where('id',$detail['account_id'])->inc('amount', $detail[$field])->update();
@@ -124,12 +130,13 @@ class FinanceLog extends Model
 					'name' => $name,
 					'types' => $array['types'],
 					'action_id' => $action_id,
+					'action_time' => time(),
 					'transaction_no' => get_codeno($array['code']),
 					'amount' => $detail[$field],
 					'enterprise_id' => $detail['enterprise_id'],
 					'account_id' => $detail['account_id'],
-					'fundscate_id' => $detail['fundscate_id'],
 					'paytype_id' => $detail['paytype_id'],
+					'fundscate_id' => empty($detail['fundscate_id'])?'0':$detail['fundscate_id'],
 					'admin_id' => $uid,
 					'create_time' => time()
 				];
@@ -137,15 +144,15 @@ class FinanceLog extends Model
 					self::strict(false)->field(true)->insert($log_data);
 				}
 			}
-		//} catch(\Exception $e) {
-		//	return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];
-		//}
+		} catch(\Exception $e) {
+			return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];
+		}
     }
 	
     /**
-    * 删除财务日志
+    * 删除财务流水
     */
-	public function del($name,$action_id)
+	public function del($name='',$action_id=0,$amount=0)
 	{
 		try {
 			$session_admin = get_config('app.session_admin');
@@ -154,6 +161,9 @@ class FinanceLog extends Model
 			if(!empty($array)){
 				$detail = Db::name($array['table'])->where('id',$action_id)->find();
 				$field = $array['amount_field'];
+				if($amount>0){
+					$detail[$field] = $amount;
+				}
 				$res=false;
 				if($array['types']==1){
 					$res=Db::name('Account')->where('id',$detail['account_id'])->dec('amount', $detail[$field])->update();
