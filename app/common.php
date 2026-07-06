@@ -727,7 +727,187 @@ function get_file_thumb($id)
 }
 
 /***************************************************工具函数相关*****************************************************/
-
+//生成sql的查询条件
+function make_where($uid,$table)
+{
+    $dids_son = get_leader_departments($uid);
+	$where=[];
+	$whereOr=[];
+	$auth=0;
+	//客户
+	if($table=='Customer'){
+		$where[]=['delete_time','=',0];
+		$where[]=['discard_time','=',0];
+		$where[]=['is_clue','=',0];
+		$auth = isAuth($uid,'customer_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['belong_uid','=',$uid];
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+			$whereOr[] = ['belong_did','in',$dids_son];
+		}
+		else{
+			$where[] = ['belong_uid', '>', 0];
+		}
+	}
+	//客户跟进记录
+	if($table=='CustomerTrace'){
+		$where[]=['delete_time','=',0];
+		$where[]=['is_clue','=',0];
+		$auth = isAuth($uid,'customer_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] =['admin_id', '=', $uid];
+			$whereOr[] =['did', 'in', $dids_son];
+		}		
+	}
+	//销售机会
+	if($table=='CustomerChance'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'customer_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['belong_uid','=',$uid];
+			$whereOr[] = ['belong_did','in',$dids_son];
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_ids)")];
+		}		
+	}
+	//销售报价
+	if($table=='CustomerQuotation'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'customer_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id','=',$uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//项目
+	if($table=='Project'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'project_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['director_uid', '=', $uid];
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//任务
+	if($table=='ProjectTask'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'project_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['director_uid', '=', $uid];
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//任务工时
+	if($table=='ProjectSchedule'){
+		$where[]=['delete_time','=',0];
+		$where[] = ['tid', '>', 0];
+		$auth = isAuth($uid,'project_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//项目文档
+	if($table=='ProjectDocument'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'project_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//销售问题
+	if($table=='Problems'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'project_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//解决方案
+	if($table=='Solutions'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'project_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}	
+	//销售合同
+	if($table=='Contract'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'contract_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//采购合同
+	if($table=='Purchase'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'contract_admin','conf_2');
+		if($auth == 0){
+			$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//借支
+	if($table=='Loan'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'finance_admin','conf_1');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//报销
+	if($table=='Expense'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'finance_admin','conf_2');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//发票
+	if($table=='Invoice'|| $table=='Ticket'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'finance_admin','conf_3');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//收款
+	if($table=='InvoiceIncome'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'finance_admin','conf_4');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	//付款/退款
+	if($table=='TicketPayment' || $table=='IncomeRefund'){
+		$where[]=['delete_time','=',0];
+		$auth = isAuth($uid,'finance_admin','conf_5');
+		if($auth == 0){
+			$whereOr[] = ['admin_id', '=', $uid];
+			$whereOr[] = ['did','in',$dids_son];
+		}		
+	}
+	$map=[
+		'where'=>$where,
+		'whereOr'=>$whereOr
+	];
+    return $map;
+}
 //生成一个不会重复的字符串
 function make_token()
 {

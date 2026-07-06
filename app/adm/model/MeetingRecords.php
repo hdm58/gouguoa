@@ -36,7 +36,7 @@ class MeetingRecords extends Model
 				->paginate(['list_rows'=> $rows])
 				->each(function ($item, $key){					
 					$item['anchor'] = Db::name('Admin')->where(['id' => $item['anchor_id']])->value('name');
-					$item['meeting_date'] = empty($item['meeting_date']) ? '-' : date('Y-m-d', $item['meeting_date']);
+					$item['meeting_date_str'] = to_date($item['meeting_date'],'Y-m-d');
 					$item['did_name'] = Db::name('Department')->where(['id' => $item['did']])->value('title');
 					$item['recorder_name'] = Db::name('Admin')->where(['id' => $item['recorder_id']])->value('name');
 				});

@@ -113,6 +113,7 @@ class Trace extends BaseController
             } else {
 				$param['create_time'] = time();
                 $param['admin_id'] = $this->uid;
+                $param['did'] = $this->did;
                 $this->model->add($param);
             }	 
         }else{

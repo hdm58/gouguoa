@@ -59,43 +59,113 @@ class Index extends BaseController
             $install = true;
         }
 		$uid = $this->uid;
-		$dids = get_role_departments($uid);
+		$dids_son = get_leader_departments($uid);
         $total = [];
 		
-		$whereFinance= array();
-		$whereFinanceOr = array();
-		$whereFinance[] = ['delete_time', '=', 0];
-		$whereFinance[] = ['check_status', '=', 2];
-		$whereFinancerOr[] =['admin_id', '=', $uid];	
-		if(!empty($dids)){
-			$whereFinancerOr[] =['did', 'in', $dids];
-		}	
-		
+		$mapExpense = make_where($uid,'Expense');
+		$whereExpense = $mapExpense['where'];
+		$whereExpenseOr = $mapExpense['whereOr'];
         $total[] = array(
             'name' => '报销总数',
-            'num' => Db::name('Expense')->where($whereFinance)
-				->where(function ($query) use($whereFinancerOr) {
-						$query->whereOr($whereFinancerOr);
-					})
-				->count()
-        );
-        $total[] = array(
-            'name' => '开票总数',
-            'num' => Db::name('Invoice')->where($whereFinance)
-				->where(function ($query) use($whereFinancerOr) {
-						$query->whereOr($whereFinancerOr);
-					})
-				->count()
-        );
-        $total[] = array(
-            'name' => '收票总数',
-            'num' => Db::name('Ticket')->where($whereFinance)
-				->where(function ($query) use($whereFinancerOr) {
-						$query->whereOr($whereFinancerOr);
-					})
+            'num' => Db::name('Expense')->where($whereExpense)
+				->where(function ($query) use($whereExpenseOr) {
+				if (!empty($whereExpenseOr))
+					$query->whereOr($whereExpenseOr);
+				})
 				->count()
         );
 		
+		$mapInvoice = make_where($uid,'Invoice');
+		$whereInvoice = $mapInvoice['where'];
+		$whereInvoiceOr = $mapInvoice['whereOr'];
+        $total[] = array(
+            'name' => '开票总数',
+            'num' => Db::name('Invoice')->where($whereInvoice)
+				->where(function ($query) use($whereInvoiceOr) {
+				if (!empty($whereInvoiceOr))		
+					$query->whereOr($whereInvoiceOr);
+				})
+				->count()
+        );
+		
+		$mapTicket = make_where($uid,'Ticket');
+		$whereTicket = $mapTicket['where'];
+		$whereTicketOr = $mapTicket['whereOr'];
+        $total[] = array(
+            'name' => '收票总数',
+            'num' => Db::name('Ticket')->where($whereTicket)
+				->where(function ($query) use($whereTicketOr) {
+				if (!empty($whereTicketOr))	
+					$query->whereOr($whereTicketOr);
+				})
+				->count()
+        );
+		
+		$mapCustomer = make_where($uid,'Customer');
+		$whereCustomer = $mapCustomer['where'];
+		$whereCustomerOr = $mapCustomer['whereOr'];
+		$total[] = array(
+			'name' => '客户总数',
+			'num' => Db::name('Customer')->where($whereCustomer)
+					->where(function ($query) use($whereCustomerOr) {
+					if (!empty($whereCustomerOr))	
+						$query->whereOr($whereCustomerOr);
+					})
+					->count()
+		);
+		
+		$mapContract = make_where($uid,'Contract');
+		$whereContract = $mapContract['where'];
+		$whereContractOr = $mapContract['whereOr'];
+		$total[] = array(
+			'name' => '销售合同',
+			'num' => Db::name('Contract')->where($whereContract)
+					->where(function ($query) use($whereContractOr) {
+					if (!empty($whereContractOr))	
+						$query->whereOr($whereContractOr);
+					})
+					->count()
+		);
+
+		$mapPurchase = make_where($uid,'Purchase');
+		$wherePurchase = $mapPurchase['where'];
+		$wherePurchaseOr = $mapPurchase['whereOr'];
+		$total[] = array(
+			'name' => '采购合同',
+			'num' => Db::name('Purchase')->where($wherePurchase)
+					->where(function ($query) use($wherePurchaseOr) {
+					if (!empty($wherePurchaseOr))	
+						$query->whereOr($wherePurchaseOr);
+					})
+					->count()
+		);
+		
+		$mapProject = make_where($uid,'Project');
+		$whereProject = $mapProject['where'];
+		$whereProjectOr = $mapProject['whereOr'];
+		$total[] = array(
+			'name' => '项目总数',
+			'num' => Db::name('Project')->where($whereProject)
+					->where(function ($query) use($whereProjectOr) {
+					if (!empty($whereProjectOr))	
+						$query->whereOr($whereProjectOr);
+					})
+					->count()
+		);
+		
+		$mapProjectTask = make_where($uid,'ProjectTask');
+		$whereProjectTask = $mapProjectTask['where'];
+		$whereProjectTaskOr = $mapProjectTask['whereOr'];
+		$total[] = array(
+			'name' => '任务总数',
+			'num' => Db::name('ProjectTask')->where($whereProjectTask)
+					->where(function ($query) use($whereProjectTaskOr) {
+					if (!empty($whereProjectTaskOr))		
+						$query->whereOr($whereProjectTaskOr);
+					})
+					->count()
+		);
+
 		$whereHandle = [];
 		$whereHandle[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
 		$whereHandle[] = ['delete_time', '=', 0];
@@ -104,8 +174,8 @@ class Index extends BaseController
         $handle[] = array(
             'name' => '待审公文',
             'num' =>  Db::name('OfficialDocs')->where($whereHandle)->count(),
-            'id' => 201,
-            'url' => '/adm/official/pending',
+            'id' => 197,
+            'url' => '/adm/official/datalist',
         );
         $handle[] = array(
             'name' => '待审用章',
@@ -173,147 +243,6 @@ class Index extends BaseController
             'id' => 378,
             'url' => '/project/task/datalist',
         );
-				
-		$whereCustomer = array();
-		$whereCustomerOr = array();
-		$whereCustomer[] = ['delete_time', '=', 0];
-		$whereCustomerOr[] =['belong_uid', '=', $uid];	
-		if(!empty($dids)){
-			$whereCustomerOr[] =['belong_did', 'in', $dids];
-		}			
-		$whereCustomerOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-		
-		$customerCount = Db::name('Customer')->where($whereCustomer)
-		->where(function ($query) use($whereCustomerOr) {
-				$query->whereOr($whereCustomerOr);
-			})
-		->count();
-		$total[] = array(
-			'name' => '客户总数',
-			'num' => $customerCount,
-		);
-		
-		$whereContract = array();
-		$whereContractOr = array();		
-		$whereContract[] = ['delete_time', '=', 0];
-		$whereContractOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
-		$whereContractOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-		$whereContractOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-		$whereContractOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-		if(!empty($dids)){
-			$whereContractOr[] =['did', 'in', $dids];
-		}
-		
-		$contractCount = Db::name('Contract')->where($whereContract)
-		->where(function ($query) use($whereContractOr) {
-				$query->whereOr($whereContractOr);
-			})
-		->count();
-		$total[] = array(
-			'name' => '销售合同',
-			'num' => $contractCount,
-		);
-		
-		$purchaseCount = Db::name('Purchase')->where($whereContract)
-		->where(function ($query) use($whereContractOr) {
-				$query->whereOr($whereContractOr);
-			})
-		->count();
-		$total[] = array(
-			'name' => '采购合同',
-			'num' => $purchaseCount,
-		);
-		
-		$project_ids = Db::name('ProjectUser')->where(['uid' => $uid, 'delete_time' => 0])->column('project_id');
-		$whereProject = [];
-		$whereProject[] = ['delete_time', '=', 0];
-		$whereProject[] = ['id', 'in', $project_ids];			
-		$projectCount = Db::name('Project')->where($whereProject)->count();
-		
-		$whereOr = array();
-		$map1 = [];
-		$map2 = [];
-		$map3 = [];
-		$map4 = [];
-		$map1[] = ['admin_id', '=', $uid];
-		$map2[] = ['director_uid', '=', $uid];
-		$map3[] = ['', 'exp', Db::raw("FIND_IN_SET({$uid},assist_admin_ids)")];
-		$map4[] = ['project_id', 'in', $project_ids];
-		
-		$whereOr =[$map1,$map2,$map3];
-		$taskCount = Db::name('ProjectTask')
-			->where(function ($query) use ($whereOr) {
-				if (!empty($whereOr))
-					$query->whereOr($whereOr);
-				})
-			->where([['delete_time', '=', 0]])->count();
-		
-		$total[] = array(
-			'name' => '项目总数',
-			'num' => $projectCount,
-		);
-		$total[] = array(
-			'name' => '任务总数',
-			'num' => $taskCount,
-		);
-		
-		$todue=[];
-		$delay_day = valueAuth('contract_admin','conf_10');
-		if(empty($delay_day)){
-			$delay_day = 30;
-		}
-		$delay_time = time()+$delay_day*60*60*24;
-		$mapContract = array();
-		$mapContractOr = array();		
-		$mapContract[] = ['delete_time', '=', 0];
-		$mapContract[] = ['check_status', '=', 2];
-		$mapContract[] = ['end_time','<',$delay_time];
-		$mapContractOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
-		$mapContractOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-		if(!empty($dids)){
-			$mapContractOr[] =['did', 'in', $dids];
-		}
-		
-        $todue[] = array(
-            'name' => '快到期的销售合同',
-            'num' =>  Db::name('Contract')->where($mapContract)
-						->where(function ($query) use($mapContractOr) {
-							$query->whereOr($mapContractOr);
-						})->count(),
-            'id' => 349,
-            'url' => '/contract/contract/datalist',
-        );
-        $todue[] = array(
-            'name' => '快到期的采购合同',
-            'num' =>  Db::name('Purchase')->where($mapContract)
-						->where(function ($query) use($mapContractOr) {
-							$query->whereOr($mapContractOr);
-						})->count(),
-            'id' => 353,
-            'url' => '/contract/purchase/datalist',
-        );
-		$delay_day_b = valueAuth('project_admin','conf_10');
-		if(empty($delay_day_b)){
-			$delay_day_b = 3;
-		}
-		$delay_day_b_time = time()+$delay_day_b*60*60*24;
-		$todue[] = array(
-            'name' => '快到期的项目',
-            'num' =>  Db::name('Project')->where($whereProject)->where([['status','<',3],['end_time','<',$delay_day_b_time]])->count(),
-            'id' => 343,
-            'url' => '/project/index/datalist',
-        );
-        $todue[] = array(
-            'name' => '快到期的任务',
-            'num' =>  Db::name('ProjectTask')
-			->where(function ($query) use ($whereOr) {
-				if (!empty($whereOr))
-					$query->whereOr($whereOr);
-				})
-			->where([['delete_time', '=', 0],['status','<',3],['end_time','<',$delay_day_b_time]])->count(),
-            'id' => 378,
-            'url' => '/project/task/datalist',
-        );
 		
 		$links = Db::name('Links')->where('delete_time',0)->order('sort desc')->select();
 		
@@ -327,6 +256,66 @@ class Index extends BaseController
 				return intval($a['sort']) - intval($b['sort']);
 			});
 		}
+		
+		$todue=[];
+		$delay_day = valueAuth('contract_admin','conf_10');
+		if(empty($delay_day)){
+			$delay_day = 30;
+		}
+		$delay_time = time()+$delay_day*60*60*24;
+
+        $todue[] = array(
+            'name' => '快到期的销售合同',
+            'num' =>  Db::name('Contract')->where($whereContract)
+					->where([['check_status','=',2],['end_time','<',$delay_time]])
+					->where(function ($query) use($whereContractOr) {
+					if (!empty($whereContractOr))	
+						$query->whereOr($whereContractOr);
+					})->count(),
+            'id' => 349,
+            'url' => '/contract/contract/datalist',
+        );
+        $todue[] = array(
+            'name' => '快到期的采购合同',
+            'num' =>  Db::name('Purchase')->where($wherePurchase)
+						->where([['check_status','=',2],['end_time','<',$delay_time]])
+						->where(function ($query) use($wherePurchaseOr) {
+							$query->whereOr($wherePurchaseOr);
+						})->count(),
+            'id' => 353,
+            'url' => '/contract/purchase/datalist',
+        );
+		$delay_day_b = valueAuth('project_admin','conf_10');
+		if(empty($delay_day_b)){
+			$delay_day_b = 3;
+		}
+		$delay_day_b_time = time()+$delay_day_b*60*60*24;
+		$todue[] = array(
+            'name' => '快到期的项目',
+            'num' =>  Db::name('Project')->where($whereProject)->where($whereProject)
+					->where([['status','<',3],['end_time','<',$delay_day_b_time]])
+					->where(function ($query) use($whereProjectOr) {
+					if (!empty($whereProjectOr))
+						$query->whereOr($whereProjectOr);
+					})
+					->count(),
+            'id' => 343,
+            'url' => '/project/index/datalist',
+        );
+        $todue[] = array(
+            'name' => '快到期的任务',
+            'num' =>  Db::name('ProjectTask')
+			->where($whereProjectTask)
+			->where([['status','<',3],['end_time','<',$delay_day_b_time]])
+			->where(function ($query) use ($whereProjectTaskOr) {
+				if (!empty($whereProjectTaskOr))
+					$query->whereOr($whereProjectTaskOr);
+				})
+			->count(),
+            'id' => 378,
+            'url' => '/project/task/datalist',
+        );
+		
 		View::assign('layouts',$layouts_array);
         View::assign('total', $total);
         View::assign('handle', $handle);

@@ -313,6 +313,7 @@ class Meeting extends BaseController
 			$where=[];
 			$whereOr = [];
 			$uid = $this->uid;
+			$auth = isAuth($this->uid,'office_admin','conf_1');
             if (!empty($param['keywords'])) {
                 $where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
             }
@@ -324,6 +325,9 @@ class Meeting extends BaseController
                 $where[] = ['meeting_date', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
             }
             $where[] = ['delete_time', '=', 0];
+			if($auth == 0){
+				$where[] = ['admin_id', '=', $uid];
+			}
 			$list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         } else {

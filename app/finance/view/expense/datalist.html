@@ -135,17 +135,17 @@
 						field: 'check_user',
 						title: '当前审核人'
 					},{
-						field: 'pay_status',
+						field: 'status',
 						title: '打款状态',
 						align: 'center',
 						width: 80,
 						templet:function(d){
 							var html='-';
-							if(d.status==1){
+							if(d.check_status==2){
 								html = '<span class="red">未打款</span>';
-							}
-							if(d.status==2){
-								html = '<span class="green">已打款</span>';
+								if(d.status==2){
+									html = '<span class="green">已打款</span>';
+								}
 							}
 							return html;
 						}
@@ -153,7 +153,7 @@
 						field: 'confirm_admin',
 						title: '打款/确认人',
 						align: 'center',
-						width: 80
+						width: 100
 					},{
 						field: 'confirm_time',
 						title: '打款/确认时间',

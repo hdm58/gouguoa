@@ -6,7 +6,7 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">会议时间<font>*</font></td>
-			<td><input type="text" name="meeting_date" value="{$detail.meeting_date|date='Y-m-d H:i:s'}" lay-verify="required" readonly lay-reqText="请选择会议时间" placeholder="请选择会议时间" class="layui-input tool-time" data-type="datetime" data-format ="yyyy-MM-dd HH:mm"></td>
+			<td><input type="text" name="meeting_date" value="{$detail.meeting_date|date='Y-m-d H:i'}" lay-verify="required" readonly lay-reqText="请选择会议时间" placeholder="请选择会议时间" class="layui-input tool-time" data-type="datetime" data-format ="yyyy-MM-dd HH:mm"></td>
 			<td class="layui-td-gray">主持人<font>*</font></td>
 			<td>
 				<input type="text" name="anchor" value="{$detail.anchor_name}" lay-verify="required" readonly lay-reqText="请选择主持人" placeholder="请选择主持人" class="layui-input picker-admin">

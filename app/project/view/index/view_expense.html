@@ -22,25 +22,28 @@ function project_expense(){
 		url: "/finance/api/get_expense",
 		where:{'project_id':project_id},
 		page: true, //开启分页
-		limit: 20,
+		limit: 50,
+		totalRow: true,
 		cols: [[
 				{
+					field:'check_status',title: '审批状态',width:110, align:'center', templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						return html;
+					}
+				},{
+					field: 'admin_name',
+					title: '报销员工',
+					align: 'center',
+					width: 90,
+					totalRow: '合计'
+				},{
 					field: 'cost',
 					title: '报销金额(元)',
 					align: 'right',
 					width: 100,
-				},{
-					field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
-						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
-						return html;
-					}
+					totalRow: '{{= d.TOTAL_NUMS.toFixed(2) }}'
 				},
 				{
-					field: 'admin_name',
-					title: '报销员工',
-					align: 'center',
-					width: 90
-				},{
 					field: 'code',
 					title: '报销凭证编号',
 					align: 'center',
@@ -65,31 +68,28 @@ function project_expense(){
 					title: '当前审核人',
 					minWidth: 120
 				},{
-					field: 'pay_status',
+					field: 'status',
 					title: '打款状态',
 					align: 'center',
-					width: 90,
+					width: 80,
 					templet:function(d){
-						var html='';
+						var html='-';
 						if(d.check_status==2){
-							html = '<span class="red">『未打款』</span>';
-							if(d.pay_status==1){
-								html = '<span class="green">『已打款』</span>';
+							html = '<span class="red">未打款</span>';
+							if(d.status==2){
+								html = '<span class="green">已打款</span>';
 							}
-						}
-						else{
-							html='-';
 						}
 						return html;
 					}
 				},{
-					field: 'pay_name',
-					title: '打款人',
+					field: 'confirm_admin',
+					title: '打款/确认人',
 					align: 'center',
-					width: 80
+					width: 100
 				},{
-					field: 'pay_time',
-					title: '打款时间',
+					field: 'confirm_time',
+					title: '打款/确认时间',
 					align: 'center',
 					width: 150
 				},{
