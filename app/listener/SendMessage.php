@@ -38,8 +38,8 @@ class SendMessage
 				$data['action_id'] = 0;
 			}
 			foreach ($data as $key => $val) {
-				$title = str_replace('{' . $key . '}', $val, $title);
-				$content = str_replace('{' . $key . '}', $val, $content);
+				$title = str_replace('{' . $key . '}', (string)$val, $title);
+				$content = str_replace('{' . $key . '}', (string)$val, $content);
 			}
 			$wxmsg_link ='';
 			if(!empty($msg_link)){
