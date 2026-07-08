@@ -170,9 +170,9 @@ class Plan extends BaseController
             $param['admin_id'] = $admin_id;
             $param['did'] = get_admin($admin_id)['did'];
             $param['create_time'] = time();
-            $addid = Db::name('Plan')->strict(false)->field(true)->insertGetId($param);
-            if ($addid > 0) {
-                add_log('add', $addid, $param);
+            $insertid = Db::name('Plan')->strict(false)->field(true)->insertGetId($param);
+            if ($insertid > 0) {
+                add_log('add', $insertid, $param);
                 return to_assign(0, '操作成功');
             } else {
                 return to_assign(0, '操作失败');

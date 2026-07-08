@@ -9,7 +9,7 @@
 			<td><input type="text" name="title" lay-verify="required" placeholder="请输入问题主题" lay-reqText="请输入问题主题" class="layui-input" value="{$detail.title|default=''}"></td>
 			<td class="layui-td-gray">关联客户<font>*</font></td>
 			<td>
-				<input type="text" name="customer" lay-verify="required" readonly placeholder="请选择" lay-reqText="请完善关联的客户" class="layui-input picker-oa" data-types="customer" value="{$detail.customer|default=''}">
+				<input type="text" name="customer" lay-verify="required" readonly placeholder="请选择" lay-reqText="请完善关联的客户" class="layui-input picker-oa" data-field="name" data-types="customer" value="{$detail.customer|default=''}">
 				<input type="hidden" name="customer_id" value="{$detail.customer_id|default=0}">
 			</td>
 		</tr>

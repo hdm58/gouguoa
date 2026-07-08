@@ -66,6 +66,42 @@ class Comment extends BaseController
             $insertId = CommentModel::strict(false)->field(true)->insertGetId($param);
 			if ($insertId) {
 				add_log('add', $insertId, $param,'评论');
+				if(!empty($param['to_uids'])){
+					if($param['module'] == 'project'){
+						$datail = Db::name('Project')->where(['id'=>$param['topic_id']])->find();
+						$director_name = Db::name('Admin')->where(['id'=>$datail['director_uid']])->value('name');
+						$msg=[
+							'from_uid'=>$param['admin_id'],//发送人
+							'to_uids'=>$param['to_uids'],//接收人    
+							'template_id'=>'project',//消息模板ID
+							'content'=>[ //消息内容
+								'title'=>'项目评论',
+								'text'=>'评论内容：'.$param['content'],
+								'name'=>$datail['name'],
+								'director_name'=>$director_name,
+								'action_id'=>$param['topic_id']
+							]
+						];
+						event('SendMessage',$msg);
+					}
+					if($param['module'] == 'task'){
+						$datail = Db::name('ProjectTask')->where(['id'=>$param['topic_id']])->find();
+						$director_name = Db::name('Admin')->where(['id'=>$datail['director_uid']])->value('name');
+						$msg=[
+							'from_uid'=>$param['admin_id'],//发送人
+							'to_uids'=>$param['to_uids'],//接收人    
+							'template_id'=>$param['module'],//消息模板ID
+							'content'=>[ //消息内容
+								'title'=>'任务评论',
+								'text'=>'评论内容：'.$param['content'],
+								'name'=>$datail['title'],
+								'director_name'=>$director_name,
+								'action_id'=>$param['topic_id']
+							]
+						];
+						event('SendMessage',$msg);
+					}
+				}
 				return to_assign();
 			}			
 		}

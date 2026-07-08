@@ -89,6 +89,19 @@ class Problems extends Model
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
 			add_log('add', $insertId, $param);
+			if(!empty($param['director_id'])){
+				$msg=[
+					'from_uid'=>$param['admin_id'],//发送人
+					'to_uids'=>$param['director_id'],//接收人    
+					'template_id'=>'problems',//消息模板ID
+					'content'=>[ //消息内容
+						'title'=>$param['title'],
+						'create_time'=>date('Y-m-d H:i:s'),
+						'action_id'=>$insertId
+					]
+				];
+				event('SendMessage',$msg);
+			}
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
         }

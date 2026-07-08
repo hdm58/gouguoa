@@ -144,7 +144,20 @@ class Project extends Model
 			add_log('add', $insertId, $param);
 			$log=new EditLog();
 			$log->add('Project',$insertId);
-			set_project_uids($insertId);
+			$to_uids = set_project_uids($insertId);
+			$msg=[
+				'from_uid'=>$param['admin_id'],//发送人
+				'to_uids'=>$to_uids,//接收人    
+				'template_id'=>'project',//消息模板ID
+				'content'=>[ //消息内容
+					'title'=>'项目创建成功',
+					'text'=>'有一个您参与的项目创建成功。',
+					'name'=>$param['name'],
+					'director_name'=>$param['director_name'],
+					'action_id'=>$insertId
+				]
+			];
+			event('SendMessage',$msg);
 			// 提交事务
 			Db::commit();
         } catch(\Exception $e) {

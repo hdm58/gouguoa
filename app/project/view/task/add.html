@@ -33,9 +33,9 @@
 			<td><input type="text" name="end_time" readonly lay-verify="required" lay-reqText="请选择预计结束日期" placeholder="请选择时间" class="layui-input tool-time" value=""></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">负责人</td>
+			<td class="layui-td-gray">负责人<span style="color: red">*</span></td>
 			<td>
-				<input type="text" name="director_name" placeholder="请选择" readonly class="layui-input picker-admin" value="">
+				<input type="text" name="director_name" lay-verify="required" lay-reqText="请完善负责人" placeholder="请选择" readonly class="layui-input picker-admin" value="">
 				<input type="hidden" name="director_uid" readonly value="0">
 			</td>
 			{empty name="$project_id"}

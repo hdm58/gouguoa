@@ -1251,6 +1251,10 @@ INSERT INTO `oa_template` VALUES (24, '业务付款通知', 'ticket_payment', 1,
 INSERT INTO `oa_template` VALUES (25, '业务退款通知', 'refund_payment', 1, 0, '', '/finance/refund/view/id/{action_id}', '您有一个『{title}』新通知，请及时查看', '您有一个『{title}』新通知，状态：{status}，金额：{amount}。', '', '', '', '', '', '', '', 1, 1, 1783050957, 1783051610, 0);
 INSERT INTO `oa_template` VALUES (26, '业务到账通知', 'invoice_income', 1, 0, '', '/finance/income/view/id/{action_id}', '您有一个『{title}』新通知，请及时查看', '您有一个『{title}』新通知，状态：{status}，金额：{amount}。', '', '', '', '', '', '', '', 1, 1, 1783053471, 0, 0);
 INSERT INTO `oa_template` VALUES (27, '借支还款通知', 'loan_back', 1, 0, '', '/finance/loan/view/id/{action_id}', '您有一个『{title}』新通知，请及时查看', '您有一个『{title}』新通知，状态：还款确认，金额：{amount}。', '', '', '', '', '', '', '', 1, 1, 1783167711, 0, 0);
+INSERT INTO `oa_template` VALUES (28, '会议记录通知', 'meeting_records', 1, 0, '', '/adm/meeting/records_view/id/{action_id}', '{from_user}给您发了一份『会议记录』，请及时查看', '您有一份新的会议记录待查看。\n会议日期：{meeting_date}\n会议主题：{title}', '', '', '', '', '', '', '', 1, 1, 1783437950, 1783438952, 0);
+INSERT INTO `oa_template` VALUES (29, '项目通知', 'project', 1, 0, '', '/project/index/view/id/{action_id}', '您有一个{title}通知，请及时查看', '{text}\n项目名称：{name}\n项目负责人：{director_name}', '', '', '', '', '', '', '', 1, 1, 1783439468, 1783495568, 0);
+INSERT INTO `oa_template` VALUES (30, '任务通知', 'task', 1, 0, '', '/project/task/view/id/{action_id}', '您有一个{title}通知，请及时查看', '{text}\n任务标题：{name}\n任务负责人：{director_name}', '', '', '', '', '', '', '', 1, 1, 1783482937, 1783495573, 0);
+INSERT INTO `oa_template` VALUES (31, '售后问题指派通知', 'problems', 1, 0, '', '/service/problems/view/id/{action_id}', '您有一个售后问题指派通知，请及时查看', '有一个新的售后问题指派给你。\n问题标题：{title}\n创建时间：{create_time}', '', '', '', '', '', '', '', 1, 1, 1783496789, 1783517290, 0);
 
 -- ----------------------------
 -- Table structure for oa_industry

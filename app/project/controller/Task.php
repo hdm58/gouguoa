@@ -160,7 +160,23 @@ class Task extends BaseController
 					$log=new EditLog();
 					$log->add('Task',$insertId);
 					//发消息
-					//event('SendMessage',$msg);
+					$to_uids = $param['director_uid'];
+					if(!empty($param['assist_admin_ids'])){
+						$to_uids = $to_uids.','.$param['assist_admin_ids'];
+					}
+					$msg=[
+						'from_uid'=>$param['admin_id'],//发送人
+						'to_uids'=>$to_uids,//接收人    
+						'template_id'=>'task',//消息模板ID
+						'content'=>[ //消息内容
+							'title'=>'任务创建成功',
+							'text'=>'有一个您参与的任务创建成功。',
+							'name'=>$param['title'],
+							'director_name'=>$param['director_name'],
+							'action_id'=>$insertId
+						]
+					];
+					event('SendMessage',$msg);
                 }
                 return to_assign();
             }

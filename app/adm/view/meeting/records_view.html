@@ -38,10 +38,12 @@
 			<td class="layui-td-gray">参会人员签字</td>
 			<td colspan="5">{$detail.sign_names}</td>
 		</tr>
+		{notempty name="$detail.share_names"}
 		<tr>
 			<td class="layui-td-gray">共享给谁</td>
 			<td colspan="5">{$detail.share_names}</td>
 		</tr>
+		{/notempty}
 		<tr>
 			<td class="layui-td-gray" style="vertical-align:top;">备注信息</td>
 			<td colspan="5">{$detail.remarks|default=''}</td>

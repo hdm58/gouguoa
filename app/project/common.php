@@ -199,4 +199,5 @@ function set_project_uids($project_id)
 	$uniqueArray = array_unique($new_array);
 	$str = implode(',' , $uniqueArray);
     Db::name('Project')->where(['id'=>$project_id])->update(['uids'=>$str]);
+	return $str;
 }
