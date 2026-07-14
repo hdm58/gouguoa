@@ -25,7 +25,6 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const account_id = {$account_id};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
 		var form = layui.form,table = layui.tablePlus,tool=layui.tool, laydatePlus = layui.laydatePlus;
@@ -36,8 +35,7 @@
 			elem: '#test',
 			title: '收入流水',
 			toolbar: '#toolbarDemo',
-			url: "/finance/account/income",
-			where:{account_id:account_id},
+			url: "/analysis/finance/incomelist", //数据接口	
 			cellMinWidth: 80,			
 			page: true, //开启分页
 			limit: 20,

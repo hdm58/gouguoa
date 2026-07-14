@@ -32,72 +32,26 @@ class FinanceLog extends Model
     * @param $where
     * @param $param
     */
-    public function datalist($param=[])
+    public function datalist($param=[],$where=[])
     {
-        $page = empty($param['page']) ?1 : intval($param['page']);;
         $rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$name=$param['name'];
-		$action_id=$param['action_id'];
         try {
-            $list = self::field('a.*, u.name as admin_name,u.thumb')
-			->where(['a.name'=>$name,'a.action_id'=>$action_id])
-			->alias('a')
-			->join('Admin u','u.id = a.admin_id')
-			->order('a.create_time desc')
-			->page($page, $rows)
-            ->select()->toArray();
-			
-			$field = self::$COMPILE[$name];
-			foreach ($list as $k => &$v) {
-				$v['action'] = '修改';
-				$v['times'] = time_trans($v['create_time']);
-				$v['create_time'] = to_date($v['create_time']);
-				if($v['field'] == 'new'){
-					continue;
+            $list = self::where($where)
+			->order('create_time desc')
+			->paginate(['list_rows'=> $rows])
+            ->each(function ($item, $key){
+ 				$types = self::$COMPILE[$item->name];
+				$item->title = $types['title'];
+				$item->enterprise = Db::name('Enterprise')->where('id','=',$item->enterprise_id)->value('title');
+				$item->account = Db::name('Account')->where('id','=',$item->account_id)->value('title');
+				$item->paytype = Db::name('PayType')->where('id','=',$item->paytype_id)->value('title');
+				$item->fundscate='-';
+				if($item->fundscate_id>0){
+					$item->fundscate = Db::name('FundsCate')->where('id','=',$item->fundscate_id)->value('title');
 				}
-				$item = $field[$v['field']];
-				if(isset($item)){
-					$v['field_name'] = $item['title'];
-					if(!empty($item['action'])){
-						$v['action'] = $item['action'];
-					}
-					if(!empty($item['table']) && !empty($item['table_field'])){
-						if(empty($item['table_more'])){
-							$v['old_content'] = Db::name($item['table'])->where('id',$v['old_content'])->value($item['table_field']);
-							$v['new_content'] = Db::name($item['table'])->where('id',$v['new_content'])->value($item['table_field']);
-						}else{
-							$old_content = Db::name($item['table'])->where('id','in',$v['old_content'])->column($item['table_field']);
-							$new_content = Db::name($item['table'])->where('id','in',$v['new_content'])->column($item['table_field']);
-							if(!empty($old_content)){
-								$v['old_content'] = implode(',',$old_content);
-							}
-							if(!empty($new_content)){
-								$v['new_content'] = implode(',',$new_content);
-							}
-						}						
-					}
-					if(!empty($item['enumerate'])){
-						$v['old_content'] = $item['enumerate'][$v['old_content']];
-						$v['new_content'] = $item['enumerate'][$v['new_content']];
-					}
-					if(!empty($item['time'])){
-						$v['old_content'] = to_date($v['old_content'],$item['time']);
-						$v['new_content'] = to_date($v['new_content'],$item['time']);
-					}
-					if ($v['old_content'] == '' || $v['old_content'] == 0 || $v['old_content'] == null) {
-						$v['old_content'] = '未设置';
-					}
-					else{
-						$v['old_content'] = $v['old_content'].$item['suffix'];
-					}
-					if ($v['new_content'] == '' || $v['new_content'] == 0 || $v['new_content'] == null) {
-						$v['new_content'] = '未设置';
-					}
-					else{
-						$v['new_content'] = $v['new_content'].$item['suffix'];
-					}
-				}
-			}
+				$item->admin_name = Db::name('Admin')->where('id','=',$item->admin_id)->value('name');
+				$item->create_time = to_date($item->create_time); 
+			});
 			return $list;
         } catch(\Exception $e) {
             return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];

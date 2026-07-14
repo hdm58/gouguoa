@@ -469,7 +469,7 @@ div.layui-table-main::-webkit-scrollbar-thumb:active{background-color:rgba(0,0,0
 .log-timeline .open-a{margin:0 4px;}
 .log-item i{font-weight:800; color:#323232}
 .log-content strong{margin:0 4px; color:#323232}
-.layui-timeline-item{color:#c9c9c9; padding-bottom:8px}
+.log-timeline .layui-timeline-item{color:#c9c9c9; padding-bottom:8px}
 .layui-timeline-item.delete_0{color:#646464;}
 /*评论*/
 .comment-input .comment-image{width:40px; height:40px; border-radius:50%}

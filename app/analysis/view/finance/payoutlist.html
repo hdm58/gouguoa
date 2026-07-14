@@ -16,7 +16,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
 <div class="layui-btn-container">
-    <h3 class="h3-title" style="height:32px;">收入流水</h3>
+    <h3 class="h3-title" style="height:32px;">支出流水</h3>
 </div>
 </script>
 {/block}
@@ -25,7 +25,6 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	const account_id = {$account_id};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
 		var form = layui.form,table = layui.tablePlus,tool=layui.tool, laydatePlus = layui.laydatePlus;
@@ -34,10 +33,9 @@
 
 		layui.pageTable = table.render({
 			elem: '#test',
-			title: '收入流水',
+			title: '支出流水',
 			toolbar: '#toolbarDemo',
-			url: "/finance/account/income",
-			where:{account_id:account_id},
+			url: "/analysis/finance/payoutlist", //数据接口	
 			cellMinWidth: 80,			
 			page: true, //开启分页
 			limit: 20,
@@ -60,12 +58,12 @@
 						field: 'amount',
 						title: '金额(元)',
 						align: 'right',
-						style:'color:#1e9fff',
+						style:'color:#ff5722',
 						width: 120,
 						totalRow: function (d) {return d.TOTAL_ROW.amount}
 					},{
 						field: 'title',
-						title: '收入类型',
+						title: '支出类型',
 						align: 'center',
 						width: 100
 					},{
@@ -79,7 +77,7 @@
 						minWidth: 180
 					},{
 						field: 'account',
-						title: '收入账户',
+						title: '支出账户',
 						width: 180
 					},{
 						field: 'paytype',

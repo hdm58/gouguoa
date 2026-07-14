@@ -18,7 +18,7 @@ namespace app\finance\controller;
 use app\base\BaseController;
 use app\finance\model\Account as AccountModel;
 use app\finance\model\FinanceInjection as FinanceInjectionModel;
-use app\finance\model\FinanceLog as FinanceLogModel;
+use app\api\model\FinanceLog;
 use app\finance\validate\AccountValidate;
 use app\finance\validate\InjectionValidate;
 use think\exception\ValidateException;
@@ -222,15 +222,17 @@ class Account extends BaseController
     {
 		$param = get_params();
         if (request()->isAjax()) {
-			$model = new FinanceLogModel();
 			$where=[];
 			$where[]=['delete_time','=',0];
 			$where[]=['types','=',1];
 			if(!empty($param['account_id'])){
 				$where[]=['account_id','=',$param['account_id']];
 			}
+			$model = new FinanceLog();
             $list = $model->datalist($param,$where);
-            return table_assign(0, '', $list);
+            $amount = $model->where($where)->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+			return table_assign(0, '', $list,$totalRow);
         }
         else{
 			View::assign('account_id', $param['account_id']);
@@ -245,15 +247,17 @@ class Account extends BaseController
     {
 		$param = get_params();
         if (request()->isAjax()) {
-			$model = new FinanceLogModel();
 			$where=[];
 			$where[]=['delete_time','=',0];
 			$where[]=['types','=',2];
 			if(!empty($param['account_id'])){
 				$where[]=['account_id','=',$param['account_id']];
 			}
+			$model = new FinanceLog();
             $list = $model->datalist($param,$where);
-            return table_assign(0, '', $list);
+			$amount = $model->where($where)->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         }
         else{
 			View::assign('account_id', $param['account_id']);

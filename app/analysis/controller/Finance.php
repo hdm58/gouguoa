@@ -17,6 +17,7 @@ namespace app\analysis\controller;
 
 use app\base\BaseController;
 use think\exception\ValidateException;
+use app\api\model\FinanceLog;
 use think\facade\Db;
 use think\facade\View;
 
@@ -44,6 +45,58 @@ class Finance extends BaseController
 		$param = get_params();	
         if (request()->isAjax()) {
  
+        }else{			
+			return view();
+		}
+    }
+	
+    /**
+    * 收入流水
+    */
+    public function incomelist()
+    {
+		$param = get_params();	
+        if (request()->isAjax()) {
+			$where=[];
+			$where[]=['delete_time','=',0];
+			$where[]=['types','=',1];
+			if(!empty($param['create_time'])){
+				if (!empty($param['create_time'])) {
+					$create_time =explode('~', $param['create_time']);
+					$where[] = ['create_time', 'between',[strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
+				}
+			}
+			$model = new FinanceLog();
+			$list = $model->datalist($param,$where);
+			$amount = $model->where($where)->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
+        }else{			
+			return view();
+		}
+    }
+
+	/**
+    * 收入流水
+    */
+    public function payoutlist()
+    {
+		$param = get_params();	
+        if (request()->isAjax()) {
+			$where=[];
+			$where[]=['delete_time','=',0];
+			$where[]=['types','=',2];
+			if(!empty($param['create_time'])){
+				if (!empty($param['create_time'])) {
+					$create_time =explode('~', $param['create_time']);
+					$where[] = ['create_time', 'between',[strtotime(urldecode($create_time[0])),strtotime(urldecode($create_time[1].' 23:59:59'))]];
+				}
+			}
+			$model = new FinanceLog();
+			$list = $model->datalist($param,$where);
+			$amount = $model->where($where)->sum('amount');
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         }else{			
 			return view();
 		}
