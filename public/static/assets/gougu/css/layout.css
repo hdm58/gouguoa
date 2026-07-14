@@ -152,12 +152,12 @@ body{color:#323232}
 .page-tabs .layui-icon-next {right: 40px}
 .page-tabs .layui-icon-down {right: 0}
 .page-tabs .layui-tab {margin: 0; overflow: hidden}
-.page-tabs .layui-tab-title {height: 42px;border: none}
+.page-tabs .layui-tab-title {height: 43px;border: none}
 .page-tabs .layui-tab-title i{font-size:18px; font-weight:600}
 
-.page-tabs .layui-tab-title li { min-width: 0; line-height: 42px; max-width: 160px; text-overflow: ellipsis; padding-left:12px; padding-right: 32px;overflow: hidden;border-right: 1px solid #eeeeee;vertical-align: top}
+.page-tabs .layui-tab-title li { min-width: 0;height: 43px;line-height: 45px; max-width: 160px; text-overflow: ellipsis; padding-left:12px; padding-right: 32px;overflow: hidden;border-right: 1px solid #eeeeee;}
 .page-tabs .layui-tab-title li:first-child {padding-right: 15px}
-.page-tabs .layui-tab-title li .layui-tab-close { position: absolute;right: 8px; top: 50%;margin: -7px 0 0; width: 16px; height: 16px;line-height: 16px;border-radius: 50%;font-size: 12px}
+.page-tabs .layui-tab-title li .layui-tab-close { position: absolute;right: 8px; top: 50%;margin: -9px 0 0; width: 20px; height:20px;line-height: 20px;border-radius: 50%;font-size: 14px}
 .page-tabs .layui-tab-title li:after { content: ''; position: absolute; top: 0; left: 0;width: 0; height: 3px; border-radius: 0; background-color: #1A75FF;
     transition: all .3s;
     -webkit-transition: all .3s
