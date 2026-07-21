@@ -1,0 +1,101 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">员工「{$detail.month_time}」工资详细</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.name|default=''}</td>
+			<td class="layui-td-gray">部门</td>
+			<td>{$detail.department|default=''}</td>
+			<td class="layui-td-gray">职位</td>
+			<td>{$detail.position|default=''}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>工资奖金</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">基本工资</td>
+			<td>{$detail.salary_basic|default=''}</td>
+			<td class="layui-td-gray">岗位工资</td>
+			<td>{$detail.salary_position|default=''}</td>
+			<td class="layui-td-gray">绩效工资</td>
+			<td>{$detail.salary_performance|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">全勤奖金</td>
+			<td>{$detail.salary_quanqin|default=''}</td>
+			<td class="layui-td-gray">加班工资</td>
+			<td>{$detail.salary_overwork|default=''}</td>
+			<td class="layui-td-gray">用餐补贴</td>
+			<td>{$detail.salary_meal|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">话费补贴</td>
+			<td>{$detail.salary_phone|default=''}</td>
+			<td class="layui-td-gray">交通补贴</td>
+			<td>{$detail.salary_traffic|default=''}</td>
+			<td class="layui-td-gray">住房补贴</td>
+			<td>{$detail.salary_house|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">节假福利</td>
+			<td>{$detail.salary_fuli|default=''}</td>
+			<td class="layui-td-gray">保竞津贴</td>
+			<td>{$detail.salary_protecting|default=''}</td>
+			<td class="layui-td-gray">奖金</td>
+			<td>{$detail.salary_bonus|default=''}</td>
+		</tr>		
+		<tr>
+			<td colspan="6"><strong>抵扣款项</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">迟到扣除</td>
+			<td>{$detail.deduct_belate|default=''}</td>
+			<td class="layui-td-gray">事假扣除</td>
+			<td>{$detail.deduct_leave|default=''}</td>
+			<td class="layui-td-gray">旷工扣除</td>
+			<td>{$detail.deduct_absenteeism|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">个税</td>
+			<td>{$detail.deduct_tax|default=''}</td>
+			<td class="layui-td-gray">社保</td>
+			<td>{$detail.deduct_social|default=''}</td>
+			<td class="layui-td-gray">公积金</td>
+			<td>{$detail.deduct_gongjijin|default=''}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>款项合计</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应领工资</td>
+			<td><span class="total_payable green">{$detail.total_payable|default=''}</span></td>
+			<td class="layui-td-gray">应扣工资</td>
+			<td><span class="total_deduction red">{$detail.total_deduction|default=''}</span></td>
+			<td class="layui-td-gray">代扣代缴</td>
+			<td><span class="total_statutory yellow">{$detail.total_statutory|default=''}</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">实发工资</td>
+			<td><strong class="total_payment blue">{$detail.total_payment|default=''}</strong></td>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">{$detail.remark|default='-'}</td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool,form = layui.form;
+		
+	}
+</script>
+{/block}
+<!-- /脚本 -->

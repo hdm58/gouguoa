@@ -17,7 +17,7 @@ layui.define(function (exports) {
 			</div>\
 		</div>'
 		},
-		side: function (url, width) {
+		side: function (url, width='') {
 			let that = this;
 			if (that.loading == true) {
 				return false;
@@ -32,6 +32,9 @@ layui.define(function (exports) {
 			}
 			if(window.innerWidth<=1000){
 				sideWidth = '95%';
+			}
+			if(width!=''){
+				sideWidth = width;
 			}
 			layer.open({
 				type: 2,
@@ -62,7 +65,7 @@ layui.define(function (exports) {
 				}
 			})
 		},
-		box: function (url,title="内容", width=720,height=405) {
+		box: function (url,title="内容", width=720,height=480,maxmin=true,closeBtn=1) {
 			let that = this;
 			if (that.loading == true) {
 				return false;
@@ -73,8 +76,11 @@ layui.define(function (exports) {
 				title: title,
 				content: url,
 				area: [width+'px', height+'px'],
-				maxmin: true,
+				maxmin: maxmin,
+				closeBtn: closeBtn,
 				end: function(){
+					$(parent.$('.express-close')).removeClass('parent-colse');
+					$('body').removeClass('right-open');
 					if (layui.pageTable && layui.pageTable.resize) {
 						layui.pageTable.resize();
 					}
@@ -86,6 +92,9 @@ layui.define(function (exports) {
 					obj.on('click','.express-close', function () {					
 						layer.close(index);
 					})
+					setTimeout(function(){
+						$(parent.$('.express-close')).addClass('parent-colse');
+					},500)
 				}
 			})
 		},

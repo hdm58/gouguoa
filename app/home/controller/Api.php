@@ -110,6 +110,88 @@ class api extends BaseController
         return to_assign(0, '', ['data_first' => hour_document($data_first), 'data_second' => hour_document($data_second)]);
     }
 	
+	
+	//获取最近一年操作数据
+	public function get_year_data()
+    {
+		$year = date('Y');
+		$lastyear = $year-1;
+		$month = date('m');
+		
+        $first_time = time();
+        $second_time = $first_time - 86400;
+		
+        $begin_first = strtotime(date('Y-m-d', $first_time) . " 00:00:00");
+        $end_first = strtotime(date('Y-m-d', $first_time) . " 23:59:59");
+		
+        $begin_second = strtotime(date('Y-m-d', $second_time) . " 00:00:00");
+        $end_second = strtotime(date('Y-m-d', $second_time) . " 23:59:59");
+		
+		$dataMonth = [];
+		$dataNum = [];
+		for ($i = $month+1; $i <= 12; $i++) {
+			$monthStr = sprintf("%02d", $i);
+			$dataMonth[] = "{$lastyear}-{$monthStr}";
+			$month_start=strtotime("{$lastyear}-{$monthStr}-01");			
+			$month_end=strtotime(date('Y-m-t',$month_start).' 23:59:59');
+			$num = Db::name('AdminLogCount')->whereTime('date', 'between',[$month_start,$month_end])->sum('num');
+			$dataNum[] = $num;
+		}
+		
+		for ($a = 1; $a <= $month; $a++) {
+			$monthStr = sprintf("%02d", $a);
+			$dataMonth[] = "{$year}-{$monthStr}";
+			$month_start=strtotime("{$year}-{$monthStr}-01");			
+			$month_end=strtotime(date('Y-m-t',$month_start).' 23:59:59');
+			$num = Db::name('AdminLogCount')->whereTime('date', 'between',[$month_start,$month_end])->sum('num');
+			if($a == $month){
+				$now = Db::name('AdminLog')->field('create_time')->whereTime('create_time', 'between',[$begin_first,$end_first])->count();
+				$num = $num+$now;
+			}
+			$dataNum[] = $num;
+		}
+		$result = [
+			'title' => [
+				'text' => '近一年员工月度动态'
+			],
+			'legend' => [
+				'年度动态',
+			],
+			'xaxis' => $dataMonth,
+			'yaxis' => [
+				[
+					'type' => 'value',
+					'name' => '',
+					'interval' => '10',
+					'axisLabel' => [
+						'formatter' => '{value}'
+					]
+				]
+			],
+			'series' => [
+				[
+					'name' => '员工年度动态',
+					'type' => 'bar',
+					'barWidth' => 50,
+					'itemStyle' => [
+						'normal' => [
+							'label' => [
+								'show' => true,
+								'position' => 'top',
+								'textStyle' => [
+									'color' => 'black',
+									'fontSize' => 14
+								]
+							]
+						]
+					],
+					'data' => $dataNum
+				]
+			]
+		];
+		return to_assign(0, '', $result);
+    }
+	
     //获取访问记录
     public function get_view_data()
     {

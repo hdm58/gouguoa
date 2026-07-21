@@ -6,7 +6,7 @@
 -moz-user-select: none; /*火狐*/
 -webkit-user-select: none; /*webkit浏览器*/
 }
-.fc .fc-toolbar.fc-header-toolbar{margin-bottom:0;border:1px solid #eeeeee; border-bottom:none;padding:15px 12px;}
+.fc .fc-toolbar.fc-header-toolbar{margin-bottom:0;border:1px solid #eeeeee; border-bottom:none;padding:10px 12px;}
 .fc-col-header{background-color:#fafafa;}
 .fc .fc-button-primary {color: #fff; background-color: #1E9FFF; border-color: #1E9FFF;}
 .fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active { color: #fff; background-color: #FBBC05; border-color: #FBBC05;}
@@ -31,16 +31,21 @@
 {block name="body"}
 <script src="{__GOUGU__}/third_party/fullcalendar/main.min.js"></script>
 <div class="p-page">
-	<div id="calendar"></div>
-	{gt name="is_leader" value="0"}
-	<div class="calendar-select">
-		<div class="layui-input-inline"><input type="text" placeholder="选择下属员工" class="layui-input" data-event="select" autocomplete="off"/></div>		
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this"><a href="/oa/plan/calendar">我的日程</a></li>
+				<li><a href="/oa/plan/datalist">我的日程查询</a></li>
+				{eq name="$auth" value="1"}
+				<li><a href="/oa/plan/datalist?tab=1">全部日程查询(管理员)</a></li>
+				{/eq}
+			</ul>
+		</div>
 	</div>
-	{/gt}
+	<div id="calendar"></div>
 </div>
 <!-- /主体 -->
 {/block}
-{block name="copyright"}{/block}
 <!-- 脚本 -->
 {block name="script"}
 <script type="text/javascript">
@@ -51,346 +56,16 @@
 		}
 		return num;
 	}
-	const moduleInit = ['tool','oaPicker'];
+	const moduleInit = ['tool'];
 	function gouguInit() {
-		var form = layui.form,tool=layui.tool, oaPicker = layui.oaPicker,laydate = layui.laydate,dropdown = layui.dropdown;
-		
-		// 选择下属员工
-		$('body').on('click','[data-event="select"]',function(){
-			var that = $(this);
-			oaPicker.employeeInit({
-				title:"选择下属",
-				department_url: "/api/index/get_department_tree_sub",
-				employee_url: "/api/index/get_employee_sub",
-				ids: '',
-				names: '',
-				type: 1,
-				callback:function(data){
-					//这里是选择后的回调方法，可以根据具体需求自定义写哦
-					let select_id=[],select_name=[];
-					for(var a=0; a<data.length;a++){
-						select_id.push(data[a].id);
-						select_name.push(data[a].name);
-					}
-					that.val(select_name.join(','));
-					uid = select_id.join(','); 
-					calendar.refetchEvents();
-				}
-			})
-		});
-		  
-		function addEvent(detail){			
-			var type='<span style="color:#aaa">请选择</span>';
-			if(detail.type==1){
-				type = '<span class="layui-badge-dot"></span> 紧急';
-			}
-			else if(detail.type==2){
-				type = '<span class="layui-badge-dot layui-bg-orange"></span> 重要';
-			}
-			else if(detail.type==3){
-				type = '<span class="layui-badge-dot layui-bg-blue"></span> 次要';
-			}
-			else if(detail.type==4){
-				type = '<span class="layui-badge-dot layui-bg-green"></span> 不重要';
-			}
-			else if(detail.type==5){
-				type = '<span class="layui-badge-dot layui-bg-black"></span> 无优先级';
-			}
-			
-			var remind_type='不提醒';
-			if(detail.remind_type==1){
-				remind_type = '提前5分钟';
-			}
-			else if(detail.remind_type==2){
-				remind_type = '提前15分钟';
-			}
-			else if(detail.remind_type==3){
-				remind_type = '提前30分钟';
-			}
-			else if(detail.remind_type==4){
-				remind_type = '提前1小时';
-			}
-			else if(detail.remind_type==5){
-				remind_type = '提前2小时';
-			}else if(detail.remind_type==6){
-				remind_type = '提前1天';
-			}
-			
-			var content='<form class="layui-form" style="width:728px">\
-							<table class="layui-table" style="margin:12px 12px 0;">\
-								<tr>\
-									<td class="layui-td-gray-2">日程时间范围<font>*</font></td>\
-									<td>\
-										<input id="start_time_a" name="start_time_a" style="width:90px; display:inline-block;" autocomplete="off" class="layui-input" value="'+detail.start_time_a+'" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间"><div style="display: inline-block; margin-left:3px; width: 80px;"><select lay-filter="start_time_b" id="start_time_b"></select></div> 至 <input id="end_time_a" name="end_time_a" style="width:90px; display:inline-block;" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" placeholder="请选择时间" lay-reqText="请选择时间"><div style="display: inline-block; margin-left:3px; width: 80px;"><select lay-filter="end_time_b" id="end_time_b"></select></div>\
-									</td>\
-									<td class="layui-td-gray">提醒<font>*</font></td>\
-									<td>\
-										<div class="layui-input" id="remind_type" style="width:120px; line-height:35px;">'+remind_type+'</div>\
-									</td>\
-								</tr>\
-								<tr>\
-									<td class="layui-td-gray">日程内容<font>*</font></td>\
-									<td><input name="title" class="layui-input" value="'+detail.title+'" lay-verify="required" placeholder="请完成日程内容" lay-reqText="请完成日程内容"></td>\
-									<td class="layui-td-gray">优先级<font>*</font></td>\
-									<td>\
-										<div class="layui-input" id="type" style="width:120px; line-height:35px;">'+type+'</div>\
-									</td>\
-								</tr>\
-								<tr>\
-									<td class="layui-td-gray-2">日程详细描述</td>\
-									<td colspan="3">\
-										<textarea name="remark" form-input="remark" class="layui-textarea" style="min-height:150px;">'+detail.remark+'</textarea>\
-									</td>\
-								</tr>\
-							</table>\
-						</form>';
-			layer.open({
-				type:1,
-				title:'创建日程安排',
-				area:['750px','399px'],
-				content:content,
-				success:function(){
-					//日期时间范围
-					laydate.render({
-						elem: '#start_time_a',
-						type: 'date',
-						format: 'yyyy-MM-dd',
-						showBottom: false,
-						done:function(a,b,c){
-							detail.start_time_a=a;
-						}
-					});
-
-					//日期时间范围
-					laydate.render({
-						elem: '#end_time_a',
-						type: 'date',
-						format: 'yyyy-MM-dd',
-						showBottom: false,
-						done:function(a,b,c){
-							detail.end_time_a=a;
-						}
-					});
-					$('#start_time_a,#end_time_a').empty();
-					
-					var hourArray=[];
-					for(var h=0;h<24;h++){
-						var t=h<10?'0'+h:h
-						var t_1=t+':00',t_2=t+':15',t_3=t+':30',t_4=t+':45';
-						hourArray.push(t_1,t_2,t_3,t_4);
-					}					
-					var html_1='', html_2='',def_h1=detail.start_time_b=detail.start_time_b,def_h2='';
-					for(var s=0;s<hourArray.length;s++){
-						var check_1='',check_2='';
-						if(hourArray[s]==def_h1){
-							check_1='selected';
-						}
-						if(hourArray[s]==def_h2){
-							check_2='selected';
-						}
-						html_1 += '<option value="'+hourArray[s]+'" '+check_1+'>'+hourArray[s]+'</option>';
-						html_2 += '<option value="'+hourArray[s]+'" '+check_2+'>'+hourArray[s]+'</option>';
-					}
-					
-					$('#start_time_b').append(html_1);
-					$('#end_time_b').append(html_2);
-					form.render();
-					
-					$('[name="title"]').on('input',function(){
-						var _val=$(this).val();
-						detail.title=_val;
-					});	
-					form.on('select(start_time_b)', function(data){
-						detail.start_time_b=data.value;
-					});
-					form.on('select(end_time_b)', function(data){
-						detail.end_time_b=data.value;
-					});
-					$('[form-input="remark"]').on('input',function(){
-						var _val=$(this).val();
-						detail.remark=_val;
-					});
-
-					dropdown.render({
-						elem: '#type'
-						,data: [{
-						  title: '紧急',
-						  templet: function(d){
-							  return '<span class="layui-badge-dot"></span> ' + d.title;
-						  },
-						  id: 1
-						},{
-						  title: '重要',
-						  templet: function(d){
-							  return '<span class="layui-badge-dot layui-bg-orange"></span> ' + d.title;
-						  },
-						  id: 2
-						},{
-						  title: '次要',
-						  templet: function(d){
-							  return '<span class="layui-badge-dot layui-bg-blue"></span> ' + d.title;
-						  },
-						  id: 3
-						},{
-						  title: '不重要',
-						  templet: function(d){
-							  return '<span class="layui-badge-dot layui-bg-green"></span> ' + d.title;
-						  },
-						  id: 4
-						},{
-						  title: '无优先级',
-						  templet: function(d){
-							  return '<span class="layui-badge-dot layui-bg-black"></span> ' + d.title;
-						  },
-						  id: 5
-						}]
-						,click: function(obj){
-							this.elem.html(obj.title);
-							detail.type = obj.id;
-						}
-						,style: 'width: 120px;'
-					  });
-					  
-					  dropdown.render({
-						elem: '#remind_type'
-						,data: [{
-						  title: '不提醒',
-						  id: 0
-						},{
-						  title: '提前5分钟',
-						  id: 1
-						},{
-						  title: '提前15分钟',
-						  id: 2
-						},{
-						  title: '提前30分钟',
-						  id: 3
-						},{
-						  title: '提前1小时',
-						  id: 4
-						},{
-						  title: '提前2小时',
-						  id: 5
-						},{
-						  title: '提前1天',
-						  id:6
-						}]
-						,click: function(obj){
-						  this.elem.html(obj.title);
-						  detail.remind_type = obj.id;
-						}
-						,style: 'width: 120px;'
-					  });					
-				},
-				btn: ['确定提交'],
-				btnAlign:'c',
-				yes: function(idx){
-					if(detail.start_time_a=='' || detail.end_time_a==''){
-						layer.msg('请完善日程时间范围');
-						return;
-					}
-					if(detail.title==''){
-						layer.msg('请填写日程内容');
-						return;
-					}
-					if(detail.type==0){
-						layer.msg('请选择日程优先级');
-						return;
-					}
-					console.log(detail);
-					$.ajax({
-						url: "/oa/plan/add",
-						type:'post',
-						data:detail,
-						success:function(e){
-							layer.msg(e.msg);
-							if(e.code==0){								
-								layer.close(idx);								
-								setTimeout(function(){
-									window.location.reload();
-								},1000)	
-							}
-						}
-					})			
-				}
-			})	
-		}
-		
-		
-		//查看日程记录
-		function viewEvent(detail){
-			var work_type='<span style="color:#393D49">无优先级</span>';
-			if(detail.type==1){
-				work_type = '<span style="color:#FF5722">紧急</span>';
-			}
-			else if(detail.type==2){
-				work_type = '<span style="color:#FFB800">重要</span>';
-			}
-			else if(detail.type==3){
-				work_type = '<span style="color:#1E9FFF">次要</span>';
-			}
-			else if(detail.type==4){
-				work_type = '<span style="color:#009688">不重要</span>';
-			}		
-			var content='<div style="width:724px">\
-							<table class="layui-table" style="margin:12px 12px 0;">\
-								<tr>\
-									<td class="layui-td-gray-2">日程时间范围</td>\
-									<td>'+detail.start_time+' 至 '+detail.end_time+'</td>\
-									<td class="layui-td-gray">提醒时间</td>\
-									<td>'+detail.remind_time+'</td>\
-								</tr>\
-								<tr>\
-									<td class="layui-td-gray-2">日程安排内容</td>\
-									<td>'+detail.title+'</td>\
-									<td class="layui-td-gray">优先级</td>\
-									<td>'+work_type+'</td>\
-								</tr>\
-								<tr>\
-									<td class="layui-td-gray-2">日程内容描述</td>\
-									<td colspan="3">'+detail.remark+'</td>\
-								</tr>\
-							</table>\
-						</div>';
-			layer.open({
-				type:1,
-				title:'查看日程安排',
-				area:['750px','398px'],
-				content:content,
-				success:function(){
-					
-				},
-				btn: ['关闭'],
-				btnAlign: 'c',
-				yes: function(idx){
-					layer.close(idx);			
-				}
-			})	
-		}
-		
-		//请求事件api数据
-		function eventApi(id){
-			if(id==0){
-				return false;
-			}
-			$.ajax({
-				url: "/oa/plan/view",
-				type:'post',
-				data:{id:id},
-				success:function(res){					
-					var detail=res.data;
-					viewEvent(detail);
-				}
-			});			
-		}
-		
+		var form = layui.form,tool=layui.tool;
 		//日历
 		var calendarEl = document.getElementById('calendar');
 		var calendar = new FullCalendar.Calendar(calendarEl, {
 			views: {
 				dayGrid: {
 					viewDidMount:function(arg){
-						calendar.setOption('height', window.innerHeight-30);
+						calendar.setOption('height', window.innerHeight);
 					}
 				},
 				timeGrid: {
@@ -412,18 +87,16 @@
 			//initialDate: '2020-09-12',//默认显示日期
 			initialView: 'dayGridMonth',//默认显示月视图
 			customButtons: {
-				clear: {
-					text: '清空员工', click: function () {
-						uid = 0;
-						$('[data-event="select"]').val('');
-						calendar.refetchEvents();
+				addnew: {
+					text: '新增日程安排', click: function () {
+						tool.box('/oa/plan/add',"新增日程安排", 810,560,false);
 					}
 				}
             },
 			headerToolbar: {
 				left: 'prev,next',//prev,next today add
 				center: 'title',
-				right: 'clear dayGridMonth,timeGridWeek,listWeek' //clear dayGridMonth,timeGridWeek,timeGridDay,listWeek
+				right: 'addnew,dayGridMonth,timeGridWeek,listWeek' //clear dayGridMonth,timeGridWeek,timeGridDay,listWeek
 			},
 			height: 'auto',//自动高度
 			navLinks: true, // can click day/week names to navigate views
@@ -433,10 +106,8 @@
 				console.log(arg);
 				var detail={};
 				detail['id']=arg.id;
-				detail['start_time_a']=arg.start.getFullYear()+'-'+addZero(arg.start.getMonth()+1)+'-'+addZero(arg.start.getDate());
-				detail['end_time_a']=arg.end.getFullYear()+'-'+addZero(arg.end.getMonth()+1)+'-'+addZero(arg.end.getDate());		
-				detail['start_time_b']=addZero(arg.start.getHours())+':'+addZero(arg.start.getMinutes());
-				detail['end_time_b']=addZero(arg.end.getHours())+':'+addZero(arg.end.getMinutes());	
+				detail['start_time'] = arg.start.getFullYear()+'-'+addZero(arg.start.getMonth()+1)+'-'+addZero(arg.start.getDate())+" "+addZero(arg.start.getHours())+':'+addZero(arg.start.getMinutes());
+				detail['end_time'] = arg.end.getFullYear()+'-'+addZero(arg.end.getMonth()+1)+'-'+addZero(arg.end.getDate())+" "+addZero(arg.end.getHours())+':'+addZero(arg.end.getMinutes());
 				console.log(detail);
 				$.ajax({
 					url: "/home/plan/add",
@@ -454,11 +125,9 @@
 				var arg = ev.event
 				console.log(arg);
 				var detail={};
-				detail['id']=arg.id;
-				detail['start_time_a']=arg.start.getFullYear()+'-'+addZero(arg.start.getMonth()+1)+'-'+addZero(arg.start.getDate());
-				detail['end_time_a']=arg.end.getFullYear()+'-'+addZero(arg.end.getMonth()+1)+'-'+addZero(arg.end.getDate());		
-				detail['start_time_b']=addZero(arg.start.getHours())+':'+addZero(arg.start.getMinutes());
-				detail['end_time_b']=addZero(arg.end.getHours())+':'+addZero(arg.end.getMinutes());	
+				detail['id']=arg.id;				
+				detail['start_time'] = arg.start.getFullYear()+'-'+addZero(arg.start.getMonth()+1)+'-'+addZero(arg.start.getDate())+" "+addZero(arg.start.getHours())+':'+addZero(arg.start.getMinutes());
+				detail['end_time'] = arg.end.getFullYear()+'-'+addZero(arg.end.getMonth()+1)+'-'+addZero(arg.end.getDate())+" "+addZero(arg.end.getHours())+':'+addZero(arg.end.getMinutes());
 				console.log(detail);
 				$.ajax({
 					url: "/oa/plan/add",
@@ -475,18 +144,8 @@
 			selectable: true,//拖拉选择日期
 			selectMirror: true,//是否在用户拖动时绘制"占位符"事件。
 			select: function(arg) {
-				var detail={};
-				detail['id']=0;
-				detail['title']='';
-				detail['start_time_a']=arg.start.getFullYear()+'-'+addZero(arg.start.getMonth()+1)+'-'+addZero(arg.start.getDate());
-				detail['end_time_a']="";		
-				detail['start_time_b']="09:00";
-				detail['end_time_b']="00:00";		
-				detail['remark']='';
-				detail['type']=0;
-				detail['remind_type']=0;
-				console.log(detail);	
-				addEvent(detail);	
+				let start_time = arg.start.getFullYear()+'-'+addZero(arg.start.getMonth()+1)+'-'+addZero(arg.start.getDate())+" 09:00";
+				tool.box('/oa/plan/add?start_time='+start_time,"新增日程安排", 810,560,false);
 			},
 			nowIndicator: true,
 			firstDay: 1,
@@ -537,8 +196,14 @@
 				})
 			},
 			eventClick: function(info) {
+				//console.log(info);
 				//console.log(info.event);
-				eventApi(info.event.id);
+				if(info.event.extendedProps.admin_id == login_admin){
+					tool.box('/oa/plan/add?id='+info.event.id,"编辑日程安排",810,560,false);
+				}
+				else{
+					tool.box('/oa/plan/view?id='+info.event.id,"日程安排",800,360,false);
+				}
 			}
 		});
 		calendar.render();

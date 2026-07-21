@@ -28,12 +28,12 @@ class Api extends BaseController
 		$task_id = isset($param['task_id']) ? $param['task_id'] : 0;
 		if ($project_id>0) {
 			$task_ids = Db::name('ProjectTask')->where(['delete_time' => 0, 'project_id' => $project_id])->column('id');
-			$where[] = ['a.tid', 'in', $task_ids];
+			$where[] = ['tid', 'in', $task_ids];
 		}
 		if ($task_id>0) {
-			$where[] = ['a.tid', '=', $task_id];
+			$where[] = ['tid', '=', $task_id];
 		}
-		$where[] = ['a.delete_time', '=', 0];
+		$where[] = ['delete_time', '=', 0];
 		$model = new Schedule();
 		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);
@@ -60,17 +60,20 @@ class Api extends BaseController
 			}				
 		}
 		if($edit_role == false){
-			return to_assign(1, "您无权限编辑");
+			return to_assign(1, "您无权限调整工时");
 		}
 		
-        if (isset($param['start_time_a'])) {
-            $param['start_time'] = strtotime($param['start_time_a'] . '' . $param['start_time_b']);
+        if (isset($param['start_time'])) {
+            $param['start_time'] = strtotime($param['start_time']);
         }
-        if (isset($param['end_time_a'])) {
-            $param['end_time'] = strtotime($param['end_time_a'] . '' . $param['end_time_b']);
+        if (isset($param['end_time'])) {
+            $param['end_time'] = strtotime($param['end_time']);
         }
 		if($param['start_time']>time()){
 			return to_assign(1, "开始时间不能大于当前时间");		
+		}
+		if (date('d',$param['end_time']) != date('d',$param['start_time'])) {
+			return to_assign(1, "结束时间与开始时间必须是同一天");
 		}
         if ($param['end_time'] <= $param['start_time']) {
             return to_assign(1, "结束时间需要大于开始时间");

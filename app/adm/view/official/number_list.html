@@ -1,0 +1,109 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<button class="layui-btn layui-btn-sm addNew" type="button">+ 添加文号规则</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, tool = layui.tool;
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: '#toolbarDemo'
+			,defaultToolbar: false
+			,title:'文号规则列表'
+			,url: "/adm/official/number_list"
+			,page: false
+			,cellMinWidth: 60
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title',title: '文号规则名称',minWidth:200}
+				,{field:'types_str',title: '文号规则类型', align:'center',width:120}
+				,{field:'code',title: '文号规则编码', align:'center',width:120}
+				,{field:'prefix',title: '文号规则',width:240,templet: function(d){
+					if(d.prefix==''){
+						return '-';
+					}
+					else{
+						return d.prefix+'〔202*〕第'+d.prefix_num+'***号';
+					}
+				}}
+				,{field:'status', title: '状态',width:60,align:'center',templet: function(d){
+					var html1='<span class="green">正常</span>';
+					var html2='<span class="yellow">禁用</span>';
+					if(d.status==1){
+						return html1;
+					}
+					else{
+						return html2;
+					}
+				}}
+				,{width:180,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">已生成的文号</a>';
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn2='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="disable">禁用</a>';
+					var btn3='<a class="layui-btn layui-bg-purple layui-btn-xs" lay-event="open">启用</a>';
+					if(d.status==1){
+						html = '<div class="layui-btn-group">'+btn+btn1+btn2+'</div>';
+					}
+					else{
+						html = '<div class="layui-btn-group">'+btn+btn1+btn3+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(test)',function (obj) {
+			if(obj.event === 'view'){
+				tool.side("/adm/official/number_view?id="+obj.data.id);
+			}
+			if(obj.event === 'edit'){
+				tool.side("/adm/official/number_add?id="+obj.data.id);
+			}
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该文号规则吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/official/number_set", { id: obj.data.id,status: 0}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该文号规则吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/official/number_set", { id: obj.data.id,status: 1}, callback);
+					layer.close(index);
+				});
+			}
+		});
+		
+		$('body').on('click','.addNew',function(){
+			tool.side("/adm/official/number_add");
+			return false;
+		});		
+	}
+</script>
+{/block}
+<!-- /脚本 -->

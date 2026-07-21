@@ -5,7 +5,7 @@
 .text-detial-ops{line-height: 30px; color:#999; font-size: 12px; padding: 12px 0;}
 .text-detial-ops span{margin-right: 20px;}
 .text-detial-ops a{margin-right:10px;}
-.text-detial-content{padding: 8px 0; color:#333; word-break: break-all; border-top:1px solid #e8e8e8;font-size: 16px!important; line-height: 1.72!important;}
+.text-detial-content{color:#333; word-break: break-all;font-size: 16px!important; line-height: 1.72!important;}
 .text-detial-content p{padding: 8px 0;}
 .text-detial-content img{max-width:98%!important; margin:0 auto; display:block; border: 1px solid #e6e6e6; -webkit-box-shadow: 0 2px 6px rgba(26,26,26,.08); box-shadow: 0 2px 6px rgba(26,26,26,.08); border-radius: 4px;}
 .text-detial-content h1,.text-detial-content h2,.text-detial-content h3,.text-detial-content h4,.text-detial-content h5{margin-top:10px;}
@@ -27,27 +27,82 @@
 {/block}
 <!-- 主体 -->
 {block name="body"}
-<form class="layui-form p-5">
-	<h1>{$detail.title}</h1>
-	<div class="text-detial-ops">
-		<span>{$detail.admin_name}发表于：{$detail.create_time | date='Y-m-d H:i:s'}</span><span>公告分类：{$detail.cate}</span>
-	</div>
-	<div class="text-detial-content">
-	{$detail.content|raw}
-	</div>
-	{notempty name="$detail.src"}
-	<div class="py-3" style="font-size:16px;">
-		关联链接：<a class="blue" href="{$detail.src}" target="_blank">{$detail.src}</a>
-	</div>
-	{/notempty}
-	{notempty name="$detail.file_ids"}
-	<div class="upload-file layui-row">
-		<h3>相关附件</h3>
-		{volist name="$detail.file_array" id="vo"}
-			<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
-		{/volist}
-	</div>
-	{/notempty}	
+<div class="p-page">
+	<h3 class="pb-2">计划详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">计划主题</td>
+			<td colspan="5">{$detail.title|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">计划类型</td>
+			<td>{$detail.cate}</td>
+			<td class="layui-td-gray">计划周期</td>
+			<td>{$detail.start_time|to_date='Y-m-d'} 至 {$detail.end_time|to_date='Y-m-d'}</td>
+			<td class="layui-td-gray">发布时间</td>
+			<td>
+				{eq name="$detail.send_time" value="0"}
+				<span class="red">未发布</span>
+				{else/}
+				{$detail.send_time|to_date='Y-m-d'}
+				{/eq}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">参与人类型</td>
+			<td>{$detail.types_str}</td>
+			<td class="layui-td-gray">参与人</td>
+			<td colspan="3">
+				{eq name="$detail.types" value="1"}
+					{$detail.unames}
+				{/eq}
+				{eq name="$detail.types" value="2"}
+					{$detail.dnames}
+				{/eq}
+				{eq name="$detail.types" value="3"}
+					{$detail.pnames}
+				{/eq}
+			</td>
+		</tr>
+		{notempty name="$detail.copy_uids"}
+		<tr>
+			<td class="layui-td-gray">抄送人</td>
+			<td colspan="5">{$detail.copy_names|default='-'}</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray">计划负责人</td>
+			<td colspan="3">{$detail.director_names|default='-'}</td>
+			<td class="layui-td-gray">批注领导</td>
+			<td>{$detail.endorse_names|default='-'}</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>计划内容</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<div class="text-detial-content">
+				{$detail.content|raw}
+				</div>
+			</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td colspan="6"><strong>相关附件</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<div class="layui-row" id="uploadBox">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+		{/notempty}	
+	</table>	
 </div>
 {/block}
 <!-- 脚本 -->

@@ -5,7 +5,7 @@
 <div class="p-page">
 	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
 		<div class="layui-input-inline" style="width:128px">
-			<select name="check_status">
+			<select name="status">
 				<option value="">选择用章状态</option>
 				{volist name="status" id="vo"}
 				<option value="{$key}">{$vo}</option>
@@ -42,6 +42,7 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus'];
 	function gouguInit() {
 		var table = layui.tablePlus, tool = layui.tool;
@@ -53,7 +54,7 @@
 			,page: true
 			,limit: 20
 			,cellMinWidth: 60
-			,height: 'full-114'
+			,height: 'full-115'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'check_status',title: '用章状态',width:90, align:'center',templet: function(d){
@@ -90,7 +91,7 @@
 					var btn3='<a class="layui-btn layui-btn-xs" lay-event="use">出借登记</a>';
 					var btn4='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="back">归还登记</a>';
 					
-					if(d.status == 0){
+					if(d.status == 0 && auth==1){
 						if(d.is_borrow==1){
 							html = '<div class="layui-btn-group">'+btn1+btn3+'</div>';
 						}
@@ -99,7 +100,7 @@
 						}
 					}
 					
-					if(d.status == 1){
+					if(d.status == 1 && auth==1){
 						if(d.is_borrow==1){
 							html = '<div class="layui-btn-group">'+btn1+btn4+'</div>';
 						}
@@ -108,7 +109,7 @@
 						}
 					}
 					if(d.status == 2){
-							html = '<div class="layui-btn-group">'+btn1+'</div>';
+						html = '<div class="layui-btn-group">'+btn1+'</div>';
 					}					
 					return html;
 				}}

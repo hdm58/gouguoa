@@ -1,0 +1,88 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<table class="layui-hide" id="table_salary_records" lay-filter="table_salary_records"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>个人工资</h3>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_salary_records"
+			,title: '工资数据列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/oa/salary/datalist"
+			,page: true
+			,cellMinWidth: 80
+			,height: 'full-52'
+			,cols: [[
+				{field:'month_time',fixed:'left',title: '月份',width:100, align:'center'}
+				,{field:'status_name',title: '状态',width:100, align:'center',ignoreExport:true,templet: function (d) {
+						var html = '<span class="check-status-color-'+d.status+'">『'+d.status_name+'』</span>';
+						return html;
+					}
+				}  
+				,{field:'salary_basic', title: '基本工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_position', title: '岗位工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_performance', title: '效益工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				
+				,{field:'salary_quanqin', title: '全勤奖金',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_overwork', title: '加班工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_meal', title: '用餐补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				
+				,{field:'salary_phone', title: '话费补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}				
+				,{field:'salary_traffic', title: '交通补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_house', title: '住房补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				
+				,{field:'salary_fuli', title: '节假福利',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_protecting', title: '保竞津贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_bonus', title: '奖金',width:80,align:'center',style: 'background-color:#F3FFFA'}				
+				,{field:'total_payable', title: '应发工资',width:100,align:'center',style: 'background-color:#F3FFFA;color:#16b777'}
+				
+				,{field:'deduct_belate', title: '迟到扣除',width:100,align:'center',style: 'background-color:#FEF5F3;'}
+				,{field:'deduct_leave', title: '事假扣除',width:80,align:'center',style: 'background-color:#FEF5F3'}
+				,{field:'deduct_absenteeism', title: '旷工扣除',width:80,align:'center',style: 'background-color:#FEF5F3'}				
+				,{field:'total_deduction', title: '应扣工资',width:100,align:'center',style: 'background-color:#FEF5F3;color:#ff5722'}
+				
+				,{field:'deduct_social', title: '社保',width:80,align:'center',style: 'background-color:#FDF8FF'}
+				,{field:'deduct_gongjijin', title: '公积金',width:80,align:'center',style: 'background-color:#FDF8FF'}
+				,{field:'deduct_tax', title: '个税',width:80,align:'center',style: 'background-color:#FDF8FF;'}
+				,{field:'total_statutory', title: '代扣代缴',width:100,align:'center',style: 'background-color:#FDF8FF;color:#A233C6'}
+				,{field:'remark',title: '备注信息',minWidth:120}
+				,{field:'total_payment',fixed:'right',title: '实发工资',width:90, align:'center',style: 'color:#1e9fff'}
+				,{width:60,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					html = btn1;
+					if(d.status==2){
+						html = '<div class="layui-btn-group">'+btn1+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+		
+		table.on('tool(table_salary_records)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/oa/salary/view?id="+data.id);
+			}
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

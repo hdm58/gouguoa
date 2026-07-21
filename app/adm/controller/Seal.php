@@ -40,6 +40,8 @@ class Seal extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$uid=$this->uid;
+		$auth = isAuth($uid,'office_admin','conf_6');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$uid=$this->uid;
@@ -48,10 +50,14 @@ class Seal extends BaseController
 			$where[]=['delete_time','=',0];
 			if($tab == 0){
 				//全部
-				$whereOr[] = ['admin_id', '=', $this->uid];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $this->uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+					$whereOr[] = ['did','in',$dids_son];
+				}
 			}
 			if($tab == 1){
 				//创建的
@@ -76,12 +82,13 @@ class Seal extends BaseController
                 $where[] = ['check_status', '=', $param['check_status']];
             }
 			if (!empty($param['keywords'])) {
-                $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
             }
             $list = $this->model->datalist($where,$whereOr, $param);
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('auth', $auth);
             return view();
         }
     }
@@ -184,6 +191,9 @@ class Seal extends BaseController
 	//用章记录
     public function record()
     {
+		$param = get_params();
+		$uid=$this->uid;
+		$auth = isAuth($uid,'office_admin','conf_7');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
@@ -193,13 +203,20 @@ class Seal extends BaseController
             if (!empty($param['seal_cate_id'])) {
                 $where[] = ['seal_cate_id', '=', $param['seal_cate_id']];
             }
-			if (!empty($param['keywords'])) {
-                $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+			if (isset($param['status']) && $param['status']!='') {
+                $where[] = ['status', '=', $param['status']];
             }
+			if (!empty($param['keywords'])) {
+                $where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
+            }
+			if($auth==0){
+				$where[] = ['admin_id','=',$uid];
+			}
 			$list = $this->model->datalist($where,$whereOr, $param);
             return table_assign(0, '', $list);
         } else {
 			View::assign('status', ['未使用','已使用','已归还']);
+			View::assign('auth', $auth);
             return view();
         }
     }

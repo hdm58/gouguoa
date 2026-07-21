@@ -17,6 +17,7 @@ namespace app\adm\controller;
 
 use app\base\BaseController;
 use app\adm\model\Car as CarModel;
+use app\adm\model\CarUse as CarUseModel;
 use app\adm\validate\CarValidate;
 use think\exception\ValidateException;
 use think\facade\Db;
@@ -77,6 +78,10 @@ class Car extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
+				$beforeMileage = Db::name('CarMileage')->where([['car_id','=',$param['id']],['delete_time','=',0]])->order('mileage_time', 'asc')->value('mileage');
+				if($param['mileage']>=$beforeMileage){
+					return to_assign(1,'里程数不能大于里程记录的里程数：'.$beforeMileage);
+				}
 				$this->model->edit($param);
             } else {
                 try {
@@ -465,19 +470,37 @@ class Car extends BaseController
 			if (isset($param['mileage_time'])) {
                 $param['mileage_time'] = strtotime($param['mileage_time']);
             }
-			$latestMileage = Db::name('CarMileage')->where([['id','<>',$param['id']],['car_id','=',$param['car_id']],['delete_time','=',0]])->order('mileage_time', 'desc')->value('mileage');
-			$mileage = Db::name('Car')->where('id',$param['car_id'])->value('mileage');
-			if(empty($latestMileage)){
-				$latestMileage = $mileage;
-			}
-			if($param['mileage'] < $latestMileage){
-				 return to_assign(1,'新增的里程数，不能小于现有里程数');
-			}
+			$hasMileage = Db::name('CarMileage')->where([['id','<>',$param['id']],['car_id','=',$param['car_id']],['delete_time','=',0],['mileage_time','=',$param['mileage_time']]])->find();
+			if(!empty($hasMileage)){
+				return to_assign(1,'同样月份的流程记录已经存在');
+			}	
             if (!empty($param['id']) && $param['id'] > 0) {
+				$nextMileage = Db::name('CarMileage')->where([['delete_time','=',0],['id','<>',$param['id']],['car_id','=',$param['car_id']],['mileage_time','>',$param['mileage_time']]])->value('mileage');
+				$prevMileage = Db::name('CarMileage')->where([['id','<>',$param['id']],['car_id','=',$param['car_id']],['delete_time','=',0],['mileage_time','<',$param['mileage_time']]])->value('mileage');
+				if(empty($prevMileage)){
+					$mileage = Db::name('Car')->where('id',$param['car_id'])->value('mileage');	
+					$prevMileage = $mileage;
+				}
+				if($param['mileage'] <= $prevMileage){
+					 return to_assign(1,'里程数不能小于之前的记录的里程数：'.$prevMileage);
+				}
+				if(!empty($nextMileage)){
+					if($param['mileage'] >= $nextMileage){
+						 return to_assign(1,'里程数不能大于之后的记录的里程数：'.$nextMileage);
+					}
+				}
                 $param['update_time'] = time();
                 $res = Db::name('CarMileage')->strict(false)->field(true)->update($param);
                 return to_assign();
             } else {
+				$latestMileage = Db::name('CarMileage')->where([['id','<>',$param['id']],['car_id','=',$param['car_id']],['delete_time','=',0]])->order('mileage_time', 'desc')->value('mileage');
+				if(empty($latestMileage)){
+					$mileage = Db::name('Car')->where('id',$param['car_id'])->value('mileage');	
+					$latestMileage = $mileage;
+				}
+				if($param['mileage'] < $latestMileage){
+					 return to_assign(1,'新增的里程数，不能小于现有里程数');
+				}
                 $param['create_time'] = time();
                 $param['admin_id'] = $this->uid;
                 $insertId = Db::name('CarMileage')->strict(false)->field(true)->insertGetId($param);
@@ -498,4 +521,168 @@ class Car extends BaseController
 			return to_assign(1, '操作失败');
 		}
     }  
+	
+	
+    /**
+    * 申请使用列表
+    */
+    public function apply_list()
+    {
+		$param = get_params();
+		$uid=$this->uid;
+		$auth = isAuth($uid,'office_admin','conf_6');
+        if (request()->isAjax()) {
+			$tab = isset($param['tab']) ? $param['tab'] : 0;
+            $where = array();
+            $whereOr = array();
+			$where[]=['delete_time','=',0];
+			if($tab == 0){
+				//全部
+				if($auth == 0){
+					$dids_son = get_leader_departments($uid);
+					$whereOr[] = ['admin_id', '=', $this->uid];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+					$whereOr[] = ['did','in',$dids_son];
+				}
+			}
+			if($tab == 1){
+				//我创建的
+				$where[] = ['admin_id', '=', $this->uid];
+			}
+			if($tab == 2){
+				//待我审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
+			}
+			if($tab == 3){
+				//我已审核的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
+			}
+			if($tab == 4){
+				//抄送给我的
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_copy_uids)")];
+			}
+			//按时间检索
+			if (!empty($param['diff_time'])) {
+				$diff_time =explode('~', $param['diff_time']);
+				$where[] = ['use_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+			}
+            if (isset($param['status']) && $param['status'] != "") {
+                $where[] = ['status', '=', $param['status']];
+            }
+			if (isset($param['check_status']) && $param['check_status'] != "") {
+                $where[] = ['check_status', '=', $param['check_status']];
+            }
+			if (!empty($param['keywords'])) {
+                $where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
+            }
+			$model = new CarUseModel();
+            $list = $model->datalist($param,$where,$whereOr);
+            return table_assign(0, '', $list);
+        }
+        else{
+			View::assign('auth', $auth);
+            return view();
+        }
+    }
+	
+    /**
+    * 申请使用添加/编辑
+    */
+    public function apply_add()
+    {
+		$param = get_params();	
+        if (request()->isAjax()) {
+			$model = new CarUseModel();
+			if (!empty($param['use_time'])) {
+                $param['use_time'] = strtotime($param['use_time']);
+            }
+            if (!empty($param['id']) && $param['id'] > 0) {
+				$model->edit($param);
+            } else {
+				$param['admin_id'] = $this->uid;
+				$param['did'] = $this->did;
+                $model->add($param);
+            }	 
+        }else{
+			$id = isset($param['id']) ? $param['id'] : 0;
+			View::assign('user', get_admin($this->uid));
+			if ($id>0) {
+				$model = new CarUseModel();
+				$detail = $model->getById($id);
+				if($detail['check_status']==0 || $detail['check_status']==4){
+					View::assign('detail', $detail);
+					if(is_mobile()){
+						return view('qiye@/approve/add_car');
+					}
+					return view('edit');
+				}
+			}
+			if(is_mobile()){
+				return view('qiye@/approve/add_car');
+			}
+			return view();
+		}
+    }
+	
+    /**
+    * 申请使用查看
+    */
+    public function apply_view($id)
+    {
+		$model = new CarUseModel();
+		$detail = $model->getById($id);
+		if (!empty($detail)) {
+			View::assign('detail', $detail);
+			return view();
+		}
+		else{
+			return view(EEEOR_REPORTING,['code'=>404,'warning'=>'找不到页面']);
+		}
+    }
+	
+   /**
+    * 申请使用删除
+    */
+    public function apply_del()
+    {
+		if (request()->isDelete()) {
+			$param = get_params();
+			$id = isset($param['id']) ? $param['id'] : 0;
+			$model = new CarUseModel();
+			$model->delById($id);
+		} else {
+            return to_assign(1, "错误的请求");
+        }
+    }
+	
+	//用车记录
+	public function record()
+    {
+		$param = get_params();
+		$uid=$this->uid;
+		$auth = isAuth($uid,'office_admin','conf_6');
+        if (request()->isAjax()) {
+			$where = array();
+			$where[] = ['check_status','=',2];
+			$where[] = ['delete_time','=',0];
+			if($auth==0){
+				$where[] = ['admin_id','=',$uid];
+			}
+			if (isset($param['status']) && $param['status']!='') {
+                $where[] = ['status', '=', $param['status']];
+            }
+			if (!empty($param['keywords'])) {
+                $where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
+            }
+			$model = new CarUseModel();
+			$list = $model->datalist($param,$where);
+			return table_assign(0, '', $list);
+		}
+		else{
+			View::assign('auth', $auth);
+			return view();
+		}
+    }
 }

@@ -51,8 +51,15 @@
 			<td>{$detail.oil}</td>
 			<td class="layui-td-gray-2">当前里程数</td>
 			<td>{$detail.latestMileage}（开始里程数：{$detail.mileage}）</td>
-			<td class="layui-td-gray-2">驾驶员</td>
-			<td>{$detail.driver_name|default=''}</td>
+			<td class="layui-td-gray-2">车辆用途</td>
+			<td>
+				{eq name="$detail.types" value="0"}
+					公车{notempty name="$detail.driver_name"}（当前用车人：{$detail.driver_name|default=''}）{/notempty}
+				{/eq}
+				{eq name="$detail.types" value="1"}
+					专车（驾驶人：{$detail.driver_name|default=''}）
+				{/eq}
+			</td>
 		</tr>
 		{notempty name="$detail.remark"}
 		<tr>
@@ -82,6 +89,7 @@
 			<li><strong>费用记录</strong></li>
 			<li><strong>维修记录</strong></li>
 			<li><strong>保养记录</strong></li>
+			<li><strong>使用记录</strong></li>
 		</ul>
 		<div class="layui-tab-content" style="padding:0;">
 			<div class="layui-tab-item layui-show">
@@ -114,6 +122,14 @@
 						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/protect_add?cid={$detail.id}">+ 保养记录</span>
 					</div>
 					<table class="layui-hide" id="protect" lay-filter="protect"></table>
+				</div>
+			</div>
+			<div class="layui-tab-item">	
+				<div class="p-3">
+					<div class="pb-3">
+						<h3>使用记录</h3>
+					</div>
+					<table class="layui-hide" id="use" lay-filter="use"></table>
 				</div>
 			</div>
 		</div>
@@ -294,7 +310,9 @@
 			limit: 10,
 			cols: [[ //表头
 				{ field: 'id', title: '序号', width: 60, align: 'center' }
-				, { field: 'mileage', title: '里程数', align: 'center', width: 120}
+				, { field: 'mileage', title: '里程表读数', align: 'center', width: 120,style:'color:#1e9fff'}
+				, { field: 'mileage_last', title: '上次里程表读数', align: 'center', width: 130,style:'color:#16b777'}
+				, { field: 'mileage_num', title: '行驶里程数', align: 'center', width: 120,style:'color:#ff5722'}
 				, { field: 'mileage_time', title: '里程月份', align: 'center', width: 120 }
 				, { field: 'admin_name', title: '创建人', align: 'center', width: 120 }
 				, { field: 'create_time', title: '记录时间', align: 'center', minWidth: 150,}
@@ -382,6 +400,54 @@
 					tool.delete("/adm/car/mileage_del", {id: data.id}, callback);
 					layer.close(index);
 				});
+			}
+		});
+		
+		layui.useTable = table.render({
+			elem: '#use',
+			title: '使用记录',
+			cellMinWidth: 80,
+			url: "/adm/api/get_car_use", //数据接口
+			where: { 'car_id': car_id },
+			page: true, //开启分页
+			limit: 10,
+			cols: [[ //表头
+				{ field: 'id', title: '序号', width: 60, align: 'center' }
+				,{field:'title',title: '用车理由',minWidth:240}
+				,{field:'car',title: '车辆',width:100, align:'center'}
+				,{field:'department',title: '用车部门',width:100, align:'center'}
+				,{field:'use_time',title: '计划用车日期',width:110, align:'center'}
+				,{field:'status',title: '用车状态',width:90, align:'center',templet: function(d){
+					if(d.check_status==2){
+						if(d.status==0){
+							return '<span class="red">未用车</span>';
+						}
+						if(d.status==1){
+							return '<span class="blue">已用车</span>';
+						}
+						if(d.status==3){
+							return '<span class="green">已还车</span>';
+						}
+					}else{
+						return '-';
+					}
+
+				}}
+				,{field:'admin_name',title: '申请人',width:90, align:'center'}
+				,{field:'create_time', title: '申请时间',width:150,align:'center'}
+				, {title: '操作',fixed:'right', align: 'center', width: 60, templet: function (d) {
+						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="view">详细</span></div>';
+					}
+				}
+			]]
+		});
+		
+		//监听行工具事件
+		table.on('tool(use)', function(obj) {
+			var data = obj.data;			
+			if(obj.event === 'view'){
+				tool.side('/adm/car/apply_view?id='+data.id);
+				return;
 			}
 		});
 	}

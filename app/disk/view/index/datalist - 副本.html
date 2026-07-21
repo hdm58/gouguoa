@@ -1,0 +1,922 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+    ::-webkit-scrollbar { display: none; width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { border-radius: 10px; background-color: #e1e1e1;}
+	.file-folder,.file-image,.file-pdf,.file-video,.file-audio{cursor:pointer;}
+	
+	.disk-left{width:150px; float:left; height:calc(100vh - 86px); overflow-y: auto; border:1px solid #eeeeee; background-color:#fbfbfb; padding:15px;user-select: none;}
+	.disk-left::-webkit-scrollbar {width: 0;}
+	.disk-left h3{font-size:18px; height:30px; padding-left:10px; font-weight:800}
+	
+	.disk-types{padding:12px 0;}
+	.disk-types li{padding:8px; border-radius:4px; cursor:pointer;}
+	.disk-types li strong{margin-right:12px; font-size:18px;}
+	.disk-types li:hover{background-color:#F3F4F5;}
+	.disk-types li.on-this{background-color:#EDF7FD; color:#1E9FFF}
+	.disk-line{border-bottom:1px solid #eee; margin:6px 0;}
+	
+	.disk-table{margin-left:150px; overflow:hidden; height:calc(100vh - 56px);border:1px solid #eeeeee; border-left:0; background-color:#fff;}
+	.disk-table.types-1 .types-thumb,.disk-table.types-1 #list{display:none;}
+	.disk-table.types-2 .types-list,.disk-table.types-2 #thumb{display:none;}
+	
+	.disk-form{padding:10px; background-color: #fff;}
+	.disk-form .tool-add{padding:0 10px;}
+	.disk-form .iconfont{font-size:16px;}
+	.disk-form .layui-form-checkbox[lay-skin=primary]>i{border-color:#5f5f5f}
+	.disk-form .layui-form-checkbox[lay-skin=primary]{padding:0; margin:0;}
+	.disk-form .layui-form-checkbox[lay-skin=primary]>div{padding:0px; margin:0;}
+	
+	.disk-path{height:42px;padding:0 4px 0 12px;}
+	.disk-breadcrumb{float:left; padding:8px 0}
+	.disk-breadcrumb span{color:#666; margin:0 3px; font-size:10px;}
+	.disk-path .layui-tabs-header{height:42px;}
+	.disk-path .layui-tabs-header li{padding:0 9px;line-height:42px; font-size:13px;}
+	
+    /** 缩略图模式 **/
+    .file-thumb {height:calc(100vh - 206px); overflow-y: auto;}
+    .file-thumb .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
+    .file-thumb .file-subject:hover::-webkit-scrollbar { display: block; }
+    .file-thumb .file-subject ul { display: flex; flex-wrap: wrap; }
+    .file-thumb .file-subject ul li {position: relative; height: 160px; margin:12px; padding: 10px; border-radius: 4px; border:2px solid #ffffff;}
+    .file-thumb .file-subject ul li:hover {border: 2px solid #f8f8f8; background-color:#F2F2F2;}
+    .file-thumb .file-subject ul li.on {border: 2px solid #1e9fff; background-color:#E5F2FF}
+    .file-thumb .file-subject ul li img {width: 86px; height: 86px; border-radius: 6px; padding:16px; border:1px solid rgba(0, 0, 0, 0.05); background-color:#fff;}
+    .file-thumb .file-subject ul li img.file-image { width: 102px; height: 102px; padding:6px;}
+    .file-thumb .file-subject ul li video { width: 60px; height: 60px; border-radius: 3px; }
+    .file-thumb .file-subject ul li p {margin: 5px 0 0; width: 118px; font-size: 13px; text-align: center; word-break: break-all; text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;}
+    .file-thumb .file-subject ul li .file-check{position: absolute; width:20px; height:20px; left: 1px; top: 1px; display: none; font-size: 14px; border-radius:2px 0 4px 0; text-align: center; line-height: 20px; color: #ffffff; background-color:#fff; border-right:1px solid #eee; border-bottom:1px solid #eee; cursor:pointer;}	
+	.file-thumb .file-subject ul li:hover .file-check{display: block;}
+    .file-thumb .file-subject ul li.on .file-check{ display: block; background: #1e9fff; border-color:#1e9fff}
+	.file-thumb .file-subject ul li .layui-btn-ctrl{position:absolute; top:1px; right:1px; opacity: 0;}
+	.file-thumb .file-subject ul li:hover .layui-btn-ctrl{opacity: 1;}
+	.file-thumb .file-subject ul li .has-star{position: absolute; width:20px; height:20px; right: 1px; top: 80px; border-radius:50%; text-align: center; line-height: 20px; color: #ffffff; background-color:#ffb800; border:1px solid #fff; padding:2px;}
+	
+    .file-footer {display: flex; align-items: center; padding: 5px 15px 0; height: 45px; border-top: 1px solid #f2f2f2; text-align: center; background: #ffffff;}
+    .empty{ display: flex; flex: 1; align-items: center; flex-direction: column; justify-content: center; overflow: hidden; text-align: center; color: #cccccc;}
+    .empty p{width: 180px; text-align: center;}
+    .empty i{font-size: 180px;}
+	.file-item{cursor:pointer;white-space: nowrap;}
+	/** 拖拽上传文件 **/
+	.file-tree{padding:6px; width:680px; height:480px; overflow-y:scroll;}
+	.file-tree tr.ok{color:#16baaa}
+	.file-tree .folder,.file{padding:0;}
+	.file-tree .folder:before{content: "📁 "; font-size:18px;}
+	.file-tree .file:before{content: "📄 "; font-size:18px;}
+	.del-file{color:#16b777;cursor:pointer;}
+	.file-tree-bottom{padding:9px 0; text-align:center; border-top:2px solid #eeeeee;}
+	.dropimg{z-index:9999999999; display:none; position:fixed; top:0;left:0; right:0; bottom:0; background-color:rgba(255,255,255,.6); text-align:center; font-size:58px; border:3px dashed #666;}
+	body.drop .dropimg{display:block;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<div class="disk-left">
+		<h3>我的空间</h3>
+		<div id="diskTypes" class="disk-types">
+			<ul>
+				<li data-tab="my" class="on-this"><strong class="iconfont icon-contact" style="color:#1e9fff"></strong>我的文件</li>
+				<li data-tab="star"><strong class="iconfont icon-shoucang" style="color:#ffb800"></strong>标星文件</li>
+				<li data-tab="myshare"><strong class="iconfont icon-daochu" style="color:#16b777"></strong>我分享的</li>
+				<li data-tab="share"><strong class="iconfont icon-daoru" style="color:#ff5722"></strong>别人分享的</li>
+			</ul>
+		</div>
+	</div>
+	<div id="diskBox" class="disk-table types-2">
+		<form class="layui-form disk-form border-b" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:300px">
+				<div class="layui-btn-group">
+					<span class="layui-btn tool-add tool-tips" data-tips="拖拽文件到页面也可以上传哦(^_^)" id="uploadBtn"><strong class="iconfont icon-shangchuan"></strong> 上传文件</span>
+					<span class="layui-btn layui-btn-normal tool-add tool-tips" data-tips="新建在线文档" id="addArticle"><strong class="iconfont icon-lunwenguanli"></strong> 新建文档</span>
+					<span class="layui-btn layui-btn-warm tool-add tool-tips" data-tips="新建文件目录" id="addFolder"><strong class="iconfont icon-xiangmuguanli"></strong> 新建目录</span>
+				 </div>
+			</div>
+			<div class="layui-input-inline" style="width:268px">
+				<input type="text" name="keywords" placeholder="输入关键字，文件名称/目录名称" class="layui-input" autocomplete="off" />
+			</div>
+			<div class="layui-input-inline" style="width:142px">
+				<input type="hidden" name="pid" value="0" />
+				<input type="hidden" name="ext" value="" />
+				<input type="hidden" name="group_id" value="0" />
+				<input type="hidden" name="is_star" value="" />
+				<input type="hidden" name="share" value="" />
+				<input type="hidden" name="limit" value="30" />
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" style="margin-left:3px;">清空</button>
+			</div>
+			<div class="layui-input-inline" style="width:145px; float:right; padding-top:3px;">
+				<div class="layui-btn-group">
+					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips" data-tips="全选文件"><input type="checkbox" lay-filter="all" name="select_all" title="" disabled="true"></span>
+					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips show-types types-thumb" data-tips="缩略图模式" data-types="1"><i class="iconfont icon-charutupian"></i></span>
+					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips show-types types-list" data-tips="列表模式" data-types="2"><i class="iconfont icon-liebiao"></i></span>
+					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips" data-tips="删除文件" id="fileDelete"><i class="iconfont icon-cuowukongxin"></i></span>
+					<span class="layui-btn layui-btn-sm layui-btn-primary tool-tips" data-tips="移动文件" id="fileMove"><i class="iconfont icon-renjijiaohu"></i></span>
+				</div>
+			</div>
+		</form>
+		<div class="disk-path layui-form border-b">
+			<div class="disk-breadcrumb" id="diskPath"><i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">我的空间</a></div>
+			<div class="layui-input-inline" style="width:468px; float:right;">
+				<div class="layui-tabs layui-tab-brief" id="tab">
+					<ul class="layui-tabs-header">
+						<li class="layui-this" lay-id="">全部</li>
+						<li lay-id="image">图片</li>
+						<li lay-id="video">视频</li>
+						<li lay-id="audio">音频</li>
+						<li lay-id="pdf">PDF</li>
+						<li lay-id="office">办公文档</li>
+						<li lay-id="online">在线文档</li>
+						<li lay-id="zip">压缩包</li>
+						<li lay-id="other">其他</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="thumb">
+			<!-- 主体 -->
+			<div class="file-thumb">
+				<div class="file-subject">
+					<ul id="filesBox"></ul>
+				</div>
+			</div>
+			<!-- 页脚 -->
+			<div class="file-footer">
+				<div id="laypage"></div>
+			</div>
+		</div>
+		
+		<div id="list">
+			<table class="layui-hide" id="table_list" lay-filter="table_list"></table>
+		</div>
+    </div>
+</div>
+<div class="dropimg"><div style="padding-top:20%">上传文件到当前目录下</div></div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>	
+	const fileExt={
+		image:['jpg','jpeg','png','gif'],
+		office:['doc','docx','xls','xlsx','ppt','pptx'],
+		pdf:['txt','pdf','article'],
+		zip:['zip','rar','7z','gz','tar'],
+		video:['mpg','mp4','mpeg','avi','wmv','mov','flv','m4v'],
+		audio:['mp3','wav','wma','flac','midi']
+	};
+	
+	function isValidFileName(fileName) {
+		const illegalChars = /[\\\/\*\:"<>|\?]/;
+		return !illegalChars.test(fileName);
+	}
+	
+	function fileDo(item){
+		let type = '',ext="zip",is_star='',is_share='';
+		// 判断元素是否在数组中
+		let path='/static/home/images/icon/file.png';
+		if (fileExt.image.includes(item.file_ext)) {
+			path=item.thumbpath;
+			type = '0,1,3,4,5';
+			ext="image";
+		}
+		if (fileExt.office.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="office";
+			path='/static/home/images/icon/'+item.file_ext+'.png';
+		}
+		if (item.file_ext == 'pdf' || item.file_ext == 'txt') {
+			type = '0,1,3,4,5';
+			ext="pdf";
+			path='/static/home/images/icon/'+item.file_ext+'.png';
+		}								
+		if (fileExt.video.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="video";
+			path='/static/home/images/icon/video.png';
+		}
+		if (fileExt.audio.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="audio";
+			path='/static/home/images/icon/audio.png';
+		}
+		if (fileExt.zip.includes(item.file_ext)) {
+			type = '0,1,3,4,5';
+			ext="zip";
+			path='/static/home/images/icon/rar.png';
+		}
+		if(item.types==1){
+			type = '1,2,3,4,5';
+			ext="article";
+			path='/static/home/images/icon/article.png';
+		}
+		if(item.types==2){
+			type = '3,4,5';
+			ext="folder";
+			path='/static/home/images/icon/folder.png';
+		}
+		if(item.is_star==1){
+			type+=',7';
+			is_star='<div class="has-star" title="已标星"><i class="iconfont icon-pingfen"></i></div>';
+		}
+		else{
+			type+=',6';
+		}
+		if(item.share_types>0){
+			type+=',9';
+			is_share='<div class="has-share" title="已分享"><i class="iconfont icon-pingfen"></i></div>';
+		}
+		if(item.share_types==0 && item.types<2){
+			type+=',8';
+		}
+		return {type:type,path:path,ext:ext,is_star:is_star,is_share:is_share};
+	}
+	
+	//默认是列表模式
+	var types=2;
+	// 拖拽
+	var files = [],folders=[];droping=false;
+	const moduleInit = ['tool','uploadPlus','tablePlus'];
+	function gouguInit() {
+		var tool = layui.tool,uploadPlus = layui.uploadPlus,table = layui.tablePlus,form = layui.form,laypage = layui.laypage,tabs = layui.tabs;
+		//选择文件类型
+		tabs.on('afterChange(tab)', function(data){
+			if(data.index==0){
+				$('[name="ext"]').val('');
+			}
+			else{
+				let ext = typeExt[data.index];
+				$('[name="ext"]').val(fileExt[ext]);
+			}
+			$('[lay-filter="webform"]').click();
+			return false;
+		});
+		
+	
+        const drop = $('body');
+        drop.bind('dragenter', function (e) {
+			drop.addClass('drop');
+        });
+		
+        drop.bind('dragleave', function (e) {
+			if(droping==false){
+				layer.open({
+					type: 1,
+					area: ['692px', '600px'],
+					title: '拖拽文件夹及文件上传',
+					shade: 0.6, // 遮罩透明度
+					content: '<div class="file-tree">\
+								<table id="fileTree" class="layui-table layui-table-min" style="margin:0 auto;">\
+									<tr><th>文件名</th><th width="80">文件大小</th><th width="80">上传状态</th><th width="80">操作</th></tr>\
+								</table>\
+							</div>\
+							<div class="file-tree-bottom"><span class="layui-btn layui-bg-blue" id="fileTreeUpload">开始上传</span> <span class="layui-btn layui-btn-primary" id="fileTreeClear">清空文件</span></div>',
+					success:function(){
+						droping=true;
+						$('#fileTreeUpload').on('click',function(){
+							let t=0;
+							$.each(files, function(index, file) {
+								if(file.isok==0){
+									let formData = new FormData(); // 创建 FormData 对象
+									formData.append('file', file); // 将文件添加到 FormData
+									formData.append('filePath', file.filePath); // 将文件添加到 FormData
+									formData.append('pid',$('[name="pid"]').val());// 将当前文件夹添加到 FormData
+									formData.append('group_id',$('[name="group_id"]').val());// 将当前文件夹添加到 FormData
+									// 使用 jQuery AJAX 上传文件
+									setTimeout(function () {
+										$.ajax({
+											url: '/disk/api/drop_upload', // 服务器接收文件的接口
+											type: 'POST',
+											data: formData,
+											contentType: false, // 必须设置为 false，使用 FormData 对象不设置内容类型
+											processData: false, // 不处理数据
+											success: function(e) {
+												if(e.code==0){
+													files[index].isok = 1;
+													$('#'+file.id).addClass('ok').find('td').eq(1).html('已上传');
+													$('#'+file.id).addClass('ok').find('td').eq(2).html('-');
+													layer.msg(files[index].name+'上传完成');
+												}
+											},
+											error: function(e) {
+												$('#file'+index).addClass('error');	
+											}
+										});
+									}, 300*t);
+									t++;
+								}
+							});
+						})
+
+						$('#fileTreeClear').on('click',function(){						
+							// 这里可以进行文件的上传操作
+							files.length = 0;
+							$('#fileTree').html('');
+						})		
+
+						$('#fileTree').on('click','.del-file',function(){
+							let id = $(this).data('id');
+							let element = files.find(item => item.id === id);
+							// 如果找到元素，就将 isok 修改为 1
+							if (element) {
+								element.isok = 2;
+								$('#'+id).remove();
+							}
+						})							
+					},
+					end:function(){						
+						droping=false;
+						files.length = 0;
+						$('[lay-filter="webform"]').click();
+					}
+				});		
+			}
+        })
+        $(document).bind('dragover', function (e) {
+            e.preventDefault();
+			e.stopPropagation();
+            return false
+        })
+        $(document).bind('drop', function (e) {
+            e.preventDefault();
+			e.stopPropagation();
+			drop.removeClass('drop');
+            return false
+        })
+		
+		let count = 0,num = 0;
+        drop.bind('drop', function (e) {
+            const items = e.originalEvent.dataTransfer.items;
+            for (let i = 0; i < items.length; i++) {
+                let item = items[i];
+				console.log(item);
+                if (item.kind == 'file') {
+                    let entry = item.webkitGetAsEntry();
+					//console.log(entry);
+                    //递归解析文件夹
+                    getCount(entry)
+                    setTimeout(() => {
+						entry.id='file'+num;
+						num++;
+                        getFilesFromEntry(entry);
+                    }, 200)
+                }
+            }
+        })
+		
+        function getCount(entry) {
+            if (entry.isFile) {
+                entry.file(
+                    file => {
+                        count++
+                    },
+                    err => {
+                        console.log(err);
+                    }
+                )
+            } else {
+                const entryReader = entry.createReader()
+                entryReader.readEntries(
+                    (results) => {
+                        results.forEach(result => {
+                            getCount(result);
+                        })
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
+            }
+        }
+		
+        function getFilesFromEntry(entry) {
+           if (entry.isFile) {
+                entry.file(
+                    file => {
+                        file.filePath = entry.fullPath.slice(1);
+						file.isok=0;
+						file.id=entry.id;
+						
+						let element = files.find(item => item.filePath === file.filePath);						
+						if (element) {
+							console.log(files);
+						}
+						else{
+							files.push(file);
+							console.log(file);
+							let tr = '<tr class="file-tr" id="'+file.id+'"><td style="text-align:left;"><div class="file">'+entry.fullPath+'</div></td><td>'+tool.renderSize(file.size)+'</td><td>等待上传</td><td class="del-file" data-id="'+file.id+'">取消</td></tr>';
+							$('#fileTree').append(tr);
+						}
+                    },
+                    err => {
+                        console.log(err);
+                    }
+                )
+            } else {
+                const entryReader = entry.createReader();
+                entryReader.readEntries(
+                    (results) => {
+                        results.forEach(result => {
+							result.id='file'+num;
+							num++;
+                            getFilesFromEntry(result);
+                        })
+                    },
+                    (error) => {
+                        console.log(error);
+                    }
+                );
+            }			
+        }
+		
+		$('#diskBox').on('click','.show-types',function(){
+			types=$(this).data('types');
+			$('#diskBox').attr('class','disk-table types-'+types);
+			if(types==1){
+				$('[lay-filter="all"]').removeAttr('disabled').prop('checked', false);
+			}
+			else{
+				$('[lay-filter="all"]').attr('disabled',true).prop('checked', false);
+			}
+			form.render();
+			$('[lay-filter="webform"]').click();
+		})
+		
+		//上传文件
+        var attachment = new uploadPlus({
+            "title":'上传文件',
+            "target":'uploadBtn',
+            "url":'/disk/api/drop_upload',
+			"data":{pid:function(){
+					return $('[name="pid"]').val();
+					},'group_id':0},
+			"attachment":{
+				"ajaxSave":function(){
+					$('[lay-filter="webform"]').click();
+					layer.closeAll();
+				}
+			}
+		})
+		
+		let ctrl_callback = function (e) {
+			if(e.code == 0){
+				layer.closeAll();
+				layer.msg(e.msg);
+				$('[lay-filter="webform"]').click();
+			}
+			else{
+				layer.msg(e.msg);
+			}
+		}
+		
+		//左侧操作
+		$('#diskTypes').on('click','li',function(){
+			$('#diskTypes').find('li').removeClass('on-this');
+			$(this).addClass('on-this');
+			let tab = $(this).data('tab');
+			$('[name="pid"]').val(0);
+			$('[name="keywords"]').val('');
+			$('[name="ext"]').val('');
+			$('[name="is_star"]').val('');
+			$('[name="share"]').val('');
+			if(tab == 'star'){
+				$('[name="is_star"]').val('1');
+			}
+			if(tab == 'share'){
+				$('[name="share"]').val('1');
+			}
+			if(tab == 'myshare'){
+				$('[name="share"]').val('2');
+			}
+			$('[lay-filter="webform"]').click();
+		})
+		
+		//顶部目录操作
+		$('#diskPath').on('click','a',function(){
+			let id=$(this).data('id');
+			$('[name="pid"]').val(id);
+			$('[lay-filter="webform"]').click();
+		})
+		
+		//单文件选择操作
+		$('#filesBox').on('click','.file-check',function(){
+			$(this).parent().toggleClass("on");
+		})
+		
+		//全选操作
+		form.on('checkbox(all)', function (data) {
+		　　let val = data.value;
+			if(data.elem.checked){
+				//判断当前多选框是选中还是取消选中
+				$('#filesBox li').addClass('on');
+			}
+			else{
+				$('#filesBox li').removeClass('on');
+			}
+		});
+		
+		//批量删除操作
+		$('#fileDelete').on('click',function(){
+			let select_array = [];
+			if(types==1){
+				$('#filesBox').find('li.on').each(function(index,item){
+					select_array.push($(item).data('id'));			
+				})
+			}
+			if(types==2){
+				var checkStatus = table.checkStatus('table_list'); 
+				var data = checkStatus.data;
+				for(var i=0;i<data.length;i++){
+					select_array.push(data[i].id);
+				}
+			}
+			if(select_array.length<1){
+				layer.msg('请先选择文件');
+				return false;
+			}
+			layer.confirm('确定要删除这些文件吗？请慎重', { icon: 3, title: '提示' }, function (index) {
+				tool.delete("/disk/index/del", {ids:select_array.join(',')}, ctrl_callback);
+			});
+		});
+		
+		//批量移动操作
+		$('#fileMove').on('click',function(){
+			let select_array = [];
+			if(types==1){
+				$('#filesBox').find('li.on').each(function(index,item){
+					select_array.push($(item).data('id'));			
+				})
+			}
+			if(types==2){
+				var checkStatus = table.checkStatus('table_list'); 
+				var data = checkStatus.data;
+				for(var i=0;i<data.length;i++){
+					select_array.push(data[i].id);
+				}
+			}
+			if(select_array.length<1){
+				layer.msg('请先选择文件');
+				return false;
+			}
+			layer.open({
+				type: 2,
+				title: '移动到',
+				area: ['720px', '480px'],
+				content: '/disk/index/move',
+				maxmin: true,
+				btn: ['移动到此', '取消'],
+				btnAlign: 'c',
+				yes: function(index, layero){
+					// 获取 iframe 的窗口对象
+					let iframeWin =  window[layero.find('iframe')[0]['name']];
+					let folder = iframeWin.$('#folder'); // 获得 iframe 中某个输入框元素
+					let val = folder.val();
+					tool.post("/disk/index/move", {ids:select_array.join(','),pid:val}, ctrl_callback);
+				}
+			});
+		})
+		
+		//新增在线文档
+		$('#addArticle').on('click',function(){
+			tool.side('/disk/index/add_article?pid='+$('[name="pid"]').val());
+		})
+		
+		//新增目录
+		$('#addFolder').on('click',function(){
+			layer.prompt({title: '请输入目录名称'}, function(val, index, elem){
+				if(val==''){
+					layer.msg('目录名称不能为空');
+					return false;
+				}
+				if(isValidFileName(val)==false){
+					layer.msg('目录名称不能包含下列任何字符：\/:*?".<>|');
+					return false;
+				}
+				$.ajax({
+					url: "/disk/index/add_folder",
+					type:'post',
+					data:{
+						'pid':$('[name="pid"]').val(),
+						'name':val,
+						'id':0,
+						'group_id':$('[name="group_id"]').val()
+					},
+					success: ctrl_callback
+				})
+			});
+		})
+		
+		//查看文件
+		$('#filesBox,#list').on('click','.file-item',function(){
+			let id = $(this).parent().data('id');
+			let href = $(this).data('href');
+			let ext = $(this).data('ext');
+			if(ext == 'video'){
+				tool.videoView(href);
+			}
+			else if(ext == 'audio'){
+				tool.audioView(href);
+			}
+			else if(ext == 'image'){
+				tool.photoView(href);
+			}
+			else if(ext == 'pdf'){
+				tool.pdfView(href);
+			}
+			else if(ext == 'article'){
+				tool.articleView(id);
+			}
+			else if(ext == 'folder'){
+				$('[name="pid"]').val(id);
+				$('[lay-filter="webform"]').click();
+			}
+			else{
+				return false;
+			}
+		})
+		
+		//重命名文件
+		$('#filesBox,#list').on('click','.name-edit',function(){
+			let id = $(this).parent().parent().data('id');
+			let title = $(this).parent().parent().data('title');
+			let ext = $(this).parent().parent().data('ext');
+			let types = $(this).parent().parent().data('types');
+			title = title.toString().replace(/\.[^.]+$/, "");
+			layer.prompt({title: '重命名',value:title}, function(val, index, elem){
+				if(val==''){
+					layer.msg('文件名不能为空');
+					return false;
+				}
+				if(isValidFileName(val)==false){
+					layer.msg('文件名不能包含下列任何字符：\/:*?".<>|');
+					return false;
+				}
+				if(types == 0){
+					val =  val+'.'+ext;
+				}
+				tool.post("/disk/index/rename", {id:id,name:val,group_id:$('[name="group_id"]').val(),pid:$('[name="pid"]').val()}, ctrl_callback);
+			});
+		})		
+		
+		//单文件删除
+		$('#filesBox,#list').on('click','.file-delete',function(){
+			let id = $(this).parent().parent().data('id');
+			layer.confirm('确定要删除该文件吗？请慎重', { icon: 3, title: '提示' }, function (index) {
+				tool.delete("/disk/index/del", {ids:id}, ctrl_callback);
+			});
+		})
+		
+		//单文件标星
+		$('#filesBox,#list').on('click','.file-star',function(){
+			let id = $(this).parent().parent().data('id');
+			layer.confirm('确定要标星该文件吗？', { icon: 3, title: '提示' }, function (index) {
+				tool.post("/disk/index/star", {ids:id}, ctrl_callback);
+			});
+		})
+		
+		//单文件取消标星
+		$('#filesBox,#list').on('click','.file-starno',function(){
+			let id = $(this).parent().parent().data('id');			
+			layer.confirm('确定要取消标星该文件吗？', { icon: 3, title: '提示' }, function (index) {
+				tool.post("/disk/index/unstar", {ids:id}, ctrl_callback);
+			});
+		})
+		
+		//单文件移动
+		$('#filesBox,#list').on('click','.file-move',function(){
+			let ids = $(this).parent().parent().data('id');
+			layer.open({
+				type: 2,
+				title: '移动到',
+				area: ['720px', '480px'],
+				content: '/disk/index/move',
+				maxmin: true,
+				btn: ['移动到此', '取消'],
+				btnAlign: 'c',
+				yes: function(index, layero){
+					// 获取 iframe 的窗口对象
+					let iframeWin =  window[layero.find('iframe')[0]['name']];
+					let folder = iframeWin.$('#folder'); // 获得 iframe 中某个输入框元素
+					let val = folder.val();
+					tool.post("/disk/index/move", {ids:ids,pid:val}, ctrl_callback);
+				}
+			});
+		})
+		
+		//单文件分享
+		$('#filesBox,#list').on('click','.file-share',function(){
+			let id = $(this).parent().parent().data('id');
+			tool.side("/disk/index/share?id="+id);
+		})
+		
+		//单文件取消分享
+		$('#filesBox,#list').on('click','.file-shareno',function(){
+			let id = $(this).parent().parent().data('id');			
+			layer.confirm('确定要取消分享该文件吗？', { icon: 3, title: '提示' }, function (index) {
+				tool.post("/disk/index/unshare", {ids:id}, ctrl_callback);
+			});
+		})
+		
+		//加载数据
+		var data = form.val('barsearchform');
+		if(types==1){
+			get_files(data);
+		}
+		
+		form.on('submit(webform)', function (data) {
+			if(types==1){
+				get_files(data.field);
+			}
+			else{
+				layui.fileTable.reload({
+					where: data.field,
+					page: {curr: 1}
+				});
+			}
+			return false;
+		});
+		
+		$('.layui-btn-reset').click(function(){
+			setTimeout(function(){
+				$('[lay-filter="webform"]').click();
+			},200)
+		})
+		
+		//thumb数据加载
+		function get_files(param){
+			var loadIndex = layer.load(0);
+			$.ajax({
+				url:"/disk/index/datalist",
+				data:param,
+				complete:function(){
+					layer.close(loadIndex)
+				},
+				success:function(res){
+					$('[name="select_all"]').prop('checked', false);
+					form.render('checkbox');
+					if(res.code==0){
+						laypage.render({
+							elem: 'laypage',
+							limit:param['limit'],
+							curr:param['page'],
+							count: res.count, // 数据总数
+							jump: function(obj, first){
+								//console.log(obj.curr); // 得到当前页，以便向服务端请求对应页的数据。
+								//console.log(obj.limit); // 得到每页显示的条数
+								// 首次不执行
+								if(!first){
+									var data = form.val('barsearchform');
+									data['page'] = obj.curr;
+									get_files(data);
+								}
+							}
+						});
+
+						let folder = res.totalRow;
+						let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">我的空间</a>';
+						if(folder.length>0){
+							for(var f=0;f<folder.length;f++){
+								folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
+							}
+						}
+						$('#diskPath').html(folderHtml);
+					
+						var item=res.data,li='';
+						if(item.length>0){
+							for(var a=0;a<item.length;a++){								
+								let fileitem = fileDo(item[a]);
+								ctrl = '<span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+item[a].id+'" data-actionid="'+item[a].action_id+'" data-href="'+item[a].filepath+'" data-filename="'+item[a].name+'" data-ext="'+fileitem.ext+'" data-type="'+fileitem.type+'">操作</span>';
+								
+								li+='<li data-id="'+item[a].id+'" data-title="'+item[a].name+'" data-ext="'+item[a].file_ext+'" data-types="'+item[a].types+'"><img src="'+fileitem.path+'" alt="'+item[a].name+'" style="object-fit: contain;" class="file-item file-'+fileitem.ext+'" data-href="'+item[a].filepath+'" data-ext="'+fileitem.ext+'"><p title="'+item[a].name+'">'+item[a].name+'</p>\
+									<div class="layui-btn-ctrl">'+ctrl+'\
+									<span class="name-edit" style="display:none;" id="fileEdit'+item[a].id+'" title="重命名"></span>\
+									<span class="file-delete" style="display:none;" id="fileDel'+item[a].id+'" title="删除"></span>\
+									<span class="file-move" style="display:none;" id="fileMove'+item[a].id+'" title="移动"></span>\
+									<span class="file-star" style="display:none;" id="fileStar'+item[a].id+'" title="标星"></span>\
+									<span class="file-starno" style="display:none;" id="fileStarno'+item[a].id+'" title="取消标星"></span>\
+									<span class="file-share" style="display:none;" id="fileShare'+item[a].id+'" title="分享"></span>\
+									<span class="file-shareno" style="display:none;" id="fileShareno'+item[a].id+'" title="取消分享"></span>\
+									</div>\
+									<div class="file-check"><i class="layui-icon layui-icon-ok" style="font-size: 16px; color: #eeeeee;"></i></div>'+fileitem.is_star+fileitem.is_share+'</li>';
+							}
+							$('#filesBox').html(li);
+							$('#laypage').show();
+						}
+						else{
+							$('#filesBox').html('<div class="empty"><i class="layui-icon layui-icon-upload"></i><p>无文件文件，赶紧去上传吧!</p></div>');
+							$('#laypage').hide();
+						}
+					}	
+				}				
+			});
+		}
+		
+		//列表数据加载
+		layui.fileTable = table.render({
+			elem: "#table_list"
+			,toolbar: false
+			,url: "/disk/index/datalist"
+			,page: true
+			,limit: 30
+			,where:data
+			,cellMinWidth: 80
+			,height: 'full-155'
+			,lineStyle: 'height: 54px;'
+			,skin:'line'
+			,size:'lg'
+			,cols: [[
+				{type:'checkbox',fixed:'left'}
+				,{field:'name',title: '文件名',minWidth:300,templet:function(d){
+					let fileitem = fileDo(d);
+					return '<div data-id="'+d.id+'"><div class="file-item file-item-'+fileitem.ext+'" data-href="'+d.filepath+'" data-ext="'+fileitem.ext+'"><div style="float:left; width:32px; height:32px; margin-right:10px; margin-top:3px; margin-left:3px;"><img src="'+fileitem.path+'" style="width:100%; height:100%; vertical-align:top;object-fit: cover;" /></div><span>'+d.name+'</span></div></div>';
+				}}
+				,{field:'file_size',title: '文件大小',align: 'center',width: 120,templet:function(d){
+					if(d.file_size>0){
+						return tool.renderSize(d.file_size);
+					}else{
+						return '-';
+					}
+				}}
+				,{field: 'is_star', title: '是否星标',align:'center', width:80,templet:function(d){
+					if(d.types==2){
+						return '-';
+					}
+					var html='<span class="layui-icon layui-icon-rate" style="color:#5FB878; font-size:20px; cursor:pointer" lay-event="star"> </span>';
+					if(d.is_star==1){
+						html='<span class="layui-icon layui-icon-rate-solid" style="color:#ffb800; font-size:20px; cursor:pointer" lay-event="unstar"> </span>';
+					}
+					return html;
+				}}
+				,{field: 'share_types', title: '是否分享',align:'center', width:80,templet:function(d){
+					if(d.types==2){
+						return '-';
+					}
+					var html='<span class="iconfont icon-fenxiang" style="color:#1e9fff; font-size:20px; cursor:pointer" lay-event="share"> </span>';
+					if(d.share_types>0){
+						html='<span class="iconfont icon-fenxiang" style="color:#ff5722; font-size:20px; cursor:pointer" lay-event="unshare"> </span>';
+					}
+					return html;
+				}}
+				,{field:'admin_name',title: '创建人',width:100,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:100,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					let fileitem = fileDo(d);
+					var ctrl = '<div data-id="'+d.id+'" data-title="'+d.name+'" data-ext="'+d.file_ext+'" data-types="'+d.types+'"><span class="layui-btn layui-btn-xs layui-btn-normal file-ctrl" data-ctrl="disk" data-fileid="'+d.id+'" data-actionid="'+d.action_id+'" data-href="'+d.filepath+'" data-filename="'+d.name+'" data-ext="'+fileitem.ext+'" data-type="'+fileitem.type+'">\
+					操作 <i class="layui-icon layui-icon-down"></i></span>\
+					<div style="display:none">\
+						<span class="name-edit" id="fileEdit'+d.id+'" title="重命名"></span>\
+						<span class="file-delete" id="fileDel'+d.id+'" title="删除"></span>\
+						<span class="file-move" id="fileMove'+d.id+'" title="移动"></span>\
+						<span class="file-star" id="fileStar'+d.id+'" title="标星"></span>\
+						<span class="file-starno" id="fileStarno'+d.id+'" title="取消标星"></span>\
+						<span class="file-share" id="fileShare'+d.id+'" title="分享"></span>\
+						<span class="file-shareno" id="fileShareno'+d.id+'" title="取消分享"></span>\
+					</div></div>';
+					return ctrl
+				}}
+			]],
+			done:function(res){
+				let folder = res.totalRow;
+				let folderHtml='<i class="layui-icon layui-icon-windows"></i> <a href="javascript:void(0);" data-id="0">我的空间</a>';
+				if(folder.length>0){
+					for(var f=0;f<folder.length;f++){
+						folderHtml+='<span> 〉</span><a href="javascript:void(0);" data-id="'+folder[f].id+'">'+folder[f].name+'</a>';
+					}
+				}
+				$('#diskPath').html(folderHtml);
+			}
+		});
+			
+		table.on('tool(table_list)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if(e.code==0){
+					layui.fileTable.reload();
+				}
+			}
+			if(obj.event === 'star'){
+				layer.confirm('确定要标星该文件吗？', { icon: 3, title: '提示' }, function (index) {
+					tool.post("/disk/index/star", {ids:data.id}, callback);
+				});
+			}
+			if(obj.event === 'unstar'){
+				layer.confirm('确定要取消标星该文件吗？', { icon: 3, title: '提示' }, function (index) {
+					tool.post("/disk/index/unstar", {ids:data.id}, callback);
+				});
+			}
+			if(obj.event === 'share'){
+				tool.side("/disk/index/share?ids="+data.id);
+			}
+			if(obj.event === 'unshare'){
+				layer.confirm('确定要取消分享该文件吗？', { icon: 3, title: '提示' }, function (index) {
+					tool.post("/disk/index/unshare", {ids:data.id}, callback);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

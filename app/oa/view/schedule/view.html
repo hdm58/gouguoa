@@ -1,0 +1,49 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-page">
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">执行员工</td>
+			<td>{$detail.name}</td>									
+			<td class="layui-td-gray">所在部门</td>
+			<td>{$detail.department}</td>
+			<td class="layui-td-gray">工作类别</td>
+			<td>{$detail.work_cate}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">时间范围</td>
+			<td colspan="3">{$detail.start_time} {$detail.start_time_1} 至 {$detail.end_time_1}，共{$detail.labor_time}工时</td>
+			<td class="layui-td-gray">工作类型</td>
+			<td>{$detail.labor_type_string}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工作内容</td>
+			<td colspan="5">{$detail.title|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">补充描述</td>
+			<td colspan="5"><pre style="font-family:inherit">{$detail.remark|default=''}</pre></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联项目</td>
+			<td colspan="5">{$detail.project|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">关联任务</td>
+			<td colspan="5">{$detail.task|default='-'}</td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

@@ -3,27 +3,27 @@
 		<div class="layui-card layui-right-bar" style="height:99px;">
 			<ul class="p-3">
 				<li class="layui-col-xs3" style="border-right:1px solid #eeeeee;">
-					<a href="javascript:;" data-href="/home/index/contacts_book" data-id="2000" class="tab-a" data-title="通讯录">
-						<i class="iconfont icon-huamingce"></i>
-						<cite>通讯录</cite>
+					<a href="javascript:;" data-href="/oa/workplan/datalist" data-id="264" class="tab-a" data-title="工作计划" style="color:#1e9fff">
+						<i class="iconfont icon-zhaopin"></i>
+						<cite>工作计划</cite>
 					</a>
 				</li>
 				<li class="layui-col-xs3" style="border-right:1px solid #eeeeee;">
-					<a href="javascript:;" data-href="/oa/plan/calendar" data-id="100" class="tab-a" data-title="日程安排">
-						<i class="iconfont icon-kaoshijihua"></i>
+					<a href="javascript:;" data-href="/oa/plan/calendar" data-id="249" class="tab-a" data-title="日程安排" style="color:#16b777">
+						<i class="iconfont icon-richengguanli"></i>
 						<cite>日程安排</cite>
 					</a>
 				</li>
 				<li class="layui-col-xs3" style="border-right:1px solid #eeeeee;">
-					<a href="javascript:;" class="report-add">
+					<a href="javascript:;" class="report-add" style="color:#ff5722">
 						<i class="iconfont icon-rizhiguanli"></i>
 						<cite>+工作汇报</cite>
 					</a>
 				</li>
 				<li class="layui-col-xs3">
-					<a href="javascript:;" class="work-add">
+					<a href="javascript:;" class="work-add" style="color:#a233c6">
 						<i class="iconfont icon-renwujincheng"></i>
-						<cite>+工作记录</cite>
+						<cite>+工作日志</cite>
 					</a>
 				</li>
 			</ul>
@@ -31,9 +31,9 @@
 	</div>
 </div>
 <script>
-function layoutFastentry(tool,work,table){
+function layoutFastentry(tool,table){
 	$('.work-add').on('click',function(){
-		work.add(0,{'id':0});
+		tool.box('/oa/schedule/add',"新增工作日志", 820,450,false);
 	})
 	$('.report-add').on('click',function(){
 		var type=[{'id':1,'title':'日报'},{'id':2,'title':'周报'},{'id':3,'title':'月报'}];

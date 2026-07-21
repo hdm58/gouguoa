@@ -62,12 +62,29 @@ class dataauth extends BaseController
 	public function auth_detail($id)
     {
         $detail = Db::name('DataAuth')->where('id',$id)->find();
-		//	日常办公
+		//	人事模块
+		if($detail['name'] =='hr_admin'){			
+			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');
+			$detail['conf_1_str'] = implode(',', $conf_1_str);
+		}
+		//	办公模块
 		if($detail['name'] =='office_admin'){			
 			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');
 			$detail['conf_1_str'] = implode(',', $conf_1_str);
 			$conf_3_str = Db::name('Admin')->where('id', 'in', $detail['conf_3'])->column('name');
 			$detail['conf_3_str'] = implode(',', $conf_3_str);
+			$conf_4_str = Db::name('Admin')->where('id', 'in', $detail['conf_4'])->column('name');
+			$detail['conf_4_str'] = implode(',', $conf_4_str);
+			$conf_5_str = Db::name('Admin')->where('id', 'in', $detail['conf_5'])->column('name');
+			$detail['conf_5_str'] = implode(',', $conf_5_str);
+			$conf_6_str = Db::name('Admin')->where('id', 'in', $detail['conf_6'])->column('name');
+			$detail['conf_6_str'] = implode(',', $conf_6_str);
+			$conf_7_str = Db::name('Admin')->where('id', 'in', $detail['conf_7'])->column('name');
+            $detail['conf_7_str'] = implode(',', $conf_7_str);
+			$conf_8_str = Db::name('Admin')->where('id', 'in', $detail['conf_8'])->column('name');
+            $detail['conf_8_str'] = implode(',', $conf_8_str);
+			$conf_9_str = Db::name('Admin')->where('id', 'in', $detail['conf_9'])->column('name');
+            $detail['conf_9_str'] = implode(',', $conf_9_str);
 		}
 		if($detail['name'] =='finance_admin'){
 			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');

@@ -7,6 +7,9 @@
 			<ul class="layui-tabs-header">
 				<li class="layui-this"><a href="/oa/work/datalist?send=1">发送的汇报</a></li>
 				<li><a href="/oa/work/datalist?send=2">接受的汇报</a></li>
+				{eq name="$auth" value="1"}
+				<li><a href="/oa/work/datalist?send=3">全部汇报(管理员)</a></li>
+				{/eq}
 			</ul>
 		</div>
 	</div>

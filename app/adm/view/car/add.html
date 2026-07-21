@@ -23,8 +23,8 @@
 		<tr>
 			<td class="layui-td-gray-2">购买日期<font>*</font></td>
 			<td><input type="text" name="buy_time" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择购买日期" class="layui-input tool-time" data-max="0"></td>
-			<td class="layui-td-gray-2">购买价格<font>*</font></td>
-			<td><input type="text" name="price" value='' placeholder="请输入购买价格" lay-verify="required|number" lay-reqText="请输入购买价格" class="layui-input"></td>
+			<td class="layui-td-gray-2">购买价格</td>
+			<td><input type="text" name="price" value='' placeholder="请输入购买价格" lay-verify="number" class="layui-input"></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray-2">车身颜色<font>*</font></td>
@@ -45,12 +45,19 @@
 			<td><input type="text" name="review_time" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择车审到期日期" class="layui-input tool-time"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">车辆油耗<font>*</font></td>
-			<td><input type="text" name="oil" autocomplete="off" placeholder="请输入油耗" lay-verify="required" lay-reqText="请输入油耗" class="layui-input"></td>
+			<td class="layui-td-gray-2">车辆用途<font>*</font></td>
+			<td>
+				<input type="radio" name="types" lay-filter="types" value="0" title="公车" checked>
+				<input type="radio" name="types" lay-filter="types" value="1" title="专车">
+			</td>
 			<td class="layui-td-gray-2">开始里程数<font>*</font></td>
 			<td><input type="text" name="mileage" value='' placeholder="请输入开始里程数" lay-verify="required|number" lay-reqText="请输入开始里程数" class="layui-input"></td>
-			<td class="layui-td-gray-2">驾驶员</td>
-			<td><input type="text" name="driver_name" value='' readonly placeholder="请选择"class="layui-input picker-admin"><input type="hidden" name="driver" value='0'></td>
+			<td class="layui-td-gray">车辆油耗</td>
+			<td><input type="text" name="oil" autocomplete="off" placeholder="请输入油耗" class="layui-input"></td>
+		</tr>
+		<tr class="tr-driver" style="display:none;">
+			<td class="layui-td-gray-2">驾驶员<font>*</font></td>
+			<td colspan="5"><input type="text" name="driver_name" value='' readonly placeholder="请选择"class="layui-input picker-admin"><input type="hidden" name="driver" value='0'></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray-2">
@@ -102,8 +109,24 @@
 
 		//相关附件上传
 		var attachment = new uploadPlus();
+		
+		form.on('radio(types)', function (data) {
+			if(data.value==1){
+				$('.tr-driver').show();
+			}
+			else{
+				$('.tr-driver').hide();
+			}
+		})
 		//监听提交
 		form.on('submit(webform)', function(data){
+			if(data.field.types == 1 && data.field.driver_name==''){
+				layer.msg('请完善驾驶员');
+				return false;
+			}
+			if(data.field.types == 0){
+				data.field.driver=0;
+			}
 			let callback = function (e) {
 				layer.msg(e.msg);
 				if (e.code == 0) {

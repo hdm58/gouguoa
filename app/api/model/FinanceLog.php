@@ -24,6 +24,10 @@ class FinanceLog extends Model
 		'loan'=>['title'=>'日常借支','table'=>'Loan','amount_field'=>'cost','types'=>"2",'code'=>'LO'],
 		'loan_back'=>['title'=>'借支归还','table'=>'Loan','amount_field'=>'cost','types'=>"1",'code'=>'LC'],
 		'expense'=>['title'=>'日常报销','table'=>'Expense','amount_field'=>'pay_amount','types'=>"2",'code'=>'EX'],
+		'salary'=>['title'=>'员工工资','table'=>'Salary','amount_field'=>'salary','types'=>"2",'code'=>'SA'],
+		'social'=>['title'=>'员工社保','table'=>'Salary','amount_field'=>'social','types'=>"2",'code'=>'SO'],
+		'gongjijin'=>['title'=>'员工公积金','table'=>'Salary','amount_field'=>'gongjijin','types'=>"2",'code'=>'GJ'],
+		'tax'=>['title'=>'员工个税','table'=>'Salary','amount_field'=>'tax','types'=>"2",'code'=>'TA'],
 	 ];
 
 	 

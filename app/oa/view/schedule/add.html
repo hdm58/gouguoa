@@ -1,0 +1,87 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-page">
+	<table class="layui-table layui-table-form">
+		{empty name="$detail"}
+		<tr>
+			<td class="layui-td-gray">开始时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" name="start_time" readonly value="{$start_time|default=''}" data-type="datetime" data-format="yyyy-MM-dd HH:mm" data-min="-15" data-max="0" lay-verify="required" lay-reqText="请完善开始时间"></td>
+			<td class="layui-td-gray">结束时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" name="end_time" readonly value="{$detail.end_time|default=''}" data-type="datetime" data-format="yyyy-MM-dd HH:mm" data-min="-15" data-max="0" lay-verify="required" lay-reqText="请完善结束时间"></td>
+			<td class="layui-td-gray">工作类别<font>*</font></td>
+			<td>
+				<select name="work_cate" lay-verify="required" lay-reqText="请完善工作类别">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('WorkCate')" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		{else/}
+		<tr>
+			<td class="layui-td-gray">开始时间</td>
+			<td>{$start_time|default=''}</td>
+			<td class="layui-td-gray">结束时间</td>
+			<td>{$detail.end_time|default=''}</td>
+			<td class="layui-td-gray">工作类别<font>*</font></td>
+			<td>
+				<select name="cid" lay-verify="required" lay-reqText="请完善工作类别">
+					<option value="">请选择</option>
+					{volist name=":get_base_data('WorkCate')" id="vo"}
+					<option value="{$vo.id}" {eq name="$detail.cid" value="$vo.id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		{/empty}
+		<tr>
+			<td class="layui-td-gray">工作内容<font>*</font></td>
+			<td colspan="3"><input type="text" class="layui-input" name="title" value="{$detail.title|default=''}" lay-verify="required" lay-reqText="请完善日程内容"></td>
+			<td class="layui-td-gray">工作类型<font>*</font></td>
+			<td style="width:200px;">
+				{empty name="$detail"}
+				<input type="radio" name="labor_type" value="1" title="案头工作">
+				<input type="radio" name="labor_type" value="2" title="外勤工作">
+				{else/}
+				<input type="radio" name="labor_type" value="1" title="案头工作" {eq name="$detail.labor_type" value="1"} checked{/eq}>
+				<input type="radio" name="labor_type" value="2" title="外勤工作" {eq name="$detail.labor_type" value="2"} checked{/eq}>
+				{/empty}
+			</td>
+		</tr>						
+		<tr>
+			<td class="layui-td-gray">补充描述</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入事务内容" class="layui-textarea" style="height: 180px;">{$detail.remark|default=''}</textarea></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" value="{$detail.id|default=0}" name="id">
+		<input type="hidden" value="{$tid|default=0}" name="tid">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if(e.code==0){
+					tool.sideClose(1000);				
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/oa/schedule/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

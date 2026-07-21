@@ -34,42 +34,52 @@ class Schedule extends BaseController
     }
 	
     function datalist() {
+		$param = get_params();
+		$tab = isset($param['tab']) ? $param['tab'] : 0;	
+		$uid = $this->uid;
         if (request()->isAjax()) {
-            $param = get_params();
+			$dids_son = get_leader_departments($uid);
             $where = [];			
-            $whereOr = [];	
-			$uid= $this->uid;			
+            $where[] = ['delete_time', '=', 0];
 			if (!empty($param['keywords'])) {
-				$where[] = ['a.title', 'like', '%' . trim($param['keywords']) . '%'];
+				$where[] = ['title|remark', 'like', '%' . trim($param['keywords']) . '%'];
 			}
 			if (!empty($param['labor_type'])) {
-				$where[] = ['a.labor_type', '=',$param['labor_type']];
+				$where[] = ['labor_type', '=',$param['labor_type']];
 			}
 			if (!empty($param['cid'])) {
-				$where[] = ['a.cid', '=',$param['cid']];
+				$where[] = ['cid', '=',$param['cid']];
 			}
 			//按时间检索
 			if (!empty($param['diff_time'])) {
 				$diff_time =explode('~', $param['diff_time']);
-				$where[] = ['a.start_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+				$where[] = ['start_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
 			}
-            $where[] = ['a.delete_time', '=', 0];
-			if (!empty($param['uid'])) {
-				$where[] = ['a.admin_id', '=', $param['uid']];
-			} else {
-				$whereOr[] = ['a.admin_id', '=', $uid];
-				$dids_a = get_leader_departments($uid);	
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$whereOr[] = ['a.did','in',$dids];
+			if($tab==0){
+				$where[] = ['admin_id', '=',$uid];
+			}
+			if($tab==1){
+				if (!empty($param['uid'])) {
+					$where[] = ['admin_id', '=', $param['uid']];
+				}
+				else{
+					$where[] = ['admin_id', '<>', $uid];
+					$where[] = ['did','in',$dids_son];
 				}
 			}
-            $list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+			if($tab==2){
+				if (!empty($param['uid'])) {
+					$where[] = ['admin_id', '=', $param['uid']];
+				}
+			}
+            $list = $this->model->datalist($param,$where);
+            $labor_time = $this->model::where($where)->sum('labor_time');					
+			$totalRow['labor_time'] = sprintf("%.1f",$labor_time);
+            return table_assign(0, '', $list,$totalRow);
         } else {
-			View::assign('is_leader', isLeader($this->uid));
-			View::assign('role_auth', isAuth($this->uid,'office_admin','conf_1'));
+			View::assign('tab', $tab);
+			View::assign('is_leader', isLeader($uid));
+			View::assign('auth', isAuth($uid,'office_admin','conf_1'));
 			View::assign('hour_auth', valueAuth('office_admin','conf_2'));
             return view();
         }
@@ -78,9 +88,9 @@ class Schedule extends BaseController
     //工作记录
     public function calendar()
     {
+        $param = get_params();
+        $uid = $this->uid;
         if (request()->isAjax()) {
-            $param = get_params();
-            $uid = $this->uid;
             if (!empty($param['uid'])) {
                 $uid = $param['uid'];
             }
@@ -126,19 +136,17 @@ class Schedule extends BaseController
                 $timeZone = new DateTimeZone($_GET['timeZone']);
             }
 
-            // Accumulate an output array of event data arrays.
             $output_arrays = array();
             foreach ($input_arrays as $array) {
-                // Convert the input array into a useful Event object
                 $event = new ScheduleIndex($array, $timeZone);
-                // If the event is in-bounds, add it to the output
                 if ($event->isWithinDayRange($range_start, $range_end)) {
                     $output_arrays[] = $event->toArray();
                 }
             }
             return json($output_arrays);
         } else {
-			View::assign('is_leader', isLeader($this->uid));
+			View::assign('is_leader', isLeader($uid));
+			View::assign('auth', isAuth($uid,'office_admin','conf_1'));
             return view();
         }
     }
@@ -148,79 +156,95 @@ class Schedule extends BaseController
     {
         $param = get_params();
         $admin_id = $this->uid;
-        if ($param['id'] == 0) {
-			if (isset($param['start_time'])) {
-                $param['start_time'] = strtotime($param['start_time']);
-            }
-			if (isset($param['end_time'])) {
-                $param['end_time'] = strtotime($param['end_time']);
-            }
-            if (isset($param['end_time_a'])) {
-                $param['end_time'] = strtotime($param['end_time_a'] . '' . $param['end_time_b']);
-            }
-            if (isset($param['start_time_a'])) {
-                $param['start_time'] = strtotime($param['start_time_a'] . '' . $param['start_time_b']);
-            }
-            if (isset($param['end_time_a'])) {
-                $param['end_time'] = strtotime($param['end_time_a'] . '' . $param['end_time_b']);
-            }
-			if($param['start_time']>time()){
-				return to_assign(1, "开始时间不能大于现在时间");			
+		$param = get_params();
+		if (request()->isAjax()) {
+			if ($param['id'] == 0) {
+				if (isset($param['start_time'])) {
+					$param['start_time'] = strtotime($param['start_time']);
+				}
+				if (isset($param['end_time'])) {
+					$param['end_time'] = strtotime($param['end_time']);
+				}
+				if($param['start_time']>time()){
+					return to_assign(1, "开始时间不能大于现在时间");			
+				}
+				if ($param['end_time'] <= $param['start_time']) {
+					return to_assign(1, "结束时间需要大于开始时间");
+				}
+				if (date('d',$param['end_time']) != date('d',$param['start_time'])) {
+					return to_assign(1, "结束时间与开始时间必须是同一天");
+				}
+				$where1[] = ['delete_time', '=', 0];
+				$where1[] = ['admin_id', '=', $admin_id];
+				$where1[] = ['start_time', 'between', [$param['start_time'], $param['end_time'] - 1]];
+
+				$where2[] = ['delete_time', '=', 0];
+				$where2[] = ['admin_id', '=', $admin_id];
+				$where2[] = ['start_time', '<=', $param['start_time']];
+				$where2[] = ['start_time', '>=', $param['end_time']];
+
+				$where3[] = ['delete_time', '=', 0];
+				$where3[] = ['admin_id', '=', $admin_id];
+				$where3[] = ['end_time', 'between', [$param['start_time'] + 1, $param['end_time']]];
+
+				$record = Db::name('Schedule')
+					->where(function ($query) use ($where1) {
+						$query->where($where1);
+					})
+					->whereOr(function ($query) use ($where2) {
+						$query->where($where2);
+					})
+					->whereOr(function ($query) use ($where3) {
+						$query->where($where3);
+					})
+					->count();
+				if ($record > 0) {
+					return to_assign(1, "您所选的时间区间已有工作记录，请重新选时间");
+				}
+				$param['labor_time'] = ($param['end_time'] - $param['start_time']) / 3600;
+				$param['admin_id'] = $this->uid;
+				$param['did'] = $this->did;
+				$param['create_time'] = time();
+				$sid = Db::name('Schedule')->strict(false)->field(true)->insertGetId($param);
+				if ($sid > 0) {
+					add_log('add', $sid, $param);
+					return to_assign(0, '操作成功');
+				} else {
+					return to_assign(0, '操作失败');
+				}
+			} else {
+				$param['update_time'] = time();
+				$res = Db::name('Schedule')->strict(false)->field(true)->update($param);
+				if ($res !== false) {
+					add_log('edit', $param['id'], $param);
+					return to_assign(0, '操作成功');
+				} else {
+					return to_assign(0, '操作失败');
+				}
 			}
-            if ($param['end_time'] <= $param['start_time']) {
-                return to_assign(1, "结束时间需要大于开始时间");
-            }
-			if (date('d',$param['end_time']) != date('d',$param['start_time'])) {
-                return to_assign(1, "结束时间与开始时间必须是同一天");
-            }
-            $where1[] = ['delete_time', '=', 0];
-            $where1[] = ['admin_id', '=', $admin_id];
-            $where1[] = ['start_time', 'between', [$param['start_time'], $param['end_time'] - 1]];
-
-            $where2[] = ['delete_time', '=', 0];
-            $where2[] = ['admin_id', '=', $admin_id];
-            $where2[] = ['start_time', '<=', $param['start_time']];
-            $where2[] = ['start_time', '>=', $param['end_time']];
-
-            $where3[] = ['delete_time', '=', 0];
-            $where3[] = ['admin_id', '=', $admin_id];
-            $where3[] = ['end_time', 'between', [$param['start_time'] + 1, $param['end_time']]];
-
-            $record = Db::name('Schedule')
-                ->where(function ($query) use ($where1) {
-                    $query->where($where1);
-                })
-                ->whereOr(function ($query) use ($where2) {
-                    $query->where($where2);
-                })
-                ->whereOr(function ($query) use ($where3) {
-                    $query->where($where3);
-                })
-                ->count();
-            if ($record > 0) {
-                return to_assign(1, "您所选的时间区间已有工作记录，请重新选时间");
-            }
-            $param['labor_time'] = ($param['end_time'] - $param['start_time']) / 3600;
-            $param['admin_id'] = $admin_id;
-            $param['did'] = get_admin($admin_id)['did'];
-            $param['create_time'] = time();
-            $sid = Db::name('Schedule')->strict(false)->field(true)->insertGetId($param);
-            if ($sid > 0) {
-                add_log('add', $sid, $param);
-                return to_assign(0, '操作成功');
-            } else {
-                return to_assign(0, '操作失败');
-            }
-        } else {
-            $param['update_time'] = time();
-            $res = Db::name('Schedule')->strict(false)->field(true)->update($param);
-            if ($res !== false) {
-                add_log('edit', $param['id'], $param);
-                return to_assign(0, '操作成功');
-            } else {
-                return to_assign(0, '操作失败');
-            }
-        }
+		}
+		else{
+			$start_time=date('Y-m-d H').':00';
+			$tid=0;
+			if(!empty($param['start_time'])){
+				$start_time=$param['start_time'];
+			}
+			if(!empty($param['tid'])){
+				$tid=$param['tid'];
+			}
+			if (!empty($param['id'])) {
+				$detail = Db::name('Schedule')->where(['id' => $param['id']])->find();
+				$detail['start_time'] = to_date($detail['start_time'],'Y-m-d H:i');
+				$detail['end_time'] = to_date($detail['end_time'],'Y-m-d H:i');
+				$detail['admin_name'] = Db::name('Admin')->where(['id' => $detail['admin_id']])->value('name');
+				$start_time = $detail['start_time'];
+				$tid = $detail['tid'];
+				View::assign('detail', $detail);
+			}
+			View::assign('start_time', $start_time);
+			View::assign('tid', $tid);
+			return view();
+		}
     }
 
     //删除工作记录
@@ -275,7 +299,7 @@ class Schedule extends BaseController
 			if(is_mobile()){
 				return view('qiye@/index/schedule_view');
 			}
-            return $schedule;
+            return view();
         }
     }
 

@@ -1,0 +1,255 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">工资单</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">工资单</td>
+			<td colspan="5">{$detail.title|default=''}</td>
+			<td class="layui-td-gray">工资月份</td>
+			<td>{$detail.month_time}</td>
+			<td class="layui-td-gray">当前状态</td>
+			<td><span class="check-status-color-{$detail.status}">{$detail.status_name}</span></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">总工资</td>
+			<td>{$detail.salary}</td>
+			<td class="layui-td-gray">总个税</td>
+			<td>{$detail.tax}</td>
+			<td class="layui-td-gray">总社保</td>
+			<td>{$detail.social}</td>
+			<td class="layui-td-gray">总公积金</td>
+			<td>{$detail.gongjijin}</td>
+			<td class="layui-td-gray">总金额</td>
+			<td class="green">{$detail.amount}</td>
+		</tr>
+	</table>
+	<div class="pt-3">
+		<table class="layui-hide" id="table_records" lay-filter="table_records"></table>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+	{eq name="$detail.status" value="0"}
+	<div class="layui-btn-group">
+		<button type="button" class="layui-btn layui-btn-sm layui-bg-blue records_import">导入工资</button>
+		<button type="button" class="layui-btn layui-btn-sm records_add">新增工资</button>
+		<button type="button" class="layui-btn layui-btn-sm layui-bg-orange records_pay">设为已发放</button>
+	</div>
+	{/eq}
+	{gt name="$detail.status" value="0"}
+	<h3>工资数据</h3>
+	{/gt}
+</script>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','uploadPlus','oaPicker'];
+	const salary_id = {$detail.id};
+	function gouguInit() {
+		var form  = layui.form,table = layui.tablePlus, tool = layui.tool, oaPicker = layui.oaPicker,uploadPlus = layui.uploadPlus;
+		
+		layui.recordsTable = table.render({
+			elem: "#table_records"
+			,title: '工资数据列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/adm/api/get_records?limit=10000"
+			,where:{'salary_id':salary_id}
+			,page: false
+			,cellMinWidth: 80
+			,height: 'full-185'
+			,cols: [[
+				{field:'name',fixed:'left',title: '姓名',width:80, align:'center'}
+				,{field:'department',title: '所在部门',width:100, align:'center'}
+				,{field:'position',title: '职位',width:100, align:'center'}
+				,{field:'status_name',title: '状态',width:100, align:'center',ignoreExport:true,templet: function (d) {
+						var html = '<span class="check-status-color-'+d.status+'">『'+d.status_name+'』</span>';
+						return html;
+					}
+				}  
+				,{field:'salary_basic', title: '基本工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_position', title: '岗位工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_performance', title: '效益工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				
+				,{field:'salary_quanqin', title: '全勤奖金',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_overwork', title: '加班工资',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_meal', title: '用餐补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				
+				,{field:'salary_phone', title: '话费补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}				
+				,{field:'salary_traffic', title: '交通补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_house', title: '住房补贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				
+				,{field:'salary_fuli', title: '节假福利',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_protecting', title: '保竞津贴',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'salary_bonus', title: '奖金',width:80,align:'center',style: 'background-color:#F3FFFA'}				
+				,{field:'total_payable', title: '应发工资',width:100,align:'center',style: 'background-color:#F3FFFA;color:#16b777'}
+				
+				,{field:'deduct_belate', title: '迟到扣除',width:100,align:'center',style: 'background-color:#FEF5F3;'}
+				,{field:'deduct_leave', title: '事假扣除',width:80,align:'center',style: 'background-color:#FEF5F3'}
+				,{field:'deduct_absenteeism', title: '旷工扣除',width:80,align:'center',style: 'background-color:#FEF5F3'}				
+				,{field:'total_deduction', title: '应扣工资',width:100,align:'center',style: 'background-color:#FEF5F3;color:#ff5722'}
+				
+				,{field:'deduct_social', title: '社保',width:80,align:'center',style: 'background-color:#FDF8FF'}
+				,{field:'deduct_gongjijin', title: '公积金',width:80,align:'center',style: 'background-color:#FDF8FF'}
+				,{field:'deduct_tax', title: '个税',width:80,align:'center',style: 'background-color:#FDF8FF;'}
+				,{field:'total_statutory', title: '代扣代缴',width:100,align:'center',style: 'background-color:#FDF8FF;color:#A233C6'}
+				,{field:'remark',title: '备注信息',minWidth:120}
+				,{field:'total_payment',fixed:'right',title: '实发工资',width:90, align:'center',style: 'color:#1e9fff'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					if(d.status==0){
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					}
+					else{
+						html = btn1;
+					}
+					return html;
+				}}
+			]]
+		});
+		
+		table.on('tool(table_records)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/salary/records_view?id="+data.id);
+			}
+			if (obj.event === 'edit') {
+				tool.side("/adm/salary/records_add?id="+data.id);
+			}
+			return false;
+		});
+		
+		$('body').on('click','.records_add',function(){
+			tool.side("/adm/salary/records_add?salary_id="+salary_id);		
+		})
+		
+		$('body').on('click','.records_import',function(){
+			let importUpload = new uploadPlus({
+				"title":'批量导入员工工资',
+				"use":'import',
+				"url":'/api/import/import_salary?salary_id='+salary_id,
+				"import":{
+					"template":'/static/home/file/勾股OA员工工资导入模板.xlsx',
+					"tips":'如果导入失败，请根据提示注意检查表格数据，员工姓名、员工手机号、员工需要是系统中存在的数据，如果不存在的话可能会导入失败。'
+				},
+				callback:function(res){
+					tool.reload(1000);
+					parent.layui.pageTable.reload();
+				}
+			});	
+			return;				
+		})
+		
+        //选择客户弹窗        
+        $('body').on('click','.picker-account',function () {
+			let enterprise_id = $('[name="enterprise_id"]').val();
+			if(enterprise_id=='' || enterprise_id==0){
+				layer.msg('请先完善企业主体');
+				return false;
+			}
+            let that = $(this),ids = [],titles=[],map = {enterprise_id:enterprise_id},types = 'account',type = 1;
+            let callback = function(data){
+                for ( var i = 0; i <data.length; i++){
+                    ids.push(data[i].id);
+                    titles.push(data[i].title);
+                }
+                that.val(titles.join(','));
+                that.next().val(ids.join(','));
+            }
+            oaPicker.picker(types,type,callback,map);
+        });
+
+		
+		$('body').on('click','.records_pay',function(){
+			layer.open({
+				type: 1
+				,title: '设为已发放后，该工资单将无法修改'
+				,area: ['396px','396px']
+				,id: 'LAY_module' //设定一个id，防止重复弹出
+				,btn: ['确定', '取消']
+				,btnAlign: 'c'
+				,content: '<div  class="layui-form" style="padding-top:15px;">\
+							<div class="layui-form-item">\
+							  <label class="layui-form-label">发放日期</label>\
+							  <div class="layui-input-inline">\
+								<input type="text" name="pay_time" value="" readonly placeholder="请完善发放日期" class="layui-input tool-time">\
+							  </div>\
+							</div>\
+							<div class="layui-form-item">\
+							  <label class="layui-form-label">企业主体</label>\
+							  <div class="layui-input-inline">\
+									<input type="text" name="enterprise" value="" readonly placeholder="请选择发放企业主体" class="layui-input picker-oa" data-types="enterprise">\
+									<input type="hidden" name="enterprise_id" value="">\
+							  </div>\
+							</div>\
+							<div class="layui-form-item">\
+							  <label class="layui-form-label">资金账户</label>\
+							  <div class="layui-input-inline">\
+									<input type="text" name="account" value="" readonly placeholder="请选择发放资金账户" class="layui-input picker-account" data-types="account">\
+									<input type="hidden" name="account_id" value="">\
+							  </div>\
+							</div>\
+							<div class="layui-form-item">\
+							  <label class="layui-form-label">支付方式</label>\
+							  <div class="layui-input-inline">\
+									<input type="text" name="paytype" value="" readonly placeholder="请选择支付方式" class="layui-input picker-oa" data-types="paytype">\
+									<input type="hidden" name="paytype_id" value="">\
+							  </div>\
+							</div>\
+						  </div>'
+				,success:function(){
+					form.render();
+					$(parent.$('.express-close')).addClass('parent-colse');
+				}
+				,end:function(){
+					$(parent.$('.express-close')).removeClass('parent-colse');
+				}
+				,yes: function(index){
+					let pay_time = $('#LAY_module').find('[name="pay_time"]').val();
+					let enterprise_id  = $('#LAY_module').find('[name="enterprise_id"]').val();
+					let account_id = $('#LAY_module').find('[name="account_id"]').val();
+					let paytype_id = $('#LAY_module').find('[name="paytype_id"]').val();
+					if(pay_time ==''){
+						layer.msg('选择发放日期');
+						return false;
+					}
+					if(enterprise_id =='' || enterprise_id==0){
+						layer.msg('选择企业主体');
+						return false;
+					}
+					if(account_id =='' || account_id==0){
+						layer.msg('选择资金账户');
+						return false;
+					}
+					if(paytype_id =='' || paytype_id==0){
+						layer.msg('选择支付方式');
+						return false;
+					}
+					$.ajax({
+						url: "/adm/api/salary_pay",
+						type:'post',
+						data:{salary_id:salary_id,pay_time:pay_time,enterprise_id:enterprise_id,account_id:account_id,paytype_id:paytype_id},
+						success:function(res){
+							layer.msg(res.msg);
+							if(res.code==0){
+								tool.reload(1000);
+								parent.layui.pageTable.reload();
+								layer.closeAll();
+							}
+						}
+					})						
+				}
+				,btn2: function(){
+					layer.closeAll();
+				}
+			});
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

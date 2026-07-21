@@ -1,0 +1,63 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style type="text/css">
+.layui-timeline-item{position:relative;}
+.layui-timeline-item button{display:none;}
+.layui-timeline-item:hover button{display:inline;}
+.layui-timeline-time{position:absolute;top:-2px; left:-90px; font-size:15px; color:#16b777}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="bg-white p-4 border">
+		<div class="layui-btn-container">
+			<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/adm/events/add">+ 添加企业大事记</button>
+		</div>
+		<div class="layui-timeline pt-4" style="padding-left:100px;">
+			{volist name="$list" id="vo"}
+			<div class="layui-timeline-item">
+				{eq name="$vo.importance" value="0"}
+				<i class="layui-icon layui-timeline-axis layui-icon-circle-dot"></i>
+				{else/}
+				<i class="layui-icon layui-timeline-axis layui-icon-fire"></i>
+				{/eq}
+				<div class="layui-timeline-content">
+					<div class="layui-timeline-time">{$vo.event_time|to_date='Y-m-d'}</div>
+					<h4 class="layui-timeline-title">{$vo.title|default='-'} <button class="layui-btn layui-btn-xs layui-bg-blue side-a" type="button" data-href="/adm/events/add?id={$vo.id}">编辑</button><button class="layui-btn layui-btn-xs layui-bg-red del" type="button" data-id="{$vo.id}">删除</button></h4>
+					{notempty name="$vo.content"}
+					<pre style="font-family:inherit">{$vo.content}</pre>
+					{/notempty}
+				</div>
+			</div>
+			{/volist}
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool;
+			
+		$('.del').on('click',function(){
+			let id=$(this).data('id');
+			tool.ask('确定要删除该内容吗?', function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						tool.reload(1000);
+					}
+				}
+				tool.delete("/adm/events/del", { id:id }, callback);
+			});
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

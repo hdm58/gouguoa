@@ -80,7 +80,7 @@ class Work extends BaseController
 				$map[] = ['delete_time', '=', 0];
 				$list =  $this->model->get_send($param,$map);
 			}
-			else{
+			if($param['send']==2){
 				if (!empty($param['read'])) {
 					if($param['read']==1){
 						$map[] = ['a.read_time', '=', 0];
@@ -99,10 +99,30 @@ class Work extends BaseController
 					$map[] = ['a.send_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1]))]];
 				}
 				$list = $this->get_accept($map, $param);
-			}            
+			}
+			if($param['send']==3){
+				if (!empty($param['types'])) {
+					$map[] = ['types', '=', $param['types']];
+				}
+				//按时间检索
+				if (!empty($param['diff_time'])) {
+					$diff_time =explode('~', $param['diff_time']);
+					$map[] = ['start_date', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1]))]];
+				}
+				if (!empty($param['uid'])) {
+					$map[] = ['admin_id', '=', $param['uid']];
+				}     
+				$map[] = ['delete_time', '=', 0];
+				$list =  $this->model->get_send($param,$map);
+			}			
             return table_assign(0, '', $list);
         } else {
 			$send = empty(get_params('send')) ? 1 : get_params('send');
+			$auth = isAuth($this->uid,'office_admin','conf_5');
+			View::assign('auth', $auth);
+			if($auth == 0 && $send==3){
+				return view(EEEOR_REPORTING,['code'=>405,'warning'=>'无权限访问']);
+			}
 			return view('datalist_'.$send);
         }
     }

@@ -24,41 +24,41 @@ use think\facade\View;
 class Plan extends BaseController
 {
     function datalist() {
-        if (request()->isAjax()) {
-            $param = get_params();			
-			//按时间检索
+        $param = get_params();
+		$tab = isset($param['tab']) ? $param['tab'] : 0;	
+		$uid = $this->uid;	
+        if (request()->isAjax()) {				
+			$where = [];
+            $whereOr = [];
+            $where[] = ['delete_time', '=', 0];
 			if (!empty($param['diff_time'])) {
 				$diff_time =explode('~', $param['diff_time']);
-                $where[] = ['a.start_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
-            }
-			
+                $where[] = ['start_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
+            }			
             if (!empty($param['keywords'])) {
-                $where[] = ['a.title', 'like', '%' . trim($param['keywords']) . '%'];
-            }
-            if (!empty($param['uid'])) {
-                $where[] = ['a.admin_id', '=', $param['uid']];
-            } else {
-                $where[] = ['a.admin_id', '=', $this->uid];
+                $where[] = ['title', 'like', '%' . trim($param['keywords']) . '%'];
             }
 			if (!empty($param['type'])) {
-                $where[] = ['a.type', '=', $param['type']];
+                $where[] = ['type', '=', $param['type']];
             }
-            $where[] = ['a.delete_time', '=', 0];
-            $rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-            $plan = PlanList::where($where)
-                ->field('a.*,u.name as create_admin')
-                ->alias('a')
-                ->join('admin u', 'u.id = a.admin_id', 'LEFT')
-                ->order('a.id desc')
-                ->paginate(['list_rows'=> $rows])
-                ->each(function ($item, $key) {
-                    $item->remind_time = empty($item->remind_time) ? '-' : to_date($item->remind_time,'Y-m-d H:i');
-                    $item->start_time = empty($item->start_time) ? '' : to_date($item->start_time,'Y-m-d H:i');
-                    $item->end_time = empty($item->end_time) ? '': to_date($item->end_time,'Y-m-d H:i');
-                });
-            return table_assign(0, '', $plan);
-        } else {
-			View::assign('is_leader', isLeader($this->uid));
+			if($tab==1){
+				if (!empty($param['uid'])) {
+					$uid = $param['uid'];
+				}
+				$whereOr[] = ['admin_id', '=', $uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];
+			}
+			else{
+				$whereOr[] = ['admin_id', '=', $uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];
+			}
+			
+            $model = new PlanList();
+            $list = $model->datalist($param,$where,$whereOr);
+            return table_assign(0, '', $list);
+        } else {			
+			View::assign('tab', $tab);
+			View::assign('auth', isAuth($uid,'office_admin','conf_4'));
             return view();
         }
     }
@@ -73,15 +73,22 @@ class Plan extends BaseController
                 $uid = $param['uid'];
             }
             $where = [];
+            $whereOr = [];
 			
 			$where[] = ['start_time','<=',strtotime($param['end'])];
             $where[] = ['end_time','>=',strtotime($param['start'])];
             $where[] = ['delete_time', '=', 0];
-            $where[] = ['admin_id', '=', $uid];
+            $whereOr[] = ['admin_id', '=', $uid];
+            $whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];
 
             $schedule = Db::name('Plan')
             ->where($where)
-            ->field('id,title,type,remind_type,start_time,end_time')
+			->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})
+            ->field('id,title,type,remind_type,start_time,end_time,admin_id')
             ->select()->toArray();
             $events = [];
             $bg_array=['#ECECEC','#FFD3D3','#F6F6C7','#D7EBFF','#CCEBCC','#E9E9CB'];
@@ -104,19 +111,16 @@ class Plan extends BaseController
                 $timeZone = new DateTimeZone($_GET['timeZone']);
             }
 
-            // Accumulate an output array of event data arrays.
             $output_arrays = array();
             foreach ($input_arrays as $array) {
-                // Convert the input array into a useful Event object
                 $event = new ScheduleIndex($array, $timeZone);
-                // If the event is in-bounds, add it to the output
                 if ($event->isWithinDayRange($range_start, $range_end)) {
                     $output_arrays[] = $event->toArray();
                 }
             }
             return json($output_arrays);
         } else {
-			View::assign('is_leader', isLeader($this->uid));
+			View::assign('auth', isAuth($this->uid,'office_admin','conf_4'));
             return view();
         }
     }
@@ -125,68 +129,77 @@ class Plan extends BaseController
     public function add()
     {
         $param = get_params();
-        $admin_id = $this->uid;
-		if (isset($param['start_time'])) {
-			$param['start_time'] = strtotime($param['start_time']);
+		if (request()->isAjax()) {
+			if (isset($param['start_time'])) {
+				$param['start_time'] = strtotime($param['start_time']);
+			}
+			if (isset($param['end_time'])) {
+				$param['end_time'] = strtotime($param['end_time']);
+			}
+			if ($param['end_time'] <= $param['start_time']) {
+				return to_assign(1, "结束时间需要大于开始时间");
+			}
+			$param['remind_time']=0;
+			if (isset($param['remind_type'])) {
+				if($param['remind_type']==1){
+					$param['remind_time'] = $param['start_time']-5*60;
+				}
+				if($param['remind_type']==2){
+					$param['remind_time'] = $param['start_time']-15*60;
+				}
+				if($param['remind_type']==3){
+					$param['remind_time'] = $param['start_time']-30*60;
+				}
+				if($param['remind_type']==4){
+					$param['remind_time'] = $param['start_time']-60*60;
+				}
+				if($param['remind_type']==5){
+					$param['remind_time'] = $param['start_time']-120*60;
+				}
+				if($param['remind_type']==6){
+					$param['remind_time'] = $param['start_time']-1440*60;
+				}
+			}
+			if ($param['id'] == 0) {
+				$param['admin_id'] = $this->uid;
+				$param['did'] = $this->did;
+				$param['create_time'] = time();
+				$insertid = Db::name('Plan')->strict(false)->field(true)->insertGetId($param);
+				if ($insertid > 0) {
+					add_log('add', $insertid, $param);
+					return to_assign(0, '操作成功');
+				} else {
+					return to_assign(0, '操作失败');
+				}
+			} else {
+				$param['update_time'] = time();
+				$res = Db::name('Plan')->strict(false)->field(true)->update($param);
+				if ($res !== false) {
+					add_log('edit', $param['id'], $param);
+					return to_assign(0, '操作成功');
+				} else {
+					return to_assign(0, '操作失败');
+				}
+			}
 		}
-		if (isset($param['end_time'])) {
-			$param['end_time'] = strtotime($param['end_time']);
+		else{
+			$start_time='';
+			if(!empty($param['start_time'])){
+				$start_time=$param['start_time'];
+			}
+			if (!empty($param['id'])) {
+				$detail = Db::name('Plan')->where(['id' => $param['id']])->find();
+				$detail['start_time'] = to_date($detail['start_time'],'Y-m-d H:i');
+				$detail['end_time'] = to_date($detail['end_time'],'Y-m-d H:i');
+				$detail['admin_name'] = Db::name('Admin')->where(['id' => $detail['admin_id']])->value('name');
+				$unames = Db::name('Admin')->where('id','in',$detail['uids'])->column('name');
+				$detail['unames'] = implode(',' ,$unames);
+				$start_time = $detail['start_time'];
+				View::assign('detail', $detail);
+			}
+			View::assign('start_time', $start_time);
+			return view();
 		}
-        if (isset($param['start_time_a'])) {
-            $param['start_time'] = strtotime($param['start_time_a'] . '' . $param['start_time_b']);
-        }
-        if (isset($param['end_time_a'])) {
-            $param['end_time'] = strtotime($param['end_time_a'] . '' . $param['end_time_b']);
-        }
-        if ($param['end_time'] <= $param['start_time']) {
-            return to_assign(1, "结束时间需要大于开始时间");
-        }
-		/*
-		if ($param['start_time'] <= time()) {
-            return to_assign(1, "开始时间需要大于当前时间");
-        }
-		*/
-		if (isset($param['remind_type'])) {
-			if($param['remind_type']==1){
-				$param['remind_time'] = $param['start_time']-5*60;
-			}
-			if($param['remind_type']==2){
-				$param['remind_time'] = $param['start_time']-15*60;
-			}
-			if($param['remind_type']==3){
-				$param['remind_time'] = $param['start_time']-30*60;
-			}
-			if($param['remind_type']==4){
-				$param['remind_time'] = $param['start_time']-60*60;
-			}
-			if($param['remind_type']==5){
-				$param['remind_time'] = $param['start_time']-120*60;
-			}
-			if($param['remind_type']==6){
-				$param['remind_time'] = $param['start_time']-1440*60;
-			}
-		}
-        if ($param['id'] == 0) {
-            $param['admin_id'] = $admin_id;
-            $param['did'] = get_admin($admin_id)['did'];
-            $param['create_time'] = time();
-            $insertid = Db::name('Plan')->strict(false)->field(true)->insertGetId($param);
-            if ($insertid > 0) {
-                add_log('add', $insertid, $param);
-                return to_assign(0, '操作成功');
-            } else {
-                return to_assign(0, '操作失败');
-            }
-        } else {
-            $param['update_time'] = time();
-            $res = Db::name('Plan')->strict(false)->field(true)->update($param);
-            if ($res !== false) {
-                add_log('edit', $param['id'], $param);
-                return to_assign(0, '操作成功');
-            } else {
-                return to_assign(0, '操作失败');
-            }
-        }
     }
 
     //删除工作记录
@@ -209,14 +222,10 @@ class Plan extends BaseController
         $schedule = Db::name('Plan')->where(['id' => $id])->find();
         if (!empty($schedule)) {
             $schedule['remind_time'] = $schedule['remind_time'] == 0?'-':date('Y-m-d H:i', $schedule['remind_time']);
-            $schedule['start_time_a'] = date('Y-m-d', $schedule['start_time']);
-            $schedule['end_time_a'] = date('Y-m-d', $schedule['end_time']);
-            $schedule['start_time_b'] = date('H:i', $schedule['start_time']);
-            $schedule['end_time_b'] = date('H:i', $schedule['end_time']);
             $schedule['start_time'] = date('Y-m-d H:i', $schedule['start_time']);
             $schedule['end_time'] = date('Y-m-d H:i', $schedule['end_time']);
             $schedule['create_time'] = date('Y-m-d H:i:s', $schedule['create_time']);
-            $schedule['user'] = Db::name('Admin')->where(['id' => $schedule['admin_id']])->value('name');
+            $schedule['admin_name'] = Db::name('Admin')->where(['id' => $schedule['admin_id']])->value('name');
         }
         return $schedule;
     }
@@ -225,11 +234,12 @@ class Plan extends BaseController
     public function view()
     {
 		$id = get_params("id");
-        $schedule = $this->detail($id);
+        $detail = $this->detail($id);
         if (request()->isAjax()) {
-            return to_assign(0, "", $schedule);
+            return to_assign(0, "", $detail);
         } else {
-            return $schedule;
+            View::assign('detail', $detail);
+			return view();
         }
     }
 

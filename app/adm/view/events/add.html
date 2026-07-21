@@ -1,0 +1,58 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">企业大事记</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">事件标题<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" lay-verify="required" lay-reqText="请输入事件标题" placeholder="请输入事件标题" class="layui-input" value="{$detail.title|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">事件时间<font>*</font></td>
+			<td><input type="text" name="event_time" placeholder="请选择" readonly class="layui-input tool-time" value="{$detail.event_time|default=''}"></td>
+			<td class="layui-td-gray">是否重要</td>
+			<td>
+				<input type="radio" name="importance" value="0" title="普通" checked>
+				<input type="radio" name="importance" value="1" title="重要">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">事件描述</td>
+			<td colspan="3">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea">{$detail.content|default=''}</textarea>
+			</td>
+		</tr>
+	</table>
+
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}" />
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+function gouguInit() {
+	var form = layui.form,tool = layui.tool;
+	//监听提交
+	form.on('submit(webform)', function (data) {
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				tool.sideClose(1000);
+			}
+		}
+		let clickbtn = $(this);
+		tool.post("/adm/events/add", data.field, callback,clickbtn);
+		return false;
+	});
+}
+</script>
+{/block}
+<!-- /脚本 -->

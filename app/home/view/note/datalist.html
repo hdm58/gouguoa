@@ -32,7 +32,7 @@
 		layui.pageTable = table.render({
 			elem: "#table_note"
 			, toolbar: "#toolbarDemo"
-			,url: "/oa/note/datalist"
+			,url: "/home/note/datalist"
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
@@ -54,7 +54,7 @@
 			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
 			var data = obj.data;
 			if (obj.event === 'view') {
-				tool.side("/oa/note/view?id="+data.id);
+				tool.side("/home/note/view?id="+data.id);
 				return;
 			}
 		});

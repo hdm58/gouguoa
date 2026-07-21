@@ -1,0 +1,54 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-2">制度详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">制度标题</td>
+			<td>{$detail.title}</td>
+			<td class="layui-td-gray">制度分类</td>
+			<td>{$detail.cate}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">适用部门</td>
+			<td colspan="3">
+				{$detail.use_dnames|default='全体公司'}
+			</td>
+		</tr>
+		{notempty name="$detail.file_ids"}
+		<tr>
+			<td class="layui-td-gray">相关附件</td>
+			<td colspan="3" style="padding:4px 2px">
+				<div class="layui-row">
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
+					{/volist}
+				</div>
+			</td>
+		</tr>
+		{/notempty}
+		<tr>
+			<td class="layui-td-gray" colspan="4" style="text-align:left; color:#666"><strong>制度描述</strong></td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				{$detail.content|raw}
+			</td>
+		</tr>
+	</table>
+
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->

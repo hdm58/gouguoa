@@ -1,0 +1,132 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this">全部工作计划</li>
+				<li>我创建的计划</li>
+				<li>我参与的计划</li>
+				<li>抄送给我的计划</li>
+			</ul>
+		</div>
+	</div>
+	<form class="layui-form gg-form-bar border-x" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:180px">
+			<input type="text"  name="end_time" class="layui-input tool-time" data-range="~" placeholder="选择时间区间" readonly>
+		</div>
+		<div class="layui-input-inline" style="width:136px">
+			<select name="types">
+				<option value="">选择类型</option>
+				{volist name = "$cate" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:240px;">
+			<input type="text" name="keywords" placeholder="输入关键字，工作计划主题/内容" class="layui-input"/>
+		</div>	
+		<div class="layui-input-inline" style="width:150px;">
+			<input type="hidden" name="tab" value="0" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_work_plan" lay-filter="table_work_plan"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/oa/workplan/add">+ 添加工作计划</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, form = layui.form, tabs = layui.tabs;
+		//tabs切换
+		tabs.on('afterChange(tab)', function(data) {
+		    $('[name="tab"]').val(data.index);
+			$("#barsearchform")[0].reset();
+			$("#barsearchform").attr('class','layui-form gg-form-bar border-x tab-'+data.index);
+			let searchObject = form.val('barsearchform');
+			layui.pageTable.reload({where:searchObject,page:{curr:1}});
+			return false;
+		})
+		layui.pageTable = table.render({
+			elem: "#table_work_plan"
+			,title: '工作计划列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/oa/workplan/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-155'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'send_time',title: '状态',width:80,align:'center',templet: function(d){
+					let html = '<span class="red">未发布</span>';
+					if(d.send_time>0){
+						html = '<span class="red">已发布</span>';					
+					}
+					return html;
+				}}
+				,{field:'title',title: '工作计划主题'}
+				,{field:'cate',title: '计划类型',width:90,align:'center'}
+				,{field:'diff_time',title: '计划周期',width:180,align:'center',templet: function(d){
+					let html = d.start_time+' 至 '+d.end_time;
+					return html;
+				}}
+				,{field:'types_str',title: '参与人类型',width:90,align:'center'}
+				,{field:'director_names',title: '计划负责人',width:120}
+				,{field:'endorse_names',title: '批注领导',width:120}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_work_plan)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/oa/workplan/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/oa/workplan/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/oa/workplan/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

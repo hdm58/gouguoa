@@ -376,4 +376,276 @@ class Import extends BaseController
 			return to_assign(1, $e->getMessage());
         }
     }
+	
+	//导入员工工资
+	public function import_salary(){
+        // 获取表单上传文件
+        $file[]= request()->file('file');
+		
+		$param = get_params();
+        try {
+            // 验证文件大小，名称等是否正确
+            validate(['file' => 'filesize:51200|fileExt:xls,xlsx'])->check($file);
+			// 日期前綴
+			 $dataPath = date('Ym');
+			 $md5 = $file[0]->hash('md5');
+			 $savename = \think\facade\Filesystem::disk('public')->putFile($dataPath, $file[0], function () use ($md5) {
+				 return $md5;
+			 });
+            $fileExtendName = substr(strrchr($savename, '.'), 1);
+            // 有Xls和Xlsx格式两种
+            if ($fileExtendName == 'xlsx') {
+                $objReader = IOFactory::createReader('Xlsx');
+            } else {
+                $objReader = IOFactory::createReader('Xls');
+            }
+            $objReader->setReadDataOnly(TRUE);
+			$path = get_config('filesystem.disks.public.url');
+            // 读取文件，tp6默认上传的文件，在runtime的相应目录下，可根据实际情况自己更改
+            $objPHPExcel = $objReader->load('.'.$path . '/' .$savename);
+            //$objPHPExcel = $objReader->load('./storage/202209/d11544d20b3ca1c1a5f8ce799c3b2433.xlsx');
+            $sheet = $objPHPExcel->getSheet(0);   //excel中的第一张sheet
+            $highestRow = $sheet->getHighestRow();       // 取得总行数
+            $highestColumn = $sheet->getHighestColumn();   // 取得总列数
+            Coordinate::columnIndexFromString($highestColumn);
+            $lines = $highestRow - 1;
+            if ($lines <= 0) {
+				return to_assign(1, '数据不能为空');
+                exit();
+            }
+			$uid_array = Db::name('SalaryRecords')->where([['salary_id','=',$param['salary_id']],['delete_time','=',0]])->column('uid');
+            //循环读取excel表格，整合成数组。如果是不指定key的二维，就用$data[i][j]表示。
+            for ($j = 3; $j <= $highestRow; $j++) {
+				$file_check = [];
+				$name = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getValue();
+				$mobile = $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getValue();
+				if(empty($name)){
+					continue;
+				}
+				if(empty($mobile)){
+					return to_assign(1, '第'.($j - 2).'行的员工用户手机号未完善');
+				}
+				$uid = Db::name('Admin')->where('mobile',$mobile)->value('id');
+				if(empty($uid)){
+					return to_assign(1, '第'.($j - 2).'行的员工用户手机号不存在，请到系统新增');
+				}
+				if(in_array($uid,$uid_array)){
+					return to_assign(1, '工资单或者上传的文件存在相同的员工，请删除再操作');
+				}
+				array_push($uid_array,$uid);
+				$salary_basic = $objPHPExcel->getActiveSheet()->getCell("C" . $j)->getValue();
+				$salary_position = $objPHPExcel->getActiveSheet()->getCell("D" . $j)->getValue();
+				$salary_performance = $objPHPExcel->getActiveSheet()->getCell("E" . $j)->getValue();
+				$salary_quanqin = $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getValue();
+				$salary_overwork = $objPHPExcel->getActiveSheet()->getCell("G" . $j)->getValue();
+				$salary_meal = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getValue();
+				$salary_phone = $objPHPExcel->getActiveSheet()->getCell("I" . $j)->getValue();
+				$salary_traffic = $objPHPExcel->getActiveSheet()->getCell("J" . $j)->getValue();
+				$salary_house = $objPHPExcel->getActiveSheet()->getCell("K" . $j)->getValue();
+				$salary_fuli = $objPHPExcel->getActiveSheet()->getCell("L" . $j)->getValue();
+				$salary_protecting = $objPHPExcel->getActiveSheet()->getCell("M" . $j)->getValue();
+				$salary_bonus = $objPHPExcel->getActiveSheet()->getCell("N" . $j)->getValue();
+				$total_payable = $objPHPExcel->getActiveSheet()->getCell("O" . $j)->getCalculatedValue();;
+				
+				$deduct_belate = $objPHPExcel->getActiveSheet()->getCell("P" . $j)->getValue();
+				$deduct_leave = $objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getValue();
+				$deduct_absenteeism = $objPHPExcel->getActiveSheet()->getCell("R" . $j)->getValue();
+				$total_deduction = $objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue();
+				
+				$deduct_social = $objPHPExcel->getActiveSheet()->getCell("T" . $j)->getValue();
+				$deduct_gongjijin = $objPHPExcel->getActiveSheet()->getCell("U" . $j)->getValue();
+				$deduct_tax = $objPHPExcel->getActiveSheet()->getCell("V" . $j)->getValue();
+				$total_statutory = $objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue();
+				
+				$total_payment = $objPHPExcel->getActiveSheet()->getCell("X" . $j)->getCalculatedValue();
+				
+				$remark = $objPHPExcel->getActiveSheet()->getCell("Y" . $j)->getValue();
+				
+				if (empty($salary_basic)){
+					$salary_basic = 0;
+				}
+				if(!is_numeric($salary_basic)){
+					return to_assign(1, '第'.($j - 2).'行的基本工资不是数字');
+				}
+				if (empty($salary_position)){
+					$salary_position = 0;
+				}
+				if(!is_numeric($salary_position)){
+					return to_assign(1, '第'.($j - 2).'行的岗位工资不是数字');
+				}
+				if (empty($salary_performance)){
+					$salary_performance = 0;
+				}
+				if(!is_numeric($salary_performance)){
+					return to_assign(1, '第'.($j - 2).'行的绩效工资不是数字');
+				}
+				if (empty($salary_quanqin)){
+					$salary_quanqin = 0;
+				}
+				if(!is_numeric($salary_quanqin)){
+					return to_assign(1, '第'.($j - 2).'行的全勤奖金不是数字');
+				}				
+				if (empty($salary_overwork)){
+					$salary_overwork = 0;
+				}
+				if(!is_numeric($salary_overwork)){
+					return to_assign(1, '第'.($j - 2).'行的加班工资不是数字');
+				}	
+				if (empty($salary_meal)){
+					$salary_meal = 0;
+				}
+				if(!is_numeric($salary_meal)){
+					return to_assign(1, '第'.($j - 2).'行的用餐补助不是数字');
+				}
+				if (empty($salary_phone)){
+					$salary_phone = 0;
+				}
+				if(!is_numeric($salary_phone)){
+					return to_assign(1, '第'.($j - 2).'行的话费补助不是数字');
+				}
+				if (empty($salary_traffic)){
+					$salary_traffic = 0;
+				}
+				if(!is_numeric($salary_traffic)){
+					return to_assign(1, '第'.($j - 2).'行的交通补助不是数字');
+				}
+				if (empty($salary_house)){
+					$salary_house = 0;
+				}
+				if(!is_numeric($salary_house)){
+					return to_assign(1, '第'.($j - 2).'行的住房补助不是数字');
+				}
+				if (empty($salary_fuli)){
+					$salary_fuli = 0;
+				}
+				if(!is_numeric($salary_fuli)){
+					return to_assign(1, '第'.($j - 2).'行的节假福利不是数字');
+				}
+				if (empty($salary_protecting)){
+					$salary_protecting = 0;
+				}
+				if(!is_numeric($salary_protecting)){
+					return to_assign(1, '第'.($j - 2).'行的保竞津贴不是数字');
+				}
+				if (empty($salary_bonus)){
+					$salary_bonus = 0;
+				}
+				if(!is_numeric($salary_protecting)){
+					return to_assign(1, '第'.($j - 2).'行的奖金不是数字');
+				}
+				if (empty($total_payable)){
+					$total_payable = 0;
+				}
+				
+				if (empty($deduct_belate)){
+					$deduct_belate = 0;
+				}
+				if(!is_numeric($deduct_belate)){
+					return to_assign(1, '第'.($j - 2).'行的迟到扣除不是数字');
+				}
+				if (empty($deduct_leave)){
+					$deduct_leave = 0;
+				}
+				if(!is_numeric($deduct_leave)){
+					return to_assign(1, '第'.($j - 2).'行的事假扣除不是数字');
+				}
+				if (empty($deduct_absenteeism)){
+					$deduct_absenteeism = 0;
+				}
+				if(!is_numeric($deduct_absenteeism)){
+					return to_assign(1, '第'.($j - 2).'行的旷工扣除不是数字');
+				}
+				if (empty($total_deduction)){
+					$total_deduction = 0;
+				}
+				
+				if (empty($deduct_social)){
+					$deduct_social = 0;
+				}
+				if(!is_numeric($deduct_social)){
+					return to_assign(1, '第'.($j - 2).'行的社保不是数字');
+				}
+				if (empty($deduct_gongjijin)){
+					$deduct_gongjijin = 0;
+				}
+				if(!is_numeric($deduct_gongjijin)){
+					return to_assign(1, '第'.($j - 2).'行的公积金不是数字');
+				}
+				if (empty($deduct_tax)){
+					$pdeduct_tax = 0;
+				}
+				if(!is_numeric($deduct_tax)){
+					return to_assign(1, '第'.($j - 2).'行的公积金不是数字');
+				}
+				if (empty($total_statutory)){
+					$total_statutory = 0;
+				}
+				
+				if (empty($total_payment)){
+					$total_payment = 0;
+				}
+				
+				if (empty($remark)){
+					$remark = '';
+				}
+				$month_time = Db::name('Salary')->where('id',$param['salary_id'])->value('month_time');
+                $data[$j - 3] = [	
+					'salary_id'=>$param['salary_id'],
+					'month_time'=>$month_time,
+                    'uid' => $uid,
+                    'salary_basic' => $salary_basic,
+                    'salary_position' => $salary_position,
+                    'salary_performance' => $salary_performance,
+                    'salary_basic' => $salary_basic,
+					'salary_position' => $salary_position,
+					'salary_performance' => $salary_position,
+					'salary_quanqin' => $salary_quanqin,
+					'salary_overwork' => $salary_overwork,
+					'salary_meal' => $salary_meal,
+					'salary_phone' => $salary_phone,
+					'salary_traffic' => $salary_traffic,
+					'salary_house' => $salary_house,
+					'salary_fuli' => $salary_fuli,
+					'salary_protecting' => $salary_protecting,
+					'salary_bonus' => $salary_bonus,
+					'total_payable' => $total_payable,
+					
+					'deduct_belate' => $deduct_belate,
+					'deduct_leave' => $deduct_leave,
+					'deduct_absenteeism' => $deduct_absenteeism,
+					'total_deduction' => $total_deduction,
+					
+					'deduct_social' => $deduct_social,
+					'deduct_gongjijin' => $deduct_gongjijin,
+					'deduct_tax' => $deduct_tax,
+					'total_statutory' => $total_statutory,
+					
+					'total_payment' => $total_payment,
+					'remark' => $remark,
+                    'admin_id' => $this->uid,
+                    'create_time' => time(),
+                    'update_time' => time()
+                ];
+            }
+            //dd($data);exit;
+            // 批量添加数据
+			$count=0;
+			foreach ($data as $a => $aa) {	
+				$cid = Db::name('SalaryRecords')->strict(false)->field(true)->insertGetId($aa);
+				if($cid>0){
+					$count++;
+				}
+			}
+			$salary = DB::name('SalaryRecords')->where(['salary_id'=>$param['salary_id'],'delete_time'=>0])->sum('total_payment');
+			$social = DB::name('SalaryRecords')->where(['salary_id'=>$param['salary_id'],'delete_time'=>0])->sum('deduct_social');
+			$gongjijin = DB::name('SalaryRecords')->where(['salary_id'=>$param['salary_id'],'delete_time'=>0])->sum('deduct_gongjijin');
+			$tax = DB::name('SalaryRecords')->where(['salary_id'=>$param['salary_id'],'delete_time'=>0])->sum('deduct_tax');
+			
+			$amount = ($salary*10000+$social*10000+$gongjijin*10000+$tax*10000)/10000;
+			DB::name('Salary')->where('id', $param['salary_id'])->strict(false)->field(true)->update(['amount'=>$amount,'salary'=>$salary,'social'=>$social,'gongjijin'=>$gongjijin,'tax'=>$tax]);
+            return to_assign(0, '共成功导入了'.$count.'条工资数据');
+        } catch (\think\exception\ValidateException $e) {
+			return to_assign(1, $e->getMessage());
+        }
+    }
 }

@@ -79,7 +79,16 @@ class Api extends BaseController
 		return table_assign(0, '', $list);
     }
 	
-    //获取资金账户
+    //获取企业主体
+    public function get_enterprise()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['status', '=', 1];
+		$list = Db::name('Enterprise')->where($where)->select()->toArray();
+		return to_assign(0, '', $list);
+    }
+	//获取资金账户
     public function get_account()
     {
 		$param = get_params();
@@ -92,6 +101,17 @@ class Api extends BaseController
 		$model = new Account();
 		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);
+    }
+	
+    //获取支付方式
+    public function get_paytype()
+    {
+		$param = get_params();
+		$where = array();
+		$where[] = ['delete_time', '=', 0];
+		$where[] = ['status', '=', 1];
+		$list = Db::name('PayType')->where($where)->select()->toArray();
+		return to_assign(0, '', $list);
     }
 
 	//获取销项发票

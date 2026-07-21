@@ -32,7 +32,7 @@
 		layui.pageTable = table.render({
 			elem: "#table_news"
 			, toolbar: "#toolbarDemo"
-			,url: "/oa/news/datalist"
+			,url: "/home/news/datalist"
 			,page: true
 			,limit: 20
 			,cellMinWidth: 80
@@ -53,7 +53,7 @@
 			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
 			var data = obj.data;
 			if (obj.event === 'view') {
-				tool.side("/oa/news/view?id="+data.id);
+				tool.side("/home/news/view?id="+data.id);
 				return;
 			}
 		});

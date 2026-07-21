@@ -1,0 +1,268 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-table-1 .tr-2,.layui-table-1 .tr-3{display:none;}
+.layui-table-2 .tr-1,.layui-table-2 .tr-3{display:none;}
+.layui-table-3 .tr-1,.layui-table-3 .tr-2{display:none;}
+.layui-table-4 .tr-1,.layui-table-4 .tr-2,.layui-table-4 .tr-3,.layui-table-4 .tr-4{display:none;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	{if condition="$id eq 0"}
+	<h3 class="pb-2">新建工作计划</h3>
+	<table id="messageTable" class="layui-table layui-table-form layui-table-1">
+		<tr>
+			<td class="layui-td-gray-2">参与人类型<font>*</font></td>
+			<td>
+				<input type="radio" name="types" lay-filter="types" value="1" title="员工" checked>
+				<input type="radio" name="types" lay-filter="types" value="2" title="部门">
+				<input type="radio" name="types" lay-filter="types" value="3" title="岗位">
+				<input type="radio" name="types" lay-filter="types" value="4" title="全部">
+			</td>
+			<td class="layui-td-gray">计划类型<font>*</font></td>
+			<td>
+				<select name="cate_id" lay-filter="cate" lay-verify="required" lay-reqText="请选择计划类型">
+					<option value="">请选择</option>
+					{volist name = "$cate" id="vo"}
+					<option value="{$vo.id}">{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr class="tr-1">
+			<td class="layui-td-gray">参与人<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="unames" value="" placeholder="请选择参与人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="uids" value="">
+			</td>
+		</tr>
+		<tr class="tr-2">
+			<td class="layui-td-gray">参与部门<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="dnames" value="" placeholder="请选择参与部门" readonly class="layui-input picker-oa" data-types="department" data-type="2">
+				<input type="hidden" name="dids" value="">
+			</td>
+		</tr>
+		<tr class="tr-3">
+			<td class="layui-td-gray">参与岗位<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="pnames" value="" placeholder="请选择参与岗位" readonly class="layui-input picker-oa" data-types="position" data-type="2"">
+				<input type="hidden" name="pids" value="">
+			</td>
+		</tr>
+		<tr class="tr-4">
+			<td class="layui-td-gray">抄送人</td>
+			<td colspan="3">
+				<input type="text" name="copy_names" value="" placeholder="请选择抄送人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="copy_uids" value="">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工作计划主题<font>*</font></td>
+			<td><input type="text" name="title" value="" lay-verify="required" lay-reqText="请输入工作计划主题" placeholder="请输入工作计划主题" class="layui-input" lay-verify="required"></td>
+			<td class="layui-td-gray">计划周期<font>*</font></td>
+			<td id="barDate" style="width:268px;">
+				<div class="layui-input-inline" style="width:120px;">
+					<input type="text" class="layui-input" id="start_time" value="" placeholder="选择时间区间" readonly name="start_time" lay-verify="required" lay-reqText="请选择合同开始时间">
+				</div>
+				~
+				<div class="layui-input-inline" style="width:120px;">
+					<input type="text" class="layui-input" id="end_time" value="" placeholder="选择时间区间" readonly name="end_time" lay-verify="required" lay-reqText="请选择合同结束时间">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工作计划内容<font>*</font></td>
+			<td colspan="3"><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0"></textarea></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">计划负责人<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="director_names" value="{$detail.director_names|default=''}" lay-verify="required" lay-reqText="请完善计划负责人" placeholder="请选择计划负责人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="director_uids" value="{$detail.director_uids|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">批注领导</td>
+			<td colspan="3">
+				<input type="text" name="endorse_names" value="{$detail.endorse_names|default=''}" placeholder="请选择批注领导" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="endorse_uids" value="{$detail.endorse_uids|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray"><div class="layui-input-inline">相关附件</div> <div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div></td>
+			<td colspan="3">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" value="{$id}" name="id">
+		<button class="layui-btn" lay-submit="" lay-filter="draftform">存为草稿</button>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即发送</button>
+	</div>
+	{else/}
+	<h3 class="pb-2">编辑工作计划</h3>
+	<table id="messageTable" class="layui-table layui-table-form layui-table-{$detail.types}">
+		<tr>
+			<td class="layui-td-gray-2">参与人类型<font>*</font></td>
+			<td>
+				<input type="radio" name="types"  lay-filter="types" value="1" title="员工" {eq name="$detail.types" value="1"}checked{/eq}>
+				<input type="radio" name="types"  lay-filter="types" value="2" title="部门" {eq name="$detail.types" value="2"}checked{/eq}>
+				<input type="radio" name="types"  lay-filter="types" value="3" title="岗位" {eq name="$detail.types" value="3"}checked{/eq}>
+				<input type="radio" name="types"  lay-filter="types" value="4" title="全部" {eq name="$detail.types" value="4"}checked{/eq}>
+			</td>
+			<td class="layui-td-gray">计划类型<font>*</font></td>
+			<td>
+				<select name="cate_id" lay-filter="cate" lay-verify="required" lay-reqText="请选择计划类型">
+					<option value="">请选择</option>
+					{volist name = "$cate" id="vo"}
+					<option value="{$vo.id}" {eq name="$vo.id" value="$detail.cate_id"} selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr class="tr-1">
+			<td class="layui-td-gray">参与人<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="unames" value="{$detail.unames|default=''}" placeholder="请选择参与人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="uids" value="{$detail.uids|default=''}">
+			</td>
+		</tr>
+		<tr class="tr-2">
+			<td class="layui-td-gray">参与部门<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="dnames" value="{$detail.dnames|default=''}" placeholder="请选择参与部门" readonly class="layui-input picker-oa" data-types="department" data-type="2">
+				<input type="hidden" name="dids" value="{$detail.dids|default=''}">
+			</td>
+		</tr>
+		<tr class="tr-3">
+			<td class="layui-td-gray">参与岗位<font>*</font></td>
+			<td colspan="3">
+				<input type="text" name="pnames" value="{$detail.pnames|default=''}" placeholder="请选择参与岗位" readonly class="layui-input picker-oa" data-types="position" data-type="2"">
+				<input type="hidden" name="pids" value="{$detail.pids|default=''}">
+			</td>
+		</tr>
+		<tr class="tr-4">
+			<td class="layui-td-gray">抄送人</td>
+			<td colspan="3">
+				<input type="text" name="copy_names" value="{$detail.copy_names|default=''}" placeholder="请选择抄送人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="copy_uids" value="{$detail.copy_uids|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工作计划主题<font>*</font></td>
+			<td><input type="text" name="title" value="{$detail.title|default=''}" lay-verify="required" lay-reqText="请输入工作计划主题" placeholder="请输入工作计划主题" class="layui-input" lay-verify="required"></td>
+			<td class="layui-td-gray">计划周期<font>*</font></td>
+			<td id="barDate" style="width:268px;">
+				<div class="layui-input-inline" style="width:120px;">
+					<input type="text" class="layui-input" id="start_time" value="{$detail.start_time|to_date='Y-m-d'}" placeholder="选择时间区间" readonly name="start_time" lay-verify="required" lay-reqText="请选择合同开始时间">
+				</div>
+				~
+				<div class="layui-input-inline" style="width:120px;">
+					<input type="text" class="layui-input" id="end_time" value="{$detail.end_time|to_date='Y-m-d'}" placeholder="选择时间区间" readonly name="end_time" lay-verify="required" lay-reqText="请选择合同结束时间">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">工作计划内容<font>*</font></td>
+			<td colspan="3"><textarea name="content" placeholder="请输入内容" class="layui-textarea" id="container" style="border:0;padding:0">{$detail.content|default=''}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray"><div class="layui-input-inline">相关附件</div> <div class="layui-input-inline"><button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button></div></td>
+			<td colspan="5">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" name="file_ids" data-type="file" value="{$detail.file_ids}">
+					{notempty name="$detail.file_ids"}
+					{volist name="$detail.file_array" id="vo"}
+					<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo)}</div>
+					{/volist}
+					{/notempty}
+				</div>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" value="{$id}" name="id">
+		{eq name="$detail.send_time" value="0"}
+		<button class="layui-btn" lay-submit="" lay-filter="draftform">存为草稿</button>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即发送</button>
+		{else/}
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="draftform">提交保存</button>
+		{/eq}
+	</div>
+	{/if}
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','uploadPlus','tinymce'];
+	function gouguInit() {
+		var form = layui.form,laydate=layui.laydate,tool=layui.tool,uploadPlus=layui.uploadPlus,tinymce= layui.tinymce;	
+		//编辑器初始化
+		var editor = layui.tinymce;
+		var edit = editor.render({
+			selector: "#container",
+			images_upload_url: '/api/index/upload/sourse/tinymce',//图片上传接口
+			height: 500
+		});
+		//日期范围
+		laydate.render({
+			elem: '#barDate',
+			range: ['#start_time', '#end_time']
+		});
+		let uploada = new uploadPlus();
+		//监听保存到草稿并发送
+		form.on('submit(webform)', function(data){
+			data.field.content = tinyMCE.editors['container'].getContent();
+			if (data.field.content == '') {
+				layer.msg('请先完善工作计划内容');
+				return false;
+			}
+			data.field.is_draft=2;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/oa/workplan/add", data.field, callback,clickbtn);
+			return false;
+		});
+		  
+		//监听保存到草稿
+		form.on('submit(draftform)', function(data){
+			data.field.content = tinyMCE.editors['container'].getContent();
+			if (data.field.content == '') {
+				layer.msg('请先完善工作计划内容');
+				return false;
+			}
+			data.field.is_draft=1;
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/oa/workplan/add", data.field, callback),clickbtn;
+			return false;
+		});
+
+		//选择参与人类型
+		form.on('radio(types)', function (data) {
+			$('#messageTable').attr('class','layui-table layui-table-form layui-table-'+data.value);
+		});		
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

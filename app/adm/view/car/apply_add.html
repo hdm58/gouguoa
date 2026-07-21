@@ -1,0 +1,74 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">添加用车申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">用车理由<font>*</font></td>
+			<td><input type="text" name="title" autocomplete="off" placeholder="请输入用车理由" lay-verify="required" lay-reqText="请输入用车理由" class="layui-input"></td>
+			<td class="layui-td-gray">用车人</td>
+			<td>{$user.name}（{$user.department}）<input type="hidden" name="did" value="{$user.did}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">车辆选择<font>*</font></td>
+			<td>
+				<input type="text" class="layui-input picker-oa" data-types="car" placeholder="请选择车辆" lay-verify="required" lay-reqText="请选择车辆" readonly value="">
+				<input type="hidden" class="layui-input" name="car_id" value="">
+			</td>
+			<td class="layui-td-gray-2">预期用车日期<font>*</font></td>
+			<td><input type="text" name="use_time" value='' readonly placeholder="请选择" lay-verify="required" lay-reqText="请选择预期用车日期" class="layui-input tool-time"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray" style="vertical-align:top;">备注信息</td>
+			<td colspan="3">
+				<textarea name="content" placeholder="请输入内容" class="layui-textarea"></textarea>
+			</td>
+		</tr>
+	</table>
+	
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+	
+	<div class="pt-4">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaPicker','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck;	
+		oaCheck.init({
+			check_name:'car_use',
+			check_btn:0
+		});
+
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					let checkCallback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							tool.sideClose(1000);				
+						}
+					}
+					data.field.check_name = 'car_use';
+					data.field.action_id = e.data.return_id;
+					oaCheck.submit(data.field,checkCallback);
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/adm/car/apply_add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

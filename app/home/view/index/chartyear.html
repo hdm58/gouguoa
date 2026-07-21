@@ -1,0 +1,212 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<div class="p-page">
+	<div class="layui-row layui-col-space16">
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div id="chartBar" class="chart-box" style="width: 100%;height:398px;"></div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div id="chartYear" style="width: 100%;height:320px;"></div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/echart/echarts.min.js"></script>
+<script>
+	const moduleInit = ['tool'];
+	function getRange() {
+		let today = new Date();
+		let tYear = today.getFullYear();
+		let tMonth = today.getMonth() + 1;
+		let tDate = today.getDate();
+		let dateFirst = tYear + "-" + tMonth + "-" + tDate;
+		let datelast = (tYear - 1) + "-" + tMonth + "-" + tDate;
+		let dataRange = [];
+		dataRange.push(dateFirst);
+		dataRange.push(datelast);
+		return dataRange;
+	}
+	function getDay(archiveCalendar) {
+		var today = new Date();
+		var dayArray = [];
+		for (var i = 0; i < 366; i++) {
+			var targetday_milliseconds = today.getTime() - 1000 * 60 * 60 * 24 * i;
+			var date = new Date(targetday_milliseconds);
+			dayArray.push(retunDay(date,archiveCalendar));
+		}
+		return dayArray;
+	}
+	
+	function retunDay(day,archiveCalendar) {
+		var tYear = day.getFullYear();
+		var tMonth = day.getMonth();
+		var tDate = day.getDate();
+		tMonth = tMonth + 1;
+		if (tMonth.toString().length == 1) {
+			tMonth = "0" + tMonth;
+		}
+		if (tDate.toString().length == 1) {
+			tDate = "0" + tDate;
+		}
+		var dateStr = tYear + "-" + tMonth + "-" + tDate;
+		var dateArray = [];
+		dateArray.push(dateStr);
+		if (archiveCalendar[dateStr]) {
+			dateArray.push(archiveCalendar[dateStr]);
+		}
+		else {
+			dateArray.push(0);
+		}
+		return dateArray;
+	}
+	
+	
+	function chartBar(){
+		let myChart = echarts.init(document.getElementById('chartBar'));
+		$.ajax({
+			url: "/home/api/get_year_data",
+			type: 'get',
+			data: {},
+			success: function (e) {
+				if (e.code == 0) {
+					chartsData=e.data;
+					var option = {
+						title: {
+							text: chartsData.title.text,
+							textStyle: {
+								fontSize: '18',
+								color: '#333',
+							}
+						},
+						grid: {
+							top: '50px',
+							left: '26px',
+							right: '10px',
+							bottom: '10px',
+							containLabel: true
+						},
+						tooltip: {
+							trigger: 'axis',
+							axisPointer: {
+								type: 'cross',
+								crossStyle: {
+									color: '#999'
+								}
+							}
+						},
+						legend: {
+							data: chartsData.legend
+						},
+						xAxis: [
+							{
+								type: 'category',
+								data: chartsData.xaxis,
+								axisPointer: {
+									type: 'shadow'
+								}
+							}
+						],
+						yAxis:chartsData.yaxis,
+						series:chartsData.series
+					};
+					// 使用刚指定的配置项和数据显示图表。
+					myChart.setOption(option);
+				}
+			}
+		})
+	}
+	
+	
+	function layoutChartYear() {
+		let myChart = echarts.init(document.getElementById('chartYear'));
+		$.ajax({
+			url: "/home/api/get_view_data",
+			type: 'get',
+			data: {},
+			success: function (e) {
+				if (e.code == 0) {			
+					let archiveCalendar= e.data.data_three;
+					is_log=1;
+					//console.log(archiveCalendar);
+					let option = {
+						title: {
+							top: '12px',
+							text: '近一年员工活跃度',
+							left: '12px',
+							textStyle: {
+								fontSize: '18',
+								color: '#333',
+							}
+						},
+						tooltip: {
+							padding: 6,
+							formatter: function (obj) {
+								var value = obj.value;
+								return '<div style="font-size: 12px;">' + value[0] + '员工活跃度：' + value[1] + '</div>';
+							}
+						},
+						visualMap: {
+							min: 0,
+							max: 300,
+							show: false,
+							inRange: {
+								color: ['#fafafa', '#1AAD19']
+							}
+						},
+						calendar: {
+							top: 75,
+							left: 60,
+							right: 20,
+							range: getRange(),
+							cellSize: ['auto', 32],
+							splitLine: {
+								lineStyle: {
+									color: '#aaa',
+									type: 'dashed'
+								}
+							},
+							itemStyle: {
+								borderWidth: 0.5
+							},
+							yearLabel: { show: false },
+							monthLabel: {
+								nameMap: 'cn',
+								fontSize: 12
+							},
+							dayLabel: {
+								show: true,
+								formatter: '{start}  1st',
+								fontWeight: 'lighter',
+								nameMap: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+								fontSize: 12
+							}
+						},
+						series: [{
+							type: 'heatmap',
+							coordinateSystem: 'calendar',
+							calendarIndex: 0,
+							data: getDay(archiveCalendar)
+						}]
+					};
+					myChart.setOption(option);
+				}
+			}
+		})
+	}
+	function gouguInit() {
+		var tool = layui.tool;
+		layoutChartYear();
+		chartBar();
+	}
+</script>
+{/block}

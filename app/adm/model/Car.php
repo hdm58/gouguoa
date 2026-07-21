@@ -41,6 +41,11 @@ class Car extends Model
 					$item->driver_name='-';
 				}
 				$item->create_time = to_date($item->create_time);
+				$mileage_now = Db::name('CarMileage')->where(['car_id'=>$item->id,'delete_time'=>0])->max('mileage');
+				if(empty($mileage_now)){
+					$mileage_now = $item->mileage;
+				}
+				$item->mileage_now = $mileage_now;
 			});
 			return $list;
         } catch(\Exception $e) {
@@ -176,13 +181,24 @@ class Car extends Model
     public function mileagelist($where, $param)
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$order = empty($param['order']) ? 'id desc' : $param['order'];
+		$order = empty($param['order']) ? 'mileage_time desc' : $param['order'];
         try {
 			$list = Db::name('CarMileage')
-				->order('mileage_time desc')
-				->where($where)
 				->order($order)
-				->paginate($rows, false)->each(function($item, $key){
+				->where($where)
+				->paginate($rows, false)
+				->each(function($item, $key){
+					$item['edit'] = 0;
+					$item['mileage_last'] = Db::name('Car')->where([['id','=',$item['car_id']]])->value('mileage');
+					$last = Db::name('CarMileage')->where([['delete_time','=',0],['car_id','=',$item['car_id']],['mileage_time','<',$item['mileage_time']]])->find();
+					if(!empty($last)){
+						$item['mileage_last'] = $last['mileage'];
+					}
+					$next = Db::name('CarMileage')->where([['delete_time','=',0],['car_id','=',$item['car_id']],['mileage_time','>',$item['mileage_time']]])->find();
+					if(!empty($next)){
+						$item['edit'] = 1;
+					}
+					$item['mileage_num'] = ($item['mileage']*10000-$item['mileage_last']*10000)/10000;
 					$item['mileage_time'] = date('Y-m', $item['mileage_time']);
 					$item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
 					$item['admin_name'] =  Db::name('Admin')->where('id',$item['admin_id'])->value('name');

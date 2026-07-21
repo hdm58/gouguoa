@@ -192,35 +192,17 @@ class Api extends BaseController
 		$task_ids = Db::name('ProjectTask')->where(['delete_time' => 0, 'project_id' => $param['tid']])->column('id');
 		$where = array();
 		if (!empty($param['keywords'])) {
-			$where[] = ['a.title', 'like', '%' . $param['keywords'] . '%'];
+			$where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
 		}
 		if (!empty($param['uid'])) {
-			$where[] = ['a.admin_id', '=', $param['uid']];
+			$where[] = ['admin_id', '=', $param['uid']];
 		}
 		if (!empty($task_ids)) {
-			$where[] = ['a.tid', 'in', $task_ids];
+			$where[] = ['tid', 'in', $task_ids];
 		}
-		$where[] = ['a.delete_time', '=', 0];
-		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-		$list = Schedule::where($where)
-			->field('a.*,u.name,d.title as department,t.title as task,p.name as project,w.title as work_cate')
-			->alias('a')
-			->join('Admin u', 'a.admin_id = u.id', 'LEFT')
-			->join('Department d', 'u.did = d.id', 'LEFT')
-			->join('ProjectTask t', 'a.tid = t.id', 'LEFT')
-			->join('WorkCate w', 'w.id = t.cate', 'LEFT')
-			->join('Project p', 't.project_id = p.id', 'LEFT')
-			->order('a.end_time desc')
-			->paginate(['list_rows'=> $rows])
-			->each(function ($item, $key) {
-				$item->start_time_a = empty($item->start_time) ? '' : date('Y-m-d', $item->start_time);
-				$item->start_time_b = empty($item->start_time) ? '' : date('H:i', $item->start_time);
-				$item->end_time_a = empty($item->end_time) ? '' : date('Y-m-d', $item->end_time);
-				$item->end_time_b = empty($item->end_time) ? '' : date('H:i', $item->end_time);
-
-				$item->start_time = empty($item->start_time) ? '' : date('Y-m-d H:i', $item->start_time);
-				$item->end_time = empty($item->end_time) ? '' : date('H:i', $item->end_time);
-			});
+		$where[] = ['delete_time', '=', 0];
+		$model = new Schedule();
+		$list = $model->datalist($param,$where);
 		return table_assign(0, '', $list);
     }
 	

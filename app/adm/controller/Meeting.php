@@ -107,7 +107,7 @@ class Meeting extends BaseController
             }	 
         }else{
 			$id = isset($param['id']) ? $param['id'] : 0;
-			$requirements = get_base_type_data('BasicAdm',2);
+			$requirements = get_base_type_data('BasicAdm',3);
 			if ($id>0) {
 				$model = new MeetingOrder();
 				$detail = $model->getById($id);
@@ -313,7 +313,7 @@ class Meeting extends BaseController
 			$where=[];
 			$whereOr = [];
 			$uid = $this->uid;
-			$auth = isAuth($this->uid,'office_admin','conf_1');
+			$auth = isAuth($this->uid,'office_admin','conf_6');
             if (!empty($param['keywords'])) {
                 $where[] = ['title', 'like', '%' . $param['keywords'] . '%'];
             }
@@ -326,7 +326,10 @@ class Meeting extends BaseController
             }
             $where[] = ['delete_time', '=', 0];
 			if($auth == 0){
-				$where[] = ['admin_id', '=', $uid];
+				$whereOr[] = ['admin_id|recorder_id|anchor_id','=',$uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',join_uids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',sign_uids)")];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_uids)")];
 			}
 			$list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);

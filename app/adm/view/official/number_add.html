@@ -1,0 +1,96 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">文号规则</h3>
+	{eq name="$id" value="0"}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">文号规则名称<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" placeholder="请输入文号规则名称" lay-verify="required" lay-reqText="请输入文号规则名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">文号规则类型<font>*</font></td>
+			<td>
+				<select name="types" lay-verify="required" lay-reqText="请选择文号规则类型">
+				  <option value="">--请选择--</option>
+				  <option value="1">发文</option>
+				  <option value="2">收文</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">文号规则前缀<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:160px;">
+					<input type="text" value="" name="prefix" placeholder="请输入文号规则前缀" class="layui-input" lay-verify="required" lay-reqText="请输入文号规则前缀">
+				</div>
+				<div class="layui-input-inline" style="width:80px;">〔202*〕第</div>
+				<div class="layui-input-inline" style="width:100px;">
+					<input type="number" name="prefix_num" value="0" placeholder="" class="layui-input" min="0" max="9" step="1" readonly lay-affix="number">
+				</div>
+				<div class="layui-input-inline" style="width:80px;">***号</div>
+			</td>
+			<td class="layui-td-gray">文号规则编码<font>*</font></td>
+			<td><input type="text" name="code" placeholder="请输入文号规则编码" value="" class="layui-input" lay-verify="required" lay-reqText="请输入文号规则编码"></td>
+		</tr>
+	</table>
+	{else/}
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">文号规则名称<font>*</font></td>
+			<td colspan="3"><input type="text" value="{$detail.title}" name="title" placeholder="请输入文号规则名称" lay-verify="required" lay-reqText="请输入文号规则名称" class="layui-input"></td>
+			<td class="layui-td-gray-2">文号规则类型<font>*</font></td>
+			<td>
+				<select name="types" lay-verify="required" lay-reqText="请选择文号规则类型">
+				  <option value="">--请选择--</option>
+				  <option value="1" {eq name="$detail.types" value="1"}selected{/eq}>发文</option>
+				  <option value="2" {eq name="$detail.types" value="2"}selected{/eq}>收文</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">文号规则前缀<font>*</font></td>
+			<td colspan="3">
+				<div class="layui-input-inline" style="width:160px;">
+					<input type="text" value="{$detail.prefix}" name="prefix" placeholder="请输入文号规则" class="layui-input" lay-verify="required" lay-reqText="请输入文号规则前缀">
+				</div>
+				<div class="layui-input-inline" style="width:80px;">〔202*〕第</div>
+				<div class="layui-input-inline" style="width:100px;">
+					<input type="number" name="prefix_num" value="{$detail.prefix_num}" placeholder="" class="layui-input" min="0" max="9" step="1" readonly lay-affix="number">
+				</div>
+				<div class="layui-input-inline" style="width:80px;">***号</div>
+			</td>
+			<td class="layui-td-gray">文号规则编码<font>*</font></td>
+			<td><input type="text" name="code" placeholder="请输入文号规则编码" value="{$detail.code}" class="layui-input" lay-verify="required" lay-reqText="请输入文号规则编码"></td>
+		</tr>
+	</table>
+	{/eq}
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$id}">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;	
+		//监听提交
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);				
+				}
+			}
+			tool.post("/adm/official/number_add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

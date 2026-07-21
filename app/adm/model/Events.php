@@ -10,15 +10,17 @@
 * @Author 勾股工作室 <hdm58@qq.com>
 +-----------------------------------------------------------------------------------------------
 */
-
-namespace app\finance\model;
-use think\Model;
+namespace app\adm\model;
+use think\model;
 use think\facade\Db;
-class FinanceLog extends Model
+class Events extends Model
 {
-	public static $log_types = ['income'=>'收款','payment'=>'付款'];
-	
-	public function datalist($param,$where)
+    /**
+    * 获取分页列表
+    * @param $where
+    * @param $param
+    */
+    public function datalist($where, $param)
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$order = empty($param['order']) ? 'id desc' : $param['order'];
@@ -27,21 +29,16 @@ class FinanceLog extends Model
 			->order($order)
 			->paginate(['list_rows'=> $rows])
 			->each(function ($item, $key){
-				$item['name_str'] = self::$log_types[$item['name']];
-				$item['admin_name'] = Db::name('Admin')->where('id',$item['admin_id'])->value('name');
-				$item['paytype'] = Db::name('PayType')->where('id',$item['paytype_id'])->value('title');
-				$item['fundscate'] = Db::name('FundsCate')->where('id',$item['fundscate_id'])->value('title');
-				$item['enter_time'] = date('Y-m-d H:i',$item['enter_time']);
-				$item['enterprise'] = Db::name('Enterprise')->where('id',$item['enterprise_id'])->value('title');
-				$item['account'] = Db::name('Account')->where('id',$item['account_id'])->value('title');
-				$item['create_time'] = to_date($item['create_time']);
+				$item->admin_name = Db::name('Admin')->where('id',$item->admin_id)->value('name');
+				$item->event_time = to_date($item->event_time,'Y-m-d');
+				$item->create_time = to_date($item->create_time);
 			});
 			return $list;
         } catch(\Exception $e) {
             return ['code' => 1, 'data' => [], 'msg' => $e->getMessage()];
         }
     }
-	
+
     /**
     * 添加数据
     * @param $param
@@ -82,11 +79,7 @@ class FinanceLog extends Model
     public function getById($id)
     {
         $info = self::find($id);
-		$info['income_time'] = to_date($info['income_time'],'Y-m-d');
-		$info['subject'] = Db::name('Enterprise')->where('id',$info['enterprise_id'])->value('title');
-		$info['account'] = Db::name('Account')->where('id',$info['account_id'])->value('title');
-		$handler_users = Db::name('Admin')->where('id','in',$info['handler_ids'])->column('name');
-		$info['handler_users'] = implode(',',$handler_users);
+		$info['event_time'] = to_date($info['event_time'],'Y-m-d');
 		return $info;
     }
 
@@ -101,18 +94,8 @@ class FinanceLog extends Model
 		if($type==0){
 			//逻辑删除
 			try {
-				$detail = self::find($id);
+				$param['delete_time'] = time();
 				self::where('id', $id)->update(['delete_time'=>time()]);
-				$has_back = Db::name('IncomeRefund')->where([['income_id','=',$detail['income_id']],['delete_time','=',0]])->sum('amount');
-				$income_amount = Db::name('Income')->where([['id','=',$detail['income_id']]])->value('amount');
-				$back_status = 2;
-				if($has_back*1000 == 0){
-					$back_status = 0;
-				}
-				if($has_back*1000>0 && $has_back*1000 < $income_amount*1000){
-					$back_status = 1;
-				}
-				Db::name('Income')->where('id',$detail['income_id'])->update(['back_status'=>$back_status,'back_amount'=>$has_back]);
 				add_log('delete', $id);
 			} catch(\Exception $e) {
 				return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -130,3 +113,4 @@ class FinanceLog extends Model
 		return to_assign();
     }
 }
+

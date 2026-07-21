@@ -1,0 +1,49 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-page">
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">开始时间</td>
+			<td>{$detail.start_time|default=''}</td>
+			<td class="layui-td-gray">结束时间</td>
+			<td>{$detail.end_time|default=''}</td>
+			<td class="layui-td-gray">提醒时间</td>
+			<td>{$detail.remind_time|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">日程内容</td>
+			<td colspan="3">{$detail.title|default=''}</td>
+			<td class="layui-td-gray">事件级别</td>
+			<td>
+				{eq name="$detail.type" value="0"}普通{/eq}
+				{eq name="$detail.type" value="1"}重要/紧急{/eq}
+				{eq name="$detail.type" value="2"}重要/不紧急{/eq}
+				{eq name="$detail.type" value="3"}不重要/紧急{/eq}
+				{eq name="$detail.type" value="4"}不重要/不紧急{/eq}
+			</td>
+		</tr>				
+		<tr>
+			<td class="layui-td-gray">参与人员</td>
+			<td colspan="3">{$detail.unames|default='-'}</td>
+			<td class="layui-td-gray">所属人员</td>
+			<td>{$detail.admin_name}</td>
+		</tr>		
+		<tr>
+			<td class="layui-td-gray">事务内容</td>
+			<td colspan="5"><pre style="font-family:inherit">{$detail.remark|default=''}</pre></td>
+		</tr>
+	</table>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

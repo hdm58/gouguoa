@@ -1,0 +1,139 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-x" id="barsearchform">
+		<div class="layui-input-inline" style="width:128px">
+			<select name="status">
+				<option value="">选择用车状态</option>
+				<option value="0">未使用</option>
+				<option value="1">已使用</option>
+				<option value="2">已归还</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<input type="hidden" name="tab" value="0" />
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_car" lay-filter="table_car"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<h3>用车记录</h3>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = {$auth};
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool, tabs = layui.tabs;
+		layui.pageTable = table.render({
+			elem: "#table_car"
+			,toolbar: "#toolbarDemo"
+			,url: "/adm/car/record"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 60
+			,height: 'full-115'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'check_status',title: '审批状态',width:112, align:'center',templet: function(d){
+					var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+					return html;
+				}}
+				,{field:'title',title: '用车理由',minWidth:240}
+				,{field:'car',title: '车辆',width:100, align:'center'}
+				,{field:'department',title: '用车部门',width:100, align:'center'}
+				,{field:'use_time',title: '计划用车日期',width:110, align:'center'}
+				,{field:'status',title: '用车状态',width:90, align:'center',templet: function(d){
+					if(d.check_status==2){
+						if(d.status==0){
+							return '<span class="red">未用车</span>';
+						}
+						if(d.status==1){
+							return '<span class="blue">已用车</span>';
+						}
+						if(d.status==2){
+							return '<span class="blue">已还车</span>';
+						}
+					}else{
+						return '-';
+					}
+
+				}}
+				,{field:'admin_name',title: '申请人',width:90, align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="use">用车登记</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="back">归还登记</a>';
+					if(auth==0){
+						return '<div class="layui-btn-group">'+btn1+'</div>';
+					}
+					else{
+						if(d.status==0){
+							return '<div class="layui-btn-group">'+btn1+btn2+'</div>';
+						}
+						if(d.status==1){
+							return '<div class="layui-btn-group">'+btn1+btn3+'</div>';
+						}
+						else{
+							return '<div class="layui-btn-group">'+btn1+'</div>';
+						}
+					}
+				}}
+			]]
+		});
+			
+		table.on('tool(table_car)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/car/apply_view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'use') {
+				layer.confirm('确定要修改用车状态位已用车吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/api/set_car_status", { id: obj.data.id,status: 1 }, callback);
+					layer.close(index);	
+				});
+				return;
+			}
+			if (obj.event === 'back') {
+				layer.confirm('确定要修改用车状态位已还车吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/api/set_car_status", { id: obj.data.id,status: 2 }, callback);
+					layer.close(index);	
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

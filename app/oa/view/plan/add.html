@@ -1,0 +1,104 @@
+{extend name="../../base/view/common/base" /}
+{block name="body"}
+<form class="layui-form p-page">
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">开始时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" name="start_time" readonly value="{$start_time|default=''}" data-type="datetime" data-format="yyyy-MM-dd HH:mm" lay-verify="required" lay-reqText="请完善开始时间"></td>
+			<td class="layui-td-gray">结束时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" name="end_time" readonly value="{$detail.end_time|default=''}" data-type="datetime" data-format="yyyy-MM-dd HH:mm" lay-verify="required" lay-reqText="请完善结束时间"></td>
+			<td class="layui-td-gray">提醒时间</td>
+			<td>
+				{empty name="$detail"}
+				<select name="remind_type">
+					<option value="0">不提醒</option>
+					<option value="1">提前5分钟</option>
+					<option value="2">提前15分钟</option>
+					<option value="3">提前30分钟</option>
+					<option value="4">提前1小时</option>
+					<option value="5">提前2小时</option>
+					<option value="6">提前1天</option>
+				</select>
+				{else/}
+				<select name="remind_type">
+					<option value="0" {eq name="$detail.remind_type" value="0"} selected{/eq}>不提醒</option>
+					<option value="1" {eq name="$detail.remind_type" value="1"} selected{/eq}>提前5分钟</option>
+					<option value="2" {eq name="$detail.remind_type" value="2"} selected{/eq}>提前15分钟</option>
+					<option value="3" {eq name="$detail.remind_type" value="3"} selected{/eq}>提前30分钟</option>
+					<option value="4" {eq name="$detail.remind_type" value="4"} selected{/eq}>提前1小时</option>
+					<option value="5" {eq name="$detail.remind_type" value="5"} selected{/eq}>提前2小时</option>
+					<option value="6" {eq name="$detail.remind_type" value="6"} selected{/eq}>提前1天</option>
+				</select>
+				{/empty}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">日程内容<font>*</font></td>
+			<td colspan="3"><input type="text" class="layui-input" name="title" value="{$detail.title|default=''}" lay-verify="required" lay-reqText="请完善日程内容"></td>
+			<td class="layui-td-gray">事件级别<font>*</font></td>
+			<td>
+				{empty name="$detail"}
+				<select name="type" lay-verify="required" lay-reqText="请完善事件级别">
+					<option value="">请选择</option>
+					<option value="1">普通</option>
+					<option value="2">重要/紧急</option>
+					<option value="3">重要/不紧急</option>
+					<option value="4">不重要/紧急</option>
+					<option value="5">不重要/不紧急</option>
+				</select>
+				{else/}
+				<select name="type" lay-verify="required" lay-reqText="请完善事件级别">
+					<option value="">请选择</option>
+					<option value="1" {eq name="$detail.type" value="1"} selected{/eq}>普通</option>
+					<option value="2" {eq name="$detail.type" value="2"} selected{/eq}>重要/紧急</option>
+					<option value="3" {eq name="$detail.type" value="3"} selected{/eq}>重要/不紧急</option>
+					<option value="4" {eq name="$detail.type" value="4"} selected{/eq}>不重要/紧急</option>
+					<option value="5" {eq name="$detail.type" value="5"} selected{/eq}>不重要/不紧急</option>
+				</select>
+				{/empty}
+			</td>
+		</tr>				
+		<tr>
+			<td class="layui-td-gray">参与人员</td>
+			<td colspan="3">
+				<input type="text" name="unames" value="{$detail.unames|default=''}" placeholder="请选择参与人" readonly class="layui-input picker-admin" data-type="2">
+				<input type="hidden" name="uids" value="{$detail.uids|default=''}">
+			</td>
+			<td class="layui-td-gray">所属人员</td>
+			<td>{$login_admin.name}</td>
+		</tr>		
+		<tr>
+			<td class="layui-td-gray">事务内容</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入事务内容" class="layui-textarea" style="height: 240px;">{$detail.remark|default=''}</textarea></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" value="{$detail.id|default=0}" name="id">
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+{block name="copyright"}{/block}
+<!-- 脚本 -->
+{block name="script"}
+<script>
+const moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool;
+		form.on('submit(webform)', function(data){
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if(e.code==0){
+					tool.sideClose(1000);				
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/oa/plan/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}		
+	</script>
+{/block}
+<!-- /脚本 -->

@@ -1,0 +1,196 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<table class="layui-hide" id="table_salary" lay-filter="table_salary"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/adm/salary/add">创建工资单</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	function gouguInit() {
+		var form = layui.form,table = layui.tablePlus, tool = layui.tool, oaPicker = layui.oaPicker;
+		
+		layui.pageTable = table.render({
+			elem: "#table_salary"
+			,title: '工资单列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/adm/salary/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-52'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'month_time',title: '工资月份',width:90, align:'center'}
+				,{field:'status_name',title: '当前状态',width:100, align:'center',templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					return html;
+					}}
+				,{field:'title',title: '工资单名称'}
+				,{field:'salary',title: '总工资',width:100,align:'right'}
+				,{field:'tax',title: '总个税',width:100,align:'right'}
+				,{field:'social',title: '总社保',width:100,align:'right'}
+				,{field:'gongjijin',title: '总公积金',width:100,align:'right'}
+				,{field:'amount',title: '总金额',width:100,align:'right','style':'color:#1e9fff'}
+				,{field:'pay_name',title: '发放人',width:90,align:'center'}
+				,{field:'pay_time',title: '发放时间',width:100,align:'center'}
+				,{field:'admin_name',title: '创建人',width:90,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:150,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-xs layui-bg-orange" lay-event="send">发放</a>';
+					var btn4='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+'</div>';
+					if(d.status==0){
+						html = '<div class="layui-btn-group">'+btn1+btn2+btn3+btn4+'</div>';
+					}
+					return html;
+				}}
+			]]
+		});
+			
+        //选择客户弹窗        
+        $('body').on('click','.picker-account',function () {
+			let enterprise_id = $('[name="enterprise_id"]').val();
+			if(enterprise_id=='' || enterprise_id==0){
+				layer.msg('请先完善企业主体');
+				return false;
+			}
+            let that = $(this),ids = [],titles=[],map = {enterprise_id:enterprise_id},types = 'account',type = 1;
+            let callback = function(data){
+                for ( var i = 0; i <data.length; i++){
+                    ids.push(data[i].id);
+                    titles.push(data[i].title);
+                }
+                that.val(titles.join(','));
+                that.next().val(ids.join(','));
+            }
+            oaPicker.picker(types,type,callback,map);
+        });	
+			
+		table.on('tool(table_salary)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/adm/salary/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/adm/salary/add?id="+data.id);
+				return;
+			}			
+			if (obj.event === 'send') {
+				layer.open({
+					type: 1
+					,title: '设为已发放后，该工资单将无法修改'
+					,area: ['396px','396px']
+					,id: 'LAY_module' //设定一个id，防止重复弹出
+					,btn: ['确定', '取消']
+					,btnAlign: 'c'
+					,content: '<div  class="layui-form" style="padding-top:15px;">\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">发放日期</label>\
+								  <div class="layui-input-inline">\
+									<input type="text" name="pay_time" value="" readonly placeholder="请完善发放日期" class="layui-input tool-time">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">企业主体</label>\
+								  <div class="layui-input-inline">\
+										<input type="text" name="enterprise" value="" readonly placeholder="请选择发放企业主体" class="layui-input picker-oa" data-types="enterprise">\
+										<input type="hidden" name="enterprise_id" value="">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">资金账户</label>\
+								  <div class="layui-input-inline">\
+										<input type="text" name="account" value="" readonly placeholder="请选择发放资金账户" class="layui-input picker-account" data-types="account">\
+										<input type="hidden" name="account_id" value="">\
+								  </div>\
+								</div>\
+								<div class="layui-form-item">\
+								  <label class="layui-form-label">支付方式</label>\
+								  <div class="layui-input-inline">\
+										<input type="text" name="paytype" value="" readonly placeholder="请选择支付方式" class="layui-input picker-oa" data-types="paytype">\
+										<input type="hidden" name="paytype_id" value="">\
+								  </div>\
+								</div>\
+							  </div>'
+					,success:function(){
+						form.render();
+						$(parent.$('.express-close')).addClass('parent-colse');
+					}
+					,end:function(){
+						$(parent.$('.express-close')).removeClass('parent-colse');
+					}
+					,yes: function(index){
+						let pay_time = $('#LAY_module').find('[name="pay_time"]').val();
+						let enterprise_id  = $('#LAY_module').find('[name="enterprise_id"]').val();
+						let account_id = $('#LAY_module').find('[name="account_id"]').val();
+						let paytype_id = $('#LAY_module').find('[name="paytype_id"]').val();
+						if(pay_time ==''){
+							layer.msg('选择发放日期');
+							return false;
+						}
+						if(enterprise_id =='' || enterprise_id==0){
+							layer.msg('选择企业主体');
+							return false;
+						}
+						if(account_id =='' || account_id==0){
+							layer.msg('选择资金账户');
+							return false;
+						}
+						if(paytype_id =='' || paytype_id==0){
+							layer.msg('选择支付方式');
+							return false;
+						}
+						$.ajax({
+							url: "/adm/api/salary_pay",
+							type:'post',
+							data:{salary_id:data.id,pay_time:pay_time,enterprise_id:enterprise_id,account_id:account_id,paytype_id:paytype_id},
+							success:function(res){
+								layer.msg(res.msg);
+								if(res.code==0){
+									tool.reload(1000);
+									layer.closeAll();
+								}
+							}
+						})						
+					}
+					,btn2: function(){
+						layer.closeAll();
+					}
+				});
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该工资单吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/salary/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

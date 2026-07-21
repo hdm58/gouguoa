@@ -12,9 +12,9 @@
 </style>
 {/block}
 {block name="body"}
-<div class="p-4">
-	<h3 class="pb-1">汇报详情</h3>
-	<table class="layui-table">
+<div class="p-page">
+	<h3 class="pb-2">汇报详情</h3>
+	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">汇报人</td>
 			<td>{$detail.person_name}</td>
@@ -79,7 +79,7 @@
 	{gt name="$detail.update_time" value="0"}
 	<div style="color:#999; padding:10px 0">该汇报于 {$detail.update_time} 进行过编辑</div>
 	{/gt}
-	<div class="p-3 border bg-white">
+	<div class="p-3 border bg-white" style="margin-top:15px;">
 		<h3 class="pb-3">工作点评</h3>
 		<div class="comment-input">
 			<input type="text" id="commentInput" readonly placeholder="发表一下你的看法" class="layui-input" value="">

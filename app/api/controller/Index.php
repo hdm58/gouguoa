@@ -448,7 +448,7 @@ class Index extends BaseController
 		$where[] = ['a.status', '=', 1];
 		$where[] = ['a.delete_time', '=', 0];
 		$employee = Db::name('admin')
-			->field('a.id,a.did,a.position_id,a.mobile,a.name,a.nickname,a.sex,a.status,a.thumb,a.username,d.title as department')
+			->field('a.id,a.did,a.position_id,a.mobile,a.name,a.nickname,a.sex,a.status,a.thumb,a.username,d.title as department,p.title as position')
             ->alias('a')
 			->join('Position p', 'p.id = a.position_id','left')
 			->join('Department d', 'a.did = d.id','left')

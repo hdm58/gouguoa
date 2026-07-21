@@ -13,15 +13,15 @@
  
 declare (strict_types = 1);
 
-namespace app\oa\controller;
+namespace app\home\controller;
 
 use app\base\BaseController;
-use app\adm\model\Note as NoteModel;
+use app\adm\model\News as NewsModel;
 use think\exception\ValidateException;
 use think\facade\Db;
 use think\facade\View;
 
-class Note extends BaseController
+class News extends BaseController
 {
 	/**
      * 构造函数
@@ -30,7 +30,7 @@ class Note extends BaseController
     public function __construct()
     {
 		parent::__construct(); // 调用父类构造函数
-        $this->model = new NoteModel();
+        $this->model = new NewsModel();
     }
 	
     /**
@@ -41,10 +41,9 @@ class Note extends BaseController
 		$param = get_params();
         if (request()->isAjax()) {
 			$where=[];
-			$where[]=['a.delete_time','=',0];
-			$where[]=['a.status','=',1];
+			$where[]=['delete_time','=',0];
             if (!empty($param['keywords'])) {
-                $where[] = ['a.id|a.title', 'like', '%' . $param['keywords'] . '%'];
+                $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
             }
             $list = $this->model->datalist($where, $param);
             return table_assign(0, '', $list);
@@ -69,7 +68,7 @@ class Note extends BaseController
 			}
 			View::assign('detail', $detail);
 			if(is_mobile()){
-				return view('qiye@/index/note_view');
+				return view('qiye@/index/news_view');
 			}
 			return view();
 		}

@@ -1,0 +1,46 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-2">用车申请详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">用车事由</td>
+			<td>{$detail.title}</td>
+			<td class="layui-td-gray">申请人</td>
+			<td>{$detail.admin_name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">车辆名称</td>
+			<td>{$detail.car}</td>
+			<td class="layui-td-gray-2">计划用车日期</td>
+			<td>{$detail.use_time}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3">{$detail.content|default='-'}</td>
+		</tr>
+		{eq name="$detail.check_status" value="2"}
+		<tr>
+			<td class="layui-td-gray">用车状态</td>
+			<td colspan="3"><span class="check-status-color-{$detail.status}">{$detail.status_str|default=''}</span></td>
+		</tr>
+		{/eq}
+	</table>
+	<div id="checkBox" data-status="{$detail.check_status|default=0}" data-id="{$detail.id|default=0}" data-checkflowid="{$detail.check_flow_id|default=0}" class="pt-3"></div>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','oaCheck'];
+	function gouguInit() {
+		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck;	
+		oaCheck.init({
+			check_name:'car_use'
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

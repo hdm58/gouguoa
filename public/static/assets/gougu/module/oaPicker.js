@@ -124,6 +124,14 @@ layui.define(['tool'], function (exports) {
 			area: ['800px', '568px'],
 			cols:[{ field: 'code',width:200,title:'发票号码',align:'center'},{field:'enterprise',title:'发票抬头'},{ field:'invoice_title',title:'开票主体',width: 240}]
 		},
+		'enterprise':{
+			title:'选择企业主体',
+			url:'/finance/api/get_enterprise',
+			area: ['500px', '524px'],
+			searchbar:'',
+			page:false,
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'企业主体'}]
+		},
 		'account':{
 			title:'选择资金账户',
 			url:'/finance/api/get_account',
@@ -131,6 +139,14 @@ layui.define(['tool'], function (exports) {
 			searchbar:'',
 			page:false,
 			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'账户名称'},{field:'enterprise',title:'所属企业主体'}]
+		},
+		'paytype':{
+			title:'选择支付方式',
+			url:'/finance/api/get_paytype',
+			area: ['372px', '524px'],
+			searchbar:'',
+			page:false,
+			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'支付方式'}]
 		}
 	}
 

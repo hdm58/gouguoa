@@ -78,7 +78,7 @@
 
 	<div class="layui-tab layui-tab-card" style="margin:0;" lay-filter="docDemoTabBrief">
 		<ul class="layui-tab-title">
-			<li class="layui-this">工作记录({$detail.schedules})</li>
+			<li class="layui-this">工作日志({$detail.schedules})</li>
 			<li>员工评论(<span id="commentTotal">0</span>)</li>
 			<li>操作日志(<span id="logListTotal">0</span>)</li>
 		</ul>
@@ -100,7 +100,7 @@
 </div>
 <script type="text/html" id="toolbarDemo">
   <div>
-  	<div class="layui-input-inline"><button class="layui-btn layui-btn-sm" type="button" lay-event="add">添加工作记录</button></div>
+  	<div class="layui-input-inline"><button class="layui-btn layui-btn-sm" type="button" lay-event="add">添加工作日志</button></div>
   </div>
 </script>
 {/block}
@@ -113,9 +113,9 @@
 	const detail_id = '{$detail.id}';
 	const status_array = {:json_encode(get_task_status(1),JSON_UNESCAPED_UNICODE)};
 	const priority_array = {:json_encode(get_priority(1),JSON_UNESCAPED_UNICODE)};
-	const moduleInit = ['tool','oaPicker','oaEdit','oaSchedule','oaComment','uploadPlus'];
+	const moduleInit = ['tool','oaPicker','oaEdit','oaComment','uploadPlus'];
 	function gouguInit() {
-		const oaEdit = layui.oaEdit,work = layui.oaSchedule,comment = layui.oaComment, uploadPlus = layui.uploadPlus, tool = layui.tool, table = layui.table;
+		const oaEdit = layui.oaEdit,comment = layui.oaComment, uploadPlus = layui.uploadPlus, tool = layui.tool, table = layui.table;
 		
 		oaEdit.log('logList','Task',detail_id);
 		
@@ -139,7 +139,7 @@
 			"target":'uploadBtn',
 			"targetBox":'uploadBox',
 			"attachment":{
-				"type":1,//0ajax多文件模式，1ajax单文件单记录模式
+				"type":1,//0ajax多文件模式，1ajax单文件单日志模式
 				"uidDelete":true,//是否开启只有上传人自己才能删除自己的附件
 				"ajaxSave":function(res){
 					tool.post('/project/api/add_file',{'topic_id':detail_id,'file_id':res.data.id,'file_name': res.data.name, 'module': 'task'},edit_callback);
@@ -161,7 +161,7 @@
 			}
 		});
 		
-		//工作记录相关
+		//工作日志相关
 		layui.scheduleTable = table.render({
 			elem: "#table_work"
 			, toolbar: "#toolbarDemo"
@@ -174,8 +174,8 @@
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'title',title: '工作内容',minWidth:240}
 				,{field: 'name', title: '所属人员', align:'center',width:80}
-				,{field: 'start_time', title: '工作时间范围', align:'center',width:260,templet:function(d){
-					var html=d.start_time+' 至 '+d.end_time;
+				,{field: 'start_time', title: '工作时间范围', align:'center',width:180,templet:function(d){
+					var html=d.start_time+' 至 '+d.end_time_b;
 					return html;
 				}}
 				,{field: 'labor_type_string', title: '工作类型', align:'center',width:80}
@@ -198,18 +198,18 @@
 		
 		table.on('toolbar(table_work)',function (obj) {
 			if (obj.event === 'add') {
-				work.add(detail_id,{'id':0});
+				tool.box('/oa/schedule/add?tid='+detail_id,"新增工作日志", 820,450,false);
 			}
 		});	 
 		table.on('tool(table_work)',function (obj) {
 			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
 			var data = obj.data;
 			if (obj.event === 'view') {
-				work.view(data);
+				tool.box('/oa/schedule/view?id='+obj.data.id,"工作日志",800,398,false);	
 				return;
 			}
 			if (obj.event === 'edit') {
-				work.add(data.task_id,data);
+				tool.box('/oa/schedule/add?id='+obj.data.id,"编辑工作日志",820,450,false);
 				return;
 			}
 			if (obj.event === 'del') {
@@ -227,7 +227,7 @@
 			}
 		});
 		
-		//工作记录相关
+		//工作日志相关
 		$('.add-schedule').on('click', function () {
 			work.add(detail_id,{'id':0});	
 		})

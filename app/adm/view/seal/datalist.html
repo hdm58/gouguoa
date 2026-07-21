@@ -55,6 +55,7 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus'];
 	function gouguInit() {
 		var table = layui.tablePlus, tool = layui.tool, tabs = layui.tabs;
@@ -99,12 +100,27 @@
 					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
 					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
 					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					var btn4='<a class="layui-btn layui-btn-xs" lay-event="use">用车登记</a>';
+					var btn5='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="back">归还登记</a>';
 					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
 					if((d.check_status==0||d.check_status==4) && d.admin_id == login_admin){
 						return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
 					}
 					else{
-						return '<div class="layui-btn-group">'+btn1+'</div>';
+						if(auth==0){
+							return '<div class="layui-btn-group">'+btn1+'</div>';
+						}
+						else{
+							if(d.status==0){
+								return '<div class="layui-btn-group">'+btn1+btn4+'</div>';
+							}
+							if(d.status==1){
+								return '<div class="layui-btn-group">'+btn1+btn5+'</div>';
+							}
+							else{
+								return '<div class="layui-btn-group">'+btn1+'</div>';
+							}
+						}
 					}
 				}}
 			]]

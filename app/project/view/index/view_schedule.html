@@ -3,7 +3,7 @@
 </div>
 <script type="text/html" id="toolbarschedule">
   <div class="layui-btn-container">
-  	<span class="yellow">如需创建工作记录，请到项目任务的详情页创建</span>
+  	<span class="yellow">如需创建工作日志，请到项目任务的详情页创建</span>
   </div>
 </script>
 <script>
@@ -12,11 +12,11 @@ function project_schedule(){
 		return false;
 	}
 	$('#projectTab').find('li').eq(2).data('load','true');
-	let form = layui.form,tool = layui.tool,table = layui.tablePlus,work = layui.oaSchedule,oaPicker = layui.oaPicker;
-	//项目工作记录
+	let form = layui.form,tool = layui.tool,table = layui.tablePlus,oaPicker = layui.oaPicker;
+	//项目工作日志
 	layui.scheduleTable = table.render({
 		elem: '#scheduleApi',
-		title: '工作记录列表',
+		title: '工作日志列表',
 		toolbar: '#toolbarschedule',
 		cellMinWidth: 80,
 		url: "/oa/api/get_schedule", //数据接口
@@ -25,7 +25,7 @@ function project_schedule(){
 			{ field: 'id', title: '序号', width: 60, align: 'center' }
 			, {
 				field: 'start_time', title: '工作时间范围', align: 'center', width: 180, templet: function (d) {
-					var html = d.start_time + '至' + d.end_time;
+					var html = d.start_time + '至' + d.end_time_b;
 					return html;
 				}
 			}
@@ -38,7 +38,7 @@ function project_schedule(){
 			, { field: 'title', title: '工作内容' }
 			, { field: 'name', title: '执行员工', align: 'center', width: 80 }
 			, { field: 'department', title: '所在部门', align: 'center', width: 100 }
-			, { field: 'create_time', title: '记录时间', align: 'center', width: 150 }
+			, { field: 'create_time', title: '日志时间', align: 'center', width: 150 }
 			, {title: '操作',fixed:'right', align: 'center', width: 100, templet: function (d) {
 					if(d.admin_id == login_admin){
 						return '<div class="layui-btn-group"><span class="layui-btn layui-btn-xs" lay-event="edit">修改</span><span class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</span></div>';
@@ -53,10 +53,10 @@ function project_schedule(){
 	//监听行工具事件		
 	table.on('tool(schedule)', function (obj) {
 		if (obj.event === 'edit') {
-			work.add(0, obj.data);
+			tool.box('/oa/schedule/add?id='+obj.data.id,"编辑工作日志",820,450,false);
 		}
 		if (obj.event === 'view') {
-			work.view(obj.data);
+			tool.box('/oa/schedule/view?id='+obj.data.id,"工作日志",800,398,false);	
 		}
 		return false;
 	})

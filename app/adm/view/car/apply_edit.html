@@ -1,0 +1,97 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">设备申请</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">关联项目<font>*</font></td>
+			<td colspan="5">
+				{$detail.project_title}
+				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id|default=0}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">申请主题<font>*</font></td>
+			<td colspan="3"><input type="text" name="title" class="layui-input" placeholder="请输入申请主题" lay-verify="required" lay-reqText="请输入申请主题" value="{$detail.title}"></td>
+			<td class="layui-td-gray">申请类型</td>
+			<td>
+				{eq name="$detail.types" value="1"}汽车{/eq}
+				{eq name="$detail.types" value="2"}内部设备{/eq}
+				{eq name="$detail.types" value="3"}外部设备{/eq}
+			</td>
+		</tr>
+		{eq name="$detail.types" value="1"}
+		<tr>
+			<td class="layui-td-gray">车辆选择</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="car" placeholder="请选择车辆" lay-verify="required" lay-reqText="请选择设备" readonly placeholder="请选择车辆" value="{$detail.equipment_title}">
+				<input type="hidden" class="layui-input" name="equipment_id" value="{$detail.equipment_id}">
+			</td>
+		</tr>
+		{/eq}
+		{eq name="$detail.types" value="2"}
+		<tr>
+			<td class="layui-td-gray">设备选择</td>
+			<td colspan="5">
+				<input type="text" class="layui-input picker-oa" data-types="property" placeholder="请选择设备" lay-verify="required" lay-reqText="请选择设备" readonly placeholder="请选择设备" value="{$detail.equipment_title}">
+				<input type="hidden" class="layui-input" name="equipment_id" value="{$detail.equipment_id}">
+			</td>
+		</tr>
+		{/eq}
+		{eq name="$detail.types" value="3"}
+		<tr>
+			<td class="layui-td-gray">设备名称</td>
+			<td><input type="text" name="equipment_title" placeholder="请输入设备名称" class="layui-input" value="{$detail.equipment_title}" lay-verify="required" lay-reqText="请输入设备名称"></td>
+			<td class="layui-td-gray-2">设备联系人</td>
+			<td><input type="text" name="equipment_name" placeholder="请输入设备联系人" class="layui-input" value="{$detail.equipment_name}"></td>
+			<td class="layui-td-gray">联系电话</td>
+			<td><input type="text" name="equipment_mobile" placeholder="请输入联系电话" class="layui-input" value="{$detail.equipment_mobile}"></td>
+		</tr>
+		{/eq}
+		<tr>
+			<td class="layui-td-gray">开始日期</td>
+			<td><input type="text" name="start_time" placeholder="请选择预计开始使用日期" class="layui-input tool-time" readonly value="{$detail.start_time}"></td>
+			<td class="layui-td-gray">结束日期</td>
+			<td><input type="text" name="end_time" placeholder="请选择预计结束使用日期" class="layui-input tool-time" readonly value="{$detail.end_time}"></td>
+			<td class="layui-td-gray">申请人</td>
+			<td>{$detail.admin_name}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">申请原因</td>
+			<td colspan="5"><textarea name="content" placeholder="请输入申请原因" class="layui-textarea">{$detail.content|default=''}</textarea></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="types" value="{$detail.types|default=0}"/>
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000,'equipmentTable');
+				}
+			}
+			let clickbtn = $(this);
+			tool.post("/project/equipment/add", data.field, callback,clickbtn);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

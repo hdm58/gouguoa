@@ -50,7 +50,8 @@
 			cellMinWidth: 80,			
 			page: true, //开启分页
 			limit: 20,
-			height: 'full-114',
+			height: 'full-115',
+			totalRow: true,
 			cols: [
 				[
 					{
@@ -66,14 +67,17 @@
 						width: 120,
 						totalRow: function (d) {return d.TOTAL_ROW.cost}
 					},{
-						field: 'pay_status',
+						field: 'status',
 						title: '打款状态',
 						align: 'center',
 						width: 90,
 						templet:function(d){
-							var html='<span class="red">『未打款』</span>';
-							if(d.pay_status==1){
-								html='<span class="yellow">『已打款』</span>';
+							var html='-';
+							if(d.status==1){
+								html = '<span class="red">未打款</span>';
+							}
+							if(d.status==2){
+								html = '<span class="green">已打款</span>';
 							}
 							return html;
 						}

@@ -10,18 +10,18 @@
 * @Author 勾股工作室 <hdm58@qq.com>
 +-----------------------------------------------------------------------------------------------
 */
- 
+
 declare (strict_types = 1);
 
-namespace app\oa\controller;
+namespace app\home\controller;
 
 use app\base\BaseController;
-use app\adm\model\News as NewsModel;
+use app\adm\model\Regulation as RegulationModel;
 use think\exception\ValidateException;
 use think\facade\Db;
 use think\facade\View;
 
-class News extends BaseController
+class Regulation extends BaseController
 {
 	/**
      * 构造函数
@@ -30,51 +30,47 @@ class News extends BaseController
     public function __construct()
     {
 		parent::__construct(); // 调用父类构造函数
-        $this->model = new NewsModel();
+        $this->model = new RegulationModel();
     }
 	
-    /**
-    * 数据列表
-    */
-    public function datalist()
+	public function datalist()
     {
-		$param = get_params();
         if (request()->isAjax()) {
-			$where=[];
-			$where[]=['delete_time','=',0];
-            if (!empty($param['keywords'])) {
-                $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
+			$param = get_params();
+			$where = [];
+			if (!empty($param['keywords'])) {
+                $where[] = ['title|content', 'like', '%' . $param['keywords'] . '%'];
             }
-            $list = $this->model->datalist($where, $param);
+			if (!empty($param['dids'])) {
+				$did = $param['dids'];
+				$where[] = ['', 'exp', Db::raw("FIND_IN_SET('{$did}',use_dids)")];
+            }
+			if (!empty($param['cate_id'])) {
+				$cate_id_array = get_cate_son('RegulationCate',$param['cate_id']);
+                $where[] = ['cate_id', 'in', $cate_id_array];
+            }
+			$where[] = ['delete_time', '=', 0];
+			$list = $this->model->datalist($where, $param);
             return table_assign(0, '', $list);
-        }
-        else{
+        } else {
             return view();
         }
     }
 	
-    /**
-    * 查看
-    */
-    public function view($id)
+    //查看
+    public function view()
     {
+        $param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
 		$detail = $this->model->getById($id);
-		if (!empty($detail)) {
-			$detail['cate'] = Db::name('NoteCate')->where(['id' => $detail['cate_id']])->value('title');
-			$detail['admin_name'] = Db::name('Admin')->where(['id' => $detail['admin_id']])->value('name');
-			if($detail['file_ids'] !=''){
-				$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
-				$detail['file_array'] = $file_array;
-			}
-			View::assign('detail', $detail);
-			if(is_mobile()){
-				return view('qiye@/index/news_view');
-			}
-			return view();
+		if($detail['cate_id']>0){
+			$detail['cate'] = Db::name('RegulationCate')->where('id',$detail['cate_id'])->value('title');
 		}
-		else{
-			return view(EEEOR_REPORTING,['code'=>404,'warning'=>'找不到页面']);
+		if($detail['file_ids'] !=''){
+			$file_array = Db::name('File')->where('id','in',$detail['file_ids'])->select();
+			$detail['file_array'] = $file_array;
 		}
+		View::assign('detail', $detail);
+		return view();
     }
-
 }

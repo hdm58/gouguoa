@@ -30,16 +30,24 @@
 {block name="body"}
 <script src="{__GOUGU__}/third_party/fullcalendar/main.min.js"></script>
 <div class="p-page">
-	<div id="calendar"></div>
-	{gt name="is_leader" value="0"}
-	<div class="calendar-select">
-		<div class="layui-input-inline"><input type="text" placeholder="选择下属员工" class="layui-input" data-event="select" autocomplete="off"/></div>		
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li class="layui-this"><a href="/oa/schedule/calendar">我的工作日志</a></li>
+				<li><a href="/oa/schedule/datalist?tab=0">我的工作日志查询</a></li>
+				{eq name="$is_leader" value="1"}
+				<li><a href="/oa/schedule/datalist?tab=1">下属工作日志查询</a></li>
+				{/eq}
+				{eq name="$auth" value="1"}
+				<li><a href="/oa/schedule/datalist?tab=2">全部工作日志查询(管理员)</a></li>
+				{/eq}
+			</ul>
+		</div>
 	</div>
-	{/gt}
+	<div id="calendar"></div>
 </div>
 <!-- /主体 -->
 {/block}
-{block name="copyright"}{/block}
 <!-- 脚本 -->
 {block name="script"}
 <script type="text/javascript">
@@ -50,57 +58,16 @@
 		}
 		return num;
 	}
-	const moduleInit = ['tool','oaPicker','oaSchedule'];
+	const moduleInit = ['tool'];
 	function gouguInit() {
-		var form = layui.form,tool=layui.tool, oaPicker = layui.oaPicker,laydate = layui.laydate,work = layui.oaSchedule;
-		// 选择下属员工
-		$('body').on('click','[data-event="select"]',function(){
-			var that = $(this);
-			oaPicker.employeeInit({
-				title:"选择下属",
-				department_url: "/api/index/get_department_tree_sub",
-				employee_url: "/api/index/get_employee_sub",
-				ids: '',
-				names: '',
-				type: 1,
-				callback:function(data){
-					//这里是选择后的回调方法，可以根据具体需求自定义写哦
-					let select_id=[],select_name=[];
-					for(var a=0; a<data.length;a++){
-						select_id.push(data[a].id);
-						select_name.push(data[a].name);
-					}
-					that.val(select_name.join(','));
-					uid = select_id.join(','); 
-					calendar.refetchEvents();
-				}
-			})
-		});
-		
-		//请求事件api数据
-		function eventApi(id){
-			if(id==0){
-				return false;
-			}
-			$.ajax({
-				url: "/oa/schedule/view",
-				type:'post',
-				data:{id:id},
-				success:function(res){					
-					detail=res.data;
-					work.view(detail);
-				}
-			});	
-		}
-
-
+		var form = layui.form,tool=layui.tool;		
 		//日历
 		var calendarEl = document.getElementById('calendar');
 		var calendar = new FullCalendar.Calendar(calendarEl, {
 			views: {
 				dayGrid: {
 					viewDidMount:function(arg){
-						calendar.setOption('height', window.innerHeight-30);
+						calendar.setOption('height', window.innerHeight);
 					}
 				},
 				timeGrid: {
@@ -122,18 +89,16 @@
 			//initialDate: '2020-09-12',//默认显示日期
 			initialView: 'dayGridMonth',//默认显示月视图
 			customButtons: {
-				clear: {
-					text: '清空员工', click: function () {
-						uid = 0;
-						$('[data-event="select"]').val('');
-						calendar.refetchEvents();
+				addnew: {
+					text: '新增工作日志', click: function () {
+						tool.box('/oa/schedule/add',"新增工作日志", 820,450,false);
 					}
 				}
             },
 			headerToolbar: {
 				left: 'prev,next',
 				center: 'title',
-				right: 'clear dayGridMonth,timeGridWeek,listWeek'
+				right: 'addnew dayGridMonth,timeGridWeek,listWeek'
 			},
 			height: 'auto',//自动高度
 			navLinks: true, // can click day/week names to navigate views
@@ -145,26 +110,19 @@
 				const dateToCheck = new Date(dateStr);
 				const currentDate = new Date();
 				const sevenDaysAgo = new Date();
-				sevenDaysAgo.setDate(currentDate.getDate() - 7);
+				sevenDaysAgo.setDate(currentDate.getDate() - 15);
 				if (dateToCheck < sevenDaysAgo) {
 					// 七日前的日期不可选，可以显示提示信息
-					layer.msg('不能选择七日前的日期。');
+					layer.msg('不能选择15天前的日期。');
 					return false;
-				} else {
-					var detail={};
-					detail['id']=0;
-					detail['title']='';
-					detail['labor_type']=0;
-					detail['start_time_a']=dateStr;
-					detail['end_time_a']=dateStr;		
-					detail['start_time_b']='09:00';
-					detail['end_time_b']='09:30';		
-					detail['remark']='';
-					detail['type']=0;
-					detail['remind_type']=0;
-					//console.log(detail);	
-					work.add(0, detail);
+				}	
+				if (dateToCheck > currentDate) {
+					// 还未到的日期不可选
+					layer.msg('只能选择前15天的日期。');
+					return false;
 				}
+				let start_time = dateStr+" 09:00";
+				tool.box('/oa/schedule/add?start_time='+start_time,"新增工作日志", 820,450,false);
 			},
 			nowIndicator: true,
 			weekNumbers: true,// 是否开启周数
@@ -209,7 +167,14 @@
 			},
 			eventClick: function(info) {
 				//console.log(info.event);
-				eventApi(info.event.id);
+				if(info.event.id>0){
+					if(info.event.extendedProps.admin_id == login_admin){
+						tool.box('/oa/schedule/add?id='+info.event.id,"编辑工作日志",820,450,false);
+					}
+					else{
+						tool.box('/oa/schedule/view?id='+info.event.id,"工作日志",800,398,false);
+					}
+				}
 			}
 		});
 		calendar.render();

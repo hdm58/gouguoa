@@ -1,0 +1,198 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">员工工资</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">员工姓名<font>*</font></td>
+			<td>
+				<input type="text" name="name" lay-verify="required" placeholder="请选择" lay-reqText="请选择员工" class="layui-input picker-diy" readonly value="{$detail.name|default=''}">
+				<input type="hidden" name="uid" value="{$detail.uid|default=''}">
+			</td>
+			<td class="layui-td-gray">所在部门</td>
+			<td><input type="text" name="department" class="layui-input" readonly value="{$detail.department|default=''}"></td>
+			<td class="layui-td-gray">岗位职称</td>
+			<td><input type="text" name="position" class="layui-input" readonly value="{$detail.position|default=''}"></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>工资奖金</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">基本工资<font>*</font></td>
+			<td><input type="text" name="salary_basic" lay-verify="required|number" placeholder="请输入" lay-reqText="请完善基本工资" class="layui-input num-basic" value="{$detail.salary_basic|default=''}"></td>
+			<td class="layui-td-gray">岗位工资</td>
+			<td><input type="text" name="salary_position" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_position|default=''}"></td>
+			<td class="layui-td-gray">绩效工资</td>
+			<td><input type="text" name="salary_performance" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_performance|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">全勤奖金</td>
+			<td><input type="text" name="salary_quanqin" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_quanqin|default=''}"></td>
+			<td class="layui-td-gray">加班工资</td>
+			<td><input type="text" name="salary_overwork" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_overwork|default=''}"></td>
+			<td class="layui-td-gray">用餐补贴</td>
+			<td><input type="text" name="salary_meal" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_meal|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">话费补贴</td>
+			<td><input type="text" name="salary_phone" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_phone|default=''}"></td>
+			<td class="layui-td-gray">交通补贴</td>
+			<td><input type="text" name="salary_traffic" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_traffic|default=''}"></td>
+			<td class="layui-td-gray">住房补贴</td>
+			<td><input type="text" name="salary_house" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_house|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">节假福利</td>
+			<td><input type="text" name="salary_fuli" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_fuli|default=''}"></td>
+			<td class="layui-td-gray">保竞津贴</td>
+			<td><input type="text" name="salary_protecting" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_protecting|default=''}"></td>
+			<td class="layui-td-gray">奖金</td>
+			<td><input type="text" name="salary_bonus" lay-verify="number" placeholder="请输入" class="layui-input num-basic" value="{$detail.salary_bonus|default=''}"></td>
+		</tr>		
+		<tr>
+			<td colspan="6"><strong>抵扣款项</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">迟到扣除</td>
+			<td><input type="text" name="deduct_belate" lay-verify="number" placeholder="请输入" class="layui-input num-deduct" value="{$detail.deduct_belate|default=''}"></td>
+			<td class="layui-td-gray">事假扣除</td>
+			<td><input type="text" name="deduct_leave" lay-verify="number" placeholder="请输入" class="layui-input num-deduct" value="{$detail.deduct_leave|default=''}"></td>
+			<td class="layui-td-gray">旷工扣除</td>
+			<td><input type="text" name="deduct_absenteeism" lay-verify="number" placeholder="请输入" class="layui-input num-deduct" value="{$detail.deduct_absenteeism|default=''}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">个税</td>
+			<td><input type="text" name="deduct_tax" lay-verify="number" placeholder="请输入" class="layui-input num-statutory" value="{$detail.deduct_tax|default=''}"></td>
+			<td class="layui-td-gray">社保</td>
+			<td><input type="text" name="deduct_social" lay-verify="number" placeholder="请输入" class="layui-input num-statutory" value="{$detail.deduct_social|default=''}"></td>
+			<td class="layui-td-gray">公积金</td>
+			<td><input type="text" name="deduct_gongjijin" lay-verify="number" placeholder="请输入" class="layui-input num-statutory" value="{$detail.deduct_gongjijin|default=''}"></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>款项合计</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">应领工资</td>
+			<td><span class="total_payable blue">{$detail.total_payable|default=''}</span><input type="hidden" name="total_payable" value="{$detail.total_payable|default=''}"/></td>
+			<td class="layui-td-gray">应扣工资</td>
+			<td><span class="total_deduction red">{$detail.total_deduction|default=''}</span><input type="hidden" name="total_deduction" value="{$detail.total_deduction|default=''}"/></td>
+			<td class="layui-td-gray">代扣代缴</td>
+			<td><span class="total_statutory yellow">{$detail.total_statutory|default=''}</span><input type="hidden" name="total_statutory" value="{$detail.total_statutory|default=''}"/></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">实发工资</td>
+			<td><span class="total_payment green">{$detail.total_payment|default=''}</span><input type="hidden" name="total_payment" value="{$detail.total_payment|default=''}"/></td>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="3"><input type="text" name="remark" placeholder="请输入" class="layui-input" value="{$detail.remark|default=''}"></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<input type="hidden" name="salary_id" value="{$salary_id}"/>
+		<input type="hidden" name="status" value="1"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var tool = layui.tool,form = layui.form,oaPicker = layui.oaPicker;
+		
+		//选择员工弹窗        
+		$('body').on('click','.picker-diy',function () {
+			let that = $(this);
+			let ids=that.next().val()+'',names = that.val()+'';
+			oaPicker.employeeInit({
+				ids:ids,
+				names:names,
+				type:1,//1是单选，2是多选
+				callback:function(data){
+					//这里是选择后的回调方法，可以根据具体需求自定义写哦
+					let uid=[],uname=[],did=[],dname=[],pid=[],pname=[];
+					for(var a=0; a<data.length;a++){
+						uid.push(data[a].id);
+						uname.push(data[a].name);
+						did.push(data[a].did);
+						dname.push(data[a].department);
+						pid.push(data[a].pid);
+						pname.push(data[a].position);
+						
+					}
+					that.val(uname.join(','));
+					that.next().val(uid.join(','));
+					$('[name="department"]').val(dname.join(','));
+					$('[name="position"]').val(pname.join(','));
+				}
+			});
+		});
+
+		$('body').on('input', '.num-basic,.num-deduct,.num-statutory', function() {
+			count();
+		});
+		
+		function count(){
+			var numA = $('.num-basic'),basic = 0;
+			for (var a = 0; a < numA.length; a++) {
+				basic+=$(numA[a]).val()*10000;
+			}
+			if(isNaN(basic)){ 
+				basic = 0;
+			}
+			
+			var numB = $('.num-deduct'),deduct = 0;
+			for (var b = 0; b < numB.length; b++) {
+				deduct+=$(numB[b]).val()*10000;
+			}
+			if(isNaN(deduct)){ 
+				deduct = 0;
+			}
+			
+			var numC = $('.num-statutory'),statutory = 0;
+			for (var c = 0; c < numC.length; c++) {
+				statutory+=$(numC[c]).val()*10000;
+			}
+			if(isNaN(statutory)){ 
+				statutory = 0;
+			}
+			
+			let = total_payable = (basic/10000).toFixed(2);
+			let = total_deduction = (deduct/10000).toFixed(2);
+			let = total_statutory = (statutory/10000).toFixed(2);
+			let = total_payment = ((basic-deduct-statutory)/10000).toFixed(2);
+			
+			$('.total_payable').html(total_payable);
+			$('[name="total_payable"]').val(total_payable);
+			
+			$('.total_deduction').html(total_deduction);
+			$('[name="total_deduction"]').val(total_deduction);
+			
+			$('.total_statutory').html(total_statutory);
+			$('[name="total_statutory"]').val(total_statutory);
+			
+			$('.total_payment').html(total_payment);
+			$('[name="total_payment"]').val(total_payment);
+		}
+		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+					parent.parent.layui.pageTable.reload();
+				}
+			}
+			tool.post("/adm/salary/records_add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

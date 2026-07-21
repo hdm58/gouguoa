@@ -7,6 +7,9 @@
 			<ul class="layui-tabs-header">
 				<li><a href="/oa/work/datalist?send=1">发送的汇报</a></li>
 				<li class="layui-this"><a href="/oa/work/datalist?send=2">接受的汇报</a></li>
+				{eq name="$auth" value="1"}
+				<li><a href="/oa/work/datalist?send=3">全部汇报(管理员)</a></li>
+				{/eq}
 			</ul>
 		</div>
 	</div>
@@ -87,7 +90,7 @@
 				},
 				{field: 'send_time', title: '汇报时间', align:'center',width:160},
 				{field: 'files', title: '附件(个)',align:'center', width:80},
-				{field: 'right', title: '操作',fixed:'right', toolbar: '#barDemo', width:120, align:'center'}
+				{field: 'right', title: '操作',fixed:'right', toolbar: '#barDemo', width:60, align:'center'}
 			]],
 		});
 

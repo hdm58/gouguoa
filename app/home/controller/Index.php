@@ -475,4 +475,17 @@ class Index extends BaseController
 			return view();
 		}
     }
+	
+	//企业大事件
+	public function events()
+    {
+        $list = Db::name('Events')->where('delete_time',0)->order('event_time desc')->select()->toArray();
+		View::assign('list', $list);
+        return view();
+    }
+	public function chartyear()
+    {
+        return view();
+    }
+	
 }

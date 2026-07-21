@@ -1,0 +1,87 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-2">文号规则</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">规则名称</td>
+			<td colspan="3">{$detail.title}</td>
+			<td class="layui-td-gray">所属类目</td>
+			<td>{$detail.types_str}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">文号规则</td>
+			<td colspan="3">
+			{empty name="$detail.prefix"}
+			-
+			{else/}
+			{$detail.prefix}〔202*〕第{$detail.prefix_num}***号
+			{/empty}
+			</td>
+			<td class="layui-td-gray">文号编码</td>
+			<td>{$detail.code}</td>
+		</tr>
+	</table>
+	<h3 class="py-2">已生成的文号</h3>
+	<div>
+		<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:200px">
+				<input type="text" name="year" placeholder="请选择年份" class="layui-input tool-time" readonly data-type="year" />
+			</div>
+			<div class="layui-input-inline" style="width:150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">清空</button>
+			</div>
+		</form>
+		<table class="layui-hide" id="test" lay-filter="test"></table>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const base_id = {$detail.id};
+	const moduleInit = ['tool'];
+	function gouguInit() {
+		var table = layui.table, form = layui.form;
+		layui.pageTable = table.render({
+			elem: '#test'
+			,toolbar: false
+			,defaultToolbar: false
+			,title:'文号规则列表'
+			,url: "/adm/api/doc_number"
+			,where: {base_id:base_id}
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'code',title: '文号名称',width:300}
+				,{field:'year',title: '所属年份', align:'center',width:80}
+				,{field:'title',title: '关联公文',minWidth:240}
+				,{field:'admin_name', title: '生成人员',width:100,align:'center'}
+				,{field:'update_time', title: '生成时间',width:160,align:'center'}
+			]]
+		});
+		
+		//监听搜索提交
+		form.on('submit(webform)', function (data) {
+			layui.pageTable.reload({
+				where: {
+					base_id: base_id,
+					year: data.field.year
+				},
+				page: {
+					curr: 1
+				}
+			});
+			return false;
+		});
+
+	}
+</script>
+{/block}
+<!-- /脚本 -->
