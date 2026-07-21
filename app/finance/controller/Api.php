@@ -36,17 +36,9 @@ class Api extends BaseController
 		$where[] = ['delete_time', '=', 0];
 		$where[] = ['admin_id', '=', $this->uid];		
 		$where[] = ['balance_status', '<', 2];		
-		$where[] = ['pay_status', '=', 1];
+		$where[] = ['status', '=', 2];
 		$where[] = ['check_status', '=', 2];
 		$where[] = ['back_status', '=', 0];
-		/*
-		if(!empty($param['project_id'])){
-			$where[] = ['project_id', '=', $param['project_id']];
-		}
-		else{
-			$where[] = ['project_id', '=', 0];
-		}
-		*/
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$list = Db::name('Loan')->where($where)
 			->paginate(['list_rows'=> $rows])

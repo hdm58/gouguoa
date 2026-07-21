@@ -129,7 +129,7 @@ mbui.define(['tool'], function (exports) {
 				if(that.count>=that.total && that.count>0){
 					elem.find('.load-data-end').show();
 				}
-				elem.find('.load-data-none').addClass('load-data-'+that.count);
+				elem.find('.load-data-none').attr('class', 'load-data-none load-data-'+that.count);
 				if (res.data.length > 0) {
 					that.page++;
 					$.each(res.data, function (index, item) {

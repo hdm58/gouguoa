@@ -153,7 +153,6 @@ class Loan extends BaseController
 		if (!empty($detail)) {
 			$detail['expense'] = Db::name('Expense')->where(['delete_time'=>0,'loan_id'=>$id])->select()->toArray();
 			View::assign('detail', $detail);
-			View::assign('create_user', get_admin($detail['admin_id']));
 			if(is_mobile()){
 				return view('qiye@/finance/view_loan');
 			}
