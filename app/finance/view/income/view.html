@@ -53,6 +53,7 @@
 				</div>
 			</td>
 		</tr>
+		{/notempty}
 		{eq name="$detail.check_status" value="2"}
 		<tr>
 			<td class="layui-td-gray">到账状态</td>
@@ -66,7 +67,6 @@
 			<td>{$detail.confirm_admin|default='-'}</td>
 		</tr>
 		{/eq}
-		{/notempty}
 	</table>
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
 </div>

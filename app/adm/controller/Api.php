@@ -297,7 +297,7 @@ class Api extends BaseController
 		$param['status'] = 1;
 		$res = Db::name('Salary')->where('id',$param['salary_id'])->strict(false)->update($param);
         if ($res!==false) {
-			Db::name('SalaryRecords')->where('salary_id',$param['salary_id'])->update(['status'=>1]);			
+			Db::name('SalaryRecords')->where('salary_id',$param['salary_id'])->update(['status'=>1,'pay_time'=>$param['pay_time']]);			
 			$log=new FinanceLog();
 			//注入收入流水
 			$log->add('salary',$param['salary_id']);

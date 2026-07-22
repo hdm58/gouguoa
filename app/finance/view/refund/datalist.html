@@ -99,7 +99,7 @@
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'status_name',title: '审批状态',width:110,align:'center',templet: function(d){
-						return '<span class="check-status-color-' + d.check_status + '">『'+d.status_name+'』</span>';
+						return '<span class="check-status-color-' + d.check_status + '">『'+d.check_status_str+'』</span>';
 					},
 					totalRowText: '<div style="text-align:right">合计</div>'
 				}

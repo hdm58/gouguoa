@@ -112,7 +112,7 @@ class Api extends BaseController
 		$param = get_params();
 		$where = array();
 		$where[] = ['delete_time', '=', 0];
-		$where[] = ['open_status', '<', 2];
+		$where[] = ['open_status', '=', 2];
 		if(!empty($param['project_id'])){
 			$where[] = ['project_id', '=', $param['project_id']];
 		}
@@ -127,7 +127,7 @@ class Api extends BaseController
 		$param = get_params();
 		$where = array();
 		$where[] = ['delete_time', '=', 0];
-		$where[] = ['open_status', '<', 2];
+		$where[] = ['open_status', '=', 2];
 		if(!empty($param['project_id'])){
 			$where[] = ['project_id', '=', $param['project_id']];
 		}

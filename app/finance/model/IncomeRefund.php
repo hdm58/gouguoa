@@ -49,7 +49,7 @@ class IncomeRefund extends Model
 				$item['fundscate'] = Db::name('FundsCate')->where('id',$item['fundscate_id'])->value('title');
 				$item['paytype'] = Db::name('PayType')->where('id',$item['paytype_id'])->value('title');
 				$item['account'] = Db::name('Account')->where('id',$item['account_id'])->value('title');
-				$item['status_name'] = check_status_name($item['check_status']);
+				$item['check_status_str'] = check_status_name($item['check_status']);
 				$item['check_user'] = '-';
 				if($item['check_status']==1 && !empty($item['check_uids'])){
 					$check_user = Db::name('Admin')->where('id','in',$item['check_uids'])->column('name');

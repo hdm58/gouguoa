@@ -161,6 +161,9 @@ class Workplan extends BaseController
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
 			View::assign('detail', $detail);
+			if(is_mobile()){
+				return view('qiye@/index/workplan_view');
+			}
 			return view();
 		}
 		else{

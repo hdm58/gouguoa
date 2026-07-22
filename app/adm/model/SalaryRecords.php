@@ -42,6 +42,7 @@ class SalaryRecords extends Model
 				$item['department'] = Db::name('Department')->where('id',$user['did'])->value('title');
 				$item['month_time'] = date('Y-m',$item['month_time']);
 				$item['status_name'] = self::$STATUS[$item['status']];
+				$item['pay_time'] = to_date($item['pay_time'],'Y-m-d');
 			});
 			return $list;
         } catch(\Exception $e) {
