@@ -273,6 +273,12 @@ class Flow extends BaseController
 					else{
 						$item['departments']='全部';
 					}
+					if(!empty($item['template_id'])){
+						$item['template'] = Db::name('Template')->where('id',$item['template_id'])->value('title');
+					}
+					else{
+						$item['template']='-';
+					}
 					return $item;
 				});
             return table_assign(0, '', $list);
