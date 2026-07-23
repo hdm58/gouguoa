@@ -456,16 +456,14 @@ class Purchase extends BaseController
 				$detail['has_ticket'] = sprintf("%.2f",$has_ticket);
 				$detail['no_ticket'] = sprintf("%.2f",($detail['cost']*100 - $has_ticket*100)/100);	
 					
-					
-				$ticket_ids = 	Db::name('Ticket')->where([['purchase_id','=',$id],['open_status','<',2],['delete_time','=',0]])->column('id');
 				$detail['payment'] = Db::name('TicketPayment')->field('t.*,a.name as admin')
 					->alias('t')
 					->join('Admin a', 'a.id = t.admin_id', 'LEFT')
-					->where([['t.ticket_id','in',$ticket_ids],['t.status','=',1]])
+					->where([['t.ticket_id','=',$id],['t.status','=',2]])
 					->order('t.pay_time desc')
 					->select();
 					
-				$has_payment = Db::name('TicketPayment')->where([['ticket_id','in',$ticket_ids],['status','=',1]])->sum('amount');
+				$has_payment = Db::name('TicketPayment')->where([['ticket_id','=',$id],['status','=',2]])->sum('amount');
 				$detail['has_payment'] = sprintf("%.2f",$has_payment);
 				$detail['no_payment'] = sprintf("%.2f",($detail['cost']*100 - $has_payment*100)/100);
 			}

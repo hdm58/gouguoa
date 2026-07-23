@@ -130,18 +130,11 @@ class Follow extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
-			$detail['contact'] = Db::name('CustomerContact')->where('id',$detail['contact_id'])->value('name');
 			$detail['types_name'] = Db::name('BasicCustomer')->where('id',$detail['types'])->value('title');
 			$detail['stage_name'] = Db::name('BasicCustomer')->where('id',$detail['stage'])->value('title');
-			if($detail['chance_id']>0){
-				$detail['chance'] = Db::name('CustomerChance')->where(['id' => $detail['chance_id']])->value('title');
-			}
-			else{
-				$detail['chance']='-';
-			}
 			View::assign('detail', $detail);
 			if(is_mobile()){
-				return view('qiye@/customer/trace_view');
+				return view('qiye@/customer/follow_view');
 			}
 			return view();
 		}

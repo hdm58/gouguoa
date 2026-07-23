@@ -120,7 +120,7 @@ class Customer extends Model
 			$param['create_time'] = time();
 			$param['update_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
-			if(!empty($param['is_clue'])){
+			if(empty($param['is_clue'])){
 				$contact = [
 					'name' => $param['c_name'],
 					'mobile' => $param['c_mobile'],

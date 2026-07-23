@@ -151,7 +151,7 @@ class Clue extends BaseController
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);
 				if(is_mobile()){
-					return view('qiye@/clue/add');
+					return view('qiye@/customer/clue_add');
 				}
 				return view('edit');
 			}
@@ -159,7 +159,7 @@ class Clue extends BaseController
 				View::assign('userinfo', get_admin($this->uid));
 			}
 			if(is_mobile()){
-				return view('qiye@/clue/add');
+				return view('qiye@/customer/clue_add');
 			}
 			return view();
 		}
@@ -175,9 +175,14 @@ class Clue extends BaseController
 		$detail['source'] = Db::name('CustomerSource')->where(['id' => $detail['source_id']])->value('title');
 		$detail['follow_time'] = to_date($detail['follow_time']);
 		$detail['next_time'] = to_date($detail['next_time']);
+		$role=0;
+		if($detail['belong_uid'] == $this->uid){
+			$role=1;
+		}
 		View::assign('detail', $detail);
+		View::assign('role', $role);
 		if(is_mobile()){
-			return view('qiye@/clue/view');
+			return view('qiye@/customer/clue_view');
 		}
 		return view();
     }
@@ -379,7 +384,7 @@ class Clue extends BaseController
 		$param = get_params();	
         if (request()->isAjax()) {	
 			$detail= Db::name('Customer')->where(['id' => $param['id']])->find();
-			if($detail['belong_uid']!=$this->uid){
+			if($detail['belong_uid']!=$this->uid && $this->uid>1){
 				return to_assign(1, '你不是该线索的所属人，不支持操作');
 			}
 			$param['customer_time'] = time();

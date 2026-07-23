@@ -169,6 +169,88 @@ mbui.define(['tool','layer'], function (exports) {
 								</div>\
 							</label>'
 			}
+		},
+		'loan':{
+			title:'选择借支冲抵',
+			url:'/finance/api/get_loan',
+			searchbar:'<div class="mbui-picker-search"><input type="search" class="search-input" placeholder="输入关键字..."></div>',
+			template:function (item,types){
+				return '<label class="mbui-picker-item" data-id="' + item.id + '" data-title="' + item.title + '">\
+								<input class="mbui-input-'+types+'" name="radio_picker[]" type="'+types+'" value="' + item.id + '">\
+								<div style="margin-left:8px;">\
+									<div class="line-limit-1">' + item.title + '</div>\
+									<div class="f12"><span class="text-gray">借款金额：</span>'+item.cost+'<span class="text-gray" style="margin-left:12px;">借支主题：</span>'+item.title+'</div>\
+								</div>\
+							</label>'
+			}
+		},
+		'invoice':{
+			title:'选择销项发票',
+			url:'/finance/api/get_invoice',
+			searchbar:'<div class="mbui-picker-search"><input type="search" class="search-input" placeholder="输入关键字..."></div>',
+			template:function (item,types){
+				return '<label class="mbui-picker-item" data-id="' + item.id + '" data-title="' + item.code + '">\
+								<input class="mbui-input-'+types+'" name="radio_picker[]" type="'+types+'" value="' + item.id + '">\
+								<div style="margin-left:8px;">\
+									<div class="line-limit-1">' + item.code + '</div>\
+									<div class="f12"><span class="text-gray">开票主体：</span>'+item.enterprise+'<span class="text-gray" style="margin-left:12px;">发票抬头：</span>'+item.invoice_title+'</div>\
+								</div>\
+							</label>'
+			}
+		},
+		'ticket':{
+			title:'选择进项发票',
+			url:'/finance/api/get_ticket',
+			searchbar:'<div class="mbui-picker-search"><input type="search" class="search-input" placeholder="输入关键字..."></div>',
+			template:function (item,types){
+				return '<label class="mbui-picker-item" data-id="' + item.id + '" data-title="' + item.code + '">\
+								<input class="mbui-input-'+types+'" name="radio_picker[]" type="'+types+'" value="' + item.id + '">\
+								<div style="margin-left:8px;">\
+									<div class="line-limit-1">' + item.code + '</div>\
+									<div class="f12"><span class="text-gray">发票抬头：</span>'+item.enterprise+'<span class="text-gray" style="margin-left:12px;">开票主体：</span>'+item.invoice_title+'</div>\
+								</div>\
+							</label>'
+			}
+		},
+		'enterprise':{
+			title:'选择企业主体',
+			url:'/finance/api/get_enterprise',
+			searchbar:'<div class="mbui-picker-search"><input type="search" class="search-input" placeholder="输入关键字..."></div>',
+			template:function (item,types){
+				return '<label class="mbui-picker-item" data-id="' + item.id + '" data-title="' + item.title + '">\
+								<input class="mbui-input-'+types+'" name="radio_picker[]" type="'+types+'" value="' + item.id + '">\
+								<div style="margin-left:8px;">\
+									<div class="line-limit-1">' + item.title + '</div>\
+								</div>\
+							</label>'
+			}
+		},
+		'account':{
+			title:'选择资金账户',
+			url:'/finance/api/get_account',
+			searchbar:'<div class="mbui-picker-search"><input type="search" class="search-input" placeholder="输入关键字..."></div>',
+			template:function (item,types){
+				return '<label class="mbui-picker-item" data-id="' + item.id + '" data-title="' + item.title + '">\
+								<input class="mbui-input-'+types+'" name="radio_picker[]" type="'+types+'" value="' + item.id + '">\
+								<div style="margin-left:8px;">\
+									<div class="line-limit-1">' + item.title + '</div>\
+									<div class="f12"><span class="text-gray">所属企业主体：</span>'+item.enterprise+'</div>\
+								</div>\
+							</label>'
+			}
+		},
+		'paytype':{
+			title:'选择支付方式',
+			url:'/finance/api/get_paytype',
+			searchbar:'<div class="mbui-picker-search"><input type="search" class="search-input" placeholder="输入关键字..."></div>',
+			template:function (item,types){
+				return '<label class="mbui-picker-item" data-id="' + item.id + '" data-title="' + item.title + '">\
+								<input class="mbui-input-'+types+'" name="radio_picker[]" type="'+types+'" value="' + item.id + '">\
+								<div style="margin-left:8px;">\
+									<div class="line-limit-1">' + item.title + '</div>\
+								</div>\
+							</label>'
+			}
 		}
 	};
 	//html转义，防止XSS
