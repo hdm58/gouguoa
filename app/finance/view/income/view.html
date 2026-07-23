@@ -67,6 +67,55 @@
 			<td>{$detail.confirm_admin|default='-'}</td>
 		</tr>
 		{/eq}
+		{gt name="$detail.back_status" value="0"}
+		<tr>
+			<td class="layui-td-gray">退款状态</td>
+			<td>
+				{eq name="$detail.back_status" value="1"}<span class="yellow">部分退款</span>{/eq}
+				{eq name="$detail.back_status" value="2"}<span class="red">已退款</span>{/eq}
+			</td>
+			<td class="layui-td-gray-2">退款金额</td>
+			<td colspan="3" class="red">{$detail.back_amount|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">退款记录</td>
+			<td colspan="5">
+				<table class="layui-table layui-table-min" style="margin:0;">
+					<tr>
+						<th style="width:60px;">序号</th>
+						<th style="width:150px;">退款金额(元)</th>
+						<th style="width:200px;">退款日期</th>
+						<th style="width:100px;">审批状态</th>
+						<th style="width:100px;">退款状态</th>
+						<th style="width:150px;">申请人</th>
+						<th style="width:150px;">申请时间</th>
+						<th style="width:60px;">操作</th>
+					</tr>
+					{volist name="$detail.refund" id="vo"}
+					<tr>
+						<td>{$vo.id}</td>
+						<td>{$vo.amount}</td>
+						<td>{$vo.back_time | date='Y-m-d'}</td>
+						<td>
+							<span class="check-status-color-{$vo.check_status}">{:check_status_name($vo.check_status)}</span>
+						</td>
+						<td>
+							{eq name="$vo.check_status" value="2"}
+								{eq name="$vo.status" value="1"}<span class="red">未确认</span>{/eq}
+								{eq name="$vo.status" value="2"}<span class="green">已确认</span>{/eq}
+							{else/}
+								-
+							{/eq}
+						</td>
+						<td>{$vo.admin|default=''}</td>
+						<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						<td><span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/finance/refund/view?id={$vo.id}">详情</span></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/gt}
 	</table>
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
 </div>

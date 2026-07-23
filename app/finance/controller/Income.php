@@ -149,6 +149,9 @@ class Income extends BaseController
 				View::assign('detail', $detail);
 			}
 			View::assign('id', $id);
+			if(is_mobile()){
+				return view('qiye@/finance/add_income');
+			}
 			return view();
         }
     }
@@ -163,6 +166,12 @@ class Income extends BaseController
 		if($detail['status']==2){
 			$detail['confirm_name'] = Db::name('Admin')->where('id','=',$detail['confirm_uid'])->value('name');
 		}
+		$detail['refund'] = Db::name('IncomeRefund')->field('i.*,a.name as admin')
+					->alias('i')
+					->join('Admin a', 'a.id = i.admin_id', 'LEFT')
+					->where([['i.income_id','=',$id],['i.delete_time','=',0]])
+					->order('i.back_time desc')
+					->select();
         View::assign('detail', $detail);
 		if(is_mobile()){
 			return view('qiye@/finance/view_income');

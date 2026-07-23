@@ -148,6 +148,9 @@ class Payment extends BaseController
 				View::assign('detail', $detail);
 			}
 			View::assign('id', $id);
+			if(is_mobile()){
+			return view('qiye@/finance/add_payment');
+		}
 			return view();
         }
     }

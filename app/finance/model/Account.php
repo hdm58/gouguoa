@@ -20,7 +20,7 @@ class Account extends Model
     * @param $where
     * @param $param
     */
-    public function datalist($where, $param)
+    public function datalist($param,$where)
     {
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
 		$order = empty($param['order']) ? 'id desc' : $param['order'];

@@ -474,15 +474,14 @@ class Contract extends BaseController
 				$detail['no_invoice'] = sprintf("%.2f",($detail['cost']*100 - $has_invoice*100)/100);	
 					
 					
-				$invoice_ids = 	Db::name('Invoice')->where([['contract_id','=',$id],['open_status','<',2],['delete_time','=',0]])->column('id');
 				$detail['income'] = Db::name('InvoiceIncome')->field('i.*,a.name as admin')
 					->alias('i')
 					->join('Admin a', 'a.id = i.admin_id', 'LEFT')
-					->where([['i.invoice_id','in',$invoice_ids],['i.status','=',1]])
+					->where([['i.contract_id','=',$id],['i.status','=',2]])
 					->order('i.enter_time desc')
 					->select();
 					
-				$has_income = Db::name('InvoiceIncome')->where([['invoice_id','in',$invoice_ids],['status','=',1]])->sum('amount');
+				$has_income = Db::name('InvoiceIncome')->where([['contract_id','=',$id],['status','=',1]])->sum('amount');
 				$detail['has_income'] = sprintf("%.2f",$has_income);
 				$detail['no_income'] = sprintf("%.2f",($detail['cost']*100 - $has_income*100)/100);
 			}
