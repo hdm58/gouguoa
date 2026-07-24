@@ -176,7 +176,9 @@ composer config -g repos.packagist composer https://mirrors.aliyun.com/composer/
 
 11. 遇到解决不了的问题请到QQ群反馈：24641076（群一），46924914（群二），295256660（群三） 。
 
-12. 更多问题请查看链接解决：https://blog.gougucms.com/home/book/detail/bid/3/id/100.html
+12. 安装过程遇到更多问题请查看链接解决：https://blog.gougucms.com/home/book/detail/bid/3/id/100.html
+
+13. 升级问题请查看链接解决：https://blog.gougucms.com/home/book/detail/bid/3/id/245.html
 
 **最后，如果实在安装不成功，确实需要提供安装服务的，请搜索微信号：hdm588，或者QQ号：327725426，添加好友，注意备注[安装勾股系统]。开源不易，该服务需友情赞赏💰99元。**
 
