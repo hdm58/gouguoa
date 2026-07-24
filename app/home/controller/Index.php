@@ -172,15 +172,15 @@ class Index extends BaseController
 		$handle=[];
 		
         $handle[] = array(
-            'name' => '待审公文',
-            'num' =>  Db::name('OfficialDocs')->where($whereHandle)->count(),
-            'id' => 197,
-            'url' => '/adm/official/datalist',
+            'name' => '待审用车',
+            'num' =>  Db::name('CarUse')->where($whereHandle)->count(),
+            'id' => 223,
+            'url' => '/adm/car/apply_list',
         );
         $handle[] = array(
             'name' => '待审用章',
             'num' => Db::name('Seal')->where($whereHandle)->count(),
-            'id' => 204,
+            'id' => 235,
             'url' => '/adm/seal/datalist',
         );
         $handle[] = array(
@@ -196,45 +196,45 @@ class Index extends BaseController
             'url' => '/contract/purchase/datalist',
         );
 		$handle[] = array(
-            'name' => '待审报销',
-            'num' => Db::name('Expense')->where($whereHandle)->count(),
-            'id' => 423,
-            'url' => '/finance/expense/datalist',
-        );
-		$handle[] = array(
             'name' => '待审借支',
             'num' => Db::name('Loan')->where($whereHandle)->count(),
-            'id' => 427,
+            'id' => 428,
             'url' => '/finance/loan/datalist',
+        );
+		$handle[] = array(
+            'name' => '待审报销',
+            'num' => Db::name('Expense')->where($whereHandle)->count(),
+            'id' => 432,
+            'url' => '/finance/expense/datalist',
         );
 		$handle[] = array(
             'name' => '待审销项发票',
             'num' => Db::name('Invoice')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
-            'id' => 431,
+            'id' => 436,
             'url' => '/finance/invoice/datalist',
         );
 		$handle[] = array(
             'name' => '待审进项收票',
             'num' => Db::name('Ticket')->where($whereHandle)->where([['invoice_type','>',0]])->count(),
-            'id' => 435,
+            'id' => 440,
             'url' => '/finance/ticket/datalist',
         );
 		$handle[] = array(
             'name' => '待审收款',
             'num' => Db::name('InvoiceIncome')->where($whereHandle)->count(),
-            'id' => 439,
+            'id' => 444,
             'url' => '/finance/income/datalist',
         );
 		$handle[] = array(
             'name' => '待审付款',
             'num' => Db::name('TicketPayment')->where($whereHandle)->count(),
-            'id' => 443,
+            'id' => 448,
             'url' => '/finance/payment/datalist',
         );
 		$handle[] = array(
             'name' => '待审退款',
             'num' => Db::name('IncomeRefund')->where($whereHandle)->count(),
-            'id' => 447,
+            'id' => 452,
             'url' => '/finance/refund/datalist',
         );
 		$handle[] = array(
@@ -299,7 +299,7 @@ class Index extends BaseController
 						$query->whereOr($whereProjectOr);
 					})
 					->count(),
-            'id' => 343,
+            'id' => 373,
             'url' => '/project/index/datalist',
         );
         $todue[] = array(

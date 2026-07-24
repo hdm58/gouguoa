@@ -137,6 +137,9 @@ function isAuth($uid,$name,$conf)
 //判断是否是部门负责人,
 function isLeader($uid = 0,$did='')
 {
+	if($uid==1){
+		return 1;
+	}
 	$map = [];
 	$map[] = ['status','=',1];
 	if(!empty($did)){

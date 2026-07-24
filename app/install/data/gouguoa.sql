@@ -189,7 +189,7 @@ INSERT INTO `oa_admin_module` VALUES (5, '客户模块', 'customer','', 2, 1,1, 
 INSERT INTO `oa_admin_module` VALUES (6, '合同模块', 'contract','', 2, 1,1, 1656142368, 0);
 INSERT INTO `oa_admin_module` VALUES (7, '项目模块', 'project','', 2, 1,1, 1656142368, 0);
 INSERT INTO `oa_admin_module` VALUES (8, '售后模块', 'service','', 2, 1,1, 1656142368, 0);
-INSERT INTO `oa_admin_module` VALUES (9, '财务模块', 'finance','', 1, 1,1, 1639562910, 0);
+INSERT INTO `oa_admin_module` VALUES (9, '财务模块', 'finance','', 2, 1,1, 1639562910, 0);
 INSERT INTO `oa_admin_module` VALUES (10, '网盘模块', 'disk','', 2, 1,1, 1656143065, 0);
 
 -- ----------------------------
@@ -480,6 +480,9 @@ INSERT INTO `oa_admin_rule` VALUES (205, 204, 'adm/official/number_add', '新增
 INSERT INTO `oa_admin_rule` VALUES (206, 204, 'adm/official/number_view', '查看','文号配置', 'adm', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (207, 204, 'adm/official/number_set', '设置','文号配置', 'adm', '', 2, 1, 1, 0, 0);
 
+--INSERT INTO `oa_admin_rule` VALUES (208, 4, 'adm/official/sendlist', '已发公文', '已发公文', 'adm', '', 1, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (209, 208, 'adm/official/receivelist', '已收公文', '已收公文', 'adm', '', 2, 1, 1, 0, 0);
+
 INSERT INTO `oa_admin_rule` VALUES (210, 4, 'adm/seal/record', '用章记录', '用章记录', 'adm', '', 1, 1, 1, 0, 0);
 
 INSERT INTO `oa_admin_rule` VALUES (211, 4, 'adm/meeting/room', '会议室管理', '会议室', 'adm', '', 1, 1, 1, 0, 0);
@@ -501,6 +504,16 @@ INSERT INTO `oa_admin_rule` VALUES (223, 5, 'adm/car/apply_list', '用车申请'
 INSERT INTO `oa_admin_rule` VALUES (224, 223, 'adm/car/apply_add', '新建/编辑', '用车', 'oa', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (225, 223, 'adm/car/apply_view', '查看', '用车', 'oa', '', 2, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (226, 223, 'adm/car/apply_del', '删除', '用车', 'oa', '', 2, 1, 1, 0, 0);
+
+--INSERT INTO `oa_admin_rule` VALUES (227, 5, 'adm/official/datalist', '公文发送', '公文发送', 'oa', '', 1, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (228, 227, 'adm/official/add', '新建/编辑', '公文发送', 'oa', '', 2, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (229, 227, 'adm/official/view', '查看', '公文发送', 'oa', '', 2, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (230, 227, 'adm/official/del', '删除', '公文发送', 'oa', '', 2, 1, 1, 0, 0);
+
+--INSERT INTO `oa_admin_rule` VALUES (231, 5, 'adm/official/receivelist', '公文接收', '公文接收', 'oa', '', 1, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (232, 231, 'adm/official/add', '新建/编辑', '公文接收', 'oa', '', 2, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (233, 231, 'adm/official/view', '查看', '公文接收', 'oa', '', 2, 1, 1, 0, 0);
+--INSERT INTO `oa_admin_rule` VALUES (234, 231, 'adm/official/del', '删除', '公文接收', 'oa', '', 2, 1, 1, 0, 0);
 
 INSERT INTO `oa_admin_rule` VALUES (235, 5, 'adm/seal/datalist', '用章申请', '用章申请', 'oa', '', 1, 1, 1, 0, 0);
 INSERT INTO `oa_admin_rule` VALUES (236, 235, 'adm/seal/add', '新建/编辑', '用章申请', 'oa', '', 2, 1, 1, 0, 0);
@@ -635,7 +648,7 @@ INSERT INTO `oa_admin_rule` VALUES (336, 334, 'contract/supplier/set', '设置',
 INSERT INTO `oa_admin_rule` VALUES (337, 334, 'contract/supplier/view', '查看', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (338, 334, 'contract/supplier/del', '删除', '供应商', 'contract', '', 2, 1, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (339, 334, 'contract/supplier/contact_add', '新建/编辑', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
-INSERT INTO `oa_admin_rule` VALUES (340, 334, 'contract/supplier/contact_del', '删除', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
+INSERT INTO `oa_admin_rule` VALUES (340, 334, 'contract/supplier/contact_del', '删除供应商联系人', '供应商联系人', 'contract', '', 2, 1, 1, 1656143065, 0);
 
 INSERT INTO `oa_admin_rule` VALUES (341, 319, 'contract/purchasedcate/datalist', '采购品分类', '采购品分类', 'contract', '', 1, 1, 1, 1656143065, 0);
 INSERT INTO `oa_admin_rule` VALUES (342, 341, 'contract/purchasedcate/add', '新建/编辑', '采购品分类', 'contract', '', 2, 1, 1, 1656143065, 0);
@@ -2876,7 +2889,7 @@ CREATE TABLE `oa_basic_adm`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '行政模块常规数据';
 
 -- ----------------------------
--- Records of oa_cost_cate
+-- Records of oa_basic_adm
 -- ----------------------------
 INSERT INTO `oa_basic_adm` VALUES (1, '1', '燃油费', 1, 1706840194, 0);
 INSERT INTO `oa_basic_adm` VALUES (2, '1', '停车费', 1, 1706840194, 0);
@@ -3907,7 +3920,6 @@ CREATE TABLE `oa_problems_work`  (
   `director_id` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '负责人员',
   `did` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '负责人部门',
   `admin_id` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建员工ID',
-  `did` int(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '所属部门',
   `start_time` int(11) NOT NULL DEFAULT 0 COMMENT '开始时间',
   `end_time` int(11) NOT NULL DEFAULT 0 COMMENT '结束时间',
   `hours` decimal(15, 1) NOT NULL DEFAULT 0.0 COMMENT '工时',
