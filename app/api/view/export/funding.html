@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>导出PDF</title>
+		<style>
+			body {color: #333333; font-family: "Microsoft YaHei", Helvetica, "Meiryo UI", "Malgun Gothic", "Segoe UI", "Trebuchet MS", "Monaco", monospace, Tahoma, STXihei, "华文细黑", STHeiti, "Helvetica Neue", "Droid Sans", "wenquanyi micro hei", FreeSans, Arimo, Arial, SimSun, "宋体", Heiti, "黑体", sans-serif; font-size: 13px;line-height: 1.5; word-wrap: break-word;}
+			h2{text-align:center;padding:0;margin:0; font-size:18px;height:39px;}
+			.pdf-table{border:1px solid #333333; border-collapse: collapse;width:100%}
+			.pdf-table td{border:1px solid #333333;border-collapse: collapse; padding:5px; line-height:1.5;}
+			.pdf-td-gray{background-color:#f5f5f5; text-align:right; width:90px;}
+		</style>
+	</head>
+	<body>
+	<h2>中新建酒店管理有限责任公司<br>付款审批单</h2>
+	<table class="pdf-table">
+		<tr>
+			<td class="pdf-td-gray">填报组织</td>
+			<td>{$detail.organization|default='-'}</td>	
+			<td class="pdf-td-gray">经办人</td>
+			<td>{$detail.admin_name}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">审批编号</td>
+			<td>{$detail.code|default='-'}</td>
+			<td class="pdf-td-gray">付款类型</td>
+			<td>{$detail.payment_type|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">费用承担部门</td>
+			<td>{$detail.department_a|default='-'}</td>
+			<td class="pdf-td-gray">下级单位审批</td>
+			<td>{$detail.department_b|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">费用项目</td>
+			<td>{$detail.project|default='-'}</td>
+			<td class="pdf-td-gray">用途</td>
+			<td>{$detail.used|default='-'}</td>
+		</tr>		
+		<tr>
+			<td class="pdf-td-gray">供应商</td>
+			<td>{$detail.supplier|default='-'}</td>
+			<td class="pdf-td-gray">价税合计</td>
+			<td>{$detail.tax_amount|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">收款方名称</td>
+			<td>{$detail.payee_name|default='-'}</td>
+			<td class="pdf-td-gray">收款银行账号</td>
+			<td>{$detail.payee_no|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">收款银行开户行</td>
+			<td>{$detail.payee_bank|default='-'}</td>
+			<td class="pdf-td-gray">收款银行开户行行号</td>
+			<td>{$detail.payee_bankno|default='-'}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">金额(小写)</td>
+			<td>{$detail.amount|default=''}</td>
+			<td class="pdf-td-gray">金额(大写)</td>
+			<td>{$detail.amount_big|default=''}</td>
+		</tr>
+		{notempty name="$detail.content"}
+		<tr>
+			<td class="pdf-td-gray">备注</td>
+			<td colspan="3">{$detail.content}</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids5"}
+		<tr>
+			<td class="pdf-td-gray">会议纪要</td>
+			<td colspan="3">
+				{volist name="$detail.file_array_5" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_array"}
+		<tr>
+			<td class="pdf-td-gray">发票</td>
+			<td colspan="3">
+				{volist name="$detail.file_array" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids1"}
+		<tr>
+			<td class="pdf-td-gray">发票查验单</td>
+			<td colspan="3">
+				{volist name="$detail.file_array_1" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids2"}
+		<tr>
+			<td class="pdf-td-gray">出入库单</td>
+			<td colspan="3">
+				{volist name="$detail.file_array_2" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids3"}
+		<tr>
+			<td class="pdf-td-gray">其他附件一</td>
+			<td colspan="3">
+				{volist name="$detail.file_array_3" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+		{notempty name="$detail.file_ids4"}
+		<tr>
+			<td class="pdf-td-gray">其他附件二</td>
+			<td colspan="3">
+				{volist name="$detail.file_array_4" id="vo"}
+				<div>{$i}、{$vo.name}</div>
+				{/volist}
+			</td>
+		</tr>
+		{/notempty}
+	</table>
+	{include file="export/pdf_check" /}
+	</body>
+</html>

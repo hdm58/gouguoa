@@ -18,9 +18,9 @@ return [
 	 // 是否是授权登录
     'authorization' => true,
     //授权域名
-	'auth_host'     => '192.168.31.184',
+	'auth_host'     => 'a.dev.com',
 	//授权key
-	'auth_key'      => 'UtGcWvJkME',
+	'auth_key'      => 'EAdSpe76Zu',
 	//授权码
-	'auth_code'     => '1D9T2J.R1o6y8t.T3/1o.91X8L4ZUft7Gpc9Wiv8Jjk1MkEymboVbhixlQeVE0aVh6akQrME4zL05SeHc9PQ==',
+	'auth_code'     => 'aw.Rd1eUvg.Ac0oom5EWAwdxSDpEeo7u6LZru9m9o7bliJlseeFhLVS9FVHBJOVprUE5iOXZ1REE9PQ==',
 ];
