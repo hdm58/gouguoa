@@ -24,12 +24,11 @@ class AdminLog extends Model
     {
         $rows = empty($param['limit']) ? get_config('app.pages') : $param['limit'];
         $list = Db::name('AdminLog')
-            ->field("a.id,a.uid,a.type,a.subject,a.action,a.create_time,u.name")
-			->alias('a')
-			->join('Admin u', 'a.uid = u.id')
-            ->order('a.create_time desc')
+            ->field("id,uid,type,subject,action,create_time")
+            ->order('create_time desc')
             ->paginate(['list_rows'=> $rows])
 			->each(function($item, $key){
+				$item['name'] = Db::name('Admin')->where('id',$item['uid'])->value('name');
 				$item['content'] = $item['name']. $item['action'] . '了' . $item['subject'];
 				$item['times'] = (new Dateset())->time_trans($item['create_time']);
 				return $item;

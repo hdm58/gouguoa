@@ -103,6 +103,7 @@ class Salary extends Model
     public function getById($id)
     {
         $info = self::find($id);
+		$info['month_time_big'] = date('Y年m月',$info['month_time']);
 		$info['month_time'] = date('Y-m',$info['month_time']);
 		$info['status_name'] = self::$STATUS[$info['status']];
 		if(!empty($info['exclude_uids'])){

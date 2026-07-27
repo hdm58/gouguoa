@@ -264,6 +264,22 @@
 				tool.side('/user/user/view?id='+data.id);
 				return;
 			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该离职用户？', {
+					icon: 3,
+					title: '提示'
+				}, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/user/user/del", {id: data.id}, callback);
+					layer.close(index);
+				});
+				return;
+			}
 			if(obj.data.status == 2){
 				layer.msg('离职员工不支持操作');
 				return false;

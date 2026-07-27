@@ -45,11 +45,53 @@ class Index extends BaseController
 			$list = list_to_tree($menu);
 			\think\facade\Cache::tag('adminMenu')->set('menu' . $this->uid, $list);
 		}
+		
+        $last_time = time() - 86400;
+		$yestoday = date('Y-m-d', $last_time);
+		$last_count = Db::name('AdminLogCount')->where('date', $yestoday)->count();
+		if($last_count==0){
+			//如果不存在生成访问记录
+			$this->initAdminLog();
+		}
+		
 		View::assign('menu', $list);
 		View::assign('admin',$admin);
 		View::assign('system',get_system_config('system'));
 		View::assign('web',get_system_config('web'));
 		return View();
+    }
+
+    // 初始历史操作记录数据
+    public function initAdminLog(){
+        $second_time = time() - 86400;
+		$startDate = date('Y-m-d',$second_time);
+        $data = [];
+        for ($i = 0; $i < 90; $i++) {
+            $year = date('Y', strtotime($startDate . ' -' . $i . ' days'));
+            $date = date('Y-m-d', strtotime($startDate . ' -' . $i . ' days'));
+			$begin_second=strtotime($date. " 00:00:00");
+			$end_second=strtotime($date. " 23:59:59");
+			$count = Db::name('AdminLogCount')->where('date', $date)->count();
+			if($count>0){
+				continue;
+			}
+            $data[] = [
+                'year' => $year,
+                'date' => $date,
+                'num' => Db::name('AdminLog')->whereBetween('create_time', "$begin_second,$end_second")->count(),
+                'create_time' => time()
+            ];            
+            // 分批插入，避免数据量过大
+            if (count($data) >= 100) {
+                Db::name('AdminLogCount')->insertAll($data);
+                $data = [];
+            }
+        }        
+        // 插入剩余数据
+        if (!empty($data)) {
+             Db::name('AdminLogCount')->insertAll($data);
+        }        
+        //return to_assign();
     }
 
     public function main()

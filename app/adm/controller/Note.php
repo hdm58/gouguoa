@@ -46,6 +46,9 @@ class Note extends BaseController
             if (!empty($param['keywords'])) {
                 $where[] = ['a.id|a.title', 'like', '%' . $param['keywords'] . '%'];
             }
+			if (!empty($param['cate_id'])) {
+                $where[] = ['cate_id', '=', $param['cate_id']];
+            }
             $list = $this->model->datalist($where, $param);
             return table_assign(0, '', $list);
         }

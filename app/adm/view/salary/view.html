@@ -2,13 +2,13 @@
 <!-- 主体 -->
 {block name="body"}
 <div class="p-page">
-	<h3 class="pb-3">工资单</h3>
+	<h3 class="pb-2">工资单</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">工资单</td>
-			<td colspan="5">{$detail.title|default=''}</td>
+			<td colspan="5" id="excelTitle">{$detail.title|default=''}</td>
 			<td class="layui-td-gray">工资月份</td>
-			<td>{$detail.month_time}</td>
+			<td>{$detail.month_time_big}</td>
 			<td class="layui-td-gray">当前状态</td>
 			<td><span class="check-status-color-{$detail.status}">{$detail.status_name}</span></td>
 		</tr>
@@ -121,6 +121,18 @@
 			if (obj.event === 'edit') {
 				tool.side("/adm/salary/records_add?id="+data.id);
 			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该工资单吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/adm/salary/records_del", { id: data.id }, callback);
+					layer.close(index);
+				});
+			}
 			return false;
 		});
 		
@@ -134,7 +146,7 @@
 				"use":'import',
 				"url":'/api/import/import_salary?salary_id='+salary_id,
 				"import":{
-					"template":'/static/home/file/勾股OA员工工资导入模板.xlsx',
+					"template":'/api/export/excel?id='+salary_id,
 					"tips":'如果导入失败，请根据提示注意检查表格数据，员工姓名、员工手机号、员工需要是系统中存在的数据，如果不存在的话可能会导入失败。'
 				},
 				callback:function(res){

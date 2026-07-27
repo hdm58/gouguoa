@@ -73,12 +73,12 @@
 				{include file="/index/layout_task" /}	
 			{/if}	
 			
-			{if ( $layout.column == 1) AND ( $layout.name == 'chartview') }
-				{include file="/index/layout_chartview" /}	
+			{if ( $layout.column == 1) AND ( $layout.name == 'problems') }
+				{include file="/index/layout_problems" /}	
 			{/if}
 			
-			{if ( $layout.column == 1) AND ( $layout.name == 'chartyear') }
-				{include file="/index/layout_chartyear" /}	
+			{if ( $layout.column == 1) AND ( $layout.name == 'chartview') }
+				{include file="/index/layout_chartview" /}	
 			{/if}
 			
 			{if ( $layout.column == 1) AND ( $layout.name == 'fastentry') }
@@ -135,12 +135,12 @@
 				{include file="/index/layout_task" /}	
 			{/if}	
 			
-			{if ( $layout.column == 2) AND ( $layout.name == 'chartview') }
-				{include file="/index/layout_chartview" /}	
+			{if ( $layout.column == 2) AND ( $layout.name == 'problems') }
+				{include file="/index/layout_problems" /}	
 			{/if}
 			
-			{if ( $layout.column == 2) AND ( $layout.name == 'chartyear') }
-				{include file="/index/layout_chartyear" /}	
+			{if ( $layout.column == 2) AND ( $layout.name == 'chartview') }
+				{include file="/index/layout_chartview" /}	
 			{/if}
 			
 			{if ( $layout.column == 2) AND ( $layout.name == 'fastentry') }
@@ -257,28 +257,28 @@
 			layoutChartView();
 		}
 		
-		if(typeof layoutChartYear ==='function'){
-			layoutChartYear();
+		if(typeof layoutProblems ==='function'){
+			layoutProblems(table);
 		}
 		
 		if(typeof layoutFastentry ==='function'){
-			layoutFastentry(tool,table)
+			layoutFastentry(tool,table);
 		}
 		
 		if(typeof layoutSystem ==='function'){
-			layoutSystem()
+			layoutSystem();
 		}
 		
 		if(typeof layoutRaking ==='function'){
-			layoutRaking()
+			layoutRaking();
 		}
 		
 		if(typeof layoutAction ==='function'){
-			layoutAction()
+			layoutAction();
 		}	
 		
 		if(typeof getLinks ==='function'){
-			getLinks()
+			getLinks();
 		}
 	}
 	
@@ -286,9 +286,6 @@
 		window.onresize = function () {
 			if(logChart){
 				chartView.resize();
-			}
-			if(myChart){
-				myChart.resize();
 			}
 			if(logChart){
 				logChart.resize();

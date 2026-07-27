@@ -1,0 +1,38 @@
+<div class="layui-row layui-col-space16">
+	<div class="layui-col-md12">
+		<div class="layui-card">
+			<div class="layui-card-title">销售问题</div>
+			<div style="padding: 12px;">
+				<table id="Problems" lay-filter="Problems" class="layui-hide" style="margin-top:0"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//公告
+function layoutProblems(table){
+	table.render({
+		elem: '#Problems'
+		, url: "/service/api/get_problems_list" //数据接口
+		, page: false //开启分页
+		, cols: [[ //表头
+			{field: 'id', title: '问题ID', width: 80, align: 'center'},
+			{field: 'cate', title: '问题分类', align: 'center','width': 90},
+			{field: 'title', title: '问题标题', minWidth: 300,templet:function(d){
+				var html = '<span class="layui-badge layui-bg-'+d.priority+'">'+d.priority_name+'</span> <a data-href="/service/problems/view/id/'+d.id+'.html" class="side-a">'+d.title+'</a>';
+				return html;
+			}},
+			{field: 'director_name', title: '指派人', align: 'center','width': 80},
+			{field:'problem_time',title: '问题日期',width:100,align:'center'},
+			{field:'emergent',title: '紧急程度',width:80,align:'center', templet: function (d) {
+					var html = '<span>-</span>';
+					if(d.emergent > 0){
+						html = '<span class="check-status-color-' + d.emergent + '">'+d.emergent_name+'</span>';
+					}
+					return html;
+				}},
+			{ field: 'create_time', title: '发布时间', align: 'center','width': 150}
+		]]
+	});
+}
+</script>

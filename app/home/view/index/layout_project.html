@@ -16,9 +16,7 @@ function layoutProject(table){
 		, url: "/project/api/get_project?limit=10" //数据接口
 		, page: false //开启分页
 		, cols: [[ //表头
-			{field: 'id', title: '项目编号', align: 'center','width': 90, templet: function (d) {
-				return 'P' + d.id;
-			}}
+			{field: 'id', title: '项目ID', width: 80, align: 'center'}
 			,{ field: 'status', title: '项目状态', align: 'center', width: 90, templet: function (d) {
 				var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
 				return html;

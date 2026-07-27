@@ -138,16 +138,16 @@ class EditLog extends Model
 		$name=$param['name'];
 		$action_id=$param['action_id'];
         try {
-            $list = self::field('a.*, u.name as admin_name,u.thumb')
-			->where(['a.name'=>$name,'a.action_id'=>$action_id])
-			->alias('a')
-			->join('Admin u','u.id = a.admin_id')
-			->order('a.create_time desc')
+            $list = self::where(['name'=>$name,'action_id'=>$action_id])
+			->order('create_time desc')
 			->page($page, $rows)
             ->select()->toArray();
 			
 			$field = self::$COMPILE[$name];
 			foreach ($list as $k => &$v) {
+				$admin = Db::name('Admin')->where('id','=',$v['admin_id'])->find();
+				$v['admin_name'] = $admin['name'];
+				$v['thumb'] = $admin['thumb'];
 				$v['action'] = '修改';
 				$v['times'] = time_trans($v['create_time']);
 				$v['create_time'] = to_date($v['create_time']);

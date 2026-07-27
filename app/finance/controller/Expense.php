@@ -80,8 +80,8 @@ class Expense extends BaseController
 				$diff_time =explode('~', $param['diff_time']);
 				$where[] = ['income_month', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
 			}
-            if (isset($param['pay_status']) && $param['pay_status'] != "") {
-                $where[] = ['pay_status', '=', $param['pay_status']];
+            if (!empty($param['status'])) {
+                $where[] = ['status', '=', $param['status']];
             }
 			if (isset($param['check_status']) && $param['check_status'] != "") {
                 $where[] = ['check_status', '=', $param['check_status']];
@@ -238,7 +238,6 @@ class Expense extends BaseController
 			$where = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
-			$where[]=['status','=',2];
 			if (!empty($param['uid'])) {
 				$where[] = ['admin_id', '=', $param['uid']];
 			}
@@ -254,6 +253,9 @@ class Expense extends BaseController
 				$expense_time =explode('~', $param['expense_time']);
 				$where[] = ['expense_time', 'between', [strtotime(urldecode($expense_time[0])),strtotime(urldecode($expense_time[1].' 23:59:59'))]];
 			}
+			if (!empty($param['status'])) {
+                $where[] = ['status', '=', $param['status']];
+            }
 			$list = $this->model->datalist($param,$where);
 			
 			$cost = $this->model::where($where)->sum('cost');					

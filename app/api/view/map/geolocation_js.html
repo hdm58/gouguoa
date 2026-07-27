@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>H5的js定位组件</title>
+</head>
+    <style>
+      * {margin: 0;padding: 0; border: none;}
+      body{width: 100%; height: 100%;font-size: 16px;}
+      #container{width: 100vw; height: 100vh;}
+      .buttons {position: absolute; left: 10px; top: 10px;z-index: 99999; display: flex; flex-direction: column;  align-items: stretch; gap: 6px;}
+      button {padding: 6px; border-radius: 4px; background-color: rgba(255, 132, 132, 0.9); color: #fff; cursor: pointer; }
+      #watch-status{padding: 6px;border-radius: 4px; background-color: rgba(255, 132, 132, 0.9); color: #ffffff; font-size:14px;}
+    </style>
+    <script src="https://mapapi.qq.com/web/lbs/h5-components/geolocation/geolocation.min.js"></script>
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key=VE5BZ-4IM6B-R7KU4-JL3XO-7NV7V-3WBZ2"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <div class="buttons">
+      <button onClick="getLocation()">精确定位</button>
+      <button onClick="getIpLocation()">IP定位</button>
+      <button onClick="watchPosition()">监听位置变化</button>
+      <button onClick="clearWatch()">清除监听</button>
+      <span id="watch-status">监听状态：关</span>
+    </div>
+
+    <script>
+      const map = new window.TMap.Map(document.querySelector('#container'));
+	  //工具组件
+	  console.log(TMap.constants.DEFAULT_CONTROL_ID);
+	  map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.ROTATION);
+	  //map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.ZOOM);
+	  //map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.FLOOR);
+	  
+      const markerLayer = new window.TMap.MultiMarker({ id: 'markers', map });
+      const key = '{$key}';
+      //项目标识
+      const referer = 'geolocation';
+      //定位组件实例
+      const geoInstance = new window.LBS.WebComponent.Geolocation({ key, referer });
+      //精确定位配置项
+      const options = { timeout: 5000, highAccuracy: true };
+      //展示定位结果
+      const onSuccess = (result) => {
+        console.log('>>> 定位成功回调数据', result);
+        const { lat, lng } = result;
+        const origin = new window.TMap.LatLng(lat, lng);
+        markerLayer.setGeometries([{ id: 1, position: origin }]);
+        map.easeTo({ center: origin, zoom: 17 });
+      };
+      //失败回调
+      const onError = (error) => console.log('>>> 定位失败回调数据', error);
+
+      //高精定位
+      const getLocation = () => geoInstance.getLocation(onSuccess, onError, options);
+	  
+	  getLocation();
+      //IP定位
+      const getIpLocation = () => geoInstance.getIpLocation(onSuccess, onError);
+
+      const watchStatusDOM = document.querySelector('#watch-status');
+      //开启定位监听
+      const watchPosition = () => {
+			geoInstance.watchPosition(onSuccess, onError, options);
+			watchStatusDOM.innerHTML = '监听状态：开';
+      };
+      //结束定位监听
+      const clearWatch = () => {
+			geoInstance.clearWatch();
+			watchStatusDOM.innerHTML = '监听状态：关';
+      };
+    </script>
+  </body>
+</html>

@@ -244,11 +244,12 @@ class Salary extends BaseController
    /**
     * 删除
     */
-    public function records_del($id)
+    public function records_del()
     {
+		$param = get_params();
 		if (request()->isDelete()) {
 			$model = new SalaryRecordsModel();
-			$model->delById($id);
+			$model->delById($param['id']);
 		} else {
             return to_assign(1, "错误的请求");
         }

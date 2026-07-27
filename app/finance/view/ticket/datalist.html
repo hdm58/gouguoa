@@ -195,20 +195,17 @@
 						field: 'pay_status',
 						title: '付款状态',
 						align: 'center',
-						width: 90,
+						width: 100,
 						templet:function(d){
-							var html='';
+							var html='-';
 							if(d.pay_status==0){
 								html = '<span class="red">『未付款』</span>';
-								if(d.pay_status==1){
-									html = '<span class="blue">『部分付款』</span>';
-								}
-								if(d.pay_status==1){
-									html = '<span class="green">『已付款』</span>';
-								}
 							}
-							else{
-								html='-';
+							if(d.pay_status==1){
+								html = '<span class="blue">『部分付款』</span>';
+							}
+							if(d.pay_status==2){
+								html = '<span class="green">『已付款』</span>';
 							}
 							return html;
 						}

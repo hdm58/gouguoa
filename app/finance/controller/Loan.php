@@ -81,8 +81,8 @@ class Loan extends BaseController
 				$diff_time =explode('~', $param['diff_time']);
 				$where[] = ['create_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
 			}
-            if (isset($param['pay_status']) && $param['pay_status'] != "") {
-                $where[] = ['pay_status', '=', $param['pay_status']];
+            if (!empty($param['status'])) {
+                $where[] = ['status', '=', $param['status']];
             }
 			if (isset($param['check_status']) && $param['check_status'] != "") {
                 $where[] = ['check_status', '=', $param['check_status']];
@@ -202,8 +202,8 @@ class Loan extends BaseController
 				$diff_time =explode('~', $param['diff_time']);
 				$where[] = ['loan_time', 'between', [strtotime(urldecode($diff_time[0])),strtotime(urldecode($diff_time[1].' 23:59:59'))]];
 			}
-            if (isset($param['pay_status']) && $param['pay_status'] != "") {
-                $where[] = ['pay_status', '=', $param['pay_status']];
+            if (!empty($param['status'])) {
+                $where[] = ['status', '=', $param['status']];
             }
 			$list = $this->model->datalist($param,$where);
 			

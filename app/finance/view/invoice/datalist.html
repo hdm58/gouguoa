@@ -53,9 +53,9 @@
 		<div class="layui-input-inline  search-item" style="width:100px;">
 			<select name="enter_status">
 				<option value="">收款状态</option>
-				<option value="0">未回款</option>
-				<option value="1">部分回款</option>
-				<option value="2">已回款</option>
+				<option value="0">未收款</option>
+				<option value="1">部分收款</option>
+				<option value="2">已收款</option>
 			</select>
 		</div>
 		<div class="layui-input-inline" style="width:240px;">
@@ -180,15 +180,12 @@
 						align: 'center',
 						width: 90,
 						templet:function(d){
-							var html='';
+							var html='-';
 							if(d.check_status==2){
 								html = '<span class="red">『未开票』</span>';
 								if(d.open_status==1){
 									html = '<span class="green">『已开票』</span>';
 								}
-							}
-							else{
-								html='-';
 							}
 							return html;
 						}
@@ -214,20 +211,17 @@
 						field: 'enter_status',
 						title: '收款状态',
 						align: 'center',
-						width: 90,
+						width: 100,
 						templet:function(d){
-							var html='';
+							var html='-';
 							if(d.enter_status==0){
 								html = '<span class="red">『未收款』</span>';
-								if(d.enter_status==1){
-									html = '<span class="blue">『部分收款』</span>';
-								}
-								if(d.enter_status==1){
-									html = '<span class="green">『已收款』</span>';
-								}
 							}
-							else{
-								html='-';
+							if(d.enter_status==1){
+								html = '<span class="blue">『部分收款』</span>';
+							}
+							if(d.enter_status==2){
+								html = '<span class="green">『已收款』</span>';
 							}
 							return html;
 						}

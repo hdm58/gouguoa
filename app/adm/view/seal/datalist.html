@@ -100,8 +100,9 @@
 					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
 					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
 					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
-					var btn4='<a class="layui-btn layui-btn-xs" lay-event="use">用车登记</a>';
-					var btn5='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="back">归还登记</a>';
+					var btn4='<a class="layui-btn layui-btn-xs" lay-event="use">用章登记</a>';
+					var btn5='<a class="layui-btn layui-btn-xs" lay-event="use">出借登记</a>';
+					var btn6='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="back">归还登记</a>';
 					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
 					if((d.check_status==0||d.check_status==4) && d.admin_id == login_admin){
 						return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
@@ -111,11 +112,16 @@
 							return '<div class="layui-btn-group">'+btn1+'</div>';
 						}
 						else{
-							if(d.status==0){
-								return '<div class="layui-btn-group">'+btn1+btn4+'</div>';
+							if(d.status==0 && d.check_status==2){
+								if(d.is_borrow==1){
+									return '<div class="layui-btn-group">'+btn1+btn5+'</div>';
+								}
+								else{
+									return '<div class="layui-btn-group">'+btn1+btn4+'</div>';
+								}
 							}
-							if(d.status==1){
-								return '<div class="layui-btn-group">'+btn1+btn5+'</div>';
+							if(d.status==1 && d.check_status==2){
+								return '<div class="layui-btn-group">'+btn1+btn6+'</div>';
 							}
 							else{
 								return '<div class="layui-btn-group">'+btn1+'</div>';
@@ -143,6 +149,32 @@
 			}
 			if (obj.event === 'edit') {
 				tool.side("/adm/seal/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'use') {
+				layer.confirm('确定要修改用章状态吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/api/set_seal_status", { id: obj.data.id,status: 1 }, callback);
+					layer.close(index);	
+				});
+				return;
+			}
+			if (obj.event === 'back') {
+				layer.confirm('确定要修改用章状态吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/adm/api/set_seal_status", { id: obj.data.id,status: 2 }, callback);
+					layer.close(index);	
+				});
 				return;
 			}
 			if (obj.event === 'del') {

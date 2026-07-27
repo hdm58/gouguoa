@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>PHP定位打卡</title>
+	<style type="text/css">
+		*{margin: 0;padding: 0; border: none;}
+        .container{background: #fff;}
+        .header { background: linear-gradient(45deg, #007AFF, #0056CC);color: #fff; padding: 15px;text-align: center;}
+        .header h1 {font-size: 24px; margin-bottom: 5px;}
+        .header p {font-size: 14px;}
+        .map-container {height: 300px;overflow: hidden;}
+        
+        #container { width: 100%;height: 100%;}        
+        .location-info {background: #f8f9fa; padding: 12px; margin:12px;}        
+        .info-row {display: flex;justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #e9ecef;}        
+        .info-row:last-child {border-bottom: none; margin-bottom: 0;}
+        
+        .info-label {font-weight: 600; color: #495057; font-size: 14px;}
+        
+        .info-value { color: #212529; font-size: 14px; text-align: right; flex: 1; margin-left: 10px;}
+        
+        .distance-section { background: #fff; border-radius: 8px; padding: 12px; margin: 12px; text-align: center; border: 2px solid #e9ecef;}
+        
+        .distance-text {font-size: 18px; font-weight: bold; margin-bottom: 5px;}
+        
+        .distance-normal {color: #28a745; border-color: #28a745; background: #d4edda; }
+        
+        .distance-warning {color: #ffc107; border-color: #ffc107; background: #fff3cd; }
+        
+        .distance-danger {color: #dc3545;border-color: #dc3545; background: #f8d7da;}
+        
+        .upload-section {background: #f8f9fa; border-radius: 8px; padding: 12px;}
+        
+        .upload-area { border: 2px dashed #dee2e6; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 10px;}
+        
+        .upload-area:hover { border-color: #007AFF; background: #f0f8ff; }
+        
+        .upload-area.dragover { border-color: #007AFF;  background: #e6f3ff;  }
+        
+        .upload-icon {
+            font-size: 32px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: #6c757d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .upload-hint {
+            color: #adb5bd;
+            font-size: 12px;
+        }
+        
+        #imagePreview {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .checkin-section {
+            text-align: center;
+            margin: 12px;
+        }
+        
+        .checkin-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+        
+        .checkin-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .checkin-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .checkin-btn.checking {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .records-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .records-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .record-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .record-time {
+            font-weight: bold;
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .record-distance {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .record-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        
+        .status-normal {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .record-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 10px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+	</style>
+</head>
+<body>
+<div class="container">
+        <div class="header">
+            <h1>📍 定位打卡</h1>
+            <p>每日签到，记录生活</p>
+        </div>
+        
+        <div class="content">
+            <div class="map-container">
+                <div id="container"></div>
+            </div>
+            
+            <div class="location-info">
+                <div class="info-row">
+                    <span class="info-label">📍 位置</span>
+                    <span class="info-value" id="locationStatus">定位中...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📌 坐标</span>
+                    <span class="info-value" id="latitude">--</span><span class="info-value" id="longitude">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">🏢 地址</span>
+                    <span class="info-value" id="address">获取地址中...</span>
+                </div>
+            </div>
+            
+            <div class="distance-section" id="distanceSection">
+                <div class="distance-text" id="distanceText">计算距离中...</div>
+            </div>
+            
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">点击或拖拽上传打卡图片</div>
+                    <div class="upload-hint">支持 JPG、PNG 格式，建议展示工作环境</div>
+                </div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <img id="imagePreview" alt="预览图片">
+            </div>
+            
+            <div class="checkin-section">
+                <button class="checkin-btn" id="checkinBtn" disabled>
+                    🎯 立即打卡
+                </button>
+                <div id="messageArea"></div>
+            </div>
+            
+            <div class="records-section">
+                <div class="records-title">📋 打卡记录</div>
+                <div id="recordsList">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<script src="/static/jquery.min.js"></script>
+	<script src="https://map.qq.com/api/gljs?v=1.exp&key={$key}"></script>
+	<script type="text/javascript">	
+        $(document).ready(function() {
+            // 全局变量
+            let map = null;
+            let marker = null;
+            let targetMarker = null;
+            let targetLatitude = 23.131367;  // 目标打卡点纬度（示例：北京天安门）
+            let targetLongitude = 113.00155; // 目标打卡点经度
+            let currentLatitude = 0;
+            let currentLongitude = 0;
+            
+            // 初始化应用
+            initApp();
+            
+            function initApp() {
+                initMap();
+                bindEvents();
+                getCurrentLocation();
+                loadCheckInRecords();
+            }
+            
+            // 初始化腾讯地图
+            function initMap() {
+                try {
+                    // 创建地图实例
+                    map = new TMap.Map("container", {
+                        center: new TMap.LatLng(targetLatitude, targetLongitude),
+                        zoom: 16 
+                    });
+                    map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.ROTATION);
+                    // 添加目标位置标记（打卡点）
+					targetMarker = new TMap.MultiMarker({
+						map: map,
+						styles: {
+							target: new TMap.MarkerStyle({
+								width: 36,
+								height: 36,
+								anchor: { x: 18, y: 30 },
+								src: '/static/home/images/map1.png'
+							})
+						},
+						geometries: [{
+							id: 'target',
+							styleId: 'target',
+							position: new TMap.LatLng(targetLatitude, targetLongitude),
+							properties: {
+								title: '打卡位置'
+							}
+						}]
+					});                    
+                } catch (error) {
+                    console.error('地图初始化失败:', error);
+                    showMessage('地图加载失败，请检查网络连接', 'error');
+                }
+            }
+            
+            // 绑定事件
+            function bindEvents() {
+                // 打卡按钮点击
+                $('#checkinBtn').click(function() {
+                    performCheckIn();
+                });                
+                // 文件选择
+                $('#imageInput').change(function() {
+                    const file = this.files[0];
+                    if (file) {
+                        handleImageFile(file);
+                    }
+                });
+                
+                const uploadArea = $('#uploadArea');
+                
+                // 点击上传区域
+                uploadArea.click(function() {
+                    imageInput.click();
+                });
+                // 拖拽上传
+                uploadArea.on('dragover', function(e) {
+                    e.preventDefault();
+                    $(this).addClass('dragover');
+                });
+                
+                uploadArea.on('dragleave', function(e) {
+                    e.preventDefault();
+                    $(this).removeClass('dragover');
+                });
+                
+                uploadArea.on('drop', function(e) {
+                    e.preventDefault();
+                    $(this).removeClass('dragover');
+                    
+                    const files = e.originalEvent.dataTransfer.files;
+                    if (files.length > 0) {
+                        const file = files[0];
+                        if (file.type.startsWith('image/')) {
+                            handleImageFile(file);
+                        } else {
+                            showMessage('请选择图片文件', 'error');
+                        }
+                    }
+                });
+            }
+            
+            // 处理图片文件
+            function handleImageFile(file) {
+                // 验证文件类型
+                if (!file.type.startsWith('image/')) {
+                    showMessage('请选择有效的图片文件', 'error');
+                    return;
+                }
+                
+                // 验证文件大小（20MB限制）
+                if (file.size > 20 * 1024 * 1024) {
+                    showMessage('图片文件不能超过10MB', 'error');
+                    return;
+                }
+                
+                // 预览图片
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview').attr('src', e.target.result).show();
+                };
+                reader.readAsDataURL(file);
+                
+                // 这里可以添加图片上传逻辑
+            }
+            
+            // 获取当前位置
+            function getCurrentLocation() {
+                if (!navigator.geolocation) {
+                    showMessage('您的浏览器不支持地理定位功能', 'error');
+                    updateLocationDisplay('--', '--', '定位功能不可用');
+                    return;
+                }
+                
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 100000 // 2分钟缓存
+                };
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        currentLatitude = position.coords.latitude;
+                        currentLongitude = position.coords.longitude;
+                        currentLatitude = 23.130354;
+                        currentLongitude = 113.003998;
+                        updateLocationDisplay(
+                            currentLatitude.toFixed(6),
+                            currentLongitude.toFixed(6),
+                            '定位成功'
+                        );
+                        
+                        updateMapPosition();
+                        getLocationAddress();
+                        calculateDistance(currentLatitude, currentLongitude);
+                    },
+                    function(error) {
+                        console.error('定位失败:', error);
+                        let errorMsg = '定位失败';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg = '请允许访问位置信息';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg = '位置信息不可用';
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg = '定位请求超时';
+                                break;
+                        }
+                        
+                        showMessage(errorMsg, 'error');
+                        updateLocationDisplay('--', '--', '定位失败');
+                    },
+                    options
+                );
+            }
+            
+            // 更新地图位置
+            function updateMapPosition() {
+                if (!map) return;
+                
+                const center = new TMap.LatLng(currentLatitude, currentLongitude);
+                map.setCenter(center);
+                map.setZoom(16);
+                
+                // 清除之前的当前位置标记
+                if (marker) {
+                    marker.setMap(null);
+                }
+                
+                // 添加当前位置标记
+                marker = new TMap.MultiMarker({
+                    map: map,
+                    styles: {
+                        current: new TMap.MarkerStyle({
+                            width: 32,
+                            height: 32,
+                            anchor: { x: 16, y: 24 },
+							src: '/static/home/images/map2.png'
+                        })
+                    },
+                    geometries: [{
+                        id: 'current',
+                        styleId: 'current',
+                        position: new TMap.LatLng(currentLatitude, currentLongitude),
+                        properties: {
+                            title: '当前位置'
+                        }
+                    }]
+                });
+            }
+            
+            // 获取位置地址
+            function getLocationAddress() {
+                const self = this;
+                $.ajax({
+                    url: '/api/map/getLocationInfo',
+                    type: 'POST',
+                    data: {
+                        latitude: currentLatitude,
+                        longitude: currentLongitude
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.code == 0) {
+                            $('#address').text(response.data.address || '地址解析中...');
+                        } else {
+                            $('#address').text('地址解析失败');
+                        }
+                    },
+                    error: function() {
+                        $('#address').text('地址解析失败');
+                    }
+                });
+            }
+            
+            // 更新位置显示
+            function updateLocationDisplay(latitude, longitude, status) {
+                $('#latitude').text(latitude);
+                $('#longitude').text(longitude);
+                $('#locationStatus').text(status);
+            }
+            
+            // 计算距离
+            function calculateDistance(latitude, longitude) {
+                const targetLat = targetLatitude;
+                const targetLng = targetLongitude;
+                
+                // 使用Haversine公式计算两点间距离
+                const distance = getDistance(latitude, longitude, targetLat, targetLng);
+                
+                displayDistanceInfo(distance);
+                updateCheckInButton(distance);
+            }
+            
+            // Haversine公式计算距离
+            function getDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371000; // 地球半径（米）
+                const dLat = deg2rad(lat2 - lat1);
+                const dLon = deg2rad(lon2 - lon1);
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+            
+            function deg2rad(deg) {
+                return deg * (Math.PI/180);
+            }
+            
+            // 显示距离信息
+            function displayDistanceInfo(distance) {
+                const distanceText = $('#distanceText');
+                const distanceSection = $('#distanceSection');
+                
+                let message = `距离打卡点: ${distance.toFixed(2)} 米`;
+                let className = 'distance-danger';
+                
+                if (distance <= 50) {
+                    message += ' ✅ (最佳打卡范围)';
+                    className = 'distance-normal';
+                } else if (distance <= 500) {
+                    message += ' ⚠️ (可打卡范围)';
+                    className = 'distance-warning';
+                } else {
+                    message += ' ❌ (超出打卡范围)';
+                }
+                
+                distanceText.text(message);
+                distanceSection.removeClass('distance-normal distance-warning distance-danger').addClass(className);
+            }
+            
+            // 更新打卡按钮状态
+            function updateCheckInButton(distance) {
+                const checkinBtn = $('#checkinBtn');
+                
+                if (distance <= 500) {
+                    checkinBtn.prop('disabled', false).text(distance <= 50 ? '🎯 立即打卡' : '📍 超出推荐范围，仍可打卡');
+                } else {
+                    checkinBtn.prop('disabled', false).text('📍 超出打卡范围，仍可打卡');
+                }
+            }
+            
+            // 执行打卡
+            function performCheckIn() {
+                const checkinBtn = $('#checkinBtn');
+                const messageArea = $('#messageArea');
+                
+                // 验证是否在可打卡范围内
+                const distance = getDistance(currentLatitude, currentLongitude, targetLatitude, targetLongitude);
+                
+                if (distance > 500) {
+                    if (!confirm(`您当前距离打卡点 ${distance.toFixed(2)} 米，超出推荐打卡范围。确定要继续打卡吗？`)) {
+                        return;
+                    }
+                }
+                
+                // 检查按钮状态
+                if (checkinBtn.prop('disabled') || checkinBtn.hasClass('checking')) {
+                    return;
+                }
+                
+                // 开始打卡流程
+                checkinBtn.addClass('checking').text('📡 打卡中...');
+                messageArea.empty();
+                
+                // 准备打卡数据
+                const checkInData = {
+                    latitude: currentLatitude,
+                    longitude: currentLongitude,
+                    distance: distance.toFixed(2)
+                };
+                
+                // 执行打卡请求
+                $.ajax({
+                    url: '/qiye/checkin/checkIn',
+                    type: 'POST',
+                    data: checkInData,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.code == 1) {
+                            const statusText = response.data.is_in_range ? '✅ 正常' : '⚠️ 超出范围';
+                            showMessage(`🎉 打卡成功！\n距离: ${response.data.distance}米\n状态: ${statusText}`, 'success');
+                            
+                            // 清空图片预览
+                            $('#imagePreview').hide();
+                            $('#imageInput').val('');
+                            
+                            // 刷新记录
+                            loadCheckInRecords();
+                            
+                            // 重新获取位置信息
+                            setTimeout(() => {
+                                getCurrentLocation();
+                            }, 2000);
+                        } else {
+                            showMessage('❌ ' + response.msg, 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('打卡请求失败:', error);
+                        showMessage('❌ 网络错误，请检查网络连接后重试', 'error');
+                    },
+                    complete: function() {
+                        checkinBtn.removeClass('checking').text('🎯 立即打卡');
+                    }
+                });
+            }
+            
+            // 显示消息
+            function showMessage(message, type) {
+                const messageArea = $('#messageArea');
+                const messageClass = type === 'success' ? 'success-message' : 'error-message';                
+                messageArea.html('<div class="'+messageClass+'">'+message.replace(/\n/g, '<br>')+'</div>');                
+                // 3秒后自动隐藏消息
+                setTimeout(() => {
+                    messageArea.empty();
+                }, 3000);
+            }
+            
+            // 加载打卡记录
+            function loadCheckInRecords() {
+                const recordsList = $('#recordsList');
+                recordsList.html('<div class="loading">加载中...</div>');
+                
+                $.ajax({
+                    url: '/qiye/checkin/getCheckInRecords',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.code == 1 && response.data) {
+                            renderCheckInRecords(response.data);
+                        } else {
+                            recordsList.html('<div class="error-message">暂无打卡记录</div>');
+                        }
+                    },
+                    error: function() {
+                        recordsList.html('<div class="error-message">加载记录失败</div>');
+                    }
+                });
+            }
+            
+            // 渲染打卡记录
+            function renderCheckInRecords(records) {
+                const recordsList = $('#recordsList');
+                
+                if (!records || records.length === 0) {
+                    recordsList.html('<div class="loading">暂无打卡记录</div>');
+                    return;
+                }
+                
+                let html = '';
+                records.forEach(function(record) {
+                    const statusClass = record.status == 1 ? 'status-normal' : 'status-danger';
+                    const statusText = record.status == 1 ? '正常' : '异常';                    
+                    html += `
+                        <div class="record-item">
+                            <div class="record-header">
+                                <span class="record-time">${record.check_time}</span>
+                                <span class="record-distance">距离: ${record.distance ? record.distance + 'm' : 'N/A'}</span>
+                            </div>
+                            <div class="record-status ${statusClass}">${statusText}</div>
+                            ${record.image_path ? `<img src="${record.image_path}" class="record-image" alt="打卡图片">` : ''}
+                        </div>
+                    `;
+                });                
+                recordsList.html(html);
+            }
+        });
+	</script>
+</body>
+</html>

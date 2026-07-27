@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>H5的iframe定位组件</title>
+</head>
+    <style>
+      * {margin: 0;padding: 0; border: none;}
+      body{width: 100%; height: 100%;font-size: 16px;}
+      #container{width: 100vw; height: 100vh;}
+      .buttons {position: absolute; left: 10px; top: 10px;z-index: 99999; display: flex; flex-direction: column;  align-items: stretch; gap: 6px;}
+      button {padding: 6px; border-radius: 4px; background-color: rgba(255, 132, 132, 0.9); color: #fff; cursor: pointer; }
+      #watch-status{padding: 6px;border-radius: 4px; background-color: rgba(255, 132, 132, 0.9); color: #ffffff; font-size:14px;}
+    </style>
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key={$key}"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <div class="buttons">
+      <button onClick="getLocation()">精确定位</button>
+      <button onClick="getIpLocation()">IP定位</button>
+      <button onClick="watchPosition()">监听位置变化</button>
+      <button onClick="clearWatch()">清除监听</button>
+      <span id="watch-status">监听状态：关</span>
+    </div>
+
+    <script>
+      const map = new window.TMap.Map(document.querySelector('#container'));
+	  //工具组件
+	  console.log(TMap.constants.DEFAULT_CONTROL_ID);
+	  map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.ROTATION);
+	  //map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.ZOOM);
+	  //map.removeControl(TMap.constants.DEFAULT_CONTROL_ID.FLOOR);
+	  
+      //地图marker图层
+      const markerLayer = new window.TMap.MultiMarker({ id: 'markers', map });
+      const key = '{$key}';
+      ///项目标识
+      const referer = 'geolocation';
+      ///立即触发标识
+      const immediate = 1;
+
+      const iframeDOM = document.createElement('iframe');
+      iframeDOM.width = 0;
+      iframeDOM.height = 0;
+      iframeDOM.src = 'https://mapapi.qq.com/web/lbs/h5-components/geolocation/geolocation.html?key='+key+'&referer='+referer+'&immediate='+immediate+'&v='+Date.now();
+      iframeDOM.allow = 'geolocation *';
+
+      //定位成功展示结果
+      const onSuccess = (result) => {
+			console.log('>>> 定位成功回调数据', result);
+			const { lat, lng } = result;
+			const origin = new window.TMap.LatLng(lat, lng);
+			markerLayer.setGeometries([{ id: 1, position: origin }]);
+			map.easeTo({ center: origin, zoom: 17 });
+      };
+      //定位失败回调
+      const onError = (error) => console.log('>>> 定位失败回调数据', error);
+
+      window.addEventListener('message', ({ data }) => {
+        if (data?.source !== 'lbs-geolocation' && !data?.func) {
+			return;
+        }
+        switch (data.func) {
+          // 返回的是getLocation方法的结果
+          case 'getLocation':
+          // 返回的是getIpLocation的结果
+          case 'getIpLocation':
+          // 返回的是watchPosition的结果
+          case 'watchPosition': {
+            const { result } = data;
+            result?.module ? onSuccess(result) : onError(result);
+            break;
+          }
+          // 未知类型可以打印查看
+          default: {
+            console.log('data.func', data.func);
+            break;
+          }
+        }
+      });
+      document.body.appendChild(iframeDOM);
+	  //与iframeDOM通信函数
+      const onPost = (payload) => iframeDOM.contentWindow.postMessage(payload, '*');
+      const getLocation = () => onPost({ func: 'getLocation', options: { timeout: 5000, highAccuracy: true } });
+      const getIpLocation = () => onPost('getIpLocation');
+      const watchStatusDOM = document.querySelector('#watch-status');
+      const watchPosition = () => {
+			onPost('watchPosition');
+			watchStatusDOM.innerHTML = '监听状态：开';
+      };
+      const clearWatch = () => {
+			onPost('clearWatch');
+			watchStatusDOM.innerHTML = '监听状态：关';
+      };
+    </script>
+  </body>
+</html>

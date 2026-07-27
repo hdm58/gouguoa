@@ -10,6 +10,13 @@
 		<div class="layui-input-inline" style="width:175px;">
 			<input type="text" class="layui-input" id="expense_time" placeholder="选择入账月份区间" readonly name="expense_time">
 		</div>
+		<div class="layui-input-inline" style="width:120px;">
+			<select name="status">
+				<option value="">打款状态</option>
+				<option value="1">未打款</option>
+				<option value="2">已打款</option>
+			</select>
+		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
 			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
@@ -64,6 +71,21 @@
 						title: '需打款金额(元)',
 						align: 'right',
 						width: 110
+					},{
+						field: 'status',
+						title: '打款状态',
+						align: 'center',
+						width: 90,
+						templet:function(d){
+							var html='-';
+							if(d.status==1){
+								html = '<span class="red">未打款</span>';
+							}
+							if(d.status==2){
+								html = '<span class="green">已打款</span>';
+							}
+							return html;
+						}
 					},{
 						field: 'admin_name',
 						title: '报销人员',

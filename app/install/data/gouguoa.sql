@@ -1245,7 +1245,7 @@ CREATE TABLE `oa_template`  (
 -- ----------------------------
 -- Records of oa_template
 -- ----------------------------
-INSERT INTO `oa_template` VALUES (1, '公告通知', 'note', 1, 0, '', '/oa/note/view/id/{action_id}', '{from_user}发了一个新『公告』，请及时查看', '您有一个新公告：{title}。', '', '', '', '', '', '', '', 1, 1, 1733312491, 1733314809, 0);
+INSERT INTO `oa_template` VALUES (1, '公告通知', 'note', 1, 0, '', '/home/note/view/id/{action_id}', '{from_user}发了一个新『公告』，请及时查看', '您有一个新公告：{title}。', '', '', '', '', '', '', '', 1, 1, 1733312491, 1733314809, 0);
 INSERT INTO `oa_template` VALUES (2, '工作汇报通知', 'work', 1, 0, '', '/oa/work/view/id/{action_id}', '{from_user}给您发了一份『工作汇报』，请及时查看', '您有一份新的工作汇报待查看。', '', '', '', '', '', '', '', 1, 1, 1760576534, 1760577087, 0);
 INSERT INTO `oa_template` VALUES (3, '工资发放通知', 'salary', 1, 0, '', '/oa/salary/view/id/{action_id}', '您有一个『{title}』新通知，请及时查看', '您有一个『{title}』新通知，金额：{amount}。', '', '', '', '', '', '', '', 1, 1, 1784533901, 0, 0);
 INSERT INTO `oa_template` VALUES (4, '会议记录通知', 'meeting_records', 1, 0, '', '/adm/meeting/records_view/id/{action_id}', '{from_user}给您发了一份『会议记录』，请及时查看', '您有一份新的会议记录待查看。\n会议日期：{meeting_date}\n会议主题：{title}', '', '', '', '', '', '', '', 1, 1, 1783437950, 1783438952, 0);

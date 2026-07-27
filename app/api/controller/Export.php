@@ -35,6 +35,14 @@ use app\finance\model\Ticket;
 use app\contract\model\Contract;
 use app\contract\model\Purchase;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Protection;
+
 class Export extends BaseController
 {	
     public function pdf($types='',$id=0)
@@ -313,5 +321,259 @@ class Export extends BaseController
 			}
 		}
 		*/
+    }
+	
+	public function excel()
+    {
+		$param = get_params();
+        // 1. 查询数据（示例：从用户表查询）
+        $users = Db::name('Admin')->field('a.id,a.name,a.mobile,d.title as department')
+				->alias('a')
+				->join('department d','a.did = d.id')
+				->where([['a.status','=', 1],['a.id','>',1]])->select()->toArray();
+		$detail = Db::name('Salary')->where('id',$param['id'])->find();
+		$month = date('Y年m月',$detail['month_time']);
+        // 2. 创建Spreadsheet对象
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // 3. 【关键】设置默认样式为不锁定（所有单元格可编辑）
+        $spreadsheet->getDefaultStyle()->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
+
+        // 4. 确保工作表保护未启用
+        $sheet->getProtection()->setSheet(false);
+
+		//头部样式
+		$topStyle = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFFFE699'], // 灰色背景
+			],
+			'font' => [
+				'color' => ['argb' => 'FFFF0000'], // 黑色字体
+				'bold' => true, // 加粗
+			],
+			'alignment' => [
+				'horizontal' => Alignment::HORIZONTAL_CENTER,
+				'vertical' => Alignment::VERTICAL_CENTER,
+			],
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => 'FFBDD7EE'],
+				],
+			],
+		];
+		
+		//表头样式
+		$headerStyle = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFEEEEEE'], // 灰色背景
+			],
+			'font' => [
+				'color' => ['argb' => 'FF000000'], // 黑色字体
+				'bold' => true, // 加粗
+			],
+			'alignment' => [
+				'horizontal' => Alignment::HORIZONTAL_CENTER,
+				'vertical' => Alignment::VERTICAL_CENTER,
+			],
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => '000000'],
+				],
+			],
+		];
+		
+		//表格样式
+		$bodyStyle = [
+			'font' => [
+				'color' => ['argb' => 'FF000000'], // 黑色字体
+			],
+			'alignment' => [
+				'horizontal' => Alignment::HORIZONTAL_CENTER,
+				'vertical' => Alignment::VERTICAL_CENTER,
+			],
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => '000000'],
+				],
+			],
+		];
+		
+		$footerStyle = [
+			'font' => [
+				'color' => ['argb' => 'FFFF0000'], // 黑色字体
+				'bold' => true, // 加粗
+			],
+			'alignment' => [
+				'horizontal' => Alignment::HORIZONTAL_LEFT,
+				'vertical' => Alignment::VERTICAL_CENTER,
+			],
+			'borders' => [
+				'allBorders' => [
+					'borderStyle' => Border::BORDER_THIN,
+					'color' => ['argb' => '000000'],
+				],
+			],
+		];
+		
+		$bgcolora = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFDDEBF7'], // 灰色背景
+			]
+		];
+		$bgcolorb = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FF2F75B5'], // 灰色背景
+			],
+			'font' => [
+				'color' => ['argb' => 'FFFFFFFF'], // 黑色字体
+				'bold' => true, // 加粗
+			]
+		];
+		$bgcolorc = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFFFF2CC'], // 灰色背景
+			]
+		];
+		$bgcolord = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFBF8F00'], // 灰色背景
+			],
+			'font' => [
+				'color' => ['argb' => 'FFFFFFFF'], // 黑色字体
+				'bold' => true, // 加粗
+			]
+		];
+		$bgcolore = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFFFEBE7'], // 灰色背景
+			]
+		];
+		$bgcolorf = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FFC62D11'], // 灰色背景
+			],
+			'font' => [
+				'color' => ['argb' => 'FFFFFFFF'], // 黑色字体
+				'bold' => true, // 加粗
+			]
+		];
+		$bgcolorg = [
+			'fill' => [
+				'fillType' => Fill::FILL_SOLID,
+				'startColor' => ['argb' => 'FF12A003'], // 灰色背景
+			],
+			'font' => [
+				'color' => ['argb' => 'FFFFFFFF'], // 黑色字体
+				'bold' => true, // 加粗
+			]
+		];
+
+		$sheet->mergeCells('A1:AB1');
+		$sheet->setCellValue('A1', '每个表格的数据格式很重要，注意填写规范，数据无时，请填写0，数据请勿放在合并的单元格中');
+		$sheet->getStyle('A1')->applyFromArray($topStyle);
+		$sheet->getRowDimension(1)->setRowHeight(25);
+        // 5. 设置表头
+        $headers = ['系统ID号','员工姓名','手机号码','所在部门','工资月份','基本工资','岗位工资','绩效工资','全勤奖金','加班工资','用餐补贴','话费补贴','交通补贴','住房补贴','节假福利','保竞津贴','奖 金','应发合计','迟到扣除','事假扣除','旷工扣除','应扣合计','扣社保','扣公积金','代扣个税','扣款合计','实发合计','备注信息'];
+        $columnCount = count($headers);
+        
+        for ($col = 0; $col < $columnCount; $col++) {
+            $columnLetter = $this->numToLetter($col);
+            $sheet->setCellValue($columnLetter . '2', $headers[$col]);
+        }
+		
+		$sheet->getStyle('A2:AB2')->applyFromArray($headerStyle);
+		$sheet->getStyle('F2:Q2')->applyFromArray($bgcolora);
+		$sheet->getStyle('R2')->applyFromArray($bgcolorb);
+		$sheet->getStyle('S2:U2')->applyFromArray($bgcolorc);
+		$sheet->getStyle('V2')->applyFromArray($bgcolord);
+		$sheet->getStyle('W2:Y2')->applyFromArray($bgcolore);
+		$sheet->getStyle('Z2')->applyFromArray($bgcolorf);
+		$sheet->getStyle('AA2')->applyFromArray($bgcolorg);
+		$sheet->getRowDimension(2)->setRowHeight(25);
+        // 6. 填充数据（从第2行开始）
+        $row = 3;
+        foreach ($users as $user) {
+            $sheet->setCellValue('A' . $row, $user['id']);
+            $sheet->setCellValue('B' . $row, $user['name']);
+            $sheet->setCellValue('C' . $row, $user['mobile']);
+            $sheet->setCellValue('D' . $row, $user['department']);
+            $sheet->setCellValue('E' . $row, $month);
+            $sheet->setCellValue('F' . $row, '');
+            $sheet->setCellValue('G' . $row, '');
+            $sheet->setCellValue('H' . $row, '');
+            $sheet->setCellValue('I' . $row, '');
+            $sheet->setCellValue('J' . $row, '');
+            $sheet->setCellValue('K' . $row, '');
+            $sheet->setCellValue('L' . $row, '');
+            $sheet->setCellValue('M' . $row, '');
+            $sheet->setCellValue('N' . $row, '');
+            $sheet->setCellValue('O' . $row, '');
+            $sheet->setCellValue('P' . $row, '');
+            $sheet->setCellValue('Q' . $row, '');
+            $sheet->setCellValue('R' . $row, '');
+            $sheet->setCellValue('S' . $row, '');
+            $sheet->setCellValue('T' . $row, '');
+            $sheet->setCellValue('U' . $row, '');
+            $sheet->setCellValue('V' . $row, '');
+            $sheet->setCellValue('W' . $row, '');
+            $sheet->setCellValue('X' . $row, '');
+            $sheet->setCellValue('Y' . $row, '');
+            $sheet->setCellValue('Z' . $row, '');
+            $sheet->setCellValue('AA' . $row, '');
+            $sheet->setCellValue('AB' . $row, '');
+			
+			//设置样式		
+			$sheet->getStyle('A'.$row.':AB'.$row)->applyFromArray($bodyStyle);
+			$sheet->getRowDimension($row)->setRowHeight(25);
+            $row++;
+        }
+
+		$sheet->mergeCells('A'.$row.':AB'.$row);
+		$sheet->setCellValue('A'.$row, '注意：系统ID号、员工姓名、手机号码、所在部门、工资月份内容无需修改，保持不变');
+		$sheet->getStyle('A'.$row.':AB'.$row)->applyFromArray($footerStyle);
+		$sheet->getRowDimension($row)->setRowHeight(25);		
+        // 8. 设置列宽自适应
+        for ($col = 0; $col < $columnCount; $col++) {
+            $columnLetter = $this->numToLetter($col);
+            $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
+        }
+
+        // 10. 输出到浏览器下载
+        $filename = '工资模版_'.$detail['title'].'_' . date('Ymd_His') . '.xlsx';
+        
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Expires: 0');
+        header('Pragma: public');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    /**
+     * 数字转Excel列字母（0->A, 1->B, 26->AA...）
+     */
+    private function numToLetter($num)
+    {
+        $letter = '';
+        while ($num >= 0) {
+            $letter = chr($num % 26 + 65) . $letter;
+            $num = intdiv($num, 26) - 1;
+        }
+        return $letter;
     }
 }

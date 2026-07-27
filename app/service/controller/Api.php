@@ -20,6 +20,20 @@ use think\facade\Db;
 
 class Api extends BaseController
 {
+    public function get_problems_list()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+			$where=[];
+			$where[]=['delete_time','=',0];
+            $where[] = ['status', '<', 3];
+			$where[] = ['director_id','=',$this->uid];
+			$model = new ProblemsModel();
+            $list = $model->datalist($where, $param);
+            return table_assign(0, '', $list);
+        }
+    }
+	
     public function get_problemscate()
     {
         if (request()->isAjax()) {

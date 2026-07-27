@@ -33,6 +33,7 @@ class User extends BaseController
             $param = get_params();
             $where = array();
             $whereOr = array();
+			$where[] = ['a.delete_time', '=', 0];
             if (!empty($param['keywords'])) {
                 $where[] = ['a.id|a.username|a.name|a.nickname|a.mobile|a.desc', 'like', '%' . $param['keywords'] . '%'];
             }

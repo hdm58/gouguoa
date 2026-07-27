@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>点击地图拾取坐标</title>
+</head>
+<script charset="utf-8" src="https://map.qq.com/api/gljs?v=1.exp&libraries=service&key={$key}"></script>
+<style type="text/css">
+    html,body {height: 100%; margin: 0px; padding: 0px;overflow: hidden;}
+    #container{position: relative; width: 100%; height: 100%;}
+    #panel{position: absolute;left: 1%; top: 0.5%;font-size: 14px; background: #FFF; width: 360px; padding:0 10px; border-radius: 3px;z-index:9999}
+	#panel p{margin:6px 0;}
+	.input{padding:6px; border:1px solid #eee; background-color:#fff; margin-right:5px; width:220px;}
+	.button{padding:4px; border:1px solid #ddd; background-color:#f1f1f1; cursor:pointer;}
+</style>
+
+<body onload="initMap()">
+    <div id="container"></div>
+	<div id="panel">
+        <p><label>地址：</label><input class="input" id='address' type="text" value='{$address}'><input class="button" id="convert" type="button" class="btn" value="转换为坐标" onclick="convert()"/></p>
+        <p><label>坐标：</label><input class="input" id='location' type='text' disabled value='{$location.lat},{$location.lng}' /><input class="button" id="convert" type="button" class="btn" value="复制坐标" onclick="copyCtrl()"/></p>
+		<p>提醒：如果定位不准确，请自行点击地图手动定位。</p>
+    </div>
+    <script>
+		var lat = {$location.lat};
+		var lng = {$location.lng};
+		
+		//初始化地图
+		var map = new TMap.Map("container", {
+			center: new TMap.LatLng(lat, lng),
+			zoom: 16
+		});
+		
+		var geocoder = new TMap.service.Geocoder(); // 新建一个正逆地址解析类
+		//初始化marker图层
+		var markerLayer = new TMap.MultiMarker({
+			id: 'marker-layer',
+			map: map,
+			geometries: [{
+				"id": 'demo',
+				"styleId": 'marker',
+				"position": new TMap.LatLng(lat,lng),
+				"properties": {
+					"title": "marker"
+				}
+			}]
+		});
+		
+		//地址转坐标
+		function convert() {
+			markerLayer.setGeometries([]);
+			// 将给定的地址转换为坐标位置
+			geocoder.getLocation({address: document.getElementById('address').value}).then((result) => {
+				markerLayer.updateGeometries([
+					{
+					  id: 'main',
+					  position: result.result.location, // 将得到的坐标位置用点标记标注在地图上
+					},
+				]);
+				map.setCenter(result.result.location);
+				document.getElementById('location').value = result.result.location.lat + "," + result.result.location.lng;
+			}).catch(error => {
+				console.log(error);
+				document.getElementById('location').value = '';
+				alert('地址转换为坐标失败，请重新输入地址');
+			});
+		}
+		
+		function copyCtrl() {
+			var content = document.getElementById('location').value
+			var save = function(e){
+				e.clipboardData.setData('text/plain', content);
+				e.preventDefault();
+			}
+			document.addEventListener('copy', save);
+			document.execCommand('copy');
+			document.removeEventListener('copy',save);
+			if (content != '') {
+				alert('复制成功');
+			}
+			else{
+				alert('请先把地址转换为坐标');
+			}
+		}
+		
+		function initMap() {	
+			//绑定点击事件
+			map.on("click",function(evt){
+				lat = evt.latLng.getLat().toFixed(6);
+				lng = evt.latLng.getLng().toFixed(6);
+				document.getElementById('location').value = lat + "," + lng;
+				//移除存在的marker图层
+				if (markerLayer) {
+					markerLayer.setMap(null);
+					markerLayer = null;
+				}
+				//初始化marker图层
+				markerLayer = new TMap.MultiMarker({
+					id: 'marker-layer',
+					map: map
+				});
+				//console.log(evt.latLng);
+				//添加marker图层
+				markerLayer.add({
+					position: evt.latLng
+				});
+			})
+		}
+    </script>
+</body>
+</html>

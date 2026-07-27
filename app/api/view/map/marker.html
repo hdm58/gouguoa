@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>点击地图拾取坐标</title>
+</head>
+<script charset="utf-8" src="https://map.qq.com/api/gljs?v=1.exp&libraries=service&key={$key}"></script>
+<style type="text/css">
+    html,body {height: 100%; margin: 0px; padding: 0px;overflow: hidden;}
+    #container{position: relative; width: 100%; height: 100%;}
+    #panel{position: absolute;left: 1%; top: 0.5%;font-size: 14px; background: #FFF; width: 360px; padding:0 10px; border-radius: 3px;z-index:9999}
+	#panel p{margin:6px 0;}
+	.input{padding:6px; border:1px solid #eee; background-color:#fff; margin-right:5px; width:296px;}
+</style>
+
+<body onload="initMap()">
+    <div id="container"></div>
+	<div id="panel">
+        <p><label>地址：</label><input class="input" id='address' type="text" disabled value='{$address}'></p>
+        <p><label>坐标：</label><input class="input" id='location' type='text' disabled value='{$latlng}' /></p>
+		<p>提醒：如果定位不准确，请联系负责人重新定位。</p>
+    </div>
+    <script>
+		var latlng = '{$latlng}';
+		var lat = latlng.split(',')[0];
+		var lng = latlng.split(',')[1];
+		
+		//初始化地图
+		var map = new TMap.Map("container", {
+			center: new TMap.LatLng(lat, lng),
+			zoom: 16
+		});
+		//初始化marker图层
+		var markerLayer = new TMap.MultiMarker({
+			id: 'marker-layer',
+			map: map,
+			geometries: [{
+				"id": 'demo',
+				"styleId": 'marker',
+				"position": new TMap.LatLng(lat,lng),
+				"properties": {
+					"title": "marker"
+				}
+			}]
+		});
+    </script>
+</body>
+</html>

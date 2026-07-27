@@ -417,8 +417,8 @@ class Import extends BaseController
             //循环读取excel表格，整合成数组。如果是不指定key的二维，就用$data[i][j]表示。
             for ($j = 3; $j <= $highestRow; $j++) {
 				$file_check = [];
-				$name = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getValue();
-				$mobile = $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getValue();
+				$name = $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getValue();
+				$mobile = $objPHPExcel->getActiveSheet()->getCell("C" . $j)->getValue();
 				if(empty($name)){
 					continue;
 				}
@@ -433,33 +433,33 @@ class Import extends BaseController
 					return to_assign(1, '工资单或者上传的文件存在相同的员工，请删除再操作');
 				}
 				array_push($uid_array,$uid);
-				$salary_basic = $objPHPExcel->getActiveSheet()->getCell("C" . $j)->getValue();
-				$salary_position = $objPHPExcel->getActiveSheet()->getCell("D" . $j)->getValue();
-				$salary_performance = $objPHPExcel->getActiveSheet()->getCell("E" . $j)->getValue();
-				$salary_quanqin = $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getValue();
-				$salary_overwork = $objPHPExcel->getActiveSheet()->getCell("G" . $j)->getValue();
-				$salary_meal = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getValue();
-				$salary_phone = $objPHPExcel->getActiveSheet()->getCell("I" . $j)->getValue();
-				$salary_traffic = $objPHPExcel->getActiveSheet()->getCell("J" . $j)->getValue();
-				$salary_house = $objPHPExcel->getActiveSheet()->getCell("K" . $j)->getValue();
-				$salary_fuli = $objPHPExcel->getActiveSheet()->getCell("L" . $j)->getValue();
-				$salary_protecting = $objPHPExcel->getActiveSheet()->getCell("M" . $j)->getValue();
-				$salary_bonus = $objPHPExcel->getActiveSheet()->getCell("N" . $j)->getValue();
-				$total_payable = $objPHPExcel->getActiveSheet()->getCell("O" . $j)->getCalculatedValue();;
+				$salary_basic = $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getValue();
+				$salary_position = $objPHPExcel->getActiveSheet()->getCell("G" . $j)->getValue();
+				$salary_performance = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getValue();
+				$salary_quanqin = $objPHPExcel->getActiveSheet()->getCell("I" . $j)->getValue();
+				$salary_overwork = $objPHPExcel->getActiveSheet()->getCell("J" . $j)->getValue();
+				$salary_meal = $objPHPExcel->getActiveSheet()->getCell("K" . $j)->getValue();
+				$salary_phone = $objPHPExcel->getActiveSheet()->getCell("L" . $j)->getValue();
+				$salary_traffic = $objPHPExcel->getActiveSheet()->getCell("M" . $j)->getValue();
+				$salary_house = $objPHPExcel->getActiveSheet()->getCell("N" . $j)->getValue();
+				$salary_fuli = $objPHPExcel->getActiveSheet()->getCell("O" . $j)->getValue();
+				$salary_protecting = $objPHPExcel->getActiveSheet()->getCell("P" . $j)->getValue();
+				$salary_bonus = $objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getValue();
+				$total_payable = $objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue();;
 				
-				$deduct_belate = $objPHPExcel->getActiveSheet()->getCell("P" . $j)->getValue();
-				$deduct_leave = $objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getValue();
-				$deduct_absenteeism = $objPHPExcel->getActiveSheet()->getCell("R" . $j)->getValue();
-				$total_deduction = $objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue();
+				$deduct_belate = $objPHPExcel->getActiveSheet()->getCell("S" . $j)->getValue();
+				$deduct_leave = $objPHPExcel->getActiveSheet()->getCell("T" . $j)->getValue();
+				$deduct_absenteeism = $objPHPExcel->getActiveSheet()->getCell("U" . $j)->getValue();
+				$total_deduction = $objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue();
 				
-				$deduct_social = $objPHPExcel->getActiveSheet()->getCell("T" . $j)->getValue();
-				$deduct_gongjijin = $objPHPExcel->getActiveSheet()->getCell("U" . $j)->getValue();
-				$deduct_tax = $objPHPExcel->getActiveSheet()->getCell("V" . $j)->getValue();
-				$total_statutory = $objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue();
+				$deduct_social = $objPHPExcel->getActiveSheet()->getCell("W" . $j)->getValue();
+				$deduct_gongjijin = $objPHPExcel->getActiveSheet()->getCell("X" . $j)->getValue();
+				$deduct_tax = $objPHPExcel->getActiveSheet()->getCell("Y" . $j)->getValue();
+				$total_statutory = $objPHPExcel->getActiveSheet()->getCell("Z" . $j)->getCalculatedValue();
 				
-				$total_payment = $objPHPExcel->getActiveSheet()->getCell("X" . $j)->getCalculatedValue();
+				$total_payment = $objPHPExcel->getActiveSheet()->getCell("AA" . $j)->getCalculatedValue();
 				
-				$remark = $objPHPExcel->getActiveSheet()->getCell("Y" . $j)->getValue();
+				$remark = $objPHPExcel->getActiveSheet()->getCell("AB" . $j)->getValue();
 				
 				if (empty($salary_basic)){
 					$salary_basic = 0;
@@ -572,7 +572,7 @@ class Import extends BaseController
 					return to_assign(1, '第'.($j - 2).'行的公积金不是数字');
 				}
 				if (empty($deduct_tax)){
-					$pdeduct_tax = 0;
+					$deduct_tax = 0;
 				}
 				if(!is_numeric($deduct_tax)){
 					return to_assign(1, '第'.($j - 2).'行的公积金不是数字');
@@ -596,9 +596,6 @@ class Import extends BaseController
                     'salary_basic' => $salary_basic,
                     'salary_position' => $salary_position,
                     'salary_performance' => $salary_performance,
-                    'salary_basic' => $salary_basic,
-					'salary_position' => $salary_position,
-					'salary_performance' => $salary_position,
 					'salary_quanqin' => $salary_quanqin,
 					'salary_overwork' => $salary_overwork,
 					'salary_meal' => $salary_meal,

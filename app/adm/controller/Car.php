@@ -79,7 +79,7 @@ class Car extends BaseController
                     return to_assign(1, $e->getError());
                 }
 				$beforeMileage = Db::name('CarMileage')->where([['car_id','=',$param['id']],['delete_time','=',0]])->order('mileage_time', 'asc')->value('mileage');
-				if($param['mileage']>=$beforeMileage){
+				if(!empty($beforeMileage) && $param['mileage']>=$beforeMileage){
 					return to_assign(1,'里程数不能大于里程记录的里程数：'.$beforeMileage);
 				}
 				$this->model->edit($param);

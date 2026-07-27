@@ -34,63 +34,8 @@ class api extends BaseController
         }
         $res['data'] = $list;
         return table_assign(0, '', $res);
-    }
-	
-	//首页知识列表
-    public function get_article_list()
-    {
-		$prefix = get_config('database.connections.mysql.prefix');//判断是否安装了文章模块
-		$exist = Db::query('show tables like "'.$prefix.'article"');
-		$res['data'] = [];
-		if($exist){
-			$list = Db::name('Article')
-				->field('a.id,a.title,a.create_time,a.read,c.title as cate_title')
-				->alias('a')
-				->join('article_cate c', 'a.cate_id = c.id')
-				->where(['a.delete_time' => 0])
-				->order('a.id desc')
-				->limit(8)
-				->select()->toArray();
-			foreach ($list as $key => $val) {
-				$list[$key]['create_time'] = date('Y-m-d H:i', $val['create_time']);
-			}
-			$res['data'] = $list;			
-		}
-		return table_assign(0, '', $res);
-	}
-	
-    // 初始历史操作记录数据
-    public function initAdminLog(){
-        $second_time = time() - 86400;
-		$startDate = date('Y-m-d',$second_time);
-        $data = [];
-        for ($i = 0; $i < 365; $i++) {
-            $year = date('Y', strtotime($startDate . ' -' . $i . ' days'));
-            $date = date('Y-m-d', strtotime($startDate . ' -' . $i . ' days'));
-			$begin_second=strtotime($date. " 00:00:00");
-			$end_second=strtotime($date. " 23:59:59");
-			$count = Db::name('AdminLogCount')->where('date', $date)->count();
-			if($count>0){
-				continue;
-			}
-            $data[] = [
-                'year' => $year,
-                'date' => $date,
-                'num' => Db::name('AdminLog')->whereBetween('create_time', "$begin_second,$end_second")->count(),
-                'create_time' => time()
-            ];            
-            // 分批插入，避免数据量过大
-            if (count($data) >= 100) {
-                Db::name('AdminLogCount')->insertAll($data);
-                $data = [];
-            }
-        }        
-        // 插入剩余数据
-        if (!empty($data)) {
-             Db::name('AdminLogCount')->insertAll($data);
-        }        
-        //return to_assign();
-    }
+    }	
+
     //获取最近访问记录
     public function get_last_data()
     {
@@ -205,11 +150,6 @@ class api extends BaseController
         $begin_time = date('Y-m-d', $three_time);
         $end_time = date('Y-m-d', $second_time);
 		
-		$last_count = Db::name('AdminLogCount')->where('date', $end_time)->count();
-		if($last_count==0){
-			//如果不存在生成记录
-			$this->initAdminLog();
-		}
 		//当天
         $today_count = Db::name('AdminLog')->whereBetween('create_time', "$begin_first,$end_first")->count();
 		//一年

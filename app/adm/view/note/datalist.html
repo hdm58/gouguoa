@@ -4,6 +4,14 @@
 
 <div class="p-page">
 	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:120px">
+			<select name="cate_id">
+				<option value="">选择分类</option>
+				{volist name=":get_base_data('note_cate')" id="v"}
+				<option value="{$v.id}">{$v.title}</option>
+				{/volist}
+			</select>
+		</div>
 		<div class="layui-input-inline" style="width:300px">
 			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
 		</div>
