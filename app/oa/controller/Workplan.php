@@ -43,7 +43,7 @@ class Workplan extends BaseController
         if (request()->isAjax()) {
 			$uid = $this->uid;
 			$did = $this->did;
-			$pid = $this->pid;
+			$pid = $this->poid;
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
             $where = [];
             $whereOr = [];

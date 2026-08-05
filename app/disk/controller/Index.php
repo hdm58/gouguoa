@@ -160,7 +160,7 @@ class Index extends BaseController
 			
 			$uid=$this->uid;
 			$did=$this->did;
-			$pid=$this->pid;
+			$pid=$this->poid;
 			
 			$map1=[
 				['share_types','=',1]
