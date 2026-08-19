@@ -1486,7 +1486,7 @@ INSERT INTO `oa_flow_cate` VALUES (8, '销项发票', 'invoice', 4, 'invoice', '
 INSERT INTO `oa_flow_cate` VALUES (9, '进项发票', 'ticket', 4, 'ticket', 'icon-yingjiaoqingdan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/ticket/add', '/finance/ticket/view', 0, 1, 1, 29, 1724749856, 1784819042);
 INSERT INTO `oa_flow_cate` VALUES (10, '收款', 'income', 4, 'invoice_income', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/income/add', '/finance/income/view', 0, 1, 1, 30, 1725856435, 1784819032);
 INSERT INTO `oa_flow_cate` VALUES (11, '付款', 'payment', 4, 'ticket_payment', 'icon-bulujiesuan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/payment/add', '/finance/payment/view', 0, 1, 1, 31, 1725856613, 1784819020);
-INSERT INTO `oa_flow_cate` VALUES (12, '退款', 'income_refund', 4, 'income_refund', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/refund/add', '/finance/refund/view', 0, 1, 1, 32, 1725856435, 1784819013);
+INSERT INTO `oa_flow_cate` VALUES (12, '退款', 'income_refund', 4, 'income_refund', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/refund/add', '/finance/refund/view', 0, 0, 1, 32, 1725856435, 1784819013);
 INSERT INTO `oa_flow_cate` VALUES (13, '销售合同', 'contract', 3, 'contract', 'icon-hetongguanli', '', 0, 0, 0, 0, 1, 0, 1, '/contract/contract/add', '/contract/contract/view', 0, 1, 1, 24, 1723469917, 1784819003);
 INSERT INTO `oa_flow_cate` VALUES (14, '采购合同', 'purchase', 3, 'purchase', 'icon-dianshang', '', 0, 0, 0, 0, 1, 0, 1, '/contract/purchase/add', '/contract/purchase/view', 0, 1, 1, 25, 1723470017, 1784818995);
 INSERT INTO `oa_flow_cate` VALUES (15, '入职', 'talent', 5, 'talent', 'icon-yuangongdaoru', '', 0, 1, 0, 1, 1, 0, 1, '/user/talent/add', '/user/talent/view', 0, 1, 1, 14, 1729490152, 1784818979);

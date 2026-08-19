@@ -26,11 +26,12 @@ mbui.define(['tool','layer','userPicker','loadData'], function (exports) {
 							ops = `<span class="mbui-btn mbui-btn-primary xs" data-event="replay" data-id="${data.id}" data-uid="${data.admin_id}" data-unames="${data.name}">回复</span>`;
 						}
 						if(data.pid>0){
-							ptext=`<div style="padding-bottom:8px;"><fieldset><legend>回复『${data.padmin}』${data.ptimes}的评论</legend>${data.pcontent}</fieldset></div>`;
+							let pcontent = tool.htmlencode(data.pcontent);
+							ptext=`<div style="padding-bottom:8px;"><fieldset><legend>回复『${data.padmin}』${data.ptimes}的评论</legend>${pcontent}</fieldset></div>`;
 						}
-							
+					let content = tool.htmlencode(data.content);		
 					let listItem = `
-							<div id="comment_${data.id}" class="mbui-comment-box border-bottom" data-content="${data.content}">
+							<div id="comment_${data.id}" class="mbui-comment-box border-bottom" data-content="${content}">
 								<div class="comment-avatar" title="${data.name}">
 									<img class="comment-image" src="${data.thumb}">
 								</div>
@@ -38,7 +39,7 @@ mbui.define(['tool','layer','userPicker','loadData'], function (exports) {
 									<div class="comment-meta">
 										<span class="comment-name">${data.name}</span><span title="${data.create_time}">${data.create_times}${data.update_times}</span>
 									</div>
-									<div class="comment-content">${to_names} ${data.content}</div>
+									<div class="comment-content">${to_names} ${content}</div>
 									${ptext}
 									<div class="comment-btn mbui-btn-group">${ops}</div>
 								</div>

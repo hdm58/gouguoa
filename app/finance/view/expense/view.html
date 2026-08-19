@@ -95,11 +95,21 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+const status = {$detail.status};
 const moduleInit = ['tool','oaCheck'];
 function gouguInit() {
 	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck;	
 	oaCheck.init({
-		check_name:'expense'
+		check_name:'expense',
+		verify_reversed :function(){
+			if(status==2){
+				layer.msg('该报销已确认付款，不支持反确认');
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
 	});
 }
 </script>

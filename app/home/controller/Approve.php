@@ -65,13 +65,8 @@ class Approve extends BaseController
 				}
 				$check_name = $table['name'];
 				$tableName = $prefix.$dbname;
-				$sqlPart = "SELECT id,admin_id,did,create_time,check_status,check_flow_id,check_step_sort,check_uids,check_last_uid,check_history_uids,check_copy_uids,check_time,'{$dbname}' as table_name,'{$check_name}' as check_name,'{$check_name}' as invoice_type,'{$check_name}' as types FROM {$tableName} WHERE {$where}";
-				if($dbname=='invoice' || $dbname=='ticket'){
-					$sqlPart = "SELECT id,admin_id,did,create_time,check_status,check_flow_id,check_step_sort,check_uids,check_last_uid,check_history_uids,check_copy_uids,check_time,'{$dbname}' as table_name,'{$check_name}' as check_name,invoice_type,'{$check_name}' as types FROM {$tableName} WHERE {$where}";
-				}
-				if($dbname=='approve'){
-					$sqlPart = "SELECT id,admin_id,did,create_time,check_status,check_flow_id,check_step_sort,check_uids,check_last_uid,check_history_uids,check_copy_uids,check_time,'{$dbname}' as table_name,'{$check_name}' as check_name,'{$check_name}' as invoice_type,types FROM {$tableName} WHERE {$where}";
-				}
+				$sqlPart = "SELECT id,admin_id,did,create_time,check_status,check_flow_id,check_step_sort,check_uids,check_last_uid,check_history_uids,check_copy_uids,check_time,'{$dbname}' as table_name,'{$check_name}' as check_name,'{$check_name}' as types FROM {$tableName} WHERE {$where}";
+
 				$sqlCount = "SELECT COUNT(*) AS count FROM {$tableName} WHERE {$where}";
 				// 查询数据库中是否存在该数据表
 				$is_table = Db::query("SHOW TABLES LIKE '{$tableName}'");
@@ -124,21 +119,15 @@ class Approve extends BaseController
 				}
 				
 				$check_name=$row['check_name'];
-				if($row['table_name'] == 'invoice' || $row['table_name']=='ticket'){
-					if($row['invoice_type']==0){
-						$check_name=$row['table_name'].'a';
-					}
-					else{
-						$check_name=$row['table_name'];
-					}
-				}
 				if($row['table_name'] == 'approve'){
 					$check_name='approve_'.$row['types'];
 				}
 				$flow_cate = Db::name('FlowCate')->where('name',$check_name)->find();
-				$row['types_name'] = $flow_cate['title'];
-				$row['view_url'] = $flow_cate['view_url'];
-				$row['add_url'] = $flow_cate['add_url'];
+				if(!empty($flow_cate)){
+    				$row['types_name'] = $flow_cate['title'];
+    				$row['view_url'] = $flow_cate['view_url'];
+    				$row['add_url'] = $flow_cate['add_url'];
+				}
 			}
 			$list=array(
 				'data'=>$result,

@@ -91,7 +91,7 @@
 				}}
 				,{field: 'work_cate', title: '工作类别', align:'center',width:80}
 				,{field: 'start_time', title: '工作时间范围', align:'center',width:186,templet:function(d){
-					var html=d.start_time+'至'+d.end_time;
+					var html=d.start_time+' 至 '+d.end_time_b;
 					return html;
 				}}
 				,{field: 'name', title: '执行人', align:'center',width:80}
@@ -130,81 +130,31 @@
 		table.on('tool(test)', function(obj){
 			var data = obj.data;
 			if(obj.event === 'time'){
-			  var content='<form class="layui-form" style="width:568px">\
-							<table class="layui-table" style="margin:15px 15px 0;">\
+			  var content='<form class="layui-form" style="width:666px">\
+							<table class="layui-table" style="margin:12px 12px 0;">\
 								<tr>\
-									<td class="layui-td-gray-2">工作时间范围<font>*</font></td>\
-									<td>\
-										<input id="start_time_a" name="start_time_a" style="width:120px; display:inline-block;" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" lay-reqText="请选择"><div style="display: inline-block; margin-left:5px; width: 80px;"><select lay-filter="start_time_b" id="start_time_b"></select></div> 至 <input id="end_time_a" name="end_time_a" style="width:120px; display:inline-block;" autocomplete="off" class="layui-input" value="" readonly lay-verify="required" lay-reqText="请选择"><div style="display: inline-block; margin-left:5px; width: 80px;"><select lay-filter="end_time_b" id="end_time_b"></select></div>\
-									</td>\
+									<td class="layui-td-gray-2">开始时间<font>*</font></td>\
+									<td><input type="text" class="layui-input tool-time" id="start_time" name="start_time" readonly value="'+data.start_time+'" data-type="datetime" data-format="yyyy-MM-dd HH:mm" data-min="-15" data-max="0" lay-verify="required" lay-reqText="请完善开始时间"></td>\
+									<td class="layui-td-gray-2">结束时间<font>*</font></td>\
+									<td><input type="text" class="layui-input tool-time" id="end_time" name="end_time" readonly value="'+data.end_time+'" data-type="datetime" data-format="yyyy-MM-dd HH:mm" data-min="-15" data-max="0" lay-verify="required" lay-reqText="请完善开始时间"></td>\
 								</tr>\
 							</table>\
 						</form>';
 				layer.open({
 					type:1,
 					title:'调整工时',
-					area:['600px','388px'],
+					area:['692px','398px'],
 					content:content,
 					success:function(){
-						//日期时间范围
-						laydate.render({
-							elem: '#start_time_a',
-							type: 'date',
-							max:0,
-							format: 'yyyy-MM-dd',
-							showBottom: false,
-							done:function(a,b,c){
-								$('#end_time_a').val(a);
-							}
-						});
-
-						//日期时间范围
-						laydate.render({
-							elem: '#end_time_a',
-							type: 'date',
-							max:0,
-							format: 'yyyy-MM-dd',
-							showBottom: false,
-							done:function(a,b,c){
-								$('#start_time_a').val(a);
-							}
-						});
-						$('#start_time_b,#end_time_b').empty();
-						
-						var hourArray=[];
-						for(var h=0;h<24;h++){
-							var t=h<10?'0'+h:h
-							var t_1=t+':00',t_2=t+':15',t_3=t+':30',t_4=t+':45';
-							hourArray.push(t_1,t_2,t_3,t_4);
-						}
-						
-						var html_1='', html_2='',def_h1='09:00',def_h2='09:30';
-						for(var s=0;s<hourArray.length;s++){
-							var check_1='',check_2='';
-							if(hourArray[s]==def_h1){
-								check_1='selected';
-							}
-							if(hourArray[s]==def_h2){
-								check_2='selected';
-							}
-							html_1 += '<option value="'+hourArray[s]+'" '+check_1+'>'+hourArray[s]+'</option>';
-							html_2 += '<option value="'+hourArray[s]+'" '+check_2+'>'+hourArray[s]+'</option>';
-						}
-						
-						$('#start_time_b').append(html_1);
-						$('#end_time_b').append(html_2);
-						form.render();
-					
+						form.render();					
 					},
 					btn: ['确定提交'],
 					btnAlign: 'c',
 					yes: function(idx){
-						let start_time_a = $('#start_time_a').val();
-						let end_time_a = $('#end_time_a').val();
-						let start_time_b = $('#start_time_b').val();
-						let end_time_b = $('#end_time_b').val();
-						if(start_time_a=='' || end_time_a==''){
-							layer.msg('请选择工作时间范围');
+						let start_time = $('#start_time').val();
+						let end_time = $('#end_time').val();
+						if(start_time=='' || end_time==''){
+							layer.msg('请完善工作时间');
 							return;
 						}
 						$.ajax({
@@ -213,10 +163,8 @@
 							data:{
 								id:data.id,
 								admin_id:data.admin_id,
-								start_time_a:start_time_a,
-								end_time_a:end_time_a,
-								start_time_b:start_time_b,
-								end_time_b:end_time_b
+								start_time:start_time,
+								end_time:end_time
 							},
 							success:function(e){
 								layer.msg(e.msg);
@@ -230,16 +178,13 @@
 				})
 			}
 			else if(obj.event === 'edit'){
-				work.add(0, obj.data);	
+				tool.box('/oa/schedule/add?id='+obj.data.id,"编辑工作日志",820,450,false);	
 			}
 			else if(obj.event === 'view'){
-				work.view(obj.data);				
+				tool.box('/oa/schedule/view?id='+obj.data.id,"工作日志",800,398,false);					
 			}
 			else if(obj.event === 'del'){
-				layer.confirm('您确定要删除该工作记录？', {
-					icon: 3,
-					title: '提示'
-				}, function (index) {
+				tool.ask('您确定要删除该工作日志？', function (index) {
 					let callback = function (e) {
 						layer.msg(e.msg);
 						if (e.code == 0) {
@@ -247,7 +192,6 @@
 						}
 					}
 					tool.delete("/oa/schedule/del", { id: obj.data.id }, callback);
-					layer.close(index);
 				});
 			}
 		}); 

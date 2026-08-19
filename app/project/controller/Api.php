@@ -41,15 +41,11 @@ class Api extends BaseController
 		$whereOr = array();
 		$where[] = ['delete_time', '=', 0];		
 		if($auth == 0){
-			$whereOr[] = ['director_uid', '=', $uid];
-			$project_ids = Db::name('ProjectUser')->where(['uid' => $uid, 'delete_time' => 0])->column('project_id');
-			$whereOr[] = ['id', 'in', $project_ids];
-			$dids_a = get_leader_departments($uid);	
-			$dids_b = get_role_departments($uid);
-			$dids = array_merge($dids_a, $dids_b);
-			if(!empty($dids)){
-				$whereOr[] = ['did','in',$dids];
-			}
+			$dids_son = get_leader_departments($uid);
+			$whereOr[] = ['admin_id', '=', $uid];//我创建的项目
+			$whereOr[] = ['director_uid', '=', $uid];//我负责的项目
+			$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];//我参与的项目
+			$whereOr[] = ['did','in',$dids_son];//我下属的项目
 		}
 		if (!empty($param['keywords'])) {
 			$where[] = ['name|content', 'like', '%' . $param['keywords'] . '%'];
@@ -87,20 +83,13 @@ class Api extends BaseController
 		else{
 			$auth = isAuth($uid,'project_admin','conf_1');
 			if($auth == 0){
-				$whereOr[] = ['admin_id', '=', $uid];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];
-				$dids_a = get_leader_departments($uid);	
-				$dids_b = get_role_departments($uid);
-				$dids = array_merge($dids_a, $dids_b);
-				if(!empty($dids)){
-					$whereOr[] = ['did','in',$dids];
-				}
-				if (empty($param['director_uid'])) {
-					$whereOr[] = ['director_uid', '=', $uid];
-				}
+				$dids_son = get_leader_departments($uid);
+				$whereOr[] = ['admin_id', '=', $uid];//我创建的任务
+				$whereOr[] = ['director_uid', '=', $uid];//我负责的任务
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];//我参与的任务
+				$whereOr[] = ['did','in',$dids_son];//我下属的任务
 			}
-		}
-		
+		}		
 		$model = new ProjectTask();
         $list = $model->datalist($param,$where,$whereOr);
         return table_assign(0, '', $list);

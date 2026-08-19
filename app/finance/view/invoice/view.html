@@ -102,6 +102,55 @@
 				</div>
 			</td>
 		</tr>
+		<tr>
+			<td class="layui-td-gray">收款状态</td>
+			<td>
+				{eq name="$detail.enter_status" value="0"}<span class="red">未收款</span>{/eq}
+				{eq name="$detail.enter_status" value="1"}<span class="blue">部分收款</span>{/eq}
+				{eq name="$detail.enter_status" value="2"}<span class="green">已收款</span>{/eq}
+			</td>
+			<td class="layui-td-gray-2">已收款金额</td>
+			<td class="green">{$detail.enter_amount}</td>
+			<td class="layui-td-gray-2">最新收款日期</td>
+			<td colspan="3">{$detail.enter_time|date='Y-m-d'}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">			
+				<div class="layui-input-inline">收款记录</div>
+			</td>
+			<td colspan="5">
+				<table class="layui-table layui-table-min" style="margin:0;">
+					<tr>
+						<th style="width:60px;">序号</th>
+						<th style="width:150px;">收款金额(元)</th>
+						<th style="width:200px;">收款日期</th>
+						<th style="width:100px;">收款状态</th>
+						<th style="width:100px;">收款记录人</th>
+						<th style="width:150px;">操作时间</th>
+						<th style="width:60px;">操作</th>
+					</tr>
+					{empty name="$detail.income"}
+					<tr>
+						<td colspan="7" style="padding:12px; color:#999">暂无记录</td>
+					</tr>
+					{/empty}
+					{volist name="$detail.income" id="vo"}
+					<tr>
+						<td>{$vo.id}</td>
+						<td><span class="green">{$vo.amount}</span></td>
+						<td>{$vo.enter_time | date='Y-m-d'}</td>
+						<td>
+							{eq name="$vo.status" value="1"}<span class="red">未确认</span>{/eq}
+							{eq name="$vo.status" value="2"}<span class="green">已确认</span>{/eq}
+						</td>
+						<td>{$vo.admin}</td>
+						<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						<td><span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/finance/income/view?id={$vo.id}">详情</span></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
 		{/if}
 	</table>
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
@@ -113,11 +162,21 @@
 {block name="script"}
 <script>
 const invoice_id = {$detail.id};
+const enter_status = {$detail.enter_status};
 const moduleInit = ['tool','oaCheck','uploadPlus'];
 function gouguInit() {
 	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
 	oaCheck.init({
-		check_name:'invoice'
+		check_name:'invoice',
+		verify_reversed :function(){
+			if(enter_status>0){
+				layer.msg('该发票已有收款记录，不支持反确认');
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
 	});
 	//相关附件上传
 	var attachment = new uploadPlus({

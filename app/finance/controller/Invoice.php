@@ -95,8 +95,14 @@ class Invoice extends BaseController
 			if (!empty($param['keywords'])) {
                 $where[] = ['invoice_title|invoice_tax|code', 'like', '%' . $param['keywords'] . '%'];
             }
-            $list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+			$list = $this->model->datalist($param,$where,$whereOr);			
+			$amount = $this->model::where($where)->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');					
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         }
         else{
 			View::assign('auth',$auth);
@@ -178,6 +184,12 @@ class Invoice extends BaseController
 			if($detail['open_status']>0){
 				$detail['open_admin_name'] = Db::name('Admin')->where('id','=',$detail['open_admin_id'])->value('name');
 			}
+			$detail['income'] = Db::name('InvoiceIncome')->field('i.*,a.name as admin')
+					->alias('i')
+					->join('Admin a', 'a.id = i.admin_id', 'LEFT')
+					->where([['i.invoice_id','=',$id],['i.delete_time','=',0]])
+					->order('i.enter_time desc')
+					->select();
 			View::assign('detail', $detail);
 			View::assign('create_user', get_admin($detail['admin_id']));
 			if(is_mobile()){
@@ -211,7 +223,6 @@ class Invoice extends BaseController
 		$auth = isAuth($uid,'finance_admin','conf_3');
         if (request()->isAjax()) {
 			$param = get_params();
-			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$where = [];
 			$whereOr = [];
 			$where[]=['delete_time','=',0];
@@ -235,8 +246,7 @@ class Invoice extends BaseController
             if (isset($param['open_status']) && $param['open_status'] != "") {
                 $where[] = ['open_status', '=', $param['open_status']];
             }
-			$list = $this->model->datalist($param,$where,$whereOr);
-			
+			$list = $this->model->datalist($param,$where,$whereOr);			
 			$amount = $this->model::where($where)->where(function ($query) use($whereOr) {
 				if (!empty($whereOr)){
 					$query->whereOr($whereOr);

@@ -1,5 +1,5 @@
 layui.define(['tool','oaPicker'], function (exports) {
-	const layer = layui.layer, tool = layui.tool;
+	const layer = layui.layer, tool = layui.tool,util = layui.util;
 	const opts={
 		"box":'commentBox',//容器id
 		"input": 'commentInput',
@@ -42,10 +42,12 @@ layui.define(['tool','oaPicker'], function (exports) {
 						ops = `<a class="mr-4" data-event="replay" data-id="${item.id}" data-uid="${item.admin_id}" data-unames="${item.name}">回复</a>`;
 					}
 					if(item.pid>0){
-						ptext=`<div style="padding-bottom:8px;"><fieldset style="border:1px solid #eeeeee; background-color:#f9f9f9;"><legend>回复『${item.padmin}』${item.ptimes}的评论</legend>${item.pcontent}</fieldset></div>`;
+						let pcontent = util.escape(item.pcontent);
+						ptext=`<div style="padding-bottom:8px;"><fieldset style="border:1px solid #eeeeee; background-color:#f9f9f9;"><legend>回复『${item.padmin}』${item.ptimes}的评论</legend>${pcontent}</fieldset></div>`;
 					}
+					let content = util.escape(item.content);
 					itemComment += `
-						<div id="comment_${item.id}" class="comment-item py-3 border-t" data-content="${item.content}">
+						<div id="comment_${item.id}" class="comment-item py-3 border-t" data-content="${content}">
 						<div class="comment-avatar" title="${item.name}">
 							<img class="comment-image" src="${item.thumb}">
 						</div>
@@ -53,7 +55,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 							<div class="comment-meta">
 								<strong class="comment-name">${item.name}</strong><span class="ml-2 gray" title="${item.create_time}">${item.create_times}${item.update_times}</span>
 							</div>
-							<div class="comment-content py-2">${to_names} ${item.content}</div>
+							<div class="comment-content py-2">${to_names} ${content}</div>
 							${ptext}
 							<div class="comment-actions">${ops}</div>
 						</div>

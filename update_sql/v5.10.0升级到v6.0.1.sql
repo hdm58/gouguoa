@@ -1530,7 +1530,7 @@ CREATE TABLE `oa_template`  (
 -- ----------------------------
 -- Records of oa_template
 -- ----------------------------
-INSERT INTO `oa_template` VALUES (1, '公告通知', 'note', 1, 0, '', '/oa/note/view/id/{action_id}', '{from_user}发了一个新『公告』，请及时查看', '您有一个新公告：{title}。', '', '', '', '', '', '', '', 1, 1, 1733312491, 1733314809, 0);
+INSERT INTO `oa_template` VALUES (1, '公告通知', 'note', 1, 0, '', '/home/note/view/id/{action_id}', '{from_user}发了一个新『公告』，请及时查看', '您有一个新公告：{title}。', '', '', '', '', '', '', '', 1, 1, 1733312491, 1733314809, 0);
 INSERT INTO `oa_template` VALUES (2, '工作汇报通知', 'work', 1, 0, '', '/oa/work/view/id/{action_id}', '{from_user}给您发了一份『工作汇报』，请及时查看', '您有一份新的工作汇报待查看。', '', '', '', '', '', '', '', 1, 1, 1760576534, 1760577087, 0);
 INSERT INTO `oa_template` VALUES (3, '工资发放通知', 'salary', 1, 0, '', '/oa/salary/view/id/{action_id}', '您有一个『{title}』新通知，请及时查看', '您有一个『{title}』新通知，金额：{amount}。', '', '', '', '', '', '', '', 1, 1, 1784533901, 0, 0);
 INSERT INTO `oa_template` VALUES (4, '会议记录通知', 'meeting_records', 1, 0, '', '/adm/meeting/records_view/id/{action_id}', '{from_user}给您发了一份『会议记录』，请及时查看', '您有一份新的会议记录待查看。\n会议日期：{meeting_date}\n会议主题：{title}', '', '', '', '', '', '', '', 1, 1, 1783437950, 1783438952, 0);
@@ -1609,7 +1609,7 @@ INSERT INTO `oa_flow_cate` VALUES (8, '销项发票', 'invoice', 4, 'invoice', '
 INSERT INTO `oa_flow_cate` VALUES (9, '进项发票', 'ticket', 4, 'ticket', 'icon-yingjiaoqingdan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/ticket/add', '/finance/ticket/view', 0, 1, 1, 29, 1724749856, 1784819042);
 INSERT INTO `oa_flow_cate` VALUES (10, '收款', 'income', 4, 'invoice_income', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/income/add', '/finance/income/view', 0, 1, 1, 30, 1725856435, 1784819032);
 INSERT INTO `oa_flow_cate` VALUES (11, '付款', 'payment', 4, 'ticket_payment', 'icon-bulujiesuan', '', 0, 1, 0, 0, 1, 0, 1, '/finance/payment/add', '/finance/payment/view', 0, 1, 1, 31, 1725856613, 1784819020);
-INSERT INTO `oa_flow_cate` VALUES (12, '退款', 'income_refund', 4, 'income_refund', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/refund/add', '/finance/refund/view', 0, 1, 1, 32, 1725856435, 1784819013);
+INSERT INTO `oa_flow_cate` VALUES (12, '退款', 'income_refund', 4, 'income_refund', 'icon-shoufeipeizhi', '', 0, 1, 0, 0, 1, 0, 1, '/finance/refund/add', '/finance/refund/view', 0, 0, 1, 32, 1725856435, 1784819013);
 INSERT INTO `oa_flow_cate` VALUES (13, '销售合同', 'contract', 3, 'contract', 'icon-hetongguanli', '', 0, 0, 0, 0, 1, 0, 1, '/contract/contract/add', '/contract/contract/view', 0, 1, 1, 24, 1723469917, 1784819003);
 INSERT INTO `oa_flow_cate` VALUES (14, '采购合同', 'purchase', 3, 'purchase', 'icon-dianshang', '', 0, 0, 0, 0, 1, 0, 1, '/contract/purchase/add', '/contract/purchase/view', 0, 1, 1, 25, 1723470017, 1784818995);
 INSERT INTO `oa_flow_cate` VALUES (15, '入职', 'talent', 5, 'talent', 'icon-yuangongdaoru', '', 0, 1, 0, 1, 1, 0, 1, '/user/talent/add', '/user/talent/view', 0, 1, 1, 14, 1729490152, 1784818979);
@@ -1704,6 +1704,31 @@ INSERT INTO `oa_basic_adm` VALUES (22, '3', '购买水果', 1, 1758584305, 0);
 INSERT INTO `oa_basic_adm` VALUES (23, '3', '订餐', 1, 1758584312, 0);
 
 -- ----------------------------
+-- Table structure for oa_mobile_types
+-- ----------------------------
+DROP TABLE IF EXISTS `oa_mobile_types`;
+CREATE TABLE `oa_mobile_types`  (
+  `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
+  `icon` varchar(255) NOT NULL DEFAULT '' COMMENT '图标',
+  `bgcolor` varchar(255) NOT NULL DEFAULT '' COMMENT '背景颜色',
+  `sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序：越大越靠前',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：-1删除 0禁用 1启用',
+  `create_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `update_time` bigint(11) UNSIGNED NOT NULL DEFAULT 0 COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COMMENT = '手机端工作台菜单类型表';
+
+-- ----------------------------
+-- Records of oa_mobile_types
+-- ----------------------------
+INSERT INTO `oa_mobile_types` VALUES (1, '办公审批', '', 'blue', 0, 1, 1723277311, 0);
+INSERT INTO `oa_mobile_types` VALUES (2, '效率工具', '', 'green', 0, 1, 1723277311, 0);
+INSERT INTO `oa_mobile_types` VALUES (3, '内部管理', '', 'yellow', 0, 1, 1723277351, 0);
+INSERT INTO `oa_mobile_types` VALUES (4, '财务管理', '', 'purple', 0, 1, 1723277356, 0);
+INSERT INTO `oa_mobile_types` VALUES (5, '人事管理', '', 'red', 0, 1, 1754539327,0);
+
+-- ----------------------------
 -- Table structure for oa_mobile_menu
 -- ----------------------------
 DROP TABLE IF EXISTS `oa_mobile_menu`;
@@ -1753,3 +1778,5 @@ INSERT INTO `oa_mobile_menu` VALUES (24, '我的薪资', 'icon-fukuanshenqing', 
 
 UPDATE `oa_loan` SET `enterprise_id` = 1;
 UPDATE `oa_expense` SET `enterprise_id` = 1;
+UPDATE `oa_disk` SET `file_ext` = 'folder' WHERE `types` = 2;
+UPDATE `oa_project` SET `importance` = 1;

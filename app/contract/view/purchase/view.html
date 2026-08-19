@@ -321,8 +321,14 @@
 		oaCheck.init({
 			check_name:'purchase',
 			checking_btn:checking_btn,
-			check_reversed :function(){
-			
+			verify_reversed :function(){
+				if(archive>0){
+					layer.msg('该合同已经归档，不支持反确认');
+					return false;
+				}
+				else{
+					return true;
+				}
 			}
 		});
 

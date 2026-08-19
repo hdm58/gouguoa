@@ -44,7 +44,7 @@ function status_name($status=0)
 //获取项目重要性
 function get_importance($id=0)
 {
-	$array = ['未设置','一般','重要','非常重要'];
+	$array = ['未设置','低','中','高'];
 	if($id==0){
 		return $array;
 	}

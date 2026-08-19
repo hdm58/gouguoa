@@ -1,5 +1,5 @@
 layui.define(['tool','oaPicker','tinymce'],function(exports){
-	let layer = layui.layer,tool=layui.tool,laydate = layui.laydate,dropdown = layui.dropdown,oaPicker = layui.oaPicker,tinymce = layui.tinymce;
+	let layer = layui.layer,tool=layui.tool,laydate = layui.laydate,dropdown = layui.dropdown,oaPicker = layui.oaPicker,tinymce = layui.tinymce,util = layui.util;
 	const opts={
 		"box":'editBox',//编辑容器id
 		"id":0,//编辑容器id
@@ -32,8 +32,10 @@ layui.define(['tool','oaPicker','tinymce'],function(exports){
 							}
 							logTime = 	item.create_time;			
 						}
+						let old_content = util.escape(item.old_content);
+						let new_content = util.escape(item.new_content);
 						detail= `
-							<span class="log-content gray">将<strong>${item.field_name}</strong>从 <span class="green">${item.old_content}</span> ${item.action}为 <span class="blue">${item.new_content}</span><span class="ml-4 gray" title="${item.create_time}">${item.times}</span></span>
+							<span class="log-content gray">将<strong>${item.field_name}</strong>从 <span class="green">${old_content}</span> ${item.action}为 <span class="blue">${new_content}</span><span class="ml-4 gray" title="${item.create_time}">${item.times}</span></span>
 						`;
 						
 						if(item.field=='new'){

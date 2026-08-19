@@ -113,7 +113,7 @@ class Payment extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
             if(!empty($param['ticket_id'])) {
 				//计算发票已付款的金额
-				$hasPayment = $this->model->where([['id','<>',$id],['ticket_id','=',$param['ticket_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
+				$hasPayment = $this->model->where([['id','<>',$id],['ticket_id','=',$param['ticket_id']],['delete_time','=',0]])->sum('amount');
 				//查询发票金额
 				$ticketAmount = Db::name('Ticket')->where(['id'=>$param['ticket_id']])->value('amount');
 				if(($param['amount']*10000 + $hasPayment*10000) > $ticketAmount*10000){
@@ -122,7 +122,7 @@ class Payment extends BaseController
 			}
 			if(!empty($param['purchase_id'])){
 				//计算合同已付款的金额
-				$hasPayment = $this->model->where([['id','<>',$id],['purchase_id','=',$param['purchase_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
+				$hasPayment = $this->model->where([['id','<>',$id],['purchase_id','=',$param['purchase_id']],['delete_time','=',0]])->sum('amount');
 				//查询合同金额
 				$purchaseAmount = Db::name('Purchase')->where(['id'=>$param['purchase_id']])->value('cost');
 				if(($param['amount']*10000 + $hasPayment*10000) > $purchaseAmount*10000){
@@ -175,31 +175,14 @@ class Payment extends BaseController
     //删除付款记录
     public function del()
     {
-        $param = get_params();
-        if (request()->isAjax()) {
-            $payment =TicketPayment::where(['id'=>$param['id']])->find();
-            $ticket = $this->model->where(['id'=>$payment['ticket_id']])->find();
-            if($payment){
-                $res = TicketPayment::where(['id'=>$param['id']])->update(['status'=>'6','update_time'=>time()]);
-                if($res!==false){
-                    if($payment['amount']*100 == $ticket['amount']*100){
-                        //发票全部反付款
-                        $this->model->where(['id'=>$payment['ticket_id']])->update(['pay_status'=>0,'pay_amount'=>0,'pay_time'=>0]);
-                    }
-                    else if($payment['amount']*100 < $ticket['amount']*100){
-                        $payTotal=TicketPayment::where(['ticket_id'=>$payment['ticket_id'],'status'=>1])->sum('amount');
-                        //发票部分付款
-                        $this->model->where(['id'=>$payment['ticket_id']])->update(['pay_status'=>1,'pay_amount'=>$payTotal,'pay_time'=>time()]);
-                    }
-                    add_log('pay',$payment['ticket_id'],$ticket);
-                    return to_assign();
-                }
-                else{
-                    return to_assign(1,'操作失败');
-                }
-            }
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
+		if (request()->isDelete()) {
+			$this->model->delById($id);
+		} else {
+            return to_assign(1, "错误的请求");
         }
-    }
+    } 
 	
 	
 	//回款记录

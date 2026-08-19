@@ -102,6 +102,7 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,height: 'full-155'
+			,totalRow: true
 			,cols: [[
 				{
 						field: 'id',
@@ -116,12 +117,14 @@
 					},{
 						field: 'invoice_title',
 						title: '开票主体 [供应商]',
-						minWidth: 240
+						minWidth: 240,
+						totalRowText: '<div style="text-align:right">合计</div>'
 					},{
 						field: 'amount',
 						title: '发票金额(元)',
 						align: 'right',
 						width: 100,
+						totalRow: function (d) {return d.TOTAL_ROW.amount}
 					},{
 						field: 'code',
 						title: '发票号码',

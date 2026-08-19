@@ -13,52 +13,47 @@
 		</style>
 	</head>
 	<body>
-	<h2>进项发票审批单</h2>
+	<h2>收款审批单</h2>
 	<table class="pdf-table">
 		<tr>
-			<td class="pdf-td-gray">发票金额</td>
+			<td class="pdf-td-gray">预回款金额</td>
 			<td>{$detail.amount} 元</td>
-			<td class="pdf-td-gray">发票类型</td>
+			<td class="pdf-td-gray">收款主体</td>
+			<td colspan="3">{$detail.subject}</td>
+		</tr>
+		<tr>
+			<td class="pdf-td-gray">付款主体</td>
 			<td>
-				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-				{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
-				{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
+				{eq name="$detail.types" value="1"}企业{/eq}
+				{eq name="$detail.types" value="2"}个人{/eq}
 			</td>
-		</tr>
-		<tr>
-		<td class="pdf-td-gray">发票抬头</td>
-			<td>{$detail.subject}</td>
-			<td class="pdf-td-gray">开票主体</td>
+			<td class="pdf-td-gray">付款方名称</td>
 			<td>{$detail.invoice_title}</td>
+			<td class="pdf-td-gray">纳税人识别号</td>
+			<td>{$detail.invoice_tax}</td>
 		</tr>
-		<tr>
-			<td class="pdf-td-gray">发票号码</td>
-			<td>{$detail.code}</td>
-			<td class="pdf-td-gray">发票日期</td>
-			<td>{$detail.open_time}</td>
-		</tr>
-		{notempty name="$detail.purchase_id"}
+		{notempty name="$detail.contract_id"}
 		<tr>
 			<td class="pdf-td-gray">关联合同</td>
-			<td colspan="3">{$detail.purchase_name|default='-'}</td>
+			<td colspan="5">{$detail.contract_name|default='-'}</td>
 		</tr>
 		{/notempty}
 		{notempty name="$detail.project_id"}
 		<tr>
 			<td class="pdf-td-gray">关联项目</td>
-			<td colspan="3">{$detail.project_name|default='-'}</td>
+			<td colspan="5">{$detail.project_name|default='-'}</td>
 		</tr>
 		{/notempty}
 		{notempty name="$detail.remark"}
 		<tr>
 			<td class="pdf-td-gray">备注信息</td>
-			<td colspan="3">{$detail.remark|default='-'}</td>
+			<td colspan="5">{$detail.remark|default='-'}</td>
 		</tr>
 		{/notempty}
 		{notempty name="$detail.file_array"}
 		<tr>
 			<td class="pdf-td-gray">相关附件</td>
-			<td colspan="3">
+			<td colspan="5">
 				{volist name="$detail.file_array" id="vo"}
 				<div>{$i}、{$vo.name}</div>
 				{/volist}

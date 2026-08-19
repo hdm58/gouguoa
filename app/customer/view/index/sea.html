@@ -53,6 +53,8 @@
 <div class="layui-btn-group">
    <button class="layui-btn layui-btn-sm" title="添加公海客户" lay-event="add">+ 添加公海客户</button>
    <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="import"><i class="layui-icon">&#xe66f;</i>批量导入</button>
+   <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="distribute"><i class="layui-icon">&#xe770;</i>分配</button>
+   <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="get"><i class="layui-icon">&#xe61f;</i>领取</button>
    <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del"><i class="layui-icon">&#xe609;</i>批量转入废弃池</button>
 </div>
 </script>
@@ -142,6 +144,12 @@
 			]
 		});
 		
+		let callback = function (e) {
+			layer.msg(e.msg);
+			if (e.code == 0) {
+				layui.pageTable.reload();
+			}
+		}
 		//表头工具栏事件
 		table.on('toolbar(test)', function(obj){
 			var checkStatus = table.checkStatus(obj.config.id);
@@ -169,11 +177,40 @@
 			for(var i=0;i<data.length;i++){
 				idArray.push(data[i].id);
 			}
+			if(data.length==0){
+				layer.msg('请选择要操作的客户');
+				return false;
+			}
+			if (obj.event === 'distribute') {
+				oaPicker.employeeInit({
+					callback:function(selected){
+						//这里是选择后的回调方法，可以根据具体需求自定义写哦
+						let select_id=[],select_name=[],select_did=[];
+						for(var a=0; a<selected.length;a++){
+							select_id.push(selected[a].id);
+							select_name.push(selected[a].name);
+							select_did.push(selected[a].did);
+						}
+						layer.confirm('确定要把选中的客户分配给'+select_name.join(',')+'?', {
+							icon: 3,
+							title: '提示'
+						}, function(index) {
+							tool.post("/customer/index/to_divide", {id: idArray.join(','),uid:select_id.join(','),did:select_did.join(',')}, callback);
+							layer.close(index);
+						});
+					}
+				});
+			}
+			if (obj.event === 'get') {
+				layer.confirm('确定要领取选中的客户?', {
+					icon: 3,
+					title: '提示'
+				}, function(index) {
+					tool.post("/customer/index/to_get", {id: idArray.join(',')}, callback);
+					layer.close(index);
+				});
+			}
 			if (obj.event === 'del') {
-				if(data.length==0){
-					layer.msg('请选择要操作的客户');
-					return false;
-				}
 				layer.confirm('您确定要把选中的客户转入废弃池?', {
 					icon: 3,
 					title: '提示'

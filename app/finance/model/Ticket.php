@@ -87,6 +87,7 @@ class Ticket extends Model
         try {
             $param['update_time'] = time();
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			ticket_payment_status($param['id']);
 			add_log('edit', $param['id'], $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());

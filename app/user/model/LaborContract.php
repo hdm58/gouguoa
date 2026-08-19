@@ -27,7 +27,7 @@ class LaborContract extends Model
 	public static $laborcontract_types = ['','新签合同','续签合同','变更合同'];
 
 	//合同属性
-	public static $laborcontract_properties = ['','初级职称','中级职称','高级职称'];
+	public static $laborcontract_properties = ['','固定期限','无固定期限','项目制'];
 	
 	//合同状态
 	public static $laborcontract_status = ['','正常','已到期','已解除'];

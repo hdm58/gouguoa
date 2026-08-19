@@ -493,6 +493,10 @@ layui.define(['tool'],function(exports){
 		excelImport:function(){
 			let me = this;
 			$(parent.$('.express-close')).addClass('parent-colse');
+			let excelBtn = '<span class="layui-btn excel-btn ml-2">Excel模板下载</span>';
+			if(me.settings.import.template!=''){
+				excelBtn = '<a href="'+me.settings.import.template+'" target="_blank" class="layui-btn ml-2">Excel模板下载</a>';
+			}
 			layer.open({
 				'title':me.settings.title,
 				'type':1,
@@ -502,7 +506,7 @@ layui.define(['tool'],function(exports){
 									<div class="layui-form-item">\
 										<label class="layui-form-label">选择文件：</label>\
 										<div class="layui-input-block">\
-											<div class="layui-input-inline" style="width:286px;"><input type="text" id="inputImport'+me.settings.index+'" placeholder=".xls,.xlsx" class="layui-input" readonly></div><button type="button" class="layui-btn layui-btn-normal" id="importSelect'+me.settings.index+'">选择文件</button><a href="'+me.settings.import.template+'" target="_blank" class="layui-btn ml-2">Excel模板下载</a>\
+											<div class="layui-input-inline" style="width:286px;"><input type="text" id="inputImport'+me.settings.index+'" placeholder=".xls,.xlsx" class="layui-input" readonly></div><button type="button" class="layui-btn layui-btn-normal" id="importSelect'+me.settings.index+'">选择文件</button>'+excelBtn+'\
 										</div>\
 									</div>\
 								</div>\

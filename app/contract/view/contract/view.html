@@ -106,7 +106,7 @@
 						<th style="width:150px;">发票状态</th>
 						<th style="width:200px;">发票号码</th>
 						<th style="width:150px;">发票日期</th>
-						<th style="width:100px;">回款状态</th>
+						<th style="width:100px;">收款状态</th>
 						<th style="width:100px;">申请人</th>
 						<th style="width:150px;">申请时间</th>
 						<th style="width:60px;">操作</th>
@@ -125,9 +125,9 @@
 						<td>-</td>								
 						{/eq}
 						<td>
-							{eq name="$vo.enter_status" value="0"}<span class="red">未回款</span>{/eq}
-							{eq name="$vo.enter_status" value="1"}<span class="blue">部分回款</span>{/eq}
-							{eq name="$vo.enter_status" value="2"}<span class="green">全部回款</span>{/eq}
+							{eq name="$vo.enter_status" value="0"}<span class="red">未收款</span>{/eq}
+							{eq name="$vo.enter_status" value="1"}<span class="blue">部分收款</span>{/eq}
+							{eq name="$vo.enter_status" value="2"}<span class="green">全部收款</span>{/eq}
 						</td>
 						<td>{$vo.admin}</td>
 						<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
@@ -141,16 +141,16 @@
 		
 		{notempty name="$detail.income"}
 		<tr>
-			<td colspan="6"><strong>回款记录</strong>『 已回款金额：<strong class="green">{$detail.has_income}</strong> 元，未回款金额：<strong class="red">{$detail.no_income}</strong> 元 』</</td>
+			<td colspan="6"><strong>收款记录</strong>『 已收款金额：<strong class="green">{$detail.has_income}</strong> 元，未收款金额：<strong class="red">{$detail.no_income}</strong> 元 』</</td>
 		</tr>
 		<tr>
 			<td colspan="6">
 				<table class="layui-table layui-table-min" style="margin:0;">
 					<tr>
 						<th style="width:60px;">序号</th>
-						<th style="width:150px;">到帐金额(元)</th>
-						<th style="width:200px;">到账日期</th>
-						<th style="width:100px;">到账操作人</th>
+						<th style="width:150px;">收款金额(元)</th>
+						<th style="width:200px;">收款日期</th>
+						<th style="width:100px;">收款操作人</th>
 						<th style="width:150px;">操作时间</th>
 						<th style="width:60px;">操作</th>
 					</tr>
@@ -328,8 +328,14 @@
 		oaCheck.init({
 			check_name:'contract',
 			checking_btn:checking_btn,
-			check_reversed :function(){
-			
+			verify_reversed :function(){
+				if(archive>0){
+					layer.msg('该合同已经归档，不支持反确认');
+					return false;
+				}
+				else{
+					return true;
+				}
 			}
 		});
 

@@ -31,7 +31,10 @@ use app\adm\model\OfficialDocs;
 use app\finance\model\Loan;
 use app\finance\model\Expense;
 use app\finance\model\Invoice;
+use app\finance\model\InvoiceIncome;
 use app\finance\model\Ticket;
+use app\finance\model\TicketPayment;
+use app\finance\model\IncomeRefund;
 use app\contract\model\Contract;
 use app\contract\model\Purchase;
 
@@ -119,17 +122,17 @@ class Export extends BaseController
 			$detail= $model->getById($id);
 			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的报销审批单';
 		}
-		//开票回款
+		//开票收款
 		if($types=='invoice'){
 			$model = new Invoice();
 			$detail= $model->getById($id);
 			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的发票开票审批单';
 		}
-		//无票回款
-		if($types=='invoicea'){
-			$model = new Invoice();
+		//收款
+		if($types=='income'){
+			$model = new InvoiceIncome();
 			$detail= $model->getById($id);
-			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的无发票回款审批单';
+			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的收款审批单';
 		}
 		//收票付款
 		if($types=='ticket'){
@@ -137,11 +140,17 @@ class Export extends BaseController
 			$detail= $model->getById($id);
 			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的收票审批单';
 		}
-		//无发票付款单
-		if($types=='ticketa'){
-			$model = new Ticket();
+		//付款
+		if($types=='payment'){
+			$model = new TicketPayment();
 			$detail= $model->getById($id);
-			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的无发票付款审批单';
+			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的付款审批单';
+		}
+		//退款
+		if($types=='income_refund'){
+			$model = new IncomeRefund();
+			$detail= $model->getById($id);
+			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的退款审批单';
 		}
 		//销售合同
 		if($types=='contract'){

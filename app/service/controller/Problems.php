@@ -40,6 +40,7 @@ class Problems extends BaseController
     public function datalist()
     {
 		$param = get_params();
+		$auth=isAuth($this->uid,'service_admin','conf_1');
         if (request()->isAjax()) {
 			$where=[];
 			$where[]=['delete_time','=',0];
@@ -61,11 +62,14 @@ class Problems extends BaseController
 			if (!empty($param['keywords'])) {
                 $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
             }
-            $list = $this->model->datalist($where, $param);
+			if($auth==0){
+				$where[] = ['admin_id|director_id','=',$this->uid];
+			}
+            $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         }
         else{
-			View::assign('auth', isAuth($this->uid,'service_admin','conf_1'));	
+			View::assign('auth',$auth);	
             return view();
         }
     }

@@ -46,12 +46,21 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+	const status = {$detail.status};
 	const moduleInit = ['tool','oaCheck'];
 	function gouguInit() {
 		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck;
 		oaCheck.init({
 			check_name:'department_change',
-			check_btn:0
+			verify_reversed :function(){
+				if(status==2){
+					layer.msg('该人员已交接调动，不支持反确认');
+					return false;
+				}
+				else{
+					return true;
+				}
+			}
 		});
 	}
 

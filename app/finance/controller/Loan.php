@@ -87,8 +87,14 @@ class Loan extends BaseController
 			if (isset($param['check_status']) && $param['check_status'] != "") {
                 $where[] = ['check_status', '=', $param['check_status']];
             }
-            $list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+			$list = $this->model->datalist($param,$where,$whereOr);
+			$cost = $this->model::where($where)->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('cost');					
+			$totalRow['cost'] = sprintf("%.2f",$cost);
+            return table_assign(0, '', $list,$totalRow);
         }
         else{
 			View::assign('auth',$auth);
@@ -185,8 +191,10 @@ class Loan extends BaseController
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];
+			$whereOr = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
+			$where[]=['status','=',2];
 			if (!empty($param['uid'])) {
 				$where[] = ['admin_id', '=', $param['uid']];
 			}
@@ -205,9 +213,12 @@ class Loan extends BaseController
             if (!empty($param['status'])) {
                 $where[] = ['status', '=', $param['status']];
             }
-			$list = $this->model->datalist($param,$where);
-			
-			$cost = $this->model::where($where)->sum('cost');					
+			$list = $this->model->datalist($param,$where,$whereOr);
+			$cost = $this->model::where($where)->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('cost');					
 			$totalRow['cost'] = sprintf("%.2f",$cost);
             return table_assign(0, '', $list,$totalRow);
         } else {

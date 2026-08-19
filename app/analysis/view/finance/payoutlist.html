@@ -42,23 +42,17 @@
 			totalRow: true,
 			height: 'full-115',
 			cols: [
-				[
-					{
-						field: 'id',
-						title: 'ID号',
-						align: 'center',
-						width: 80
-					},{
+				[{
 						field: 'transaction_no',
 						title: '流水号',
 						align: 'center',
-						width: 160,
+						width: 188,
 						totalRowText: '<div style="text-align:right">合计</div>'
 					}, {
 						field: 'amount',
 						title: '金额(元)',
 						align: 'right',
-						style:'color:#ff5722',
+						style:'color:#16b777',
 						width: 120,
 						totalRow: function (d) {return d.TOTAL_ROW.amount}
 					},{

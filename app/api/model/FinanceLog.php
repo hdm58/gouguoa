@@ -89,7 +89,7 @@ class FinanceLog extends Model
 					'types' => $array['types'],
 					'action_id' => $action_id,
 					'action_time' => time(),
-					'transaction_no' => get_codeno($array['code']),
+					'transaction_no' => get_codeno($array['code']).str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT),
 					'amount' => $detail[$field],
 					'enterprise_id' => $detail['enterprise_id'],
 					'account_id' => $detail['account_id'],

@@ -128,7 +128,7 @@ class Finance extends BaseController
 				}
 				$result = [
 					'title' => [
-						'text' => '每月支出对比'
+						'text' => '每月收入对比'
 					],
 					'legend' => [
 						'月收入'
@@ -144,7 +144,7 @@ class Finance extends BaseController
 					],
 					'series' => [
 						[
-							'name' => '支出金额',
+							'name' => '收入金额',
 							'type' => 'bar',
 							'barWidth'=>'60%',
 							'data' => $income

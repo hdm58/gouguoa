@@ -24,12 +24,15 @@ class Api extends BaseController
     {
 		$param = get_params();
         if (request()->isAjax()) {
+			$auth=isAuth($this->uid,'service_admin','conf_1');
 			$where=[];
 			$where[]=['delete_time','=',0];
             $where[] = ['status', '<', 3];
-			$where[] = ['director_id','=',$this->uid];
+			if($auth==0){
+				$where[] = ['admin_id|director_id','=',$this->uid];
+			}
 			$model = new ProblemsModel();
-            $list = $model->datalist($where, $param);
+            $list = $model->datalist($param,$where);
             return table_assign(0, '', $list);
         }
     }

@@ -113,7 +113,7 @@ class Income extends BaseController
 			$id = isset($param['id']) ? $param['id'] : 0;
             if($param['invoice_id']>0){
 				//计算发票已回款的金额
-				$hasIncome = $this->model->where([['id','<>',$id],['invoice_id','=',$param['invoice_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
+				$hasIncome = $this->model->where([['id','<>',$id],['invoice_id','=',$param['invoice_id']],['delete_time','=',0]])->sum('amount');
 				//查询发票金额
 				$invoiceAmount = Db::name('Invoice')->where(['id'=>$param['invoice_id']])->value('amount');
 				if(($param['amount']*10000 + $hasIncome*10000) > $invoiceAmount*10000){
@@ -122,7 +122,7 @@ class Income extends BaseController
 			}
 			if($param['contract_id']>0){
 				//计算合同已回款的金额
-				$hasIncome = $this->model->where([['id','<>',$id],['contract_id','=',$param['contract_id']],['status','in',[1,2]],['delete_time','=',0]])->sum('amount');
+				$hasIncome = $this->model->where([['id','<>',$id],['contract_id','=',$param['contract_id']],['delete_time','=',0]])->sum('amount');
 				//查询合同金额
 				$contractAmount = Db::name('Contract')->where(['id'=>$param['contract_id']])->value('cost');
 				if(($param['amount']*10000 + $hasIncome*10000) > $contractAmount*10000){
@@ -182,31 +182,14 @@ class Income extends BaseController
     //删除到账记录
     public function del()
     {
-        $param = get_params();
-        if (request()->isAjax()) {
-            $income =InvoiceIncome::where(['id'=>$param['id']])->find();
-            $invoice = $this->model->where(['id'=>$income['invoice_id']])->find();
-            if($income){
-                $res = InvoiceIncome::where(['id'=>$param['id']])->update(['status'=>'6','update_time'=>time()]);
-                if($res!==false){
-                    if($income['amount']*100 == $invoice['amount']*100){
-                        //发票全部反到账
-                        $this->model->where(['id'=>$income['invoice_id']])->update(['enter_status'=>0,'enter_amount'=>0,'enter_time'=>0]);
-                    }
-                    else if($income['amount']*100 < $invoice['amount']*100){
-                        $incomeTotal=InvoiceIncome::where(['invoice_id'=>$income['invoice_id'],'status'=>1])->sum('amount');
-                        //发票部分到账
-                        $this->model->where(['id'=>$income['invoice_id']])->update(['enter_status'=>1,'enter_amount'=>$incomeTotal,'enter_time'=>time()]);
-                    }
-                    add_log('enter',$income['invoice_id'],$invoice);
-                    return to_assign();
-                }
-                else{
-                    return to_assign(1,'操作失败');
-                }
-            }
+		$param = get_params();
+		$id = isset($param['id']) ? $param['id'] : 0;
+		if (request()->isDelete()) {
+			$this->model->delById($id);
+		} else {
+            return to_assign(1, "错误的请求");
         }
-    }
+    } 
 	
 	
 	//回款记录

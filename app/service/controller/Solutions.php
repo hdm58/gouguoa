@@ -56,7 +56,7 @@ class Solutions extends BaseController
             if (!empty($param['keywords'])) {
                 $where[] = ['id|title', 'like', '%' . $param['keywords'] . '%'];
             }
-            $list = $this->model->datalist($where, $param);
+            $list = $this->model->datalist($param,$where);
             return table_assign(0, '', $list);
         }
         else{

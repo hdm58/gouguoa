@@ -18,7 +18,7 @@
 			<tr>
 			  <td>
 				<div class="num-title">账户当前总金额</div>
-				<div class="num" style="color:#16b777">{$amount}</div>
+				<div class="num" style="color:#ff5722">{$amount}</div>
 			  </td>
 			  <td>
 				<div class="num-title">账户初始资金</div>
@@ -34,7 +34,7 @@
 			  </td>
 			  <td>
 				<div class="num-title">总支出<a class="side-a" data-href="/analysis/finance/payoutlist">『流水记录』</a></div>
-				<div class="num" style="color:#ff5722">{$payout}</div>
+				<div class="num" style="color:#16b777">{$payout}</div>
 			  </td>
 		</table>
 	</div>
@@ -55,30 +55,30 @@
 			{volist name="$vo.account" id="voo" key="k"}	
 				{eq name="$k" value="0"}
 				<td>{$voo.title}</td>
-				<td style="text-align:right;color:#16b777">{$voo.total}</td>
+				<td style="text-align:right;color:#ff5722">{$voo.total}</td>
 				<td style="text-align:right">{$voo.initial_amount}</td>
 				<td style="text-align:right;color:#a233c6">{$voo.injection}</td>
 				<td style="text-align:right;color:#1e9fff">{$voo.income}</td>
-				<td style="text-align:right;color:#ff5722">{$voo.payout}</td>
+				<td style="text-align:right;color:#16b777">{$voo.payout}</td>
 			</tr>
 				{else/}
 			<tr>
 				<td>{$voo.title}</td>
-				<td style="text-align:right;color:#16b777">{$voo.total}</td>
+				<td style="text-align:right;color:#ff5722">{$voo.total}</td>
 				<td style="text-align:right">{$voo.initial_amount}</td>
 				<td style="text-align:right;color:#a233c6">{$voo.injection}</td>
 				<td style="text-align:right;color:#1e9fff">{$voo.income}</td>
-				<td style="text-align:right;color:#ff5722">{$voo.payout}</td>
+				<td style="text-align:right;color:#16b777">{$voo.payout}</td>
 			</tr>
 			{/eq}
 			{/volist}
 			<tr>
 				<td style="text-align:right">合计：</td>
-				<td style="text-align:right;color:#16b777">{$vo.total}</td>
+				<td style="text-align:right;color:#ff5722">{$vo.total}</td>
 				<td style="text-align:right">{$vo.initial}</td>
 				<td style="text-align:right;color:#a233c6">{$vo.injection}</td>
 				<td style="text-align:right;color:#1e9fff">{$vo.income}</td>
-				<td style="text-align:right;color:#ff5722">{$vo.payout}</td>
+				<td style="text-align:right;color:#16b777">{$vo.payout}</td>
 			</tr>	
 			{/volist}	
 		</table>

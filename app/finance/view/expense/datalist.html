@@ -85,17 +85,20 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,height: 'full-155'
+			,totalRow: true
 			,cols: [[
-				{
+					{
 						field: 'id',
 						title: 'ID号',
 						align: 'center',
-						width: 80
-					}, {
+						width: 80,
+						totalRowText: '<div style="text-align:right">合计</div>'
+					},{
 						field: 'cost',
 						title: '报销金额(元)',
 						align: 'right',
-						width: 100,
+						width: 110,
+						totalRow: function (d) {return d.TOTAL_ROW.cost}
 					},{
 						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
 							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
@@ -159,7 +162,7 @@
 						title: '打款/确认时间',
 						align: 'center',
 						width: 150
-					}, {
+					},{
 						field: 'right',
 						fixed: 'right',
 						title: '操作',

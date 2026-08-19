@@ -109,6 +109,7 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,height: 'full-155'
+			,totalRow: true
 			,cols: [[
 				{
 						field: 'id',
@@ -130,12 +131,14 @@
 								html='<span class="layui-badge layui-bg-green">个人</span> '+d.invoice_title;
 							}
 							return html;
-						}
+						},
+						totalRowText: '<div style="text-align:right">合计</div>'
 					}, {
 						field: 'amount',
 						title: '发票金额(元)',
 						align: 'right',
 						width: 100,
+						totalRow: function (d) {return d.TOTAL_ROW.amount}
 					},{
 						field: 'invoice_type',
 						title: '开票类型',

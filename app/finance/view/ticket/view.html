@@ -58,6 +58,56 @@
 			</td>
 		</tr>
 		{/notempty}
+		{eq name="$detail.check_status" value="2"}
+		<tr>
+			<td class="layui-td-gray">付款状态</td>
+			<td>
+				{eq name="$detail.pay_status" value="0"}<span class="red">未付款</span>{/eq}
+				{eq name="$detail.pay_status" value="1"}<span class="blue">部分付款</span>{/eq}
+				{eq name="$detail.pay_status" value="2"}<span class="green">已付款</span>{/eq}
+			</td>
+			<td class="layui-td-gray-2">已付款金额</td>
+			<td class="green">{$detail.pay_amount}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">			
+				<div class="layui-input-inline">付款记录</div>
+			</td>
+			<td colspan="5">
+				<table class="layui-table layui-table-min" style="margin:0;">
+					<tr>
+						<th style="width:60px;">序号</th>
+						<th style="width:150px;">付款金额(元)</th>
+						<th style="width:200px;">付款日期</th>
+						<th style="width:100px;">付款状态</th>
+						<th style="width:100px;">付款记录人</th>
+						<th style="width:150px;">操作时间</th>
+						<th style="width:60px;">操作</th>
+					</tr>
+					{empty name="$detail.payment"}
+					<tr>
+						<td colspan="7" style="padding:12px; color:#999">暂无记录</td>
+					</tr>
+					{/empty}
+					{volist name="$detail.payment" id="vo"}
+					<tr>
+						<td>{$vo.id}</td>
+						<td><span class="green">{$vo.amount}</span></td>
+						<td>{$vo.pay_time | date='Y-m-d'}</td>
+						<td>
+							{eq name="$vo.status" value="1"}<span class="red">未确认</span>{/eq}
+							{eq name="$vo.status" value="2"}<span class="green">已确认</span>{/eq}
+						</td>
+						<td>{$vo.admin}</td>
+						<td>{$vo.create_time | date='Y-m-d H:i:s'}</td>
+						<td><span class="layui-btn layui-btn-normal layui-btn-xs side-a" data-href="/finance/payment/view?id={$vo.id}">详情</span></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+		{/eq}
+		
 	</table>
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
 </div>
@@ -67,12 +117,22 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+const pay_status = {$detail.pay_status};
 const ticket_id = {$detail.id};
 const moduleInit = ['tool','oaCheck','uploadPlus'];
 function gouguInit() {
 	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
 	oaCheck.init({
-		check_name:'ticket'
+		check_name:'ticket',
+		verify_reversed :function(){
+			if(pay_status>0){
+				layer.msg('该发票已有付款记录，不支持反确认');
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
 	});
 }
 </script>

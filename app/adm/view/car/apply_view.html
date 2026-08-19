@@ -34,11 +34,21 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
+	const status = {$detail.status};
 	const moduleInit = ['tool','oaCheck'];
 	function gouguInit() {
 		var form = layui.form,tool=layui.tool,oaCheck=layui.oaCheck;	
 		oaCheck.init({
-			check_name:'car_use'
+			check_name:'car_use',
+			verify_reversed :function(){
+				if(status>0){
+					layer.msg('该申请已用车，不支持反确认');
+					return false;
+				}
+				else{
+					return true;
+				}
+			}
 		});
 	}
 </script>

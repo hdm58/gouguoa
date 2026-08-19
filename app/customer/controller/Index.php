@@ -178,7 +178,12 @@ class Index extends BaseController
     public function to_trash()
     {
 		if (request()->isAjax()) {
-			$params = get_params();	
+			$params = get_params();
+			//是否是客户管理员
+			$auth = isAuth($this->uid,'customer_admin','conf_1');
+			if($auth==0){
+				return to_assign(1, "只有客户管理员才有权限操作");
+			}
 			$id = get_params("id");			
 			$idArray = explode(',', strval($id));
 			$list = [];
@@ -223,4 +228,34 @@ class Index extends BaseController
             return to_assign(1, "错误的请求");
         }
     }
+	
+	//分配转移客户
+	public function to_divide()
+    {
+		if (request()->isAjax()) {
+			$params = get_params();
+			//是否是客户管理员
+			$auth = isAuth($this->uid,'customer_admin','conf_1');
+			if($auth==0){
+				return to_assign(1, "只有客户管理员才有权限操作");
+			}
+			$id = $params["id"];
+			$idArray = explode(',', strval($id));
+			foreach ($idArray as $key => $val) {
+				$data = [
+					'id' => $val,
+					'belong_uid' => $params['uid'],
+					'belong_did' => $params['did'],
+					'belong_time' => time(),
+					'distribute_time' => time()
+				];
+				if (Db::name('Customer')->update($data) !== false) {
+					add_log('allot', $data['id'],[],'客户');
+				}
+			}
+			return to_assign(0, '操作成功');
+		} else {
+            return to_assign(1, "错误的请求");
+        }
+	}
 }

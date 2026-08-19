@@ -12,7 +12,7 @@
             exclude: ".noExl",
             name: "Table2Excel",
             filename: "table2excel",
-            fileext: ".xls",
+            fileext: ".xlsx",
             exclude_img: true,
             exclude_links: true,
             exclude_inputs: true,
@@ -63,7 +63,11 @@
                     //读取原始<table>的<th>表头行(表头必须是<th>！表头如果是<td>的话则会当做普通数据行处理...)
                     $(p).find("th").not(e.settings.exclude).each(function (i, q) {
                         //<th>的样式:
+						let style = $(q).attr('style');
                         var thStyles = "background-color: "+e.settings.thBackgroundColor+";";
+						if(style){
+							thStyles+=style;
+						}
                         var rc = {
                             rows: $(this).attr("rowspan"),
                             cols: $(this).attr("colspan"),
@@ -96,7 +100,10 @@
 							additionalStyles += (compStyle && compStyle.backgroundColor ? "background-color: " + compStyle.backgroundColor + ";" : "");
 							additionalStyles += (compStyle && compStyle.color ? "color: " + compStyle.color + ";" : "");
 						}
-						
+						let style = $(q).attr('style');
+						if(style){
+							additionalStyles+=style;
+						}
                         //<td>的样式
                         var tdStyles = "background-color:#8DB4E2;";//合计行的样式
                         var rc = {
@@ -210,7 +217,7 @@
                 }
  
             } else {
-                var blob = new Blob([e.format(fullTemplate, e.ctx)], { type: "application/vnd.ms-excel" });
+                var blob = new Blob([e.format(fullTemplate, e.ctx)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
                 window.URL = window.URL || window.webkitURL;
                 link = window.URL.createObjectURL(blob);
                 a = document.createElement("a");

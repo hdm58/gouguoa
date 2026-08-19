@@ -86,6 +86,7 @@
 			,limit: 20
 			,cellMinWidth: 80
 			,height: 'full-155'
+			,totalRow: true
 			,cols: [[
 				{
 						field: 'id',
@@ -96,12 +97,14 @@
 						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
 							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
 							return html;
-						}
+						},
+						totalRowText: '<div style="text-align:right">合计</div>'
 					}, {
 						field: 'cost',
 						title: '借支金额(元)',
 						align: 'right',
 						width: 100,
+						totalRow: function (d) {return d.TOTAL_ROW.cost}
 					},
 					{
 						field: 'balance_cost',

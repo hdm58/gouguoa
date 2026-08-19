@@ -91,6 +91,9 @@ class TicketPayment extends Model
         try {
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
+			if($param['ticket_id']>0){
+				ticket_payment_status($param['ticket_id']);
+			}
 			add_log('add', $insertId, $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -107,6 +110,9 @@ class TicketPayment extends Model
         try {
             $param['update_time'] = time();
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			if($param['ticket_id']>0){
+				ticket_payment_status($param['ticket_id']);
+			}
 			add_log('edit', $param['id'], $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -155,6 +161,9 @@ class TicketPayment extends Model
 			try {
 				$detail = self::find($id);
 				self::where('id', $id)->update(['delete_time'=>time()]);
+				if($detail['ticket_id']>0){
+					ticket_payment_status($detail['ticket_id']);
+				}
 				add_log('delete', $id);
 			} catch(\Exception $e) {
 				return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -163,7 +172,11 @@ class TicketPayment extends Model
 		else{
 			//物理删除
 			try {
+				$detail = self::find($id);
 				self::destroy($id);
+				if($detail['ticket_id']>0){
+					ticket_payment_status($detail['ticket_id']);
+				}
 				add_log('delete', $id);
 			} catch(\Exception $e) {
 				return to_assign(1, '操作失败，原因：'.$e->getMessage());

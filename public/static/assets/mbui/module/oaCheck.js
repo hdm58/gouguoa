@@ -20,6 +20,10 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 		},
 		"check_reversed":function(){
 			//反确认的执行函数
+		},
+		"verify_reversed":function(){
+			//反确认执行前验证函数
+			return true;
 		}
 	};
 	const obj = {
@@ -104,7 +108,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 						for(let l=0;l<record.length;l++){
 							let check_content='';
 							if(record[l].content!=''){
-								check_content='审批意见：<span class="text-green">'+record[l].content+'</span>。';
+								check_content='审批意见：<span class="text-green">'+tool.htmlencode(record[l].content)+'</span>。';
 							}
 							tem+='<div class="mbui-steps-item delete-'+record[l].delete_time+'">'+record[l].check_time_str+'<small><span class="text-black">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。'+check_content+'</small>';
 						
@@ -617,7 +621,10 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 						layer.close(index);
 					});
 				}
-				else if(check_status ==4){			
+				else if(check_status ==4){
+					if(me.sets.verify_reversed()==false){
+						return false;
+					}
 					layer.prompt('请输入反确认理由', function(val, index){
 						if(val==''){
 							layer.msg('请输入反确认理由');

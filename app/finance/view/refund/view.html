@@ -64,13 +64,20 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-	var moduleInit = ['tool','oaPicker','oaCheck'];
+	const status = {$detail.status};
+	const moduleInit = ['tool','oaPicker','oaCheck'];
 	function gouguInit() {
 		var form = layui.form, tool = layui.tool, oaCheck = layui.oaCheck;
 		oaCheck.init({
 			check_name:'income_refund',
-			check_reversed :function(){
-			
+			verify_reversed :function(){
+				if(status==2){
+					layer.msg('该退款已确认退款，不支持反确认');
+					return false;
+				}
+				else{
+					return true;
+				}
 			}
 		});
 	}

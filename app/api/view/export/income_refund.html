@@ -13,46 +13,36 @@
 		</style>
 	</head>
 	<body>
-	<h2>进项发票审批单</h2>
+	<h2>退款审批单</h2>
 	<table class="pdf-table">
 		<tr>
-			<td class="pdf-td-gray">发票金额</td>
+			<td class="pdf-td-gray">退款金额</td>
 			<td>{$detail.amount} 元</td>
-			<td class="pdf-td-gray">发票类型</td>
-			<td>
-				{eq name="$detail.invoice_type" value="1"}增值税专用发票{/eq}
-				{eq name="$detail.invoice_type" value="2"}普通发票{/eq}
-				{eq name="$detail.invoice_type" value="3"}专业发票{/eq}
-			</td>
+			<td class="pdf-td-gray">退款时间</td>
+			<td>{$detail.back_time|default=''}</td>
 		</tr>
 		<tr>
-		<td class="pdf-td-gray">发票抬头</td>
-			<td>{$detail.subject}</td>
-			<td class="pdf-td-gray">开票主体</td>
-			<td>{$detail.invoice_title}</td>
+			<td class="pdf-td-gray">退款类型</td>
+			<td>{$detail.fundscate|default=''}</td>
+			<td class="pdf-td-gray">退款方式</td>
+			<td>{$detail.paytype|default=''}</td>
 		</tr>
 		<tr>
-			<td class="pdf-td-gray">发票号码</td>
-			<td>{$detail.code}</td>
-			<td class="pdf-td-gray">发票日期</td>
-			<td>{$detail.open_time}</td>
+			<td class="pdf-td-gray">退款主体</td>
+			<td>{$detail.subject|default=''}</td>
+			<td class="pdf-td-gray">退款账户</td>
+			<td>{$detail.account|default=''}</td>
 		</tr>
-		{notempty name="$detail.purchase_id"}
 		<tr>
-			<td class="pdf-td-gray">关联合同</td>
-			<td colspan="3">{$detail.purchase_name|default='-'}</td>
+			<td class="pdf-td-gray">关联收款</td>
+			<td>{$detail.income|default='-'}</td>
+			<td class="pdf-td-gray">退款客户</td>
+			<td>{$detail.customer|default='-'}</td>
 		</tr>
-		{/notempty}
-		{notempty name="$detail.project_id"}
+		{notempty name="$detail.remarks"}
 		<tr>
-			<td class="pdf-td-gray">关联项目</td>
-			<td colspan="3">{$detail.project_name|default='-'}</td>
-		</tr>
-		{/notempty}
-		{notempty name="$detail.remark"}
-		<tr>
-			<td class="pdf-td-gray">备注信息</td>
-			<td colspan="3">{$detail.remark|default='-'}</td>
+			<td class="pdf-td-gray">退款理由</td>
+			<td colspan="3">{$detail.remarks|default='-'}</td>
 		</tr>
 		{/notempty}
 		{notempty name="$detail.file_array"}

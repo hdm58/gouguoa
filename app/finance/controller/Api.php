@@ -160,7 +160,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有开票权限，请联系管理员或者HR");
 			}
@@ -187,7 +187,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有作废发票权限，请联系管理员或者HR");
 			}
@@ -214,7 +214,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有反作废发票权限，请联系管理员或者HR");
 			}
@@ -235,7 +235,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有开票权限，请联系管理员或者HR");
 			}
@@ -255,7 +255,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有作废发票权限，请联系管理员或者HR");
 			}
@@ -282,7 +282,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有反作废发票权限，请联系管理员或者HR");
 			}
@@ -303,7 +303,7 @@ class Api extends BaseController
     {
         $param = get_params();
         if (request()->isAjax()) {
-			$auth = isAuthInvoice($this->uid);
+			$auth = isAuth($this->uid,'finance_admin','conf_3');
 			if($auth == 0){
 				return to_assign(1, "你没有发票权限，请联系管理员或者HR");
 			}

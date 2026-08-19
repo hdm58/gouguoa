@@ -2,16 +2,13 @@
 <!-- 主体 -->
 {block name="body"}
 <form class="layui-form p-page">
-	<h3 class="pb-3">奖罚信息</h3>
+	<h3 class="pb-2">奖罚信息</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">员工姓名</td>
 			<td>{$detail.user_name|default=''}</td>
-			<td class="layui-td-gray">关怀类型</td>
-			<td>
-				{eq name="$detail.types" value="1"}<span class="green">奖励</span>{/eq}
-				{eq name="$detail.types" value="2"}<span class="red">惩罚</span>{/eq}
-			</td>
+			<td class="layui-td-gray">关怀项目</td>
+			<td>{$detail.cate}</td>
 			<td class="layui-td-gray">当前状态</td>
 			<td>
 				{eq name="$detail.status" value="1"}<span class="green">『待执行』</span>{/eq}
@@ -19,19 +16,19 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">关怀项目</td>
-			<td>{$detail.cate}</td>
-			<td class="layui-td-gray-2">关怀金额(元)</td>
-			<td>{$detail.cost}</td>
 			<td class="layui-td-gray">关怀日期</td>
 			<td>{$detail.care_time}</td>
+			<td class="layui-td-gray-2">关怀金额(元)</td>
+			<td>{$detail.cost}</td>
+			<td class="layui-td-gray">关怀假日</td>
+			<td>{$detail.vacation}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">关怀物品</td>
 			<td colspan="5">{$detail.thing}</td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">奖罚描述</td>
+			<td class="layui-td-gray">关怀描述</td>
 			<td colspan="5">{$detail.remark|default=''}</td>
 		</tr>
 	</table>

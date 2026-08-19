@@ -91,6 +91,9 @@ class InvoiceIncome extends Model
         try {
 			$param['create_time'] = time();
 			$insertId = self::strict(false)->field(true)->insertGetId($param);
+			if($param['invoice_id']>0){
+				invoice_income_status($param['invoice_id']);
+			}
 			add_log('add', $insertId, $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -107,6 +110,9 @@ class InvoiceIncome extends Model
         try {
             $param['update_time'] = time();
             self::where('id', $param['id'])->strict(false)->field(true)->update($param);
+			if($param['invoice_id']>0){
+				invoice_income_status($param['invoice_id']);
+			}
 			add_log('edit', $param['id'], $param);
         } catch(\Exception $e) {
 			return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -155,16 +161,9 @@ class InvoiceIncome extends Model
 			try {
 				$detail = self::find($id);
 				self::where('id', $id)->update(['delete_time'=>time()]);
-				$has_back = Db::name('IncomeRefund')->where([['income_id','=',$detail['income_id']],['delete_time','=',0]])->sum('amount');
-				$income_amount = Db::name('Income')->where([['id','=',$detail['income_id']]])->value('amount');
-				$back_status = 2;
-				if($has_back*1000 == 0){
-					$back_status = 0;
+				if($detail['invoice_id']>0){
+					invoice_income_status($detail['invoice_id']);
 				}
-				if($has_back*1000>0 && $has_back*1000 < $income_amount*1000){
-					$back_status = 1;
-				}
-				Db::name('Income')->where('id',$detail['income_id'])->update(['back_status'=>$back_status,'back_amount'=>$has_back]);
 				add_log('delete', $id);
 			} catch(\Exception $e) {
 				return to_assign(1, '操作失败，原因：'.$e->getMessage());
@@ -173,7 +172,11 @@ class InvoiceIncome extends Model
 		else{
 			//物理删除
 			try {
+				$detail = self::find($id);
 				self::destroy($id);
+				if($detail['invoice_id']>0){
+					invoice_income_status($detail['invoice_id']);
+				}
 				add_log('delete', $id);
 			} catch(\Exception $e) {
 				return to_assign(1, '操作失败，原因：'.$e->getMessage());

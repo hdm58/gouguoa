@@ -49,6 +49,7 @@ abstract class BaseController
     protected $uid;
     protected $did;
     protected $pid;
+    protected $poid;
     /**
      * 构造方法
      * @access public
@@ -60,9 +61,10 @@ abstract class BaseController
         $this->module = strtolower(app('http')->getName());
         $this->controller = strtolower(Request::controller());
         $this->action = strtolower(Request::action());
-        $this->uid = 0;
-        $this->did = 0;
-        $this->pid = 0;
+        $this->uid = 0;//员工id
+        $this->did = 0;//员工部门id
+        $this->pid = 0;//员工上级主管id
+        $this->poid = 0;//员工主部门id
         // 控制器初始化
         $this->initialize();
     }
@@ -94,6 +96,7 @@ abstract class BaseController
 				$login_admin = get_admin($this->uid);
 				$this->did = $login_admin['did'];
 				$this->pid = $login_admin['pid'];			
+				$this->poid = $login_admin['position_id'];			
 				$is_lock = $login_admin['is_lock'];
 				$last_login_time = Db::name('Admin')->where(['id' => $this->uid])->value('last_login_time');
 				$timeDiff = time() - $last_login_time;

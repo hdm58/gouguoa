@@ -6,7 +6,7 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">账户名称<font>*</font></td>
-			<td><input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入资金账户名称" lay-reqText="请输入资金账户名称"class="layui-input" value="{$detail.title|default=''}"></td>
+			<td><input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入资金账户名称" lay-reqText="请输入资金账户名称" class="layui-input" value="{$detail.title|default=''}"></td>
 			<td class="layui-td-gray-2">所属企业主体<font>*</font></td>
 			<td>
 				{empty name="$detail"}
@@ -29,8 +29,8 @@
 		<tr>
 			<td class="layui-td-gray">具体账号</td>
 			<td><input type="text" name="account" placeholder="请输入具体账号" autocomplete="off" class="layui-input" value="{$detail.account|default=''}"></td>
-			<td class="layui-td-gray">初始资金</td>
-			<td><input type="text" name="initial_amount" placeholder="请输入初始资金，数字" autocomplete="off" class="layui-input" value="{$detail.initial_amount|default=''}"></td>
+			<td class="layui-td-gray">初始资金<font>*</font></td>
+			<td><input type="text" name="initial_amount" placeholder="请输入初始资金，数字" autocomplete="off" class="layui-input" lay-verify="required|number" lay-reqText="请输入初始资金" value="{$detail.initial_amount|default=''}"></td>
 		</tr>
 	</table>
 	<div class="pt-4">

@@ -35,14 +35,17 @@
 			</td>
 			<td class="layui-td-gray-3">开票主体(供应商)<font>*</font></td>
 			<td>
-				<input type="text" name="supplier_name" class="layui-input picker-oa" data-types="supplier" value="{$detail.supplier_name}" placeholder="请选择" readonly lay-verify="required" lay-reqText="开票主体(供应商)">
-				<input type="hidden" name="supplier_id" value="{$detail.supplier_id}">
+				<div class="layui-input-group" style="width:100%">
+					<input type="text" name="invoice_title" value="{$detail.invoice_title}" placeholder="请输入开票主体，若是个人输入姓名" class="layui-input" lay-verify="required" lay-reqText="请完善开票主体">
+					<input type="hidden" name="supplier_id" value="{$detail.supplier_id}">
+					<div class="layui-input-split layui-input-suffix invoice-qiye supplier-picker" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i></div>
+				</div>
 			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">关联采购合同</td>
 			<td>
-				<input type="text" class="layui-input picker-oa" data-types="purchase" data-field="name" name="purchase_name" placeholder="请选择" readonly value="{$detail.purchase_name|default=''}">		
+				<input type="text" class="layui-input picker-oa" data-types="purchase" data-field="name" name="purchase_name" placeholder="请选择" readonly value="{$detail.purchase_name|default=''}">
 				<input type="hidden" class="layui-input" name="purchase_id" value="{$detail.purchase_id}">		
 			</td>
 			<td class="layui-td-gray">关联项目</td>
@@ -108,7 +111,18 @@
 			check_name:'ticket',
 			check_btn:0
 		});
-		
+		$('.supplier-picker').on('click',function(){
+			let that = $(this),ids = [],titles=[];
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				$('[name="invoice_title"]').val(titles.join(','));
+				$('[name="supplier_id"]').val(ids.join(','));
+			}
+			oaPicker.picker('supplier',1,callback,{});
+		});
 		$('.customer-picker').on('click',function(){
 			let that = $(this),ids = [],titles=[];
 			let callback = function(data){

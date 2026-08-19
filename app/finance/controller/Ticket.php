@@ -95,8 +95,14 @@ class Ticket extends BaseController
 			if (!empty($param['keywords'])) {
                 $where[] = ['invoice_title|code', 'like', '%' . $param['keywords'] . '%'];
             }
-            $list = $this->model->datalist($param,$where,$whereOr);
-            return table_assign(0, '', $list);
+			$list = $this->model->datalist($param,$where,$whereOr);			
+			$amount = $this->model::where($where)->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');					
+			$totalRow['amount'] = sprintf("%.2f",$amount);
+            return table_assign(0, '', $list,$totalRow);
         }
         else{
 			View::assign('auth',$auth);
@@ -167,6 +173,12 @@ class Ticket extends BaseController
     {
 		$detail = $this->model->getById($id);
 		if (!empty($detail)) {
+			$detail['payment'] = Db::name('TicketPayment')->field('t.*,a.name as admin')
+					->alias('t')
+					->join('Admin a', 'a.id = t.admin_id', 'LEFT')
+					->where([['t.ticket_id','=',$id],['t.delete_time','=',0]])
+					->order('t.pay_time desc')
+					->select();
 			View::assign('detail', $detail);
 			View::assign('create_user', get_admin($detail['admin_id']));
 			if(is_mobile()){
@@ -202,6 +214,7 @@ class Ticket extends BaseController
 			$param = get_params();
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$where = [];
+			$whereOr = [];
 			$where[]=['delete_time','=',0];
 			$where[]=['check_status','=',2];
 			$where[]=['invoice_type','>',0];
@@ -223,9 +236,12 @@ class Ticket extends BaseController
             if (isset($param['open_status']) && $param['open_status'] != "") {
                 $where[] = ['open_status', '=', $param['open_status']];
             }
-			$list = $this->model->datalist($param,$where);
-			
-			$amount = $this->model::where($where)->sum('amount');					
+			$list = $this->model->datalist($param,$where,$whereOr);			
+			$amount = $this->model::where($where)->where(function ($query) use($whereOr) {
+				if (!empty($whereOr)){
+					$query->whereOr($whereOr);
+				}
+			})->sum('amount');					
 			$totalRow['amount'] = sprintf("%.2f",$amount);
             return table_assign(0, '', $list,$totalRow);
         } else {

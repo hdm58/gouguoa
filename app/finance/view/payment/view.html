@@ -76,12 +76,21 @@
 <!-- 脚本 -->
 {block name="script"}
 <script>
-const invoice_id = {$detail.id};
+const status = {$detail.status};
 const moduleInit = ['tool','oaCheck','uploadPlus'];
 function gouguInit() {
 	var form = layui.form,tool=layui.tool, oaCheck=layui.oaCheck,uploadPlus = layui.uploadPlus;	
 	oaCheck.init({
-		check_name:'payment'
+		check_name:'payment',
+		verify_reversed :function(){
+			if(status==2){
+				layer.msg('该付款已确认，不支持反确认');
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
 	});
 }
 </script>

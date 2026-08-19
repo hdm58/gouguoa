@@ -1,6 +1,7 @@
 layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 	const layer = layui.layer;
 	const form = layui.form;
+	const util = layui.util;
 	const tool = layui.tool;
 	const uploadPlus = layui.uploadPlus;
 	const opts={
@@ -20,6 +21,10 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 		},
 		"check_reversed":function(){
 			//反确认的执行函数
+		},
+		"verify_reversed":function(){
+			//反确认执行前验证函数
+			return true;
 		}
 	};
 	const obj = {
@@ -101,7 +106,7 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 				for(let l=0;l<record.length;l++){
 					let check_content='';
 					if(record[l].content!=''){
-						check_content='审批意见：<span class="green">'+record[l].content+'</span>。';
+						check_content='审批意见：<span class="green">'+util.escape(record[l].content)+'</span>。';
 					}
 					tem+='<li class="layui-timeline-item delete-'+record[l].delete_time+'">\
 								<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
@@ -617,7 +622,6 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 					});   
 				}
 				else if(check_status ==3){
-					$(parent.$('.express-close')).addClass('parent-colse');
 					layer.prompt({
 						formType: 2,
 						title: '请输入撤回理由',
@@ -647,12 +651,13 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 								}
 							}
 						})
-						$(parent.$('.express-close')).removeClass('parent-colse');
 						layer.close(index);
 					});
 				}
 				else if(check_status ==4){
-					$(parent.$('.express-close')).addClass('parent-colse');
+					if(me.sets.verify_reversed()==false){
+						return false;
+					}
 					layer.prompt({
 						formType: 2,
 						title: '请输入反确认理由',
@@ -682,7 +687,6 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 								}
 							}
 						})
-						$(parent.$('.express-close')).removeClass('parent-colse');
 						layer.close(index);
 					});
 				}

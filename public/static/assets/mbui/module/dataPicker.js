@@ -425,17 +425,20 @@ mbui.define(['tool','layer'], function (exports) {
 		});
 	}
 	
-	//选择员工弹窗		
+	//选择窗口	
 	$('body').on('click','.picker-data',function () {
 		let that = $(this);
 		let types = that.data('types');
 		let type = that.data('type');
 		let where = that.data('where');
+		let field = $(this).data('field');
 		if (typeof(type) == "undefined" || type == '') {
 			type = 1;
 		}
 		type = type == 2 ? 'checkbox' : 'radio';
-
+		if (typeof(field) == "undefined" || field === '') {
+			field = 'title';
+		}
 		if (typeof(types) == "undefined" || types == '') {
 			layer.msg('请设置【picker】的类型');
 			return false;
@@ -451,14 +454,15 @@ mbui.define(['tool','layer'], function (exports) {
 		picker.init({
 			type:type,
 			where: map,
+			field:field,
 			callback:function(selectData){
 				let ids=[],titles=[];
 				for ( var i = 0; i <selectData.length; i++){
 					ids.push(selectData[i].id);
-					if(!selectData[i].title){
-						titles.push(selectData[i].name);
-					}else{
+					if(!selectData[i][field]){
 						titles.push(selectData[i].title);
+					}else{
+						titles.push(selectData[i][field]);
 					}
 				}
 				that.val(titles.join(','));

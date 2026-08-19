@@ -369,7 +369,7 @@ class Contract extends BaseController
                     // 验证失败 输出错误信息
                     return to_assign(1, $e->getError());
                 }
-				if($param['chance_id']>0){
+				if(isset($param['chance_id']) && $param['chance_id']>0){
 					$has_chance = Db::name('Contract')->where(['chance_id'=>$param['chance_id'],'delete_time'=>0])->count();
 					if($has_chance>0){
 						return to_assign(1, '所选的机会线索已关联有销售合同，不支持关联多合同');
@@ -481,7 +481,7 @@ class Contract extends BaseController
 					->order('i.enter_time desc')
 					->select();
 					
-				$has_income = Db::name('InvoiceIncome')->where([['contract_id','=',$id],['status','=',1]])->sum('amount');
+				$has_income = Db::name('InvoiceIncome')->where([['contract_id','=',$id],['status','=',2]])->sum('amount');
 				$detail['has_income'] = sprintf("%.2f",$has_income);
 				$detail['no_income'] = sprintf("%.2f",($detail['cost']*100 - $has_income*100)/100);
 			}
