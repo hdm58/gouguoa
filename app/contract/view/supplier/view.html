@@ -6,13 +6,13 @@
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray-2">供应商名称</td>
-			<td>{$detail.title}</td>
+			<td colspan="3">{$detail.title}</td>
 			<td class="layui-td-gray-2">供应商电话</td>
 			<td>{$detail.phone}</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray-2">供应商地址</td>
-			<td>{$detail.address}</td>
+			<td colspan="3">{$detail.address}</td>
 			<td class="layui-td-gray-2">供应商邮箱</td>
 			<td>{$detail.email}</td>
 		</tr>
@@ -25,7 +25,7 @@
 			<td class="layui-td-gray-2">
 				<div class="layui-input-inline">相关附件</div>
 			</td>
-			<td colspan="3">
+			<td colspan="5">
 				<div class="layui-row" id="uploadBox">
 					{volist name="$detail.file_array" id="vo"}
 						<div class="layui-col-md4" id="uploadFile{$vo.id}">{:file_card($vo,'view')}</div>
@@ -34,6 +34,23 @@
 			</td>
 		</tr>
 		{/notempty}
+		<tr>
+			<td colspan="6"><strong>开票信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td>{$detail.tax_num|default=""}</td>
+			<td class="layui-td-gray">开户行</td>
+			<td>{$detail.tax_bank|default=""}</td>
+			<td class="layui-td-gray">银行账号</td>
+			<td>{$detail.tax_banksn|default=""}</td>
+	   </tr>
+	   <tr>
+			<td class="layui-td-gray">电话号码</td>
+			<td>{$detail.tax_mobile|default=""}</td>
+			<td class="layui-td-gray">详细地址</td>
+			<td colspan="3">{$detail.tax_address|default=""}</td>
+	   </tr>
 		<tr>
 			<td colspan="6"><strong>联系人信息</strong><span class="layui-btn layui-btn-xs add-contact ml-3">+ 新增联系人</span></td>
 		</tr>

@@ -1,0 +1,58 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">绩效规则</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">规则名称<font>*</font></td>
+			<td><input type="text" name="title" lay-verify="required" placeholder="请输入绩效规则名称" lay-reqText="请输入绩效规则名称"class="layui-input" value="{$detail.title|default=''}"></td>
+			<td class="layui-td-gray">绩效分数<font>*</font></td>
+			<td style="width:268px;">
+				{empty name="$detail"}
+					<input type="text" name="score" placeholder="请输入绩效分数，数字" lay-verify="required|number" class="layui-input" value="">
+				{else/}
+					{eq name="$detail.count" value="0"}
+						<input type="text" name="score" placeholder="请输入绩效分数，数字" lay-verify="required|number" class="layui-input" value="{$detail.score}">
+						{else/}
+						{$detail.score} <span class="red" style="font-size:12px">(该规则已关联使用，取消关联才能编辑分数)</span>
+					{/eq}
+				{/empty}
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">规则描述</td>
+			<td colspan="3"><textarea name="content" placeholder="请输入绩效规则详细描述" class="layui-textarea">{$detail.content|default=''}</textarea></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/performance/rules/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

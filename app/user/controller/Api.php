@@ -79,4 +79,209 @@ class Api extends BaseController
             return to_assign(1, "交接失败");
         }
     }
+	
+	//人事分析报表
+    public function statistics()
+    {
+        $param = get_params();
+		$types = isset($param['types']) ? $param['types'] : 0;
+		//部门
+		if($types==0){
+			$departments = Db::name('Department')->where([['status','=',1]])->select()->toArray();
+			$departments_x = [];
+			$departments_y = [];
+			foreach ($departments as $key => &$val) {
+				$departments_x[] = $val['title'];
+				$departments_y[] = Db::name('Admin')->where([['status','=',1],['id','>',1],['did','=',$val['id']]])->count();
+			}
+			// 构建部门人员
+			$result = [
+					'title' => [
+						'text' => '各部门人员'
+					],
+					'xaxis' => $departments_x,
+					'yaxis' => [
+						[
+							'type' => 'value',
+							'axisLabel' => [
+								'formatter' => '{value} 人'
+							]
+						]
+					],
+					'series' => [
+						[
+							'name' => '',
+							'type' => 'bar',
+							'barWidth'=>'50%',
+							'data' => $departments_y
+						]
+					]
+				];
+			return to_assign(0, '', $result);
+		}
+		//性别
+		if($types==1){
+			$sex = [];
+			$sex[]=[
+				'name'=>'未知',
+				'value'=> Db::name('Admin')->where('sex', 0)->where([['status','=',1],['id','>',1]])->count()
+			];
+			$sex[]=[
+				'name'=>'男',
+				'value'=> Db::name('Admin')->where('sex', 1)->where([['status','=',1],['id','>',1]])->count()
+			];
+			$sex[]=[
+				'name'=>'女',
+				'value'=> Db::name('Admin')->where('sex', 2)->where([['status','=',1],['id','>',1]])->count()
+			];
+			
+			$result = [
+				'title' => [
+					'text' => '员工性别'
+				],
+				'series' => [
+					'data' => $sex
+				]
+			];
+			return to_assign(0, '', $result);
+		}
+		//年龄
+		if($types==2){
+			$a=0;
+			$b=0;
+			$c=0;
+			$d=0;
+			$e=0;
+			$users = Db::name('Admin')->where([['status','=',1],['birthday','<>',0],['id','>',1]])->select()->toArray();
+			foreach ($users as $key =>$val) {
+				$age = calculateAge($val['birthday']);
+				if($age>=16 && $age<=20){
+					$a=$a+1;
+				}
+				if($age>=21 && $age<=30){
+					$b=$b+1;
+				}
+				if($age>=31 && $age<=40){
+					$c=$c+1;
+				}
+				if($age>=41 && $age<=50){
+					$d=$d+1;
+				}
+				if($age>50){
+					$e=$e+1;
+				}
+			}
+			
+			$age = [
+				[
+					'name'=>'16-20岁',
+					'value'=> $a
+				],
+				[
+					'name'=>'21-30岁',
+					'value'=> $b
+				],
+				[
+					'name'=>'31-40岁',
+					'value'=> $c
+				],[
+					'name'=>'41-50岁',
+					'value'=> $d
+				],[
+					'name'=>'50岁以上',
+					'value'=> $e
+				]
+			];
+			$result = [
+				'title' => [
+					'text' => '员工年龄'
+				],
+				'series' => [
+					'data' => $age
+				]
+			];
+			return to_assign(0, '', $result);
+		}
+		if($types==3){
+			$staff_a = Db::name('Admin')->where([['status','=',1],['is_staff','=',1],['id','>',1]])->count();
+			$staff_b = Db::name('Admin')->where([['status','=',1],['is_staff','=',2],['id','>',1]])->count();
+			$staff_c = Db::name('Admin')->where([['status','=',1],['is_staff','=',3],['id','>',1]])->count();
+			$staff = [
+				[
+					'name'=>'企业员工',
+					'value'=> $staff_a
+				],
+				[
+					'name'=>'劳务派遣',
+					'value'=> $staff_b
+				],
+				[
+					'name'=>'兼职员工',
+					'value'=> $staff_c
+				]
+			];
+			$result = [
+				'title' => [
+					'text' => '员工类型'
+				],
+				'series' => [
+					'data' => $staff
+				]
+			];
+			return to_assign(0, '', $result);
+		}
+    }
+	
+	//入职离职分析报表
+    public function in_out()
+    {
+        $param = get_params();
+		$year = date('Y');
+		if (!empty($param['year_time'])) {
+			$year = $param['year_time'];
+		}
+		//入职离职
+		$months = [];
+		$data_in =[];
+		$data_out =[];
+		for($m=1;$m<13;$m++){
+			$month=$year.'-'.$m;
+			$data=[];
+			if($m<9){
+				$month=$year.'-0'.$m;
+			}
+			$months[] = $month;
+			$data_in[] = Db::name('Admin')->whereMonth('entry_time', $month)->where([['status','=',1],['id','>',1]])->count();
+			$data_out[] = Db::name('PersonalQuit')->whereMonth('quit_time', $month)->where([['delete_time','=',0],['check_status','=',2]])->count();		
+		}
+		$result = [
+			'title' => [
+				'text' => $year.'年入职/离职数据分析'
+			],
+			'xaxis' => $months,
+			'yaxis' => [
+				[
+					'type' => 'value',
+					'axisLabel' => [
+						'formatter' => '{value}'
+					]
+				]
+			],
+			'series' => [
+				[
+					'name' => '入职',
+					'type' => 'bar',
+					'barWidth'=>'30%',
+					'data' => $data_in
+				],
+				[
+					'name' => '离职',
+					'type' => 'bar',
+					'barWidth'=>'30%',
+					'data' => $data_out
+				]
+			]
+		];
+		return to_assign(0, '', $result);
+	}
 }

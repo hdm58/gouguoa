@@ -1,0 +1,136 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+  <style>
+	.tree-left{width:200px; float:left; height:calc(100vh - 79px); overflow-y: auto; border:1px solid #eeeeee; border-right:0; background-color:#fbfbfb; padding:12px 12px 12px 5px;}
+	.tree-left::-webkit-scrollbar {width: 0;}
+	.tree-left h3{font-size:16px; height:30px; padding-left:10px; font-weight:800}
+  </style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="tree-left">
+		<h3>企业组织架构</h3>
+		<div id="depament"></div>
+	</div>
+	<div class="body-table" style="margin-left:200px; overflow:hidden;">
+		<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+			<div class="layui-input-inline" style="width:300px">
+				<input type="text" name="keywords" placeholder="关键字,员工姓名" class="layui-input" autocomplete="off" />
+			</div>
+			<div class="layui-input-inline" style="width:150px">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+			</div>
+		</form>
+		<table class="layui-hide" id="table_performance_users" lay-filter="table_performance_users"></table>
+	</div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/performance/users/add">+ 添加绩效员工</button>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus,tool = layui.tool,tree = layui.tree,form = layui.form;
+		
+		$.ajax({
+			url: "/api/index/get_department_tree",
+			type:'get',
+			success:function(res){					
+				//仅节点左侧图标控制收缩
+				tree.render({
+					elem: '#depament',
+					data: res.trees,
+					onlyIconControl: true,  //是否仅允许节点左侧图标控制展开收缩
+					click: function(obj){
+						//layer.msg(JSON.stringify(obj.data));
+						$('#depament').find('.layui-tree-main').removeClass('on');
+						$(obj.elem).find('.layui-tree-main').eq(0).addClass('on');
+						layui.pageTable.reload({
+						   where:{did: obj.data.id},
+						   page:{curr:1}
+						});
+						$('[name="keywords"]').val('');
+					}
+				});	
+			}
+		});
+		
+		
+		layui.pageTable = table.render({
+			elem: "#table_performance_users"
+			,title: '绩效员工列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/performance/users/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-114'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'u_name',title: '员工姓名',width:100, align:'center'}
+				,{field:'department',title: '所属部门',width:150}
+				,{field:'position',title: '职称',width:100, align:'center'}
+				,{field:'template_name',title: '绩效模板'}
+				,{field: 'score', title: '绩效分数',align:'center', width:80}
+				,{field: 'kpi_score', title: 'KPI占比',align:'center', width:80,templet: function(d){
+					return d.kpi_score+'%';
+				}}
+				,{field: 'action_score', title: '行为态度占比',align:'center', width:110,templet: function(d){
+					return d.action_score+'%';
+				}}
+				,{field: 'kpi_uname', title: 'KPI收集人',align:'center', width:80}
+				,{field: 'action_uname', title: '行为态度评价人',align:'center', width:110}
+				,{field: 'event_uname', title: '加减分项收集人',align:'center', width:110}
+				,{field: 'check_uname', title: '行政审核人',align:'center', width:90}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					html = '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_performance_users)',function (obj) {
+			var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/performance/users/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/performance/users/add?id="+data.id);
+				return;
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除该内容吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/performance/users/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

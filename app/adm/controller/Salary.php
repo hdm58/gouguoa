@@ -91,11 +91,6 @@ class Salary extends BaseController
 			if ($id>0) {
 				$detail = $this->model->getById($id);
 			}
-			else{
-				$detail['exclude_uids'] = valueAuth('human_admin','conf_6');
-				$exclude_names = Db::name('Admin')->where('id', 'in', $detail['exclude_uids'])->column('name');
-				$detail['exclude_names'] = implode(',', $exclude_names);
-			}
 			View::assign('detail', $detail);
 			return view();
 		}

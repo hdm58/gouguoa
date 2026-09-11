@@ -1,0 +1,131 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_performance_templates" lay-filter="table_performance_templates"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<button class="layui-btn layui-btn-sm tool-add" type="button" data-href="/performance/templates/add">+ 添加绩效模板</button>
+  </div>
+</script>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_performance_templates"
+			,title: '绩效模板列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/performance/templates/datalist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-114'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{field:'title', width:240, title: '绩效模板名称'}
+				,{field: 'score', title: '绩效分数',align:'center', width:80}
+				,{field: 'kpi_score', title: 'KPI占比',align:'center', width:80,templet: function(d){
+					return d.kpi_score+'%';
+				}}
+				,{field: 'action_score', title: '行为态度占比',align:'center', width:110,templet: function(d){
+					return d.action_score+'%';
+				}}
+				,{field:'content', title: '描述', }
+				,{field:'status', title: '状态',width:80,align:'center',templet: function(d){
+					var html1='<span class="green">正常</span>';
+					var html2='<span class="yellow">禁用</span>';
+					if(d.status==1){
+						return html1;
+					}
+					else{
+						return html2;
+					}
+				}}
+				,{width:160,title: '操作', align:'center',ignoreExport:true,templet: function(d){
+						var html='';
+						var btn0='<button class="layui-btn layui-bg-blue layui-btn-xs" lay-event="view">详细</button>';
+						var btn1='<button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>';
+						var btn2='<a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="disable">禁用</a>';
+						var btn3='<a class="layui-btn layui-btn-xs" lay-event="open">启用</a>';
+						var btn4='<button class="layui-btn layui-bg-red layui-btn-xs" lay-event="del">删除</button>';
+						if(d.status==1){
+							html = '<div class="layui-btn-group">'+btn0+btn1+btn2+btn4+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn0+btn1+btn3+btn4+'</div>';
+						}
+						return html;
+					}
+				}
+			]]
+		});
+		
+		//操作按钮
+		table.on('tool(table_performance_templates)', function (obj) {
+			if (obj.event === 'view') {
+				tool.side("/performance/templates/view?id="+obj.data.id);
+				return;
+			}
+			if (obj.event === 'edit') {
+				tool.side("/performance/templates/add?id="+obj.data.id);
+				return;
+			}
+			if(obj.event === 'disable'){
+				layer.confirm('确定要禁用该记录吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/performance/templates/set", {id:obj.data.id,status: 0}, callback);
+					layer.close(index);
+				});
+			}
+			if(obj.event === 'open'){
+				layer.confirm('确定要启用该记录吗?', {icon: 3, title:'提示'}, function(index){
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							layui.pageTable.reload();
+						}
+					}
+					tool.post("/performance/templates/set", {id:obj.data.id,status:1}, callback);
+					layer.close(index);
+				});
+			}
+			if (obj.event === 'del') {
+				layer.confirm('确定要删除吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/performance/templates/del", { id: obj.data.id }, callback);
+					layer.close(index);
+				});
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

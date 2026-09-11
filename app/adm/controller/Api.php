@@ -282,7 +282,7 @@ class Api extends BaseController
     public function salary_pay()
     {
 		$param = get_params();
-		$auth = isAuth($this->uid,'office_admin','conf_3');
+		$auth = isAuth($this->uid,'human_admin','conf_3');
 		if($auth == 0){
 			return to_assign(1, "你无权限操作");
 		}

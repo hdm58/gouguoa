@@ -152,7 +152,7 @@ layui.define(['tool','oaPicker'], function (exports) {
 			})
 			//加载更多
 			commentBox.on('click','.log-more',function(){
-				let page = commentBox.data(page);
+				let page = commentBox.data('page');
 				let callback = function (res) {
 					me.template(res,page);
 				}

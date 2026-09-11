@@ -5,6 +5,48 @@
 	<h3 class="pb-2">编辑进项发票申请</h3>
 	<table class="layui-table layui-table-form">
 		<tr>
+			<td colspan="4"><strong>销售方(开票主体)</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">开票主体<font>*</font></td>
+			<td>
+				<div class="layui-input-group" style="width:100%">
+					<input type="text" name="invoice_title" value="{$detail.invoice_title}" placeholder="请输入开票主体，若是个人输入姓名" class="layui-input" lay-verify="required" lay-reqText="请完善开票主体">
+					<input type="hidden" name="supplier_id" value="{$detail.supplier_id}">
+					<div class="layui-input-split layui-input-suffix invoice-qiye supplier-picker" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i>供应商</div>
+				</div>
+			</td>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td><input type="text" name="invoice_tax" placeholder="请输入纳税人识别号" class="layui-input" value="{$detail.invoice_tax}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">开户行</td>
+			<td><input type="text" name="invoice_bank" class="layui-input" value="{$detail.invoice_bank}"></td>
+			<td class="layui-td-gray">银行账号</td>
+			<td><input type="text" name="invoice_account" class="layui-input" value="{$detail.invoice_account}"></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">电话号码</td>
+			<td><input type="text" name="invoice_phone" class="layui-input" value="{$detail.invoice_phone}"></td>
+			<td class="layui-td-gray">详细地址</td>
+			<td><input type="text" name="invoice_address" class="layui-input" value="{$detail.invoice_address}"></td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>购买方(开票抬头)</strong></td>
+		</tr>	
+		<tr>
+			<td class="layui-td-gray-2">开票抬头</td>
+			<td>
+				<input type="text" class="layui-input subject-picker" name="subject_name" placeholder="请选择开票抬头" readonly value="{$detail.subject}" lay-verify="required" lay-reqText="请完善开票抬头">		
+				<input type="hidden" class="layui-input" name="invoice_subject" value="{$detail.invoice_subject}">		
+			</td>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td class="subject_tax_num">{$detail.tax_num|default=''}</td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>发票信息</strong></td>
+		</tr>
+		<tr>
 			<td class="layui-td-gray-2">发票金额<font>*</font></td>
 			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入发票金额" lay-reqText="请输入发票金额" value="{$detail.amount}"></td>
 			<td class="layui-td-gray">发票号码<font>*</font></td>
@@ -13,34 +55,15 @@
 		<tr>
 			<td class="layui-td-gray">发票类型<font>*</font></td>
 			<td>
-			<select name="invoice_type" lay-verify="required" lay-reqText="请选择发票类型">
-				<option value="">请选择发票类型</option>
-				<option value="1" {eq name="$detail.invoice_type" value="1"}selected{/eq}>增值税专用发票</option>
-				<option value="2" {eq name="$detail.invoice_type" value="2"}selected{/eq}>普通发票</option>
-				<option value="3" {eq name="$detail.invoice_type" value="3"}selected{/eq}>专业发票</option>
-			  </select>
+				<select name="invoice_type" lay-verify="required" lay-reqText="请选择发票类型">
+					<option value="">请选择发票类型</option>
+					<option value="1" {eq name="$detail.invoice_type" value="1"}selected{/eq}>增值税专用发票</option>
+					<option value="2" {eq name="$detail.invoice_type" value="2"}selected{/eq}>普通发票</option>
+					<option value="3" {eq name="$detail.invoice_type" value="3"}selected{/eq}>专业发票</option>
+				</select>
 			</td>
 			<td class="layui-td-gray">发票日期<font>*</font></td>
 			<td><input type="text" class="layui-input tool-time" name="open_time" lay-verify="required" readonly placeholder="请选择" lay-reqText="请完善发票日期" value="{$detail.open_time|date='Y-m-d'}"></td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray">发票抬头<font>*</font></td>
-			<td>
-				<select name="invoice_subject" lay-verify="required" lay-reqText="请选择发票抬头">
-					<option value="">请选择发票抬头</option>
-					{volist name=":get_base_data('enterprise')" id="vo"}
-					<option value="{$vo.id}" {eq name="$vo.id" value="$detail.invoice_subject"}selected{/eq}>{$vo.title}</option>
-					{/volist}
-				</select>
-			</td>
-			<td class="layui-td-gray-3">开票主体(供应商)<font>*</font></td>
-			<td>
-				<div class="layui-input-group" style="width:100%">
-					<input type="text" name="invoice_title" value="{$detail.invoice_title}" placeholder="请输入开票主体，若是个人输入姓名" class="layui-input" lay-verify="required" lay-reqText="请完善开票主体">
-					<input type="hidden" name="supplier_id" value="{$detail.supplier_id}">
-					<div class="layui-input-split layui-input-suffix invoice-qiye supplier-picker" style="cursor: pointer;"><i class="layui-icon layui-icon-search"></i></div>
-				</div>
-			</td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">关联采购合同</td>
@@ -53,6 +76,10 @@
 				<input type="text" class="layui-input picker-oa" data-types="project" name="project_name" placeholder="请选择需要关联的项目" readonly value="{$detail.project_name|default=''}">		
 				<input type="hidden" class="layui-input" name="project_id" value="{$detail.project_id}">		
 			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">发票内容</td>
+			<td colspan="5"><textarea name="remark" placeholder="请输入发票内容" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
 		</tr>
 		<tr>
 			<td class="layui-td-gray">
@@ -71,10 +98,6 @@
 					{/notempty}
 				</div>
 			</td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray">备注信息</td>
-			<td colspan="3"><textarea name="remark" placeholder="请输入备注信息" class="layui-textarea">{$detail.remark|default=''}</textarea></td>
 		</tr>
 	</table>	
 	<div id="checkBox" class="pt-3" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}"></div>
@@ -112,33 +135,26 @@
 			check_btn:0
 		});
 		$('.supplier-picker').on('click',function(){
-			let that = $(this),ids = [],titles=[];
+			let that = $(this),ids = [],titles=[],tax_num=[],tax_bank=[],tax_banksn=[],tax_mobile=[],tax_address=[];
 			let callback = function(data){
 				for ( var i = 0; i <data.length; i++){
 					ids.push(data[i].id);
 					titles.push(data[i].title);
+					tax_num.push(data[i].tax_num);
+					tax_bank.push(data[i].tax_bank);
+					tax_banksn.push(data[i].tax_banksn);
+					tax_mobile.push(data[i].tax_mobile);
+					tax_address.push(data[i].tax_address);
 				}
 				$('[name="invoice_title"]').val(titles.join(','));
 				$('[name="supplier_id"]').val(ids.join(','));
+				$('[name="invoice_tax"]').val(tax_num.join(','));
+				$('[name="invoice_bank"]').val(tax_bank.join(','));
+				$('[name="invoice_account"]').val(tax_banksn.join(','));
+				$('[name="invoice_phone"]').val(tax_mobile.join(','));
+				$('[name="invoice_address"]').val(tax_address.join(','));
 			}
 			oaPicker.picker('supplier',1,callback,{});
-		});
-		$('.customer-picker').on('click',function(){
-			let that = $(this),ids = [],titles=[];
-			let callback = function(data){
-				for ( var i = 0; i <data.length; i++){
-					ids.push(data[i].id);
-					titles.push(data[i].title);
-				}
-				that.val(titles.join(','));
-				that.next().val(ids.join(','));
-				$('[name="invoice_tax"]').val(tax_num.join(','));
-				$('[name="invoice_bank"]').val(bank.join(','));
-				$('[name="invoice_account"]').val(bank_sn.join(','));
-				$('[name="invoice_phone"]').val(cperson_mobile.join(','));
-				$('[name="invoice_address"]').val(cperson_address.join(','));
-			}
-			oaPicker.picker('customer',1,callback,{});
 		});
 		//监听提交
 		form.on('submit(webform)', function (data) {

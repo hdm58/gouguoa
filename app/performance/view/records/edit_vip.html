@@ -1,0 +1,446 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">员工绩效 <span class="layui-btn layui-btn-normal layui-btn-sm to-excel" data-title="{$detail.range_time|default=''} {$detail.u_name|default=''}的绩效"><i class="layui-icon layui-icon-download-circle"></i> 导出EXCEL</span></div>
+</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">考核员工</td>
+			<td>{$detail.u_name|default=''}</td>
+			<td class="layui-td-gray">所属部门</td>
+			<td>{$detail.department|default=''}</td>
+			<td class="layui-td-gray">岗位职称</td>
+			<td style="width:100px;">{$detail.position|default=''}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">当前状态</td>
+			<td><span class="check-status-color-{$detail.status}">『{:status_name($detail.status)}』</span></td>
+			<td class="layui-td-gray">考核周期</td>
+			<td>{$detail.range_time|default=''}</td>
+			<td class="layui-td-gray">满数</td>
+			<td style="width:100px;">{$detail.score|default='100'}</td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>KPI考核</strong></td>
+			<td class="layui-td-gray">分数占比</td>
+			<td style="width:100px;">{$detail.kpi_score|default='0'}%</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="kpiTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="300">指标名称</th>
+						<th width="300">指标说明</th>
+						<th width="100">权重(%)</th>
+						<th width="150">目标值</th>
+						<th width="150">评分标准</th>
+						<th width="100">完成值</th>
+						<th width="100">评价人</th>
+						<th width="100">考核频率</th>
+						<th width="100">得分</th>
+					</tr>
+					{empty name="$detail.kpi_array"}
+					<tr class="kpi-tr">
+						<td colspan="10" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.kpi_array" id="vo"}
+					<tr class="kpi-tr">
+						<td>1.{$key+1}</td>
+						<td style="text-align:left;">{$vo.kpi_title|default='-'}<input type="hidden" name="kpi_title[]" value="{$vo.kpi_title|default=''}"></td>
+						<td style="text-align:left;">{$vo.kpi_content|default='-'}<input type="hidden" name="kpi_content[]" value="{$vo.kpi_content|default=''}"></td>
+						<td>{$vo.kpi_weight|default='0'}<input type="hidden" name="kpi_weight[]" value="{$vo.kpi_weight|default=''}" class="kpi-weight"><input type="hidden" name="kpi_max[]" value="{$vo.kpi_max|default='100'}" class="kpi-max"></td>
+						<td style="text-align:left;">{$vo.kpi_goal|default='-'}<input type="hidden" name="kpi_goal[]" value="{$vo.kpi_goal|default=''}"></td>
+						<td style="text-align:left;">{$vo.kpi_standard|default='注意'}，得分封顶值为权重的{$vo.kpi_max|default='100'}%<input type="hidden" name="kpi_standard[]" value="{$vo.kpi_standard|default=''}"></td>
+						<td><input type="text" name="kpi_finish[]" lay-verify="required|number" lay-reqText="请完善完成值，若无分写0" class="layui-input kpi-finish" value="{$vo.kpi_finish|default=''}"></td>
+						<td>{$detail.kpi_uname|default=''}<input type="hidden" name="kpi_uname[]" value="{$vo.kpi_uname|default=''}"></td>
+						<td>{$vo.kpi_frequency|default='-'}<input type="hidden" name="kpi_frequency[]" value="{$vo.kpi_frequency|default=''}"></td>
+						<td><input type="text" name="kpi_score[]" lay-verify="number" readonly class="layui-input kpi-score layui-input-readonly" value="{$vo.kpi_score|default='0'}"></td>
+					</tr>
+					{/volist}	
+					<tr>
+						<td colspan="10" style="text-align:right;"><strong>KPI得分</strong></td>
+						<td>
+							<input type="text" name="final_kpi_score" lay-verify="required|number" lay-reqText="请完善KPI得分" readonly class="layui-input layui-input-readonly" value="{$detail.final_kpi_score|default='0'}">
+						</td>
+					</tr>
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>行为态度考核</strong></td>
+			<td class="layui-td-gray">分数占比</td>
+			<td style="width:100px;">{$detail.action_score|default='10'}%</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="actionTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="300">事项</th>
+						<th width="100">权重(%)</th>
+						<th width="200">评分标准</th>
+						<th width="300">完成效果评价与原因说明</th>
+						<th width="100">任务评分</th>
+						<th width="100">评价人</th>
+						<th width="100">考核频率</th>
+						<th width="100">得分</th>
+					</tr>
+					{empty name="$detail.action_array"}
+					<tr class="kpi-tr">
+						<td colspan="9" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.action_array" id="vo"}
+					<tr class="action-tr">
+						<td>2.{$key+1}</td>
+						<td style="text-align:left;">{$vo.action_title|default='-'}<input type="hidden" name="action_title[]" value="{$vo.action_title|default=''}"></td>
+						<td>{$vo.action_weight|default='0'}<input type="hidden" name="action_weight[]" value="{$vo.action_weight|default=''}" class="action-weight"><input type="hidden" name="action_max[]" value="{$vo.action_max|default='100'}" class="action-max"></td>
+						<td style="text-align:left;">{$vo.action_standard|default='-'}<input type="hidden" name="action_standard[]" value="{$vo.action_standard|default=''}"></td>
+						<td>{$vo.action_content|default=''}<input type="hidden" name="action_content[]" value="{$vo.action_content|default=''}"></td>
+						<td><input type="text" name="action_task[]" lay-verify="required|number" lay-reqText="请完善任务评分，若无分写0" class="layui-input action-task" value="{$vo.action_task|default=''}"></td>
+						<td>{$detail.action_uname|default=''}<input type="hidden" name="action_uname[]" value="{$vo.action_uname|default=''}"></td>
+						<td>{$vo.action_frequency|default='-'}<input type="hidden" name="action_frequency[]" value="{$vo.action_frequency|default=''}"></td>
+						<td><input type="text" name="action_score[]" lay-verify="number" readonly class="layui-input action-score layui-input-readonly" value="{$vo.action_score|default='0'}"></td>
+					</tr>					
+					{/volist}	
+					<tr>
+						<td colspan="8" style="text-align:right;"><strong>行为态度考核得分</strong></td>
+						<td>
+							<input type="text" name="final_action_score" lay-verify="required|number" lay-reqText="请完善任务考核得分" readonly class="layui-input layui-input-readonly" value="{$detail.final_action_score|default='0'}">
+						</td>
+					</tr>
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>加减分项考核</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="eventTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="200">事项</th>
+						<th width="200">评分标准</th>
+						<th>情况说明</th>
+						<th width="100">出现次数</th>
+						<th width="100">评价人</th>
+						<th width="100">得分</th>
+					</tr>
+					{empty name="$detail.event_array"}
+					<tr class="kpi-tr">
+						<td colspan="7" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.event_array" id="vo"}
+					<tr class="event-tr">
+						<td>3.{$key+1}</td>
+						<td style="text-align:left;">{$vo.event_title|default='-'}<input type="hidden" name="event_title[]" value="{$vo.event_title|default=''}"></td>
+						<td style="text-align:left;">{$vo.event_standard|default='-'}<input type="hidden" name="event_standard[]" value="{$vo.event_standard|default=''}"></td>
+						<td style="text-align:left;">{$vo.event_content|default=''}<input type="hidden" name="event_content[]" value="{$vo.event_content|default=''}"></td>
+						<td><input type="text" name="event_num[]" lay-verify="required|number" lay-reqText="请完善出现次数，若无分写0" class="layui-input" value="{$vo.event_num|default=''}"></td>					
+						<td>{$detail.event_uname|default=''}<input type="hidden" name="event_uname[]" value="{$vo.event_uname|default=''}"></td>
+						<td><input type="text" name="event_score[]" lay-verify="required|number" lay-reqText="请完善得分，若无分写0" class="layui-input event-score" value="{$vo.event_score|default=''}"></td>
+					</tr>					
+					{/volist}	
+					<tr>
+						<td colspan="6" style="text-align:right;"><strong>加减分项考核得分</strong></td>
+						<td>
+							<input type="text" name="final_event_score" lay-verify="required|number" lay-reqText="请完善加减分项考核得分" readonly class="layui-input layui-input-readonly" value="{$detail.final_event_score|default='0'}">
+						</td>
+					</tr>
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="text-align:right;"><strong>绩效考核总分</strong></td>
+			<td><input type="text" name="final_score" lay-verify="required|number" lay-reqText="请完善绩效考核总分" readonly class="layui-input layui-input-readonly" value="{$detail.final_score|default='0'}"></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>行政部审核：{$detail.check_uname|default=''}</strong></td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+
+
+<div id="excel_table" style="display:none;">
+	<table class="layui-table">
+		<tr>
+			<td colspan="10" style="text-align:center;">{$detail.range_time|default=''} {$detail.u_name|default=''}的绩效考核</td>
+		</tr>
+		<tr>
+			<td>考核员工</td>
+			<td>{$detail.u_name|default=''}</td>
+			<td colspan="8" align="left">考核周期：{$detail.range_time|default=''}</td>
+		</tr>
+		<tr>
+			<td colspan="10" align="left"><strong>KPI考核<strong>（{$detail.kpi_score|default='0'}%）</td>
+		</tr>
+		
+		
+		
+		<tr>
+			<th width="60">序号</th>
+			<th width="300">指标名称</th>
+			<th width="300">指标说明</th>
+			<th width="100">权重(%)</th>
+			<th width="100">保障值</th>
+			<th width="150">目标值</th>
+			<th width="100">挑战值</th>
+			<th width="150">评分标准</th>
+			<th width="300">计分准则</th>
+			<th width="100">完成值</th>
+			<th width="100">评价人</th>
+			<th width="100">考核频率</th>
+			<th width="100">得分</th>
+		</tr>
+		{volist name="$detail.kpi_array" id="vo"}
+		<tr>
+			<td>1.{$key+1}</td>
+			<td align="left">{$vo.kpi_title|default='-'}</td>
+			<td align="left">{$vo.kpi_content|default='-'}</td>
+			<td>{$vo.kpi_weight|default='0'}</td>
+			<td>{$vo.kpi_guarantee|default='-'}</td>
+			<td align="left">{$vo.kpi_goal|default='-'}</td>
+			<td>{$vo.kpi_challenge|default='-'}</td>
+			<td>{$vo.kpi_standard|default='-'}</td>
+			<td align="left">{$vo.kpi_rules|default='-'}</td>
+			<td>{$vo.kpi_finish|default=''}</td>
+			<td>{$detail.kpi_uname|default=''}</td>
+			<td>{$vo.kpi_frequency|default='-'}</td>
+			<td>{$vo.kpi_score|default=''}</td>
+		</tr>
+		{/volist}	
+		<tr>
+			<td colspan="12" align="right"><strong>KPI得分</strong></td>
+			<td>{$detail.final_kpi_score|default='0'}</td>
+		</tr>
+		
+		
+
+		<tr>
+			<td colspan="13" align="left"><strong>行为态度考核<strong>（{$detail.action_score|default='0'}%）</td>
+		</tr>
+
+
+
+		<tr>
+			<th width="60">序号</th>
+			<th width="300" colspan="2">阶段工作任务</th>
+			<th width="100">权重(%)</th>
+			<th width="200" colspan="2">评分标准</th>
+			<th width="300" colspan="3">任务完成效果评价与原因说明</th>
+			<th width="100">任务评分</th>
+			<th width="100">评价人</th>
+			<th width="100">考核频率</th>
+			<th width="100">得分</th>
+		</tr>
+		{volist name="$detail.action_array" id="vo"}
+		<tr class="action-tr">
+			<td>2.{$key+1}</td>
+			<td align="left" colspan="2">{$vo.action_title|default='-'}</td>
+			<td>{$vo.action_weight|default='0'}</td>
+			<td align="left" colspan="2">{$vo.action_standard|default='-'}</td>
+			<td align="left" colspan="3">{$vo.action_content|default=''}</td>
+			<td>{$vo.action_task|default=''}</td>
+			<td>{$detail.action_uname|default=''}</td>
+			<td>{$vo.action_frequency|default='-'}</td>
+			<td>{$vo.action_score|default=''}</td>
+		</tr>					
+		{/volist}	
+		<tr>
+			<td colspan="12" align="right"><strong>任务考核得分</strong></td>
+			<td>{$detail.final_action_score|default='0'}</td>
+		</tr>
+		
+
+
+		<tr>
+			<td colspan="13" align="left"><strong>例外事件(加减分项考核)<strong></td>
+		</tr>
+		
+		
+		
+		<tr>
+			<th width="60">序号</th>
+			<th width="200" colspan="3">事项</th>
+			<th width="200" colspan="2">评分标准</th>
+			<th colspan="4">情况说明</th>
+			<th width="100">出现次数</th>
+			<th width="100">评价人</th>
+			<th width="100">得分</th>
+		</tr>
+		{volist name="$detail.event_array" id="vo"}
+		<tr class="event-tr">
+			<td>3.{$key+1}</td>
+			<td align="left" colspan="3">{$vo.event_title|default='-'}</td>
+			<td align="left" colspan="2">{$vo.event_standard|default='-'}</td>
+			<td align="left" colspan="4">{$vo.event_content|default=''}</td>
+			<td>{$vo.event_num|default='0'}</td>
+			<td>{$detail.event_uname|default=''}</td>
+			<td>{$vo.event_score|default=''}</td>
+		</tr>					
+		{/volist}	
+		<tr>
+			<td colspan="12" align="right"><strong>例外事件考核得分</strong></td>
+			<td>{$detail.final_event_score|default='0'}</td>
+		</tr>
+
+
+
+		<tr>
+			<td colspan="12" align="right"><strong>绩效考核总分</strong></td>
+			<td>{$detail.final_score|default='0'}</td>
+		</tr>
+		<tr>
+			<td colspan="13" align="left"><strong>行政部审核：{$detail.check_uname|default=''}</strong></td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','excel'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool,excel = layui.excel;
+		
+		//计算KPI分数
+		/*
+		$('#kpiTable').on('input', '.kpi-score', function() {
+			count_score();
+		});
+		*/
+		$('#kpiTable').on('input', '.kpi-finish', function() {
+			let kpi_finish = $(this).val();
+			let tr = $(this).parent().parent();
+			let kpi_weight = tr.find('.kpi-weight').val();
+			let kpi_max = tr.find('.kpi-max').val();
+			if(isNaN(kpi_weight)){ 
+				kpi_weight = 0;
+			}
+			if(isNaN(kpi_finish)){ 
+				kpi_finish = 0;
+			}
+			if(kpi_finish*100 > kpi_max*100){
+				layer.msg('完成值不能大于封顶值'+kpi_max);
+				$(this).val(kpi_max);
+				kpi_finish = kpi_max;
+			}
+			let kpi_score = kpi_finish*kpi_weight/100;
+			tr.find('.kpi-score').val(kpi_score);
+			count_score();
+		});
+		//计算行为分数
+		/*
+		$('#actionTable').on('input', '.action-score', function() {
+			count_score();
+		});
+		*/
+		$('#actionTable').on('input', '.action-task', function() {
+			let action_task = $(this).val();
+			let tr = $(this).parent().parent();
+			let action_weight = tr.find('.action-weight').val();
+			let action_max = tr.find('.action-max').val();
+			if(isNaN(action_weight)){ 
+				action_weight = 0;
+			}
+			if(isNaN(action_task)){ 
+				action_task = 0;
+			}
+			if(action_task*100 > action_max*100){
+				layer.msg('任务评分不能大于封顶值'+action_max);
+				$(this).val(action_max);
+				action_task = action_max;
+			}
+			let action_score = action_task*action_weight/100;
+			tr.find('.action-score').val(action_score);
+			count_score();
+		});
+		//计算事件分数
+		$('#eventTable').on('input', '.event-score', function() {
+			count_score();
+		});
+		
+		//计算总数
+		function count_score(){
+			var kpi = $('#kpiTable').find(".kpi-score");
+			var kpi_score = 0;
+			for (var a = 0; a < kpi.length; a++) {
+				kpi_score+=$(kpi[a]).val()*100;
+			}
+			if(isNaN(kpi_score)){ 
+				kpi_score = 0;
+			}
+			$('[name="final_kpi_score"]').val(kpi_score/100);
+			
+			var action = $('#actionTable').find(".action-score");
+			var action_score = 0;
+			for (var b = 0; b < action.length; b++) {
+				action_score+=$(action[b]).val()*100;
+			}
+			if(isNaN(action_score)){ 
+				action_score = 0;
+			}
+			$('[name="final_action_score"]').val(action_score/100);
+			
+			var events = $('#eventTable').find(".event-score");
+			var event_score = 0;
+			for (var c = 0; c < events.length; c++) {
+				event_score+=$(events[c]).val()*100;
+			}
+			if(isNaN(event_score)){ 
+				event_score = 0;
+			}
+			$('[name="final_event_score"]').val(event_score/100);
+			
+			if(isNaN(kpi_score)){ 
+				kpi_score = 0;
+			}
+			if(isNaN(action_score)){ 
+				action_score = 0;
+			}
+			$('[name="final_score"]').val((kpi_score+action_score+event_score)/100);
+		}
+		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.ask('确定修改该绩效数据?',function(){
+				tool.post("/performance/records/edit", data.field, callback);
+			})
+			return false;
+		});
+		
+		$('body').on('click','.to-excel',function(){
+			var tableName=$(this).data('title');
+			excel.init('excel_table', {
+				name:tableName,
+				nested: true,
+				exclude_inputs: false
+			});
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

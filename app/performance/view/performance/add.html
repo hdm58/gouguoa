@@ -1,0 +1,100 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">创建绩效单</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">绩效周期<font>*</font></td>
+			<td><input type="text" class="layui-input" placeholder="请选择" lay-verify="required" lay-reqText="请完善事件周期" readonly name="range_time" id="range_time" data-range="~" value="{$detail.range_time|default=''}"></td>
+			<td class="layui-td-gray-2">绩效单标题<font>*</font></td>
+			<td><input type="text" name="title" placeholder="例：20XX年X月的绩效单" lay-verify="required" lay-reqText="请完善绩效单标题" class="layui-input" value="{$detail.title|default=''}"></td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>参与考核的员工</strong>
+				<span class="layui-btn layui-btn-xs layui-btn-normal tool-add" type="button" data-href="/performance/users/add">+ 新增</span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" class="red" style="line-height:1.8">
+				<p><strong>说明：</strong>默认读取的是已配置了绩效模板的员工数据，点击【新增】可添加参与考核的员工。</p>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<table class="layui-table layui-table-min" style="margin:0" id="performanceUser">
+					<tr>
+						<th width="100">员工姓名</th>
+						<th>所在部门</th>
+						<th>岗位</th>
+						<th>KPI收集人</th>
+						<th>行为态度评价人</th>
+						<th>例外事件收集人</th>
+						<th>行政审核人</th>
+						<th width="100">操作</th>
+					</tr>
+					{empty name="$detail.users"}
+					<tr>
+						<td colspan="8" class="data-none">暂无关联员工</td>
+					</tr>
+					{/empty}
+					{volist name="$detail.users" id="vo"}
+					<tr>
+						<td>{$vo.u_name}</td>
+						<td style="text-align:left">{$vo.department}</td>
+						<td>{$vo.position}</td>
+						<td>{$vo.kpi_uname}</td>
+						<td>{$vo.action_uname}</td>
+						<td>{$vo.event_uname}</td>
+						<td>{$vo.check_uname}</td>
+						<td>
+							<input type="hidden" name="uid[]" value="{$vo.uid|default=0}">
+							<input type="hidden" name="template_id[]" value="{$vo.template_id|default=0}">						
+							<span class="layui-btn layui-bg-red layui-btn-xs del-users">删除</span>
+						</td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','laydatePlus'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, laydatePlus = layui.laydatePlus;
+		var laydatePlus = new laydatePlus({'target':'range_time'});
+		
+		$('#performanceUser').on('click','.del-users',function(){
+			let tr = $(this).parent().parent();
+			tool.ask('确定要删除该考核员工？',function(){
+				tr.remove();
+			})			
+		})
+		
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/performance/performance/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

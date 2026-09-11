@@ -102,8 +102,8 @@ class Api extends BaseController
 				$fileSize = $param['size'];
 			}
 			$validate = \think\facade\Validate::rule([
-				//'image' => 'require|fileSize:' . $fileSize . '|fileExt:' . $fileExt,
-				'image' => 'require|fileSize:' . $fileSize,
+				'image' => 'require|fileSize:' . $fileSize . '|fileExt:' . $fileExt,
+				//'image' => 'require|fileSize:' . $fileSize,
 			]);
 			$file_check['image'] = $file;
 			if (!$validate->check($file_check)) {

@@ -50,7 +50,7 @@ class Talent extends BaseController
 			$where[]=['delete_time','=',0];
 			if($tab == 0){
 				//全部
-				$auth = isAuth($uid,'office_admin','conf_1');
+				$auth = isAuth($uid,'human_admin','conf_1');
 				if($auth == 0){
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
@@ -98,7 +98,7 @@ class Talent extends BaseController
             return table_assign(0, '', $list);
         }
         else{
-			View::assign('is_auth', isAuth($this->uid,'office_admin','conf_1'));
+			View::assign('is_auth', isAuth($this->uid,'human_admin','conf_1'));
             return view();
         }
     }

@@ -40,7 +40,7 @@
     .file-thumb .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
     .file-thumb .file-subject:hover::-webkit-scrollbar { display: block; }
     .file-thumb .file-subject ul { display: flex; flex-wrap: wrap; }
-    .file-thumb .file-subject ul li {position: relative; height: 160px; margin:12px; padding: 10px; border-radius: 4px; border:2px solid #ffffff;}
+    .file-thumb .file-subject ul li {position: relative; height: 160px; margin:11px; padding: 10px; border-radius: 4px; border:2px solid #ffffff;}
     .file-thumb .file-subject ul li:hover {border: 2px solid #f8f8f8; background-color:#F2F2F2;}
     .file-thumb .file-subject ul li.on {border: 2px solid #1e9fff; background-color:#E5F2FF}
     .file-thumb .file-subject ul li img {width: 86px; height: 86px; border-radius: 6px; padding:16px; border:1px solid rgba(0, 0, 0, 0.05); background-color:#fff;}
@@ -444,7 +444,7 @@
                 "type":1,//0ajax多文件模式，1ajax单文件单记录模式
                 "ajaxSave":function(res){
                     $.ajax({
-                        url: "/disk/api/drop_upload",
+                        url: "/disk/index/add_upload",
                         type:'post',
                         data:{
 							'pid':$('[name="pid"]').val(),

@@ -1,0 +1,159 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-2">付款信息</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-2">付款金额<font>*</font></td>
+			<td><input type="text" class="layui-input" name="amount" lay-verify="required|number" placeholder="请输入付款金额" lay-reqText="请输入付款金额" value=""></td>
+			<td class="layui-td-gray-2">付款交易单号<font>*</font></td>
+			<td><input type="text" class="layui-input" name="transaction_code" lay-verify="required" placeholder="请输入付款交易单号" lay-reqText="请完善付款交易单号" value=""></td>
+			<td class="layui-td-gray">付款时间<font>*</font></td>
+			<td><input type="text" class="layui-input tool-time" data-type="datetime" data-format="yyyy-MM-dd HH:mm" name="pay_time" readonly lay-verify="required" placeholder="请选择付款具体时间" lay-reqText="请输入付款具体时间" value=""></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">款项类型<font>*</font></td>
+			<td>
+				<select name="fundscate_id" lay-verify="required" lay-reqText="请选择款项类型">
+				<option value="">请选择款项类型</option>
+				{volist name=":get_base_data('funds_cate')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}			
+			</td>
+			<td class="layui-td-gray">付款方式<font>*</font></td>
+			<td>
+				<select name="paytype_id" lay-verify="required" lay-reqText="请选择付款方式">
+				<option value="">请选择付款方式</option>
+				{volist name=":get_base_data('pay_type')" id="vo"}
+				<option value="{$vo.id}">{$vo.title}</option>
+				{/volist}			
+			</td>
+			<td class="layui-td-gray">付款主体<font>*</font></td>
+			<td>
+				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择付款主体">
+					<option value="">请选择付款主体</option>
+					{volist name=":get_base_data('Enterprise')" id="vo"}
+					<option value="{$vo.id}" {eq name="$vo.id" value="$ticket.invoice_subject"}selected{/eq}>{$vo.title}</option>
+					{/volist}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">关联进项发票</td>
+			<td>			
+				<input type="text" name="ticket" value="{$ticket.code|default=''}" readonly placeholder="请选择进项发票" class="layui-input picker-oa" data-types="ticket" data-field="code">
+				<input type="hidden" name="ticket_id" value="{$ticket.id|default=0}">
+			</td>
+			<td class="layui-td-gray-2">关联供应商</td>
+			<td>
+				{eq name="$ticket.supplier_id" value="0"}
+				<input type="text" name="supplier" value="" readonly placeholder="请选择供应商" class="layui-input picker-oa" data-types="supplier" data-field="name">
+				<input type="hidden" name="supplier_id" value="0">
+				{else/}
+				<input type="text" name="supplier" value="{$ticket.invoice_title|default=''}" readonly placeholder="请选择供应商" class="layui-input picker-oa" data-types="supplier" data-field="name">
+				<input type="hidden" name="supplier_id" value="{$ticket.supplier_id|default=0}">
+				{/eq}
+			</td>
+			<td class="layui-td-gray">付款账户<font>*</font></td>
+			<td>
+				<input type="text" name="account" autocomplete="off" value="" readonly placeholder="请选择付款账户" lay-verify="required" lay-reqText="请选择付款账户" class="layui-input picker-account">
+				<input type="hidden" name="account_id" value="0">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">关联采购合同</td>
+			<td colspan="3">			
+				<input type="text" name="purchase" autocomplete="off" value="{$ticket.purchase_name|default=''}" readonly placeholder="请选择采购合同" class="layui-input picker-oa" data-types="purchase"  data-field="name">
+				<input type="hidden" name="purchase_id" value="{$ticket.purchase_id|default=0}">
+			</td>
+			<td class="layui-td-gray">关联项目</td>
+			<td>			
+				<input type="text" name="project" autocomplete="off" value="{$ticket.project_name|default=''}" readonly placeholder="请选择项目" class="layui-input picker-oa" data-types="project">
+				<input type="hidden" name="project_id" value="{$ticket.project_id|default=0}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">
+				<div class="layui-input-inline">付款附件</div>
+				<div class="layui-input-inline">
+					<button type="button" class="layui-btn layui-btn-xs" id="uploadBtn"><i class="layui-icon"></i></button>
+				</div>
+			</td>
+			<td colspan="5">
+				<div class="layui-row" id="uploadBox">
+					<input type="hidden" data-type="file" name="file_ids" value="">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">备注信息</td>
+			<td colspan="5"><textarea name="remarks" placeholder="请输入备注信息" class="layui-textarea"></textarea></td>
+		</tr>
+	</table>
+	<div id="checkBox" data-status="0" data-id="0" data-checkflowid="0" class="pt-3"></div>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="0"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool, oaCheck  = layui.oaCheck ,uploadPlus = layui.uploadPlus,oaPicker = layui.oaPicker;
+		$('body').on('click','.picker-account',function(){
+			let enterprise_id = $('[name="enterprise_id"]').val();
+			if(enterprise_id==0 || enterprise_id==''){
+				layer.msg('请先选择付款主体');
+				return false;
+			}
+			let that = $(this),ids = [],titles=[],map = {enterprise_id:enterprise_id},types = 'account',type = 1;
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				that.val(titles.join(','));
+				that.next().val(ids.join(','));
+			}
+			oaPicker.picker(types,type,callback,map);
+		})
+		//相关附件上传
+		var attachment = new uploadPlus();
+		//审批相关
+		oaCheck.init({
+			check_name:'payment',
+			check_btn:0
+		});
+		//监听提交
+		form.on('submit(webform)', function(data){
+			tool.ask('审核期间不能编辑修改，确定数据无误？', function(index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						let checkCallback = function (e) {
+							layer.msg(e.msg);
+							if (e.code == 0) {
+								tool.sideClose(1000);				
+							}
+						}
+						data.field.check_name = 'payment';
+						data.field.action_id = e.data.return_id;
+						oaCheck.submit(data.field,checkCallback);
+					}
+				}
+				tool.post("/finance/payment/add", data.field, callback);
+				layer.close(index);
+			});
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

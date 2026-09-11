@@ -530,7 +530,7 @@ class Car extends BaseController
     {
 		$param = get_params();
 		$uid=$this->uid;
-		$auth = isAuth($uid,'office_admin','conf_6');
+		$auth = isAuth($uid,'office_admin','conf_7');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
             $where = array();
@@ -635,6 +635,9 @@ class Car extends BaseController
 		$detail = $model->getById($id);
 		if (!empty($detail)) {
 			View::assign('detail', $detail);
+			if(is_mobile()){
+				return view('qiye@/approve/view_car');
+			}
 			return view();
 		}
 		else{
@@ -662,7 +665,7 @@ class Car extends BaseController
     {
 		$param = get_params();
 		$uid=$this->uid;
-		$auth = isAuth($uid,'office_admin','conf_6');
+		$auth = isAuth($uid,'office_admin','conf_7');
         if (request()->isAjax()) {
 			$where = array();
 			$where[] = ['check_status','=',2];

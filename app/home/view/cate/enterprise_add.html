@@ -2,79 +2,40 @@
 {block name="body"}
 <form class="layui-form p-page">
 	<h3 class="pb-2">企业主体</h3>
-	{if condition="$id eq 0"}
 	<table class="layui-table layui-table-form">
 		<tr>
 			<td class="layui-td-gray">企业名称<font>*</font></td>
-			<td>
-				<input type="text" name="title" value="" lay-verify="required" lay-reqText="请完善企业名称" placeholder="请完善企业名称" class="layui-input">
-			</td>
+			<td colspan="3"><input type="text" name="title" value="{$detail.title|default=''}" lay-verify="required" lay-reqText="请完善企业名称" placeholder="请完善企业名称" class="layui-input"></td>
 			<td class="layui-td-gray">所在城市<font>*</font></td>
-			<td>
-				<input type="text" name="city" value="" lay-verify="required" lay-reqText="请完善所在城市" placeholder="请完善所在城市" class="layui-input">
-			</td>
+			<td><input type="text" name="city" value="{$detail.city|default=''}" lay-verify="required" lay-reqText="请完善所在城市" placeholder="请完善所在城市" class="layui-input"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">详细地址<font>*</font></td>
-			<td>
-				<input type="text" name="address" value="" lay-verify="required" lay-reqText="请完善详细地址" placeholder="请完善详细地址" class="layui-input">
-			</td>
+			<td colspan="6"><strong>开票信息</strong></td>
+		</tr>
+		<tr>
 			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
-			<td><input type="text" name="tax_num" value="" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
-		</tr>
-		<tr>
+			<td><input type="text" name="tax_num" value="{$detail.tax_num|default=''}" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
 			<td class="layui-td-gray">开户银行</td>
-			<td>
-				<input type="text" name="bank" value="" placeholder="请完善开户银行" class="layui-input">
-			</td>
+			<td><input type="text" name="bank" value="{$detail.bank|default=''}" placeholder="请完善开户银行" class="layui-input"></td>
 			<td class="layui-td-gray">银行帐号</td>
-			<td><input type="text" name="bank_sn" value="" placeholder="请完善银行帐号" class="layui-input"></td>
+			<td><input type="text" name="bank_sn" value="{$detail.bank_sn|default=''}" placeholder="请完善银行帐号" class="layui-input"></td>
 		</tr>
 		<tr>
-			<td class="layui-td-gray">备注信息</td>
-			<td colspan="3">
-				<textarea name="remark" placeholder="请输入描述" class="layui-textarea" style="height: 120px;"></textarea>
+			<td class="layui-td-gray">联系电话</td>
+			<td><input type="text" name="phone" value="{$detail.phone|default=''}" placeholder="请完善银行帐号" class="layui-input"></td>
+			<td class="layui-td-gray">详细地址</td>
+			<td colspan="3"><input type="text" name="address" value="{$detail.address|default=''}" placeholder="请完善详细地址" class="layui-input"></td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>备注信息</strong></td>
+		</tr>
+			<td colspan="6">
+				<textarea name="remark" placeholder="请输入描述" class="layui-textarea" style="height: 120px;">{$detail.remark|default=''}</textarea>
 			</td>
 		</tr>
 	</table>
-	{else/}
-	<table class="layui-table layui-table-form">
-		<tr>
-			<td class="layui-td-gray">企业名称<font>*</font></td>
-			<td>
-				<input type="text" name="title" value="{$detail.title}" lay-verify="required" lay-reqText="请完善企业名称" placeholder="请完善企业名称" class="layui-input">
-			</td>
-			<td class="layui-td-gray">所在城市<font>*</font></td>
-			<td>
-				<input type="text" name="city" value="{$detail.city}" lay-verify="required" lay-reqText="请完善所在城市" placeholder="请完善所在城市" class="layui-input">
-			</td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray">详细地址<font>*</font></td>
-			<td>
-				<input type="text" name="address" value="{$detail.address}" lay-verify="required" lay-reqText="请完善详细地址" placeholder="请完善详细地址" class="layui-input">
-			</td>
-			<td class="layui-td-gray-2">纳税人识别号<font>*</font></td>
-			<td><input type="text" name="tax_num" value="{$detail.tax_num}" lay-verify="required" lay-reqText="请完善纳税人识别号" placeholder="请完善纳税人识别号" class="layui-input"></td>
-		</tr>	
-		<tr>
-			<td class="layui-td-gray">开户银行</td>
-			<td>
-				<input type="text" name="bank" value="{$detail.bank}" placeholder="请完善开户银行" class="layui-input">
-			</td>
-			<td class="layui-td-gray">银行帐号</td>
-			<td><input type="text" name="bank_sn" value="{$detail.bank_sn}" placeholder="请完善银行帐号" class="layui-input"></td>
-		</tr>
-		<tr>
-			<td class="layui-td-gray">备注信息</td>
-			<td colspan="3">
-				<textarea name="remark" placeholder="请输入描述" class="layui-textarea" style="height: 120px;">{$detail.remark}</textarea>
-			</td>
-		</tr>
-	</table>
-	{/if}
 	<div class="pt-4">
-		<input type="hidden" value="{$id}" name="id">
+		<input type="hidden" value="{$detail.id|default=0}" name="id">
 		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交保存</button>
 	</div>
 </form>

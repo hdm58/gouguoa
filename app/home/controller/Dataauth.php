@@ -66,6 +66,10 @@ class dataauth extends BaseController
 		if($detail['name'] =='human_admin'){			
 			$conf_1_str = Db::name('Admin')->where('id', 'in', $detail['conf_1'])->column('name');
 			$detail['conf_1_str'] = implode(',', $conf_1_str);
+			$conf_2_str = Db::name('Admin')->where('id', 'in', $detail['conf_2'])->column('name');
+			$detail['conf_2_str'] = implode(',', $conf_2_str);
+			$conf_3_str = Db::name('Admin')->where('id', 'in', $detail['conf_3'])->column('name');
+            $detail['conf_3_str'] = implode(',', $conf_3_str);
 		}
 		//	办公模块
 		if($detail['name'] =='office_admin'){			

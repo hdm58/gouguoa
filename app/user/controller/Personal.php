@@ -36,7 +36,7 @@ class Personal extends BaseController
 			$where[]=['delete_time','=',0];
             if($tab == 0){
 				//全部
-				$auth = isAuth($uid,'office_admin','conf_1');
+				$auth = isAuth($uid,'human_admin','conf_1');
 				if($auth == 0){
 					$whereOr[] = ['admin_id', '=', $uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
@@ -165,7 +165,7 @@ class Personal extends BaseController
 			$where[]=['delete_time','=',0];
             if($tab == 0){
 				//全部
-				$auth = isAuth($uid,'office_admin','conf_1');
+				$auth = isAuth($uid,'human_admin','conf_1');
 				if($auth == 0){
 					$whereOr[] = ['admin_id', '=', $this->uid];
 					$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
@@ -283,5 +283,50 @@ class Personal extends BaseController
 		} else {
             return to_assign(1, "错误的请求");
         }
+    }
+	
+	//人事分析报表
+    public function statistics()
+    {
+        $param = get_params();
+		//部门
+		$total = Db::name('Admin')->where([['status','=',1],['id','>',1]])->count();
+		$departments = Db::name('Department')->where([['status','=',1]])->select()->toArray();
+		foreach ($departments as $key => &$val) {
+			$val['users'] = Db::name('Admin')->where([['status','=',1],['id','>',1],['did','=',$val['id']]])->count();
+		}
+		View::assign('total', $total);
+		View::assign('departments', $departments);
+		return view();
+    }
+	
+	//入职离职分析报表
+    public function in_out()
+    {
+        $param = get_params();
+		$year = date('Y');
+		if (!empty($param['year_time'])) {
+			$year = $param['year_time'];
+		}
+		//入职离职
+		$in=[];
+		$out=[];
+		for($m=1;$m<13;$m++){
+			$month=$year.'-'.$m;
+			$data=[];
+			if($m<9){
+				$month=$year.'-0'.$m;
+			}
+			$data['month']=$m;
+			$in[] = Db::name('Admin')->whereMonth('entry_time', $month)->where([['status','=',1],['id','>',1]])->count();
+			$out[] = Db::name('PersonalQuit')->whereMonth('quit_time', $month)->where([['delete_time','=',0],['check_status','=',2]])->count();		
+		}
+		$one_data = [
+			'in'=>$in,
+			'out'=>$out,
+		];		
+		View::assign('year', $year);
+		View::assign('one_data', $one_data);
+		return view();
     }
 }

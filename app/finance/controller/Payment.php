@@ -16,6 +16,7 @@ declare (strict_types = 1);
 namespace app\finance\controller;
 
 use app\base\BaseController;
+use app\finance\model\Ticket;
 use app\finance\model\TicketPayment;
 use think\exception\ValidateException;
 use think\facade\Db;
@@ -142,7 +143,14 @@ class Payment extends BaseController
 			}
 		}
         else{
-            $id = isset($param['id']) ? $param['id']: 0 ;
+            $id = isset($param['id']) ? $param['id']: 0;
+            $ticket_id = isset($param['ticket_id']) ? $param['ticket_id']: 0 ;
+			if($ticket_id>0){
+				$ticketModel = new Ticket();
+				$ticket = $ticketModel->getById($ticket_id);
+				View::assign('ticket', $ticket);
+				return view('ticket_add');
+			}
 			if($id>0){
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);

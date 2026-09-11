@@ -38,7 +38,7 @@
     .file-thumb .file-subject { flex: 1; overflow: hidden; overflow-y: auto; margin: 10px; box-sizing: border-box; }
     .file-thumb .file-subject:hover::-webkit-scrollbar { display: block; }
     .file-thumb .file-subject ul { display: flex; flex-wrap: wrap; }
-    .file-thumb .file-subject ul li {position: relative; height: 160px; margin:12px; padding: 10px; border-radius: 4px; border:2px solid #ffffff;}
+    .file-thumb .file-subject ul li {position: relative; height: 160px; margin:11px; padding: 10px; border-radius: 4px; border:2px solid #ffffff;}
     .file-thumb .file-subject ul li:hover {border: 2px solid #f8f8f8; background-color:#F2F2F2;}
     .file-thumb .file-subject ul li.on {border: 2px solid #1e9fff; background-color:#E5F2FF}
     .file-thumb .file-subject ul li img {width: 86px; height: 86px; border-radius: 6px; padding:16px; border:1px solid rgba(0, 0, 0, 0.05); background-color:#fff;}
@@ -176,7 +176,7 @@
 	}
 	
 	function fileDo(item){
-		let type = '0,3',ext="zip",is_star='',is_share='';
+		let type = '0,3,4',ext="zip",is_star='',is_share='';
 		// 判断元素是否在数组中
 		let path='/static/home/images/icon/file.png';
 		if (fileExt.image.includes(item.file_ext)) {

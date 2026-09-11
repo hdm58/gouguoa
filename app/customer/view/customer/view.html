@@ -99,6 +99,23 @@
 		<td colspan="6">{$detail.remark}</td>
 	  </tr>
 	  {/notempty}
+		<tr>
+			<td colspan="6"><strong>开票信息</strong></td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-2">纳税人识别号</td>
+			<td>{$detail.tax_num|default=""}</td>
+			<td class="layui-td-gray">开户行</td>
+			<td>{$detail.tax_bank|default=""}</td>
+			<td class="layui-td-gray">银行账号</td>
+			<td>{$detail.tax_banksn|default=""}</td>
+	   </tr>
+	   <tr>
+			<td class="layui-td-gray">电话号码</td>
+			<td>{$detail.tax_mobile|default=""}</td>
+			<td class="layui-td-gray">详细地址</td>
+			<td colspan="3">{$detail.tax_address|default=""}</td>
+	   </tr>
 	</table>
 	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="customer" id="customerTab">
 		<ul class="layui-tab-title">

@@ -1761,6 +1761,19 @@ function is_wxwork()
 }
 
 /**
+ * 判断是否是钉钉浏览器
+ *  @return bool
+ */
+function is_dingtalk()
+{ 
+	if (strpos($_SERVER['HTTP_USER_AGENT'] , 'DingTalk') !== false ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
  * 验证输入的邮件地址是否合法
  * @param $user_email 邮箱
  * @return bool

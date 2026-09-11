@@ -141,45 +141,45 @@
 	};
 	
 	function fileDo(item){
-		let type = '0,10',ext="zip",is_star='';
+		let type = '0,10,11',ext="zip",is_star='';
 		let path='/static/home/images/icon/file.png';
 		if (fileExt.image.includes(item.file_ext)) {
 			path=item.filepath;
-			type = '0,1,10';
+			type = '0,1,10,11';
 			ext="image";
 		}
 		if (fileExt.office.includes(item.file_ext)) {
-			type = '0,1,10';
+			type = '0,1,10,11';
 			ext="office";
 			path='/static/home/images/icon/'+item.file_ext+'.png';
 		}
 		if (item.file_ext == 'pdf' || item.file_ext == 'txt') {
-			type = '0,1,10';
+			type = '0,1,10,11';
 			ext="pdf";
 			path='/static/home/images/icon/'+item.file_ext+'.png';
 		}								
 		if (fileExt.video.includes(item.file_ext)) {
-			type = '0,1,10';
+			type = '0,1,10,11';
 			ext="video";
 			path='/static/home/images/icon/video.png';
 		}
 		if (fileExt.audio.includes(item.file_ext)) {
-			type = '0,1,10';
+			type = '0,1,10,11';
 			ext="audio";
 			path='/static/home/images/icon/audio.png';
 		}
 		if (fileExt.zip.includes(item.file_ext)) {
-			type = '0,10';
+			type = '0,10,11';
 			ext="zip";
 			path='/static/home/images/icon/rar.png';
 		}
 		if(fileExt.article.includes(item.file_ext)){
-			type = '1,10';
+			type = '1,10,11';
 			ext="article";
 			path='/static/home/images/icon/article.png';
 		}
 		if(item.file_ext == 'folder'){
-			type = '10';
+			type = '10,11';
 			ext="folder";
 			path='/static/home/images/icon/folder.png';
 		}

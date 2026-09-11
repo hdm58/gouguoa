@@ -38,7 +38,7 @@ class Comment extends Model
 				$item['name'] = Db::name('Admin')->where(['id' => $item['admin_id']])->value('name');
 				$to_names = Db::name('Admin')->where([['id', 'in', $item['to_uids']]])->column('name');
 				if (empty($to_names)) {
-                    $item['to_names'] = '-';
+                    $item['to_names'] = '';
                 } else {
                     $item['to_names'] = implode(',', $to_names);
                 }

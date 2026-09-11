@@ -1,0 +1,112 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">绩效单</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">绩效周期</td>
+			<td>{$detail.range_time}</td>
+			<td class="layui-td-gray-2">绩效单标题</td>
+			<td>{$detail.title|default=''}</td>
+			<td class="layui-td-gray-2">绩效单状态</td>
+			<td><span class="check-status-color-{$detail.status}">{eq name="$detail.status" value="0"}未发布绩效单{else/}已发布{/eq}</span></td>
+		</tr>
+		<tr>
+			<td colspan="6" class="red" style="line-height:1.8">
+				<p><strong>说明：</strong>绩效单要设置为【已发布】，相关员工才能看到对应的绩效单，从而进行下一步的绩效数据填写，填写完绩效数据后，自动进入审核阶段。 {eq name="$detail.status" value="0"}<a class="layui-btn layui-btn-normal layui-btn-xs send">发布绩效单</a>{/eq}</p>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-3">
+		<table class="layui-hide" id="table_records" lay-filter="table_records"></table>
+	</div>
+</div>
+<script type="text/html" id="toolbarDemo">
+	<h3>绩效数据</h3>
+</script>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	const performance_id = {$detail.id};
+	const role_auth = {$role_auth};
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_records"
+			,title: '绩效数据列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/performance/api/get_records?limit=10000"
+			,where:{'performance_id':performance_id}
+			,page: false
+			,cellMinWidth: 80
+			,height: 'full-188'
+			,cols: [[
+				{field:'name',fixed:'left',title: '员工姓名',width:80, align:'center'}
+				,{field:'department',title: '所在部门',minWidth:100, align:'center'}
+				,{field:'position',title: '职位',width:100, align:'center'}
+				,{field:'status_name',title: '当前状态',width:100, align:'center',ignoreExport:true,templet: function (d) {
+						var html = '<span class="check-status-color-'+d.status+'">'+d.status_name+'</span>';
+						return html;
+					}
+				}
+				,{field:'final_score', title: '绩效考核总分',width:100,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'final_kpi_score', title: 'KPI得分',width:80,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'final_action_score', title: '任务考核得分',width:100,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'final_event_score', title: '例外事件考核得分',width:130,align:'center',style: 'background-color:#F3FFFA'}
+				,{field: 'kpi_uname', title: 'KPI收集人',align:'center', width:80}
+				,{field: 'action_uname', title: '行为态度评价人',align:'center', width:110}
+				,{field: 'event_uname', title: '例外事件收集人',align:'center', width:110}
+				,{field: 'check_uname', title: '行政审核人',align:'center', width:90}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var btn1='<a class="layui-btn layui-btn-xs" lay-event="add">编辑</a>';
+					var btn2='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn3='<a class="layui-btn layui-bg-red layui-btn-xs" lay-event="role">修改绩效分</a>';
+					var html = '<div class="layui-btn-group">'+btn1+btn2+'</div>';
+					if(d.status>0){
+						if(role_auth==1 && d.status==4){
+							html = '<div class="layui-btn-group">'+btn2+btn3+'</div>';
+						}
+						else{
+							html = '<div class="layui-btn-group">'+btn2+'</div>';
+						}
+					}
+					return html;
+				}}
+			]]
+		});
+		
+		table.on('tool(table_records)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/performance/records/view?id="+data.id);
+			}
+			if (obj.event === 'add') {
+				tool.side("/performance/records/add?id="+data.id);
+			}
+			if (obj.event === 'role') {
+				tool.side("/performance/records/edit?vip=1&id="+data.id);
+			}			
+			return false;
+		});
+		
+		$('body').on('click','.send',function(){
+			tool.ask('设为已发布后，该绩效单将可开放填写，确定要进行该操作吗?',function(){
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						tool.reload(1000);
+						parent.layui.pageTable.reload();
+					}
+				}
+				tool.post("/performance/api/performance_send", {id:performance_id}, callback);	
+			})
+		})
+	}
+</script>
+{/block}
+<!-- /脚本 -->

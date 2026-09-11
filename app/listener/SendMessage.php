@@ -1,6 +1,7 @@
 <?php
 namespace app\listener;
 use think\facade\Db;
+use think\facade\Cache;
 class SendMessage
 {
 	/**
@@ -65,6 +66,7 @@ class SendMessage
 			}
 			$res = Db::name('Msg')->strict(false)->field(true)->insertAll($send_data);
 			$this->qiyeMessage($users,$title,$content,$wxmsg_link);
+			$this->dingdingMessage($users,$title,$content,$wxmsg_link);
 		} catch (\Exception $e) {
 			// 处理异常，记录日志或者其他逻辑
 			// 但不要抛出异常，以免中断主程序流程
@@ -75,6 +77,10 @@ class SendMessage
 	//获取access_token
 	function get_access_token($corpid,$corpsecret)
 	{
+	    $cacheKey = 'workchat_access_token';
+        $token = Cache::get($cacheKey);
+        if ($token) return $token;
+        
 		$url="https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=$corpid&corpsecret=$corpsecret";
 		$ch=curl_init();
 		curl_setopt($ch,CURLOPT_URL,$url);
@@ -86,7 +92,12 @@ class SendMessage
 
 		curl_close($ch);
 		$jsoninfo = json_decode($output,true);
-		return $jsoninfo["access_token"];
+		if (isset($jsoninfo["access_token"])) {
+            // 官方有效期7200秒，这里缓存7000秒防止临界点失效
+            Cache::set($cacheKey, $jsoninfo["access_token"], 7000);
+            return $jsoninfo["access_token"];
+        }
+		return null;
 	}
 
 	function qiyeMessage($users,$title,$content,$msg_link)
@@ -104,7 +115,6 @@ class SendMessage
 		$corpsecret=$workchat['corpsecret'];
 		$agentid=$workchat['agentid'];
 		$host=$workchat['host'];
-		//$message_array =['title'=>$title,'tips'=>$content,'url'=>$msg_link];
 		//获取access_token
 		$accesstoken=$this->get_access_token($corpid,$corpsecret);
 		$url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=$accesstoken";
@@ -130,4 +140,88 @@ class SendMessage
 			//echo '消息发送失败，错误码：' . $errcode;
 		}
 	}
+	
+	function dingdingMessage($users,$title,$content,$msg_link)
+	{	
+		$dingtalk = get_config('dingtalk');
+		if($dingtalk['dingtalk']==false){
+			return false;
+		}
+		$userid = Db::name('Admin')->where([['id','in',$users],['dingtalk_userid','<>','']])->column('dingtalk_userid');
+		if (empty($userid)) {
+		   return false;
+		}
+		$users = implode(',' ,$userid);
+		$appKey = $dingtalk['appKey'];
+		$appSecret = $dingtalk['appSecret'];
+		$agentId = $dingtalk['agentId'];
+		$host = $dingtalk['host'];
+		//获取access_token
+		$accessToken = $this->getAccessToken($appKey,$appSecret);
+        if (!$accessToken) {
+            return false;
+        }
+        $url = "https://oapi.dingtalk.com/topapi/message/corpconversation/asyncsend_v2?access_token={$accessToken}";
+		
+		$msg = [
+            'msgtype' => 'action_card',
+            'action_card' => [
+                'title' => $title,
+                'markdown' => "### ".$content,
+                'single_title' => '查看详情',
+                'single_url' => $host.$msg_link
+            ]
+        ];
+		
+        $postData = [
+            'agent_id'    => $agentId,
+            'userid_list' => $users,
+            'msg'         => $msg
+        ];
+        $res = $this->httpPostJson($url, $postData);
+        $errcode = $res['errcode'];
+		if ($errcode == 0) {
+			return true;
+		} else {
+			return false;
+			//echo '消息发送失败，错误码：' . $errcode;
+		}
+	}
+	
+	private function getAccessToken($appKey,$appSecret)
+    {
+        $cacheKey = 'dingtalk_access_token';
+        $token = Cache::get($cacheKey);
+        if ($token) return $token;
+
+        $url = "https://oapi.dingtalk.com/gettoken?appkey={$appKey}&appsecret={$appSecret}";
+        $res = json_decode(file_get_contents($url), true);
+
+        if (isset($res['access_token'])) {
+            // 官方有效期7200秒，这里缓存7000秒防止临界点失效
+            Cache::set($cacheKey, $res['access_token'], 7000);
+            return $res['access_token'];
+        }
+        return null;
+    }
+
+    /**
+     * 封装 HTTP POST JSON 请求
+     */
+    private function httpPostJson($url, $data)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($response, true) ?: ['errcode' => -1, 'errmsg' => '请求钉钉接口失败'];
+    }
 }

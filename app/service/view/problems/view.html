@@ -15,7 +15,7 @@
 <div class="p-page">
 	<h3><span class="font20">{$detail.title}</span></h3>
 	<div class="py-3">
-		{$detail.admin_name} 创建于{$detail.create_time}
+		{$detail.admin_name} 创建于{$detail.create_time|to_date}
 	</div>
 	<div class="layui-tabs layui-tab-brief" id="projectTab">
 		<ul class="layui-tabs-header border-t border-x bg-white">
@@ -47,7 +47,7 @@
 					<tr>
 						<td class="layui-td-gray">优 先 级</td>
 						<td>{$detail.priority_name}</td>
-						<td class="layui-td-gray">项目状态</td>
+						<td class="layui-td-gray">问题状态</td>
 						<td>{$detail.status_name}</td>
 						{eq name="$detail.status" value="4"}
 						<td class="layui-td-gray">完成日期</td>

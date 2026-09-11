@@ -27,7 +27,7 @@ class Api extends BaseController
 			$auth=isAuth($this->uid,'service_admin','conf_1');
 			$where=[];
 			$where[]=['delete_time','=',0];
-            $where[] = ['status', '<', 3];
+            $where[] = ['status', '<', 4];
 			if($auth==0){
 				$where[] = ['admin_id|director_id','=',$this->uid];
 			}

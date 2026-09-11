@@ -518,10 +518,8 @@
 				let callback = function (e) {
 					layer.msg(e.msg);
 					if(e.code==0){
+						tool.reload(2000);
 						parent.layui.pageTable.reload();
-						setTimeout(function(){
-							location.reload();
-						},2000)
 					}
 				}
 				tool.post("/project/api/close", { 'id': project_id}, callback);
@@ -532,10 +530,8 @@
 				let callback = function (e) {
 					layer.msg(e.msg);
 					if(e.code==0){
+						tool.reload(2000);
 						parent.layui.pageTable.reload();
-						setTimeout(function(){
-							location.reload();
-						},2000)
 					}
 				}
 				tool.post("/project/api/open", { 'id': project_id}, callback);

@@ -1,0 +1,356 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">员工绩效</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">考核周期</td>
+			<td>{$detail.range_time|default=''}</td>
+			<td class="layui-td-gray">考核员工</td>
+			<td>{$detail.u_name|default=''}</td>
+			<td class="layui-td-gray">总分数<font>*</font></td>
+			<td style="width:100px;"><input type="text" name="score" lay-verify="required|number" readonly class="layui-input layui-input-readonly" value="{$detail.score|default='100'}"></td>
+		</tr>
+		<tr>
+			<td colspan="2"><strong>KPI考核</strong> <span class="layui-btn layui-btn-sm" type="button" id="kpiAdd">+ 添加选项</span></td>
+			<td class="layui-td-gray-2">KPI收集人<font>*</font></td>
+			<td style="width:100px;">
+				<input type="text" name="kpi_uname" readonly lay-verify="required" placeholder="请选择KPI收集人" lay-reqText="请选择KPI收集人" class="layui-input picker-admin" value="{$detail.kpi_uname|default=''}">
+				<input type="hidden" name="kpi_uid" value="{$detail.kpi_uid|default=''}">
+			</td>
+			<td class="layui-td-gray-2">分数占比(%)<font>*</font></td>
+			<td style="width:100px;"><input type="text" name="kpi_score" lay-verify="required|number" readonly placeholder="请输入绩效模板名称" lay-reqText="请输入绩效模板名称" class="layui-input layui-input-readonly" value="{$detail.kpi_score|default='90'}"></td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="kpiTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="300">指标名称</th>
+						<th width="300">指标说明</th>
+						<th width="100">权重(%)</th>
+						<th width="100">保障值</th>
+						<th width="150">目标值</th>
+						<th width="100">挑战值</th>
+						<th width="150">评分标准</th>
+						<th width="200">计分准则</th>
+						<th width="120">权重封顶值</th>
+						<th width="100">考核频率</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$detail.kpi_array"}
+					<tr class="kpi-tr">
+						<td><input type="text" name="kpi_title[]" value="销售额（校园）" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="kpi_content[]" value="考核校园累计销售额" class="layui-input" lay-verify="required" lay-reqText="请输入指标说明"></td>
+						<td><input type="text" name="kpi_weight[]" value="10" class="layui-input kpi-num" lay-verify="required|number" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="kpi_guarantee[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_goal[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_challenge[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_standard[]" value="完成率*权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_rules[]" value="累计销售量/当月累计任务额 * 权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="kpi_frequency[]" value="季度" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					<tr class="kpi-tr">
+						<td><input type="text" name="kpi_title[]" value="客户培训次数" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="kpi_content[]" value="考核客服人员累计给客户的培训次数" class="layui-input" lay-verify="required" lay-reqText="请输入指标说明"></td>
+						<td><input type="text" name="kpi_weight[]" value="20" class="layui-input kpi-num" lay-verify="required|number" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="kpi_guarantee[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_goal[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_challenge[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_standard[]" value="完成率*权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_rules[]" value="累计销售量/当月累计任务额 * 权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="kpi_frequency[]" value="季度" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					<tr class="kpi-tr">
+						<td><input type="text" name="kpi_title[]" value="OKR更新" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="kpi_content[]" value="每月4次" class="layui-input" lay-verify="required" lay-reqText="请输入指标说明"></td>
+						<td><input type="text" name="kpi_weight[]" value="30" class="layui-input kpi-num" lay-verify="required|number" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="kpi_guarantee[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_goal[]" value="每周一次，每月四次" class="layui-input"></td>
+						<td><input type="text" name="kpi_challenge[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_standard[]" value="完成率*权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_rules[]" value="实际数量/考核数量 * 权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="kpi_frequency[]" value="季度" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					<tr class="kpi-tr">
+						<td><input type="text" name="kpi_title[]" value="每周问题反馈表更新" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="kpi_content[]" value="每月4次" class="layui-input" lay-verify="required" lay-reqText="请输入指标说明"></td>
+						<td><input type="text" name="kpi_weight[]" value="30" class="layui-input kpi-num" lay-verify="required|number" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="kpi_guarantee[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_goal[]" value="每周一次，每月四次" class="layui-input"></td>
+						<td><input type="text" name="kpi_challenge[]" value="" class="layui-input"></td>
+						<td><input type="text" name="kpi_standard[]" value="完成率*权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_rules[]" value="实际数量/考核数量 * 权重" class="layui-input"></td>
+						<td><input type="text" name="kpi_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="kpi_frequency[]" value="季度" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					{else/}
+					{volist name="$detail.kpi_array" id="vo"}
+					<tr class="kpi-tr">
+						<td><input type="text" name="kpi_title[]" value="{$vo.kpi_title|default=''}" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="kpi_content[]" value="{$vo.kpi_content|default=''}" class="layui-input" lay-verify="required" lay-reqText="请输入指标说明"></td>
+						<td><input type="text" name="kpi_weight[]" value="{$vo.kpi_weight|default=''}" class="layui-input kpi-num" lay-verify="required" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="kpi_guarantee[]" value="{$vo.kpi_guarantee|default=''}" class="layui-input"></td>
+						<td><input type="text" name="kpi_goal[]" value="{$vo.kpi_goal|default=''}" class="layui-input"></td>
+						<td><input type="text" name="kpi_challenge[]" value="{$vo.kpi_challenge|default=''}" class="layui-input"></td>
+						<td><input type="text" name="kpi_standard[]" value="{$vo.kpi_standard|default=''}" class="layui-input"></td>
+						<td><input type="text" name="kpi_rules[]" value="{$vo.kpi_rules|default=''}" class="layui-input"></td>
+						<td><input type="text" name="kpi_max[]" value="{$vo.kpi_max|default='100'}" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="kpi_frequency[]" value="{$vo.kpi_frequency|default=''}" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><strong>行为态度考核</strong> <span class="layui-btn layui-btn-sm" type="button" id="actionAdd">+ 添加选项</span></td>
+			<td class="layui-td-gray-2">行为评价人<font>*</font></td>
+			<td style="width:100px;">
+				<input type="text" name="action_uname" readonly lay-verify="required" placeholder="请选择行为评价人" lay-reqText="请选择行为评价人" class="layui-input picker-admin" value="{$detail.action_uname|default=''}">
+				<input type="hidden" name="action_uid" value="{$detail.action_uid|default=''}">
+			</td>
+			<td class="layui-td-gray-2">分数占比(%)<font>*</font></td>
+			<td style="width:100px;"><input type="text" name="action_score" lay-verify="required|number" readonly placeholder="请输入绩效模板名称" lay-reqText="请输入绩效模板名称" class="layui-input layui-input-readonly" value="{$detail.action_score|default='10'}"></td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="actionTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="300">阶段工作任务</th>
+						<th width="100">权重(%)</th>
+						<th>评分标准</th>
+						<th width="120">权重封顶值</th>
+						<th width="100">考核频率</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$detail.action_array"}
+					<tr class="action-tr">
+						<td><input type="text" name="action_title[]" value="工作表现" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="action_weight[]" value="10" class="layui-input action-num" lay-verify="required" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="action_standard[]" value="" class="layui-input"></td>
+						<td><input type="text" name="action_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="action_frequency[]" value="月" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					{else/}
+					{volist name="$detail.action_array" id="vo"}
+					<tr class="action-tr">
+						<td><input type="text" name="action_title[]" value="{$vo.action_title|default=''}" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>
+						<td><input type="text" name="action_weight[]" value="{$vo.action_weight|default=''}" class="layui-input action-num" lay-verify="required" lay-reqText="请输入权重，数字"></td>
+						<td><input type="text" name="action_standard[]" value="{$vo.action_standard|default=''}" class="layui-input"></td>
+						<td><input type="text" name="action_max[]" value="{$vo.action_max|default='100'}" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>
+						<td><input type="text" name="action_frequency[]" value="{$vo.action_frequency|default=''}" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><strong>例外事件(加减分项考核)</strong> <span class="layui-btn layui-btn-sm" type="button" id="eventAdd">+ 添加选项</span></td>
+			<td class="layui-td-gray-3">例外事件收集人<font>*</font></td>
+			<td colspan="3" style="width:100px;">
+				<input type="text" name="event_uname" readonly lay-verify="required" placeholder="请选择例外事件收集人" lay-reqText="请选择例外事件收集人" class="layui-input picker-admin" value="{$detail.event_uname|default=''}">
+				<input type="hidden" name="event_uid" value="{$detail.event_uid|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="eventTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th>事项</th>
+						<th>评分标准</th>
+						<th width="60">操作</th>
+					</tr>
+					{empty name="$detail.event_array"}
+					<tr class="event-tr">
+						<td><input type="text" name="event_title[]" value="异常监督" class="layui-input" lay-verify="required" lay-reqText="请完善事项"></td>
+						<td><input type="text" name="event_standard[]" value="" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					<tr class="event-tr">
+						<td><input type="text" name="event_title[]" value="规章制度" class="layui-input" lay-verify="required" lay-reqText="请完善事项"></td>
+						<td><input type="text" name="event_standard[]" value="" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					<tr class="event-tr">
+						<td><input type="text" name="event_title[]" value="合理化建议" class="layui-input" lay-verify="required" lay-reqText="请完善事项"></td>
+						<td><input type="text" name="event_standard[]" value="" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					{else/}
+					{volist name="$detail.event_array" id="vo"}
+					<tr class="event-tr">
+						<td><input type="text" name="event_title[]" value="{$vo.event_title|default=''}" class="layui-input" lay-verify="required" lay-reqText="请完善事项"></td>
+						<td><input type="text" name="event_standard[]" value="{$vo.event_standard|default=''}" class="layui-input"></td>
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+		<td class="layui-td-gray">行政部审核人<font>*</font></td>
+			<td colspan="5">	
+				<input type="text" name="check_uname" readonly lay-verify="required" placeholder="请选择行政部审核人" lay-reqText="请选择行政部审核人" class="layui-input picker-admin" value="{$detail.check_uname|default=''}">
+				<input type="hidden" name="check_uid" value="{$detail.check_uid|default=''}">
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交保存</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+
+	function gouguInit() {
+		var form = layui.form, tool = layui.tool;
+		
+		//添加KPI选项表格
+		$('#kpiAdd').on('click',function(){
+			var html = '';
+			html += '<tr class="kpi-tr">\
+						<td><input type="text" name="kpi_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>\
+						<td><input type="text" name="kpi_content[]" value="" class="layui-input" lay-verify="required" lay-reqText="请输入指标说明"></td>\
+						<td><input type="text" name="kpi_weight[]" value="" class="layui-input kpi-num" lay-verify="required" lay-reqText="请输入权重，数字"></td>\
+						<td><input type="text" name="kpi_guarantee[]" value="" class="layui-input"></td>\
+						<td><input type="text" name="kpi_goal[]" value="" class="layui-input"></td>\
+						<td><input type="text" name="kpi_challenge[]" value="" class="layui-input"></td>\
+						<td><input type="text" name="kpi_standard[]" value="" class="layui-input"></td>\
+						<td><input type="text" name="kpi_rules[]" value="" class="layui-input"></td>\
+						<td><input type="text" name="kpi_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>\
+						<td><input type="text" name="kpi_frequency[]" value="季度" class="layui-input"></td>\
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>\
+					</tr>';
+			$('#kpiTable').append(html);
+			form.render();
+		});	
+
+		$('#kpiTable').on('click', '[lay-event="del"]', function() {
+			if($('.kpi-tr').length<2){
+				layer.msg('至少保留一个KPI选项');
+				return false;
+			}
+			$(this).parents('.kpi-tr').remove();
+			count_score();
+		});
+		
+		//计算KPI权重总数
+		$('#kpiTable').on('input', '.kpi-num', function() {
+			count_score();
+		});
+		
+		//添加action选项表格
+		$('#actionAdd').on('click',function(){
+			var html = '';
+			html += '<tr class="action-tr">\
+						<td><input type="text" name="action_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善指标名称"></td>\
+						<td><input type="text" name="action_weight[]" value="" class="layui-input action-num" lay-verify="required" lay-reqText="请输入权重，数字"></td>\
+						<td><input type="text" name="action_standard[]" value="" class="layui-input"></td>\
+						<td><input type="text" name="action_max[]" value="100" class="layui-input" lay-verify="required|number" lay-reqText="请输入权重封顶值，数字"></td>\
+						<td><input type="text" name="action_frequency[]" value="月" class="layui-input"></td>\
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>\
+					</tr>';
+			$('#actionTable').append(html);
+			form.render();
+		});	
+
+		$('#actionTable').on('click', '[lay-event="del"]', function() {
+			if($('.action-tr').length<2){
+				layer.msg('至少保留一个行为态度考核选项');
+				return false;
+			}
+			$(this).parents('.action-tr').remove();
+			count_score();
+		});
+		
+		//计算action权重总数
+		$('#actionTable').on('input', '.action-num', function() {
+			count_score();
+		});
+		
+		//添加event选项表格
+		$('#eventAdd').on('click',function(){
+			var html = '';
+			html += '<tr class="event-tr">\
+						<td><input type="text" name="event_title[]" value="" class="layui-input" lay-verify="required" lay-reqText="请完善事项"></td>\
+						<td><input type="text" name="event_standard[]" value="" class="layui-input"></td>\
+						<td><a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a></td>\
+					</tr>';
+			$('#eventTable').append(html);
+			form.render();
+		});	
+
+		$('#eventTable').on('click', '[lay-event="del"]', function() {
+			if($('.event-tr').length<2){
+				layer.msg('至少保留一个例外事件考核选项');
+				return false;
+			}
+			$(this).parents('.event-tr').remove();
+		});
+		
+		
+		//计算总数
+		function count_score(){
+			var kpi = $('#kpiTable').find(".kpi-num");
+			var kpi_score = 0;
+			for (var a = 0; a < kpi.length; a++) {
+				kpi_score+=$(kpi[a]).val()*100;
+			}
+			if(isNaN(kpi_score)){ 
+				kpi_score = 0;
+			}
+			$('[name="kpi_score"]').val(kpi_score/100);
+			
+			var action = $('#actionTable').find(".action-num");
+			var action_score = 0;
+			for (var b = 0; b < action.length; b++) {
+				action_score+=$(action[b]).val()*100;
+			}
+			if(isNaN(action_score)){ 
+				action_score = 0;
+			}
+			$('[name="action_score"]').val(action_score/100);
+			
+			if(isNaN(kpi_score)){ 
+				kpi_score = 0;
+			}
+			if(isNaN(action_score)){ 
+				action_score = 0;
+			}
+			$('[name="score"]').val((kpi_score+action_score)/100);
+		}
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/performance/records/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

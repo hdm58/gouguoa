@@ -16,6 +16,7 @@ declare (strict_types = 1);
 namespace app\finance\controller;
 
 use app\base\BaseController;
+use app\finance\model\Invoice;
 use app\finance\model\InvoiceIncome;
 use think\exception\ValidateException;
 use think\facade\Db;
@@ -143,7 +144,14 @@ class Income extends BaseController
 			}
 		}
         else{
-            $id = isset($param['id']) ? $param['id']: 0 ;
+            $id = isset($param['id']) ? $param['id']: 0;
+            $invoice_id = isset($param['invoice_id']) ? $param['invoice_id']: 0;
+			if($invoice_id>0){
+				$invoiceModel = new Invoice();
+				$invoice = $invoiceModel->getById($invoice_id);
+				View::assign('invoice', $invoice);
+				return view('invoice_add');
+			}
 			if($id>0){
 				$detail = $this->model->getById($id);
 				View::assign('detail', $detail);

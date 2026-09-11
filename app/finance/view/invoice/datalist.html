@@ -296,67 +296,8 @@
 				return;
 			}
 			if(obj.event === 'open'){
-				layer.open({
-					type: 1
-					,title: '标记为已开票'
-					,area: '396px;'
-					,id: 'invoiceBox' //设定一个id，防止重复弹出
-					,btn: ['确定', '取消']
-					,btnAlign: 'c'
-					,content: '<div style="padding-top:15px;">\
-								<div class="layui-form-item">\
-								  <label class="layui-form-label">开票日期</label>\
-								  <div class="layui-input-inline">\
-									<input type="text" name="open_time" readonly value="'+data.open_time+'" placeholder="请选择实际开票日期" class="layui-input tool-time">\
-								  </div>\
-								</div>\
-								<div class="layui-form-item">\
-								  <label class="layui-form-label">发票号码</label>\
-								  <div class="layui-input-inline">\
-									<input type="text" name="code" autocomplete="off" value="'+data.code+'" placeholder="请输入发票号码" class="layui-input">\
-								  </div>\
-								</div>\
-								<div class="layui-form-item">\
-								  <label class="layui-form-label">物流单号</label>\
-								  <div class="layui-input-inline">\
-									<input type="text" name="delivery" autocomplete="off" value="'+data.delivery+'" placeholder="请输入物流快递单号" class="layui-input">\
-								  </div>\
-								</div>\
-							  </div>'
-					,yes: function(index){
-						let code = $('#invoiceBox').find('[name="code"]').val();
-						let open_time = $('#invoiceBox').find('[name="open_time"]').val();
-						let delivery = $('#invoiceBox').find('[name="delivery"]').val();
-						if(open_time == ''){
-							layer.msg('请完善开票时间');
-							return false;
-						}
-						if(code == ''){
-							layer.msg('请完善发票号码');
-							return false;
-						}
-						$.ajax({
-							url: "/finance/api/open",
-							type: 'post',
-							data: {
-								id: data.id,
-								code: code,
-								open_time: open_time,
-								delivery: delivery
-							},
-							success: function(e) {
-								layer.msg(e.msg);
-								if (e.code == 0) {
-									layer.close(index);
-									layui.pageTable.reload();
-								}
-							}
-						})
-					}
-					,btn2: function(){
-						layer.closeAll();
-					}
-				});			
+				tool.side("/finance/api/open?id="+data.id);
+				return;		
 			}
 			if (obj.event === 'tovoid') {
 				tool.ask('确定作废该发票吗？', function(index) {

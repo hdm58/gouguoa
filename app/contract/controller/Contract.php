@@ -302,7 +302,7 @@ class Contract extends BaseController
 				}	
 				if($param['types']==3){			
 					$service_title_data = isset($param['service_title']) ? $param['service_title'] : '';
-					$service_id_data = isset($param['service_id']) ? $param['service_id'] : 0;
+					$service_id_data = isset($param['service_id']) ? $param['service_id'] : [];
 					$service_time_a_data = isset($param['service_time_a']) ? $param['service_time_a'] : '';
 					$service_time_b_data = isset($param['service_time_b']) ? $param['service_time_b'] : '';
 					$service_date_data = isset($param['service_date']) ? $param['service_date'] : '';

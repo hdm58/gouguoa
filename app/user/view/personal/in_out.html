@@ -1,0 +1,181 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style>
+.layui-table-form th{text-align:center; background-color:#f8f8f8;}
+.layui-table-form td{text-align:center;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">	
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li><a href="/user/personal/statistics">人事报表</a></li>					
+				<li class="layui-this"><a href="/user/personal/in_out">入职/离职分析</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="p-3 border-x border-t" style="background-color:#fff; margin-top:12px;">
+		选择年度
+		<div class="layui-input-inline" style="width:120px;">
+			<div class="layui-input-wrap">
+				  <div class="layui-input-prefix">
+						<i class="layui-icon layui-icon-date"></i>
+				  </div>
+				  <input type="text" id="laydateYear" readonly placeholder="选择年度" class="layui-input" value="{$year}">
+				  <div class="layui-input-suffix">
+						<i class="layui-icon layui-icon-down"></i>
+				  </div>
+			</div>
+		</div>
+	</div>
+	<div class="border-x border-t" style="background-color:#fff">
+		<div id="chartElectric" class="chart-box" style="width: 100%; height:360px;" data-type="bar"  data-year="{$year}" data-url="/user/api/in_out"></div>
+	</div>
+    <table class="layui-table layui-table-form" id="excel_table_2">
+		<tr>
+			<td colspan="13" align="center"><strong>{$year}年 - 入职/离职报表</strong> <input type="button" class="layui-btn layui-btn-xs to-excel" data-id="2" value="导出报表" data-title="{$year}年 - 入职/离职报表"></td>
+		</tr>
+		<tr>
+			<th>月份</th>
+			{for start="1" end="13"}
+			<th>{$i}月份</th>
+			{/for}
+		</tr>
+		<tr style="color:#1e9fff">
+		<td>入职</td>
+		{volist name="$one_data.in" id="vo"}
+			<td>{$vo}</td>
+		{/volist}
+		</tr>
+		<tr style="color:#ff5722">
+		<td>离职</td>
+		{volist name="$one_data.out" id="vo"}
+			<td>{$vo}</td>
+		{/volist}
+		</tr>
+    </table>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/echart/echarts.min.js"></script>
+<script>
+	const moduleInit = ['tool','excel'];
+	
+	//加载有数据
+    function initBoxData() {
+		var index = layer.load(0, {shade: false});
+		  setTimeout(function(){
+			layer.close(index);
+		}, 1000);
+        $('.chart-box').each(function(){
+            var id  =$(this).attr("id");
+            ajaxCharts(id);
+        });
+    }
+
+	var chartsData={
+		"title": {
+			"text": "人员"
+		},
+		"series": {}
+	};
+	
+    function ajaxCharts(id) {
+        var that=$('#'+id+'');
+        var type=that.data('type');
+        var year=that.data('year');
+        var target=that.attr('data-url');
+        $.ajax({
+            type: "GET",
+            url: target,
+            data: {'year_time':year},
+            dataType: "json",
+            async: false,
+            success: function (e) {
+				if(e.code==0){
+					chartsData=e.data;
+				}
+            },
+            complete: function () {
+
+            }
+        });
+
+		// 基于准备好的dom，初始化echarts实例
+		var myChart = echarts.init(document.getElementById(id));
+		switch (type) {
+			case 'bar':
+                option = {
+                    title: {
+                        text: chartsData.title.text,
+						left: '12px',
+						top:'12px'
+                    },
+					grid: {
+						top: '60px',
+						left: '1%',
+						right: '2%',
+						bottom: '3%',
+						containLabel: true
+					},
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#999'
+                            }
+                        }
+                    },
+                    legend: {
+                        data: chartsData.legend,
+						left: 'center',
+						top:'20px'
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: chartsData.xaxis,
+                            axisTick: {
+								alignWithLabel: true
+							}
+                        }
+                    ],
+                    yAxis:chartsData.yaxis,
+                    series:chartsData.series
+                };
+				myChart.setOption(option);
+             break;
+		}
+
+	}
+	
+	function gouguInit() {
+		var tool = layui.tool,form  = layui.form,laydate  = layui.laydate,excel  = layui.excel;
+		$('body').on('click','.to-excel',function(){
+			var tableid=$(this).data('id');
+			var tableName=$(this).data('title');
+			excel.init('excel_table_'+tableid, {
+				name:tableName,
+				nested: true,
+				exclude_inputs: false
+			});
+			return false;
+		});
+		laydate.render({
+			elem: '#laydateYear',
+			type:'year',
+			done:function(a){
+				window.location.href="/user/personal/in_out?year_time="+a;
+			}
+		 });
+		initBoxData();
+	}
+</script>
+{/block}
+<!-- /脚本 -->

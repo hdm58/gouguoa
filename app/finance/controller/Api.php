@@ -172,7 +172,7 @@ class Api extends BaseController
 			if(isset($param['open_time'])){
 				$param['open_time'] = strtotime(urldecode($param['open_time']));
 			}
-            $res = Invoice::where('id', $param['id'])->strict(false)->field('code,open_status,open_time,open_admin_id,delivery')->update($param);
+            $res = Invoice::where('id', $param['id'])->strict(false)->field('code,open_status,open_time,open_admin_id,delivery,other_file_ids')->update($param);
             if ($res !== false) {
 				add_log('open', $param['id'],$param,'发票');
                 return to_assign();
@@ -180,6 +180,14 @@ class Api extends BaseController
                 return to_assign(1, "操作失败");
             }
         }
+		else{
+			$model = new Invoice();
+			$detail = $model->getById($param['id']);
+			$other_file_array = Db::name('File')->where('id','in',$detail['other_file_ids'])->select();
+			$detail['other_file_array'] = $other_file_array;
+			View::assign('detail', $detail);
+			return view();
+		}
     }
 	
     //作废发票

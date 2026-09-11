@@ -11,4 +11,20 @@
 +-----------------------------------------------------------------------------------------------
 */
 
-use think\facade\Db;
+//计算年龄
+function calculateAge($birthTimestamp) {
+	if(!empty($birthTimestamp)){
+	// 获取当前时间的时间戳  
+		$currentTimestamp = time();  		  
+		// 计算两个时间戳之间的秒数差  
+		$secondsDifference = $currentTimestamp - strtotime($birthTimestamp);  		  
+		// 将秒数差转换为天数  
+		$daysDifference = floor($secondsDifference / (60 * 60 * 24));  		  
+		// 计算完整的年份差（忽略不完整的年份，比如只过了几个月）  
+		$age = floor($daysDifference / 365.25); // 使用365.25来考虑闰年 		  
+		return $age; 
+	}
+	else{
+		return 1;
+	}
+}

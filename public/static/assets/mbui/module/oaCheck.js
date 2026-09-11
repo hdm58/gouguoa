@@ -5,6 +5,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 	const fileupload = mbui.fileupload;
 	const opts={
 		"checkBox":"checkBox",//审核容器id
+		"checkClass":"bg-white",//审核容器id样式
 		"check_name": "",//审核类型标识
 		"check_btn":1,//是否显示提交审核按钮
 		"checking_btn":'',//待审核状态下添加的按钮
@@ -30,7 +31,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 		loading:false,
 		checkStatus: function (status) {
 			statusArray = ['待提交审批','审批中','审批通过','审批不通过','已撤回'];
-			return '<span class="check-status-color-'+status+'">'+statusArray[status]+'</span>';
+			return '<div class="bg-status bg-status-color-'+status+'">'+statusArray[status]+'</div>';
 		},
 		statusTemplate: function (status) {
 			let me = this;
@@ -132,7 +133,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="bg-white">
+					<div class="${me.sets.checkClass}">
 						${me.flowTemplate(flow)}
 						<div id="checkTR">${me.uidsTemplate()}</div>
 						${me.copyTemplate(flow[0])}
@@ -147,7 +148,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="bg-white">
+					<div class="${me.sets.checkClass}">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
@@ -160,7 +161,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 			let viewHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="bg-white">
+					<div class="${me.sets.checkClass}">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 					</div>
@@ -300,20 +301,20 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="mbui-list">
-						<div class="mbui-list-bd">审批状态</div>
-						<div class="mbui-list-ft">
-							${me.checkStatus(detail.check_status)}
+					<div class="${me.sets.checkClass}">
+						<div class="mbui-list">
+							<div class="mbui-list-bd">审批状态</div>
+							<div class="mbui-list-ft">
+								${me.checkStatus(detail.check_status)}
+							</div>
 						</div>
-					</div>
-					<div class="mbui-list">
-						<div class="mbui-list-bd">当前审批人</div>
-						<div class="mbui-list-ft">
-							${detail.check_unames}
+						<div class="mbui-list">
+							<div class="mbui-list-bd">当前审批人</div>
+							<div class="mbui-list-ft">
+								${detail.check_unames}
+							</div>
 						</div>
-					</div>
-					${checkCopy}					
-					<div class="bg-white">
+						${checkCopy}					
 						<div class="padding-12 border-top">
 							<span class="f16 mbui-text-gray">审批流</span>
 						</div>
@@ -332,7 +333,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 						${detail.is_checker==1 && detail.step.check_role==0?checkNode:''}
 						${detail.is_checker==1?checkContent:''}
 					</div>
-					<div class="padding-16 center">
+					<div class="padding-12 center">
 						<input type="hidden" name="check_role" value="${detail.step.check_role}">
 						${detail.is_checker==1?btnCheck:''}
 						${detail.is_creater==1 && detail.is_back==1 && (detail.check_status==1 || detail.check_status==3)?btnBack:''}
@@ -353,7 +354,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 			let checkHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="bg-white">
+					<div class="${me.sets.checkClass}">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 						${me.flowTemplate(detail.flow)}
@@ -366,7 +367,7 @@ mbui.define(['form','layer','userPicker','fileupload'], function (exports) {
 			let viewHtml = `
 				<form class="mbui-form" id="formCheckBox">
 					<div class="mbui-group-title">审批操作</div>
-					<div class="bg-white">
+					<div class="${me.sets.checkClass}">
 						${me.statusTemplate(detail.check_status)}
 						${me.recordTemplate(detail.check_record)}
 					</div>

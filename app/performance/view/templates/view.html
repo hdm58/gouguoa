@@ -1,0 +1,230 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">绩效模板详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">模板名称</td>
+			<td colspan="3">{$detail.title|default=''}</td>
+			<td class="layui-td-gray">绩效分数</td>
+			<td class="{$detail.score==100?'green':'red'}">{$detail.score}</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">模板描述</td>
+			<td colspan="5">{$detail.content|default=''}</td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>KPI考核</strong></td>
+			<td class="layui-td-gray">分数占比</td>
+			<td style="width:100px;">{$detail.kpi_score|default='0'}%</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="kpiTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="300">指标名称</th>
+						<th width="300">指标说明</th>
+						<th width="100">权重(%)</th>
+						<th width="100">目标值</th>
+						<th width="300">评分标准</th>
+						<th width="100">考核频率</th>
+					</tr>
+					{empty name="$detail.kpi_array"}
+					<tr class="kpi-tr">
+						<td colspan="7" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.kpi_array" id="vo"}
+					<tr class="kpi-tr">
+						<td>1.{$key+1}</td>
+						<td style="text-align:left;">{$vo.kpi_title|default='-'}</td>
+						<td style="text-align:left;">{$vo.kpi_content|default='-'}</td>
+						<td>{$vo.kpi_weight|default='0'}</td>
+						<td>{$vo.kpi_goal|default='-'}</td>
+						<td style="text-align:left;">{$vo.kpi_standard|default='注意'}，得分封顶值为权重的{$vo.kpi_max|default='100'}%</td>
+						<td>{$vo.kpi_frequency|default='-'}</td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4"><strong>行为态度考核</strong></td>
+			<td class="layui-td-gray">分数占比</td>
+			<td style="width:100px;">{$detail.action_score|default='10'}%</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="actionTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="300">阶段工作任务</th>
+						<th width="100">权重(%)</th>
+						<th>评分标准</th>
+						<th width="100">考核频率</th>
+					</tr>
+					{empty name="$detail.action_array"}
+					<tr class="kpi-tr">
+						<td colspan="5" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.action_array" id="vo"}
+					<tr class="action-tr">
+						<td>2.{$key+1}</td>
+						<td style="text-align:left;">{$vo.action_title|default='-'}</td>
+						<td>{$vo.action_weight|default='0'}</td>
+						<td style="text-align:left;">{$vo.action_standard|default='注意'}，得分封顶值为权重的{$vo.action_max|default='100'}%</td>
+						<td>{$vo.action_frequency|default='-'}</td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>加减分项考核</strong></td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="eventTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th>事项</th>
+						<th>评分标准</th>
+					</tr>
+					{empty name="$detail.event_array"}
+					<tr class="kpi-tr">
+						<td colspan="3" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.event_array" id="vo"}
+					<tr class="event-tr">
+						<td>3.{$key+1}</td>
+						<td style="text-align:left;">{$vo.event_title|default='-'}</td>
+						<td style="text-align:left;">{$vo.event_standard|default='-'}</td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6"><strong>关联员工</strong>
+			<span class="layui-btn layui-btn-xs layui-btn-normal tool-add" type="button" data-href="/performance/users/add?template_id={$detail.id}">+ 新增</span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6">
+				<table class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="100">员工姓名</th>
+						<th>所在部门</th>
+						<th>岗位</th>
+						<th>KPI收集人</th>
+						<th>行为态度评价人</th>
+						<th>加减分项收集人</th>
+						<th>行政审核人</th>
+						<th width="100">操作</th>
+					</tr>
+					{empty name="$detail.users"}
+					<tr>
+						<td colspan="8" class="data-none">暂无关联员工</td>
+					</tr>
+					{/empty}
+					{volist name="$detail.users" id="vo"}
+					<tr>
+						<td>{$vo.u_name}</td>
+						<td style="text-align:left">{$vo.department}</td>
+						<td>{$vo.position}</td>
+						<td>{$vo.kpi_uname}</td>
+						<td>{$vo.action_uname}</td>
+						<td>{$vo.event_uname}</td>
+						<td>{$vo.check_uname}</td>
+						<td><button class="layui-btn layui-bg-red layui-btn-xs del-users" data-id="{$vo.id}">删除关联</button></td>
+					</tr>
+					{/volist}
+				</table>
+			</td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var template_id = {$detail.id};
+	var moduleInit = ['tool','oaPicker'];
+
+	function gouguInit() {
+		var tool = layui.tool,oaPicker=layui.oaPicker;
+		$('body').on('click','#rules',function () {
+			let that = $(this),ids = [],titles=[],map = {};
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title);
+				}
+				that.next().val(ids.join(','));
+				let rulesback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function () {
+							window.location.reload();
+						}, 1000);
+					}
+				}
+				tool.post("/performance/api/rules_add", {'rule_id':ids.join(','),'template_id':template_id}, rulesback);
+			}
+			let opts={
+				"title":"选择绩效考核规则",
+				"url": "/performance/api/get_rules?template_id="+template_id,
+				"ids":"",
+				"titles":"",
+				"area": ['600px', '580px'],
+				"cols":[{field: 'id',width: 80,title:'序号',align:'center'},{field:'title',title:'绩效考核规则'},{field:'score',width: 80,title:'绩效分数'}]
+			}
+			oaPicker.picker(opts,1,callback,map);//单选
+		});
+		
+		$('body').on('click','.del-rules',function () {
+			let id=$(this).data('id');
+			layer.confirm('确定要删除该绩效规则关联吗?', { icon: 3, title: '提示' }, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function () {
+							window.location.reload();
+						}, 1000);
+					}
+				}
+				tool.delete("/performance/api/rules_del", {'id':id}, callback);	
+				layer.close(index);
+			});
+		})
+		
+		$('body').on('click','.del-users',function () {
+			let id=$(this).data('id');
+			layer.confirm('确定要删除该员工关联吗?', { icon: 3, title: '提示' }, function (index) {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if (e.code == 0) {
+						setTimeout(function () {
+							window.location.reload();
+						}, 1000);
+					}
+				}
+				tool.delete("/performance/users/del", {'id':id}, callback);	
+				layer.close(index);
+			});
+		})
+		
+	}
+</script>
+{/block}
+<!-- /脚本 -->
+
+

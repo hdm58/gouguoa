@@ -1,0 +1,105 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<form class="layui-form p-page">
+	<h3 class="pb-3">绩效员工配置</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray-3">选择绩效员工<font>*</font></td>
+			<td>
+				<input type="text" name="uname" readonly lay-verify="required" placeholder="请选择绩效员工" lay-reqText="请选择绩效员工" class="layui-input picker-admin" value="{$detail.u_name|default=''}" data-type="2">
+				<input type="hidden" name="uid" value="{$detail.uid|default=''}">
+			</td>
+			<td class="layui-td-gray-3">关联绩效模板<font>*</font></td>
+			<td>
+				<input type="text" name="template_name" readonly lay-verify="required" placeholder="请选择绩效模板" lay-reqText="请选择绩效模板" class="layui-input picker-diy" value="{$detail.template_name|default=''}">
+				<input type="hidden" name="template_id" value="{$detail.template_id|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray">KPI收集人<font>*</font></td>
+			<td>
+				<input type="text" name="kpi_uname" readonly lay-verify="required" placeholder="请选择KPI收集人" lay-reqText="请选择KPI收集人" class="layui-input picker-admin" value="{$detail.kpi_uname|default=''}">
+				<input type="hidden" name="kpi_uid" value="{$detail.kpi_uid|default=''}">
+			</td>
+			<td class="layui-td-gray">行为态度评价人<font>*</font></td>
+			<td>
+				<input type="text" name="action_uname" readonly lay-verify="required" placeholder="请选择行为态度评价人" lay-reqText="请选择行为态度评价人" class="layui-input picker-admin" value="{$detail.action_uname|default=''}">
+				<input type="hidden" name="action_uid" value="{$detail.action_uid|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td class="layui-td-gray-3">加减分项收集人<font>*</font></td>
+			<td>
+				<input type="text" name="event_uname" readonly lay-verify="required" placeholder="请选择加减分项收集人" lay-reqText="请选择加减分项收集人" class="layui-input picker-admin" value="{$detail.event_uname|default=''}">
+				<input type="hidden" name="event_uid" value="{$detail.event_uid|default=''}">
+			</td>
+			<td class="layui-td-gray">行政部审核人<font>*</font></td>
+			<td>
+				<input type="text" name="check_uname" readonly lay-verify="required" placeholder="请选择行政部审核人" lay-reqText="请选择行政部审核人" class="layui-input picker-admin" value="{$detail.check_uname|default=''}">
+				<input type="hidden" name="check_uid" value="{$detail.check_uid|default=''}">
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" class="red" style="line-height:1.8">
+				<p><strong>绩效员工配置说明：</strong></p>
+				<p>1、必须是要配置了绩效模板的员工才能能进行绩效评定。</p>
+				<p>2、KPI收集人、行为评价人、例外事件收集人、行政部审核人是必须要选择。</p>
+				<p>3、如需新增【绩效模板】，请联系有权限的人员到【基础数据】=>【行政模块】=>【绩效模板】新增。</p>
+			</td>
+		</tr>
+	</table>
+	<div class="pt-4">
+		<input type="hidden" name="id" value="{$detail.id|default=0}"/>
+		<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">立即提交</button>
+		<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+	</div>
+</form>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool','oaPicker'];
+	function gouguInit() {
+		var tool = layui.tool,form = layui.form, oaPicker=layui.oaPicker;
+		$('body').on('click','.picker-diy',function () {
+			let that = $(this),ids = [],titles=[],map = {};
+			let callback = function(data){
+				for ( var i = 0; i <data.length; i++){
+					ids.push(data[i].id);
+					titles.push(data[i].title+'('+data[i].score+'分)');
+				}
+				that.val(titles.join(','));
+				that.next().val(ids.join(','));
+			}
+			let opts={
+				"title":"选择绩效模板",
+				"url": "/performance/api/get_templates",
+				"ids":"",
+				"titles":"",
+				"area": ['600px', '580px'],
+				"cols":[{field: 'id',width: 80,title:'序号',align:'center'},{field:'title',title:'绩效考核模板'},{field:'score',width: 80,title:'绩效分数'}]
+			}
+			oaPicker.picker(opts,1,callback,map);//单选
+		});
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			if(data.field.check_three!='' && data.field.check_second==''){
+				layer.msg('请完善二级审批人');
+				return false;
+			}
+			let callback = function (e) {
+				layer.msg(e.msg);
+				if (e.code == 0) {
+					tool.sideClose(1000);
+				}
+			}
+			tool.post("/performance/users/add", data.field, callback);
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

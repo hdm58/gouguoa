@@ -9,9 +9,11 @@
 .layui-table td, .layui-table th{padding:8px;}
 .gougu-picker .layui-layer-btn1{background-color:#f5f5f5}
 .gougu-picker .layui-layer-btn2{background-color:#EAFAFF}
+.layui-layer-btn a{height:32px;}
 .picker-table{padding:8px 8px 0;}
-.picker-table .layui-table-cell {padding:4px; height: 32px;line-height: 24px;}
-.layui-table-cell{padding:6px;}
+.picker-table .layui-table-cell {padding:4px; height: 32px;line-height: 23px;}
+.layui-table-cell{padding:6px;line-height: 23px;}
+.layui-table-view .layui-table[lay-size=lg] .layui-table-cell{line-height: 38px;}
 .layui-table-box{background-color:#fff;}
 .layui-table-page{background-color:#fff;border-bottom:1px solid #eeeeee;}
 .layui-table-tool{box-shadow: 0 0 0 rgb(0 0 0 / 1%);padding:10px 12px; background-color:#fff;}
@@ -22,9 +24,9 @@
 .layui-form-pane .layui-label-inline{height: 24px; padding:8px; float:left;}
 .layui-input-suffix .layui-form-checkbox{padding-right:0; margin-right:0}
 
-.layui-btn {height: 36px;line-height: 36px; padding:0 16px;}
+.layui-btn {height: 36px;line-height: 36px; padding:0 16px; font-family: -apple-system, Roboto, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
 .layui-btn-sm {height: 30px; line-height: 30px; padding:0 8px;}
-.layui-btn-xs {height: 22px; line-height: 22px; padding:0 4px;}
+.layui-btn-xs {height: 24px; line-height: 24px; padding:0 4px;}
 .layui-btn-reset {height: 36px;background-color: #fff; line-height: 36px; border: 1px solid transparent;padding: 0 8px; white-space: nowrap; color: #767a82;font-size: 14px;cursor: pointer;vertical-align: middle;}
 .layui-btn-reset:hover{color: #323232;}
 
@@ -57,16 +59,16 @@
 .layui-table-min td{font-size:13px; padding:6px;text-align:center;}
 
 .layui-tree-entry{line-height:24px}
-.layui-tree-set{padding:2px 0}
+.layui-tree-set{padding:2px 0;font-family: -apple-system, Roboto, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';}
 .layui-tree-main.on .layui-tree-txt,.layui-tree-main.on .layui-icon{color:#1A75FF;}
 .layui-icon layui-icon-file{font-size:16px;}
-.layui-tree-icon {height: 16px;line-height: 14px; width: 16px; text-align: center;}
+.layui-tree-icon {height: 16px;line-height: 16px; width: 16px; text-align: center;}
 .layui-tree-icon .layui-icon{color:#969696}
 .layui-tree-line .layui-tree-set .layui-tree-set:after{top:18px;}
 .layui-tree-line .layui-tree-entry:hover .layui-tree-txt{text-decoration:none; color:#186AF2;}
 .layui-tree-iconClick .layui-icon.layui-icon-file:before { content: "\e857";}
 .layui-select-tags{padding:10px 0;}
-.layui-tags-span{padding:3px 6px 0; font-size:14px; border-radius:3px; margin-bottom:6px; margin-right:6px; border:1px solid #e6e6e6; display:inline-block;cursor:pointer;}
+.layui-tags-span{padding:2px 6px; font-size:14px; border-radius:3px; margin-bottom:6px; margin-right:6px; border:1px solid #e6e6e6; display:inline-block;cursor:pointer;}
 .layui-tags-span:hover{border:1px solid #ddd; background-color:#f5f5f5;}
 .layui-tags-span.on{border:1px solid #eee; color:#bbb; background-color:#ffffff;cursor:not-allowed}
 .layui-readonly{background-color: #f5f5f5; color:#999;}
@@ -75,7 +77,7 @@
 .layui-letter-span{padding:10px 5px; font-size:16px; display:inline-block; cursor:pointer;}
 .layui-letter-span.on{color:#FF6347;}
 .layui-letter-span:hover{color:#1e9fff;}
-.layui-tags-all{float: right; font-weight: 200; background-color:#1e9fff; color:#fff; border-radius: 3px; padding: 3px 6px 0; font-size: 12px; cursor: pointer; display: none;}
+.layui-tags-all{float: right; font-weight: 200; background-color:#1e9fff; color:#fff; border-radius: 3px; padding: 2px 6px; font-size: 12px; cursor: pointer; display: none;}
 
 .layui-data-none{padding:12px 0; color:#969696; text-align:center; font-size:12px;}
 .gougu-data-none{background:url(../images/data-none.png) no-repeat center center; background-size:auto 80%;}
@@ -85,8 +87,8 @@
 .click-edit::after{content: ""; width: 36px; height: 24px; display: block; position: absolute; right:0; top: 5px; background:url(../images/click-edit.png) no-repeat center; background-size:24px auto; opacity: 0; transition: opacity ease-in-out .2s;}
 .click-edit.on:hover::after {opacity: 1;}
 
-html {background-color: #F9F9F9;}
-html,body{height:100%;scrollbar-width: thin; color:#323232;}
+html {background-color: #F9F9FA;}
+html,body{height:100%;scrollbar-width: thin; color:#323232; font-family: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;}
 .p-page{padding:15px 12px 0;box-sizing: border-box; width:100%; position:relative;}
 .copyright{padding:10px 0; text-align:center; font-size:12px; color: #989898; text-shadow: 2px 2px 0px #fff}
 .copyright a{margin-left:12px; color: #989898;text-shadow: 2px 2px 0px #fff}

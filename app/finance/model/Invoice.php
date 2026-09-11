@@ -110,6 +110,7 @@ class Invoice extends Model
 		$info['admin_name'] = Db::name('Admin')->where(['id' => $info['admin_id']])->value('name');
 		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
 		$info['subject'] = Db::name('Enterprise')->where(['id' =>$info['invoice_subject']])->value('title');
+		$info['tax_num'] = Db::name('Enterprise')->where(['id' =>$info['invoice_subject']])->value('tax_num');
 		if($info['contract_id']>0){
 			$info['contract_name'] = Db::name('Contract')->where('id',$info['contract_id'])->value('name');
 		}

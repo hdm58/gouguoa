@@ -38,6 +38,6 @@ class ExpenseValidate extends Validate
 	
     protected $scene = [
         'add' => ['code'],
-        'edit' => ['code', 'id'],
+        'edit' => ['id'],
     ];
 }

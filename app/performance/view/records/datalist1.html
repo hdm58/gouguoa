@@ -1,0 +1,89 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-card border-x border-t" style="margin-bottom:0; box-shadow:0 0 0 0 rgb(5 32 96 / 0%)">
+		<div class="layui-tabs layui-tab-brief" id="tab">
+			<ul class="layui-tabs-header">
+				<li {eq name="$tab" value="0"} class="layui-this"{/eq}><a href="/performance/records/datalist?tab=0">我的绩效</a></li>
+				<li {eq name="$tab" value="1"} class="layui-this"{/eq}><a href="/performance/records/datalist?tab=1">待我填写的绩效<span class="red">({$count_a})</span></a></li>
+				<li {eq name="$tab" value="2"} class="layui-this"{/eq}><a href="/performance/records/datalist?tab=2">待我审核的绩效<span class="red">({$count_b})</span></a></li>
+				<li {eq name="$tab" value="3"} class="layui-this"{/eq}><a href="/performance/records/datalist?tab=3">我填写的绩效</a></li>
+				<li {eq name="$tab" value="4"} class="layui-this"{/eq}><a href="/performance/records/datalist?tab=4">我审核的绩效</a></li>
+			</ul>
+		</div>
+	</div>
+	<table class="layui-hide" id="table_performance_records" lay-filter="table_performance_records"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+  	<h3>绩效数据</h3>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus'];
+	const tab = {$tab};
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_performance_records"
+			,title: '员工绩效列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/performance/records/datalist"
+			,where:{tab:tab}
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-96'
+			,cols: [[
+				{field:'name',fixed:'left',title: '员工姓名',width:80, align:'center'}
+				,{field:'department',title: '所在部门',width:100, align:'center'}
+				,{field:'position',title: '职位',width:100, align:'center'}
+				,{field:'status_name',title: '当前状态',width:100, align:'center',ignoreExport:true,templet: function (d) {
+						var html = '<span class="check-status-color-'+d.status+'">'+d.status_name+'</span>';
+						return html;
+					}
+				}
+				,{field:'range_time', title: '考核周期',width:180,align:'center'}
+				,{field:'performance', title: '所属绩效单',minWidth:200}
+				,{field:'final_score', title: '绩效考核总分',width:100,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'final_kpi_score', title: 'KPI得分',width:100,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'final_action_score', title: '任务考核得分',width:100,align:'center',style: 'background-color:#F3FFFA'}
+				,{field:'final_event_score', title: '例外事件考核得分',width:150,align:'center',style: 'background-color:#F3FFFA'}
+				,{field: 'kpi_uname', title: 'KPI收集人',align:'center', width:90}
+				,{field: 'kpi_score', title: 'KPI占比',align:'center', width:90,templet: function(d){
+					return d.kpi_score+'%';
+				}}
+				,{field: 'action_uname', title: '行为态度评价人',align:'center', width:110}
+				,{field: 'action_score', title: '行为态度占比',align:'center', width:110,templet: function(d){
+					return d.action_score+'%';
+				}}
+				,{field: 'event_uname', title: '例外事件收集人',align:'center', width:110}
+				,{field: 'check_uname', title: '行政审核人',align:'center', width:90}
+				,{width:80,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">去填写</a>';
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_performance_records)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/performance/records/edit?id="+data.id);
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

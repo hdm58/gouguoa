@@ -41,7 +41,7 @@ class Seal extends BaseController
     {
 		$param = get_params();
 		$uid=$this->uid;
-		$auth = isAuth($uid,'office_admin','conf_6');
+		$auth = isAuth($uid,'office_admin','conf_8');
         if (request()->isAjax()) {
 			$tab = isset($param['tab']) ? $param['tab'] : 0;
 			$uid=$this->uid;
@@ -193,7 +193,7 @@ class Seal extends BaseController
     {
 		$param = get_params();
 		$uid=$this->uid;
-		$auth = isAuth($uid,'office_admin','conf_7');
+		$auth = isAuth($uid,'office_admin','conf_8');
         if (request()->isAjax()) {
 			$param = get_params();
 			$where = [];

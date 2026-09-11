@@ -1,0 +1,106 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border-t border-x" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:100px">
+			<input type="text" name="month_time" placeholder="选择月份" readonly class="layui-input tool-time" data-type="month" />
+		</div>
+		<div class="layui-input-inline" style="width:100px">
+			<input type="text" name="u_name" placeholder="选择员工" readonly class="layui-input picker-admin" />
+			<input type="text" name="uid" style="display:none" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_performance_records" lay-filter="table_performance_records"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <h3>员工绩效</h3>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	const auth = {$auth_performance};
+	function gouguInit() {
+		var table = layui.tablePlus, tool = layui.tool;
+		
+		layui.pageTable = table.render({
+			elem: "#table_performance_records"
+			,title: '员工绩效列表'
+			,toolbar: "#toolbarDemo"
+			,url: "/performance/records/recordslist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-112'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{ field: 'status', title: '审核状态', align: 'center', width: 110, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					return html;
+					}
+				}
+				,{field:'month_time',title: '考核月份',width:90, align:'center'}
+				,{field:'u_name',title: '考核员工',width:90, align:'center'}
+				,{field:'department',title: '所属部门'}
+				,{field:'score',title: '绩效总分',width:80,align:'center'}
+				,{field:'self_score',title: '自评分',width:80,align:'center',style:"color:#16b777"}
+				,{field:'self_ratio',title: '自评分比例',width:90,align:'center',style:"color:#16b777",templet: function(d){
+					return d.self_ratio+'%';
+				}}
+				,{field:'superior_score',title: '上级评分',width:80,align:'center',style:"color:#1e9fff"}
+				,{field:'self_ratio',title: '上级分比例',width:90,align:'center',style:"color:#1e9fff",templet: function(d){
+					return (100-d.self_ratio)+'%';
+				}}
+				,{field:'final_score',title: '实际分数',width:80,align:'center',style:'color:#ff5722'}
+				,{field:'first_name', title: '第一审核人',width:90,align:'center'}
+				,{field:'second_name', title: '第二审核人',width:90,align:'center'}
+				,{field:'three_name', title: '第三审核人',width:90,align:'center'}
+				,{width:100,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-bg-red layui-btn-xs" lay-event="reset">反确认</a>';
+					if(auth == 1){
+						html = '<div class="layui-btn-group">'+btn1+btn2+'</div>';
+					}else{
+						html = btn1;
+					}
+					return html;
+				}}
+			]]
+		});
+			
+		table.on('tool(table_performance_records)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/performance/records/view?id="+data.id);
+				return;
+			}
+			if (obj.event === 'reset') {
+				layer.confirm('反确认后需要申请人重新提交审批，确定要反确认该绩效吗?', { icon: 3, title: '提示' }, function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/performance/api/performance_reset", { id: data.id }, callback);
+					layer.close(index);
+				});
+				return;
+			}
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

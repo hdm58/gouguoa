@@ -217,7 +217,7 @@ class Approve extends BaseController
 	//全部审批
     public function all()
     {
-		$auth_approve = isAuth($this->uid,'office_admin','conf_1');
+		$auth_approve = isAuth($this->uid,'human_admin','conf_1');
         if (request()->isAjax()) {
 			if($auth_approve==0){
 				return to_assign(1, '无权限访问');

@@ -1,0 +1,148 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+<div class="p-page">
+	<h3 class="pb-3">绩效模板详情</h3>
+	<table class="layui-table layui-table-form">
+		<tr>
+			<td class="layui-td-gray">员工姓名</td>
+			<td>{$detail.u_name|default=''}</td>
+			<td class="layui-td-gray">所属部门</td>
+			<td>{$detail.department}</td>
+			<td class="layui-td-gray">岗位职称</td>
+			<td>{$detail.position}</td>
+		</tr>
+			<td class="layui-td-gray">绩效模板</td>
+			<td colspan="3">{$detail.template_name|default=''}</td>
+			<td class="layui-td-gray">绩效分数</td>
+			<td class="{$detail.template_score==100?'green':'red'}">{$detail.template_score}</td>
+		</tr>
+		<tr>
+			<td colspan="2"><strong>KPI考核</strong></td>
+			<td class="layui-td-gray-2">数据收集人员</td>
+			<td style="width:100px;">{$detail.kpi_uname|default=''}</td>
+			<td class="layui-td-gray">分数占比</td>
+			<td style="width:100px;">{$detail.kpi_score|default='0'}%</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="kpiTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="300">指标名称</th>
+						<th width="300">指标说明</th>
+						<th width="100">权重(%)</th>
+						<th width="100">目标值</th>
+						<th width="300">评分标准</th>
+						<th width="100">考核频率</th>
+					</tr>
+					{empty name="$detail.kpi_array"}
+					<tr class="kpi-tr">
+						<td colspan="7" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.kpi_array" id="vo"}
+					<tr class="kpi-tr">
+						<td>1.{$key+1}</td>
+						<td style="text-align:left;">{$vo.kpi_title|default='-'}</td>
+						<td style="text-align:left;">{$vo.kpi_content|default='-'}</td>
+						<td>{$vo.kpi_weight|default='0'}</td>
+						<td style="text-align:left;">{$vo.kpi_goal|default='-'}</td>
+						<td style="text-align:left;">{$vo.kpi_standard|default='注意'}，得分封顶值为权重的{$vo.kpi_max|default='100'}%</td>
+						<td>{$vo.kpi_frequency|default='-'}</td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><strong>行为态度考核</strong></td>
+			<td class="layui-td-gray-2">评价人员</td>
+			<td style="width:100px;">{$detail.action_uname|default=''}</td>
+			<td class="layui-td-gray">分数占比</td>
+			<td style="width:100px;">{$detail.action_score|default='10'}%</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="actionTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th width="300">阶段工作任务</th>
+						<th width="100">权重(%)</th>
+						<th>评分标准</th>
+						<th width="100">考核频率</th>
+					</tr>
+					{empty name="$detail.action_array"}
+					<tr class="kpi-tr">
+						<td colspan="5" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.action_array" id="vo"}
+					<tr class="action-tr">
+						<td>2.{$key+1}</td>
+						<td style="text-align:left;">{$vo.action_title|default='-'}</td>
+						<td>{$vo.action_weight|default='0'}</td>
+						<td style="text-align:left;">{$vo.action_standard|default='注意'}，得分封顶值为权重的{$vo.action_max|default='100'}%</td>
+						<td>{$vo.action_frequency|default='-'}</td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><strong>加减分项考核</strong></td>
+			<td class="layui-td-gray-2">数据收集人员</td>
+			<td colspan="3">{$detail.event_uname|default=''}</td>
+		</tr>
+		<tr>
+			<td colspan="6">				
+				<table id="eventTable" class="layui-table layui-table-min" style="margin:0">
+					<tr>
+						<th width="60">序号</th>
+						<th>事项</th>
+						<th>评分标准</th>
+					</tr>
+					{empty name="$detail.event_array"}
+					<tr class="kpi-tr">
+						<td colspan="3" style="padding:10px; text-align:center; color:#999">暂无考核项</td>
+					</tr>
+					{else/}
+					{volist name="$detail.event_array" id="vo"}
+					<tr class="event-tr">
+						<td>3.{$key+1}</td>
+						<td style="text-align:left;">{$vo.event_title|default='-'}</td>
+						<td style="text-align:left;">{$vo.event_standard|default='-'}</td>
+					</tr>
+					{/volist}					
+					{/empty}
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="6" class="red" style="line-height:1.8">
+				<p><strong>绩效模板配置说明：</strong></p>
+				<p>1、必须是要增加了绩效设置的员工才能能进行绩效评定。</p>
+				<p>2、选择的绩效模板分数必须是100分，否则在填写绩效的时候无法提交。</p>
+				<p>3、KPI收集人、行为评价人、事件收集人、行政部审核人是必须要选择的。</p>
+			</td>
+		</tr>
+	</table>
+</div>
+{/block}
+<!-- /主体 -->
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	var moduleInit = ['tool'];
+	function gouguInit() {
+		var tool = layui.tool;
+
+		
+	}
+</script>
+{/block}
+<!-- /脚本 -->
+
+

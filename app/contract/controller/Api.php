@@ -298,7 +298,7 @@ class Api extends BaseController
 		}
 		$where[] = ['delete_time', '=', 0];
 		$rows = empty($param['limit']) ? get_config('app.page_size') : $param['limit'];
-        $list = Db::name('Supplier')->field('id,title,address')->order('id asc')->where($where)->paginate(['list_rows'=> $rows])->each(function($item, $key){
+        $list = Db::name('Supplier')->order('id asc')->where($where)->paginate(['list_rows'=> $rows])->each(function($item, $key){
 			$contact = Db::name('SupplierContact')->where(['sid'=>$item['id'],'is_default'=>1])->find();
 			if(!empty($contact)){
 				$item['contact_name'] = $contact['name'];

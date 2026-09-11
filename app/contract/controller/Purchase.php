@@ -264,12 +264,10 @@ class Purchase extends BaseController
 				$purchased_title = '';
 				
 				$service = [];
-				$service_ids = [];
-				$service_title = '';
 				$param['content'] = serialize([]);
 				if($param['types']==2){			
 					$purchased_title_data = isset($param['purchased_title']) ? $param['purchased_title'] : '';
-					$purchased_id_data = isset($param['purchased_id']) ? $param['purchased_id'] : 0;
+					$purchased_id_data = isset($param['purchased_id']) ? $param['purchased_id'] : [];
 					$purchased_unit_data = isset($param['purchased_unit']) ? $param['purchased_unit'] : '';
 					$purchased_specs_data = isset($param['purchased_specs']) ? $param['purchased_specs'] : '';
 					$purchased_price_data = isset($param['purchased_price']) ? $param['purchased_price'] : '0.00';
@@ -328,10 +326,6 @@ class Purchase extends BaseController
 							$data['service_num'] = $service_num_data[$key];
 							$data['service_subtotal'] = $service_subtotal_data[$key];
 							$data['service_remark'] = $service_remark_data[$key];
-							if(in_array($service_id_data[$key],$service_ids)){
-								$service_title = $service_title_data[$key];
-							}
-							$service_ids[]=$service_id_data[$key];
 							$service[]=$data;
 						}
 					}
@@ -339,10 +333,6 @@ class Purchase extends BaseController
 				}
 				if(!empty($purchased_title)){
 					return to_assign(1, '【'.$purchased_title.'】存在相同的产品');
-				}
-				
-				if(!empty($service_title)){
-					return to_assign(1, '【'.$service_title.'】存在相同的服务');
 				}
 			}
             if (!empty($param['id']) && $param['id'] > 0) {

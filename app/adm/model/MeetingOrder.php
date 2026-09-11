@@ -98,7 +98,7 @@ class MeetingOrder extends Model
 		$info['room'] = Db::name('MeetingRoom')->where(['id' => $info['room_id']])->value('title');
 		$info['department'] = Db::name('Department')->where(['id' => $info['did']])->value('title');
 		$info['admin_name'] = Db::name('Admin')->where('id','=',$info['admin_id'])->value('name');
-		$requirements = get_base_type_data('BasicAdm',2);
+		$requirements = get_base_type_data('BasicAdm',3);
 		$requirements_array = explode(',', $info['requirements']);
 		foreach ($requirements as &$val) {
 			if (in_array($val['id'], $requirements_array)) {
