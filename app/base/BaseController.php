@@ -56,6 +56,8 @@ abstract class BaseController
      * @param  App  $app  应用对象
      */
 	protected $model;
+	protected $fingerprint;
+	
     public function __construct()
     {
         $this->module = strtolower(app('http')->getName());
@@ -65,6 +67,12 @@ abstract class BaseController
         $this->did = 0;//员工部门id
         $this->pid = 0;//员工上级主管id
         $this->poid = 0;//员工主部门id
+		$this->fingerprint = md5(
+            Request::ip() .
+            Request::header('user-agent', '') .
+            Request::header('accept-language', '') .
+            Request::header('accept-encoding', '')
+        );
         // 控制器初始化
         $this->initialize();
     }
@@ -72,7 +80,23 @@ abstract class BaseController
     protected function initialize()
     {
         // 检测权限
-        $this->checkLogin();
+		if ($this->controller !== 'login' && $this->controller !== 'captcha') {
+			$this->checkLogin();
+		}
+		$sessionFingerprint = Session::get('fingerprint');
+		//var_dump($this->fingerprint);
+		//var_dump($sessionFingerprint);exit;
+		if ($sessionFingerprint && $sessionFingerprint !== $this->fingerprint) {
+            // 指纹不匹配，说明会话可能被劫持
+			$session_admin = get_config('app.session_admin');
+			Session::delete($session_admin);
+            redirect('/home/login/index.html')->send();
+            exit;
+        }
+        if (!$sessionFingerprint) {
+            // 首次登录，绑定当前设备指纹
+            Session::set('fingerprint', $this->fingerprint);
+        }
 		//每页显示数据量
         $this->pageSize = Request::param('limit', \think\facade\Config::get('app.page_size'));
     }
@@ -100,8 +124,8 @@ abstract class BaseController
 				$is_lock = $login_admin['is_lock'];
 				$last_login_time = Db::name('Admin')->where(['id' => $this->uid])->value('last_login_time');
 				$timeDiff = time() - $last_login_time;
-				// 如果超过10小时（36000秒），则用户需要重新登录
-				if ($timeDiff > 36000) {
+				// 如果超过8小时（28800秒）没有任何操作，则用户需要重新登录
+				if ($timeDiff > 28800) {
 					Session::delete($session_admin);
 					redirect('/home/login/index.html')->send();
                     exit;

@@ -62,7 +62,7 @@
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{ field: 'status', title: '状态', align: 'center', width: 90, templet: function (d) {
-					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					var html = '<span class="check-status-color-' + d.status + '">' + d.status_name + '</span>';
 					return html;
 					}
 				}

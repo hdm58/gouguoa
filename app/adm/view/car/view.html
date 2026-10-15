@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
 <style>
-.layui-tab-title .layui-this{background-color:#fff;}
-.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+.layui-tabs-header{background-color:#FAFAFA; font-weight:600}
+.layui-tabs-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
 </style>
 {/block}
 <!-- 主体 -->
@@ -83,16 +83,16 @@
 		{/notempty}
 	</table>
 		
-	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="car" id="carTab">
-		<ul class="layui-tab-title">
-			<li class="layui-this" data-load="true"><strong>里程记录</strong></li>
-			<li><strong>费用记录</strong></li>
-			<li><strong>维修记录</strong></li>
-			<li><strong>保养记录</strong></li>
-			<li><strong>使用记录</strong></li>
+	<div class="layui-tabs layui-tabs-card layui-panel" style="margin:0; background-color:#fff;" lay-filter="car" id="carTab">
+		<ul class="layui-tabs-header">
+			<li class="layui-this" data-load="true">里程记录</li>
+			<li>费用记录</li>
+			<li>维修记录</li>
+			<li>保养记录</li>
+			<li>使用记录</li>
 		</ul>
-		<div class="layui-tab-content" style="padding:0;">
-			<div class="layui-tab-item layui-show">
+		<div class="layui-tabs-body" style="padding:0;">
+			<div class="layui-tabs-item layui-show">
 				<div class="p-3">
 					<div class="pb-3">
 						<span class="layui-btn layui-btn-sm add-mileage">+ 里程记录</span>
@@ -100,7 +100,7 @@
 					<table class="layui-hide" id="mileage" lay-filter="mileage"></table>
 				</div>
 			</div>
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				<div class="p-3">
 					<div class="pb-3">
 						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/fee_add?cid={$detail.id}">+ 费用记录</span>
@@ -108,7 +108,7 @@
 					<table class="layui-hide" id="fee" lay-filter="fee"></table>
 				</div>
 			</div>
-			<div class="layui-tab-item">	
+			<div class="layui-tabs-item">	
 				<div class="p-3">
 					<div class="pb-3">
 						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/repair_add?cid={$detail.id}">+ 维修记录</span>
@@ -116,7 +116,7 @@
 					<table class="layui-hide" id="repair" lay-filter="repair"></table>
 				</div>
 			</div>
-			<div class="layui-tab-item">	
+			<div class="layui-tabs-item">	
 				<div class="p-3">
 					<div class="pb-3">
 						<span class="layui-btn layui-btn-sm side-a" data-href="/adm/car/protect_add?cid={$detail.id}">+ 保养记录</span>
@@ -124,7 +124,7 @@
 					<table class="layui-hide" id="protect" lay-filter="protect"></table>
 				</div>
 			</div>
-			<div class="layui-tab-item">	
+			<div class="layui-tabs-item">	
 				<div class="p-3">
 					<div class="pb-3">
 						<h3>使用记录</h3>
@@ -143,8 +143,8 @@
 	var car_id = {$detail.id};
 	var moduleInit = ['tool'];
 	function gouguInit() {
-		var tool = layui.tool,table = layui.table,element = layui.element;
-		element.on('tab(car)', function(data){
+		var tool = layui.tool,table = layui.table,tabs = layui.tabs;
+		tabs.on('afterChange(carTab)', function(data){
 			let index = data.index;
 			if(index == 1){
 				layui.feeTable = table.render({

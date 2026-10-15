@@ -97,10 +97,10 @@ layui.define(['tool','oaPicker'], function (exports) {
 		//文本
 		textarea: function (id,txt, pid, to_uid, to_uname) {
 			let that = this;
-			let display='',usersInput='',height='286px';
+			let display='',usersInput='',height='292px';
 			if(id==0){
 				usersInput='<div class="layui-input-wrap" style="margin-bottom:5px;"><div class="layui-input-prefix"><i class="layui-icon layui-icon-at"></i></div><input type="text" placeholder="要提醒的员工" value="'+to_uname+'" readonly class="layui-input picker-admin" data-type="2" /><input type="hidden" id="to_uids" value="'+to_uid+'" /></div>';
-				height='320px';
+				height='324px';
 			}
 			$(parent.$('.express-close')).addClass('parent-colse');
 			layer.open({

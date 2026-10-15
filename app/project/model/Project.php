@@ -60,7 +60,7 @@ class Project extends Model
 				$step = Db::name('ProjectStep')->where(['project_id' => $item->id,'is_current' => 1,'delete_time'=>0])->find();
 				if(!empty($step)){
 					$item->step_director = Db::name('Admin')->where(['id'=>$step['director_uid']])->value('name');
-					$item->step = $step['title'] . '『' . $item->step_director. '』';
+					$item->step = $step['title'] . '〔' . $item->step_director. '〕';
 				}
 				else{						
 					$item->step = '-';

@@ -8,7 +8,7 @@
 			<input type="hidden" name="uid" value="0">
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="diff_time" placeholder="选择入账月份区间" readonly name="diff_time">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择借支申请日期" readonly name="diff_time">
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
@@ -88,7 +88,7 @@
 							return '-';
 						}
 					},{
-						field:'balance_status',title: '冲抵状态',width:110, align:'center',templet: function(d){							
+						field:'balance_status',title: '冲抵状态',width:80, align:'center',templet: function(d){							
 							var html = '-';
 							if(d.pay_status==1){
 								html = '<span class="green">未冲抵</span>';

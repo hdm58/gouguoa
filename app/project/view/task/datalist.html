@@ -106,14 +106,16 @@
 					return 'T' + d.id;
 				}}
 				,{ field: 'status', title: '任务状态', align: 'center', width: 90, templet: function (d) {
-						var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+						var html = '<span class="status-color-' + d.status + '">' + d.status_name + '</span>';
 						return html;
 						}
 					}
-				, { field: 'cate_name', title: '工作类型', width: 90, align: 'center'}
+				,{ field: 'cate_name', title: '工作类型', width: 90, align: 'center'}
 				,{field:'title',title: '任务主题', minWidth: 300,templet:function(d){
 					var html = '<span class="layui-badge layui-bg-'+d.priority+'">'+d.priority_name+'</span> <a data-href="/project/task/view/id/'+d.id+'.html" class="side-a">'+d.title+'</a>';
 					return html;
+				},exportTemplet: function(d, obj){
+					return d.title;
 				}}
 				,{field:'project_name',title: '所属项目',minWidth: 200}
 				,{field:'director_name',title: '负责人', align:'center',width: 80}

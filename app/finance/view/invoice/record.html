@@ -4,7 +4,7 @@
 <div class="p-page">
 	<form class="layui-form gg-form-bar border-x tab-0" id="barsearchform">
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="diff_time" placeholder="选择时间区间" readonly name="diff_time">
+			<input type="text" class="layui-input" id="diff_time" placeholder="选择发票日期" readonly name="diff_time">
 		</div>
 		<div class="layui-input-inline" style="width:120px">
 			<select name="open_status">
@@ -97,14 +97,14 @@
 						field: 'open_status',
 						title: '开票状态',
 						align: 'center',
-						width: 90,
+						width: 80,
 						templet:function(d){
-							var html='<span class="red">『未开具』</span>';
+							var html='<span class="red">未开具</span>';
 							if(d.open_status==1){
-								html='<span class="green">『已开具』</span>';
+								html='<span class="green">已开具</span>';
 							}
 							else if(d.open_status==2){
-								html='<span class="yellow">『已作废』</span>';
+								html='<span class="yellow">已作废</span>';
 							}
 							return html;
 						}

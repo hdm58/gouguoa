@@ -37,10 +37,10 @@
 			</select>
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="create_time" placeholder="选择申请时间区间" readonly name="create_time">
+			<input type="text" class="layui-input" id="create_time" placeholder="选择申请时间" readonly name="create_time">
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="open_time" placeholder="选择开票日期区间" readonly name="open_time">
+			<input type="text" class="layui-input" id="open_time" placeholder="选择发票日期" readonly name="open_time">
 		</div>
 		<div class="layui-input-inline  search-item" style="width:100px;">
 			<select name="open_status">
@@ -117,8 +117,8 @@
 						align: 'center',
 						width: 80
 					},{
-						field:'check_status',title: '审批状态',width:100, align:'center',templet: function(d){
-							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						field:'check_status',title: '审批状态',width:90, align:'center',templet: function(d){
+							var html = '<span class="check-status-color-'+d.check_status+'">'+d.check_status_str+'</span>';
 							return html;
 						}
 					},{
@@ -181,13 +181,13 @@
 						field: 'open_status',
 						title: '开票状态',
 						align: 'center',
-						width: 90,
+						width: 80,
 						templet:function(d){
 							var html='-';
 							if(d.check_status==2){
-								html = '<span class="red">『未开票』</span>';
+								html = '<span class="red">未开票</span>';
 								if(d.open_status==1){
-									html = '<span class="green">『已开票』</span>';
+									html = '<span class="green">已开票</span>';
 								}
 							}
 							return html;
@@ -214,17 +214,17 @@
 						field: 'enter_status',
 						title: '收款状态',
 						align: 'center',
-						width: 100,
+						width: 80,
 						templet:function(d){
 							var html='-';
 							if(d.enter_status==0){
-								html = '<span class="red">『未收款』</span>';
+								html = '<span class="red">未收款</span>';
 							}
 							if(d.enter_status==1){
-								html = '<span class="blue">『部分收款』</span>';
+								html = '<span class="blue">部分收款</span>';
 							}
 							if(d.enter_status==2){
-								html = '<span class="green">『已收款』</span>';
+								html = '<span class="green">已收款</span>';
 							}
 							return html;
 						}

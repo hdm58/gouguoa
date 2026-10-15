@@ -29,7 +29,7 @@ function project_task(){
 				}
 			}
 			,{ field: 'status', title: '任务状态', align: 'center', width: 90, templet: function (d) {
-					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+					var html = '<span class="status-color-' + d.status + '">' + d.status_name + '</span>';
 					return html;
 					}
 				}

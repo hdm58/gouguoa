@@ -31,7 +31,7 @@
 			</td>
 			<td class="layui-td-gray">收款主体<font>*</font></td>
 			<td>
-				<select name="enterprise_id" lay-verify="required" lay-reqText="请选择收款主体">
+				<select name="enterprise_id" lay-filter="enterprise" lay-verify="required" lay-reqText="请选择收款主体">
 					<option value="">请选择收款主体</option>
 					{volist name=":get_base_data('Enterprise')" id="vo"}
 					<option value="{$vo.id}" {eq name="$vo.id" value="$invoice.invoice_subject"}selected{/eq}>{$vo.title}</option>
@@ -107,6 +107,11 @@
 	var moduleInit = ['tool','oaPicker','oaCheck','uploadPlus'];
 	function gouguInit() {
 		var form = layui.form, tool = layui.tool, oaCheck  = layui.oaCheck ,uploadPlus = layui.uploadPlus,oaPicker = layui.oaPicker;
+		form.on('select(enterprise)', function(data){
+			$('[name="account_id"]').val(0);
+			$('[name="account"]').val('');
+		});
+		
 		$('body').on('click','.picker-account',function(){
 			let enterprise_id = $('[name="enterprise_id"]').val();
 			if(enterprise_id==0 || enterprise_id==''){

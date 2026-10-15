@@ -18,7 +18,7 @@ function layoutProject(table){
 		, cols: [[ //表头
 			{field: 'id', title: '项目ID', width: 80, align: 'center'}
 			,{ field: 'status', title: '项目状态', align: 'center', width: 90, templet: function (d) {
-				var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+				var html = '<span class="status-color-' + d.status + '">' + d.status_name + '</span>';
 				return html;
 				}
 			}

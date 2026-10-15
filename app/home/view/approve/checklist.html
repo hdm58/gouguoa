@@ -42,8 +42,8 @@
 			,height: 'full-95'
 			,cols: [[
 					{field:'types_name',title: '审批类型',width:100, align:'center'}
-					,{field:'check_status',title: '审核状态',width:110, align:'center',templet: function(d){
-						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+					,{field:'check_status',title: '审核状态',width:90, align:'center',templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">'+d.check_status_str+'</span>';
 						return html;
 					}}
 					,{field:'admin_name',title: '申请人',width:90,align:'center'}

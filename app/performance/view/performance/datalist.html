@@ -33,8 +33,8 @@
 			,height: 'full-56'
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
-				,{field:'status_name',title: '当前状态',width:136, align:'center',templet: function (d) {
-					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+				,{field:'status_name',title: '当前状态',width:120, align:'center',templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">' + d.status_name + '</span>';
 					return html;
 				}}
 				,{field:'range_time',title: '绩效周期',width:180, align:'center'}

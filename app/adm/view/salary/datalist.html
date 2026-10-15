@@ -34,8 +34,8 @@
 			,cols: [[
 				{field:'id',width:80, title: 'ID号', align:'center'}
 				,{field:'month_time',title: '工资月份',width:90, align:'center'}
-				,{field:'status_name',title: '当前状态',width:100, align:'center',templet: function (d) {
-					var html = '<span class="check-status-color-' + d.status + '">『' + d.status_name + '』</span>';
+				,{field:'status_name',title: '当前状态',width:90, align:'center',templet: function (d) {
+					var html = '<span class="check-status-color-' + d.status + '">' + d.status_name + '</span>';
 					return html;
 					}}
 				,{field:'title',title: '工资单名称'}

@@ -1,13 +1,13 @@
 <table class="layui-table layui-table-form">
 	<tr>
 		<td class="layui-td-gray">项目状态</td>
-		<td><span class="check-status-color-{$detail.status}">『{$detail.status_name}』</span></td>
+		<td><span class="status-color-{$detail.status}">{$detail.status_name}</span></td>
 		<td class="layui-td-gray">项目类别</td>
 		<td>{$detail.cate}</td>
 		<td class="layui-td-gray">项目评分</td>
 		<td>{$detail.score}</td>
 		<td class="layui-td-gray">重要程度</td>
-		<td>{:importance_name($detail.importance)}</td>
+		<td><span class="layui-badge layui-bg-{$detail.importance}">{:importance_name($detail.importance)}</span></td>
 	</tr>
 	<tr>
 		<td class="layui-td-gray">项目经理</td>

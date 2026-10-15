@@ -33,6 +33,8 @@ class Login
 		if($mobile){
 			return redirect('/qiye/login/index');
 		}
+		Session::clear();
+		Session::regenerate(true);
         return View();
     }
     //提交登录

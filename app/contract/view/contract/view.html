@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
 <style>
-.layui-tab-title .layui-this{background-color:#fff;}
-.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+.layui-tabs-header{background-color:#FAFAFA; font-weight:600}
+.layui-tabs-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
 #checkBox .pb-2{display:none;}
 </style>
 {/block}
@@ -246,18 +246,18 @@
 	   </tr>
 	</table>
 				
-	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="contract" id="contractTab">
-		<ul class="layui-tab-title">
+	<div class="layui-tabs layui-tabs-card layui-panel" style="margin:0; background-color:#fff;" lay-filter="contract" id="contractTab">
+		<ul class="layui-tabs-header">
 			<li class="layui-this" data-load="true">审批信息</li>
 			<li>操作记录</li>
 		</ul>
-		<div class="layui-tab-content" style="padding:0;">
-			<div class="layui-tab-item layui-show" style="padding-top:12px; background-color:#fff;">	
+		<div class="layui-tabs-body" style="padding:0;">
+			<div class="layui-tabs-item layui-show" style="padding-top:12px; background-color:#fff;">	
 				{if ($detail.stop_time == 0) AND ($detail.void_time == 0) }
 				<div id="checkBox" data-status="{$detail.check_status}" data-id="{$detail.id}" data-checkflowid="{$detail.check_flow_id}" class="px-3 pb-3"></div>
 				{/if}	
 			</div>
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/contract/view_log" /}
 			</div>
 		</div>
@@ -274,7 +274,7 @@
 	var moduleInit = ['tool','oaCheck','oaPicker','oaEdit','uploadPlus'];
 	let checking_btn='<span class="layui-btn layui-btn-warm" data-event="stop" data-status="1">中止合同</span><span class="layui-btn layui-btn-danger" data-event="void" data-status="1">作废合同</span>';
 	function gouguInit() {
-		var tool = layui.tool,element = layui.element,oaCheck=layui.oaCheck,oaPicker=layui.oaPicker,uploadPlus=layui.uploadPlus;	
+		var tool = layui.tool,tabs = layui.tabs,oaCheck=layui.oaCheck,oaPicker=layui.oaPicker,uploadPlus=layui.uploadPlus;	
 		
 		var attachment = new uploadPlus({
 			"attachment":{
@@ -318,7 +318,7 @@
 			}
 		})
 		
-		element.on('tab(contract)', function(data){
+		tabs.on('afterChange(contractTab)', function(data){
 			let index = data.index;
 			if(index == 1){
 				log();	

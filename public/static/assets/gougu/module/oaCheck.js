@@ -110,7 +110,7 @@ layui.define(['tool','oaPicker','uploadPlus'], function (exports) {
 					}
 					tem+='<li class="layui-timeline-item delete-'+record[l].delete_time+'">\
 								<i class="layui-icon layui-timeline-axis">&#xe63f;</i>\
-								<p style="padding-left:24px">'+record[l].check_time_str+'<span class="black ml-2">'+record[l].name+'</span><span class="check-status-color-'+(record[l].check_status+1)+'">『'+record[l].status_str+'』</span>了此申请。'+check_content+'</p>';
+								<p style="padding-left:24px">'+record[l].check_time_str+'<span class="black ml-2">'+record[l].name+'</span> <span class="record-color-'+(record[l].check_status)+'">'+record[l].status_str+'</span> 了此申请。'+check_content+'</p>';
 					let file_array= record[l].file_array;	
 					if(file_array.length>0){
 						tem+='<p style="padding:4px 24px 0;">审批附件：</p><div class="layui-row" style="padding:2px 16px;">';

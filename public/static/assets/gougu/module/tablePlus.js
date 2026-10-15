@@ -97,7 +97,7 @@ layui.define(function(exports) {
 							if(type === 'page') {
 								// 调用内置导出方法
 								let msg = layer.msg('正在导出数据...', {time:1000});
-								table.exportFile(options.id, null, 'csv');
+								table.exportFile(options.id, null, 'xls');
 							}else if(type === 'all') {
 								let tableWhere = JSON.parse(JSON.stringify(options.where));
 								tableWhere.limit=options.excel_limit;
@@ -108,7 +108,7 @@ layui.define(function(exports) {
 										url: options.url,
 										data: tableWhere,
 										success:function(res){
-											table.exportFile(options.id, res.data,'csv');
+											table.exportFile(options.id, res.data,'xls');
 											setTimeout(function(){
 												layer.msg('导出完成');			
 											},3000)	

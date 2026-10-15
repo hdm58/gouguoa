@@ -96,8 +96,8 @@
 						align: 'center',
 						width: 80
 					},{
-						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
-							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						field:'check_status',title: '审批状态',width:80, align:'center',templet: function(d){
+							var html = '<span class="check-status-color-'+d.check_status+'">'+d.check_status_str+'</span>';
 							return html;
 						},
 						totalRowText: '<div style="text-align:right">合计</div>'

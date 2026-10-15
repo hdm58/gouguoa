@@ -1,9 +1,8 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
 <style>
-.layui-tab-card1{border:0}
-.layui-tab-title .layui-this{background-color:#fff;}
-.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+.layui-tabs-header{background-color:#FAFAFA; font-weight:600}
+.layui-tabs-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
 </style>
 {/block}
 <!-- 主体 -->
@@ -117,28 +116,28 @@
 			<td colspan="3">{$detail.tax_address|default=""}</td>
 	   </tr>
 	</table>
-	<div class="layui-tab layui-tab-card" style="margin:0; background-color:#fff;" lay-filter="customer" id="customerTab">
-		<ul class="layui-tab-title">
+	<div class="layui-tabs layui-tabs-card layui-panel" style="margin:0; background-color:#fff;" lay-filter="customer" id="customerTab">
+		<ul class="layui-tabs-header">
 			<li class="layui-this" data-load="true">跟进记录</li>
 			<li>销售机会</li>
 			<li>联 系 人</li>
 			<li>客户合同</li>
 			<li>操作记录</li>
 		</ul>
-		<div class="layui-tab-content" style="padding:0;">
-			<div class="layui-tab-item layui-show">
+		<div class="layui-tabs-body" style="padding:0;">
+			<div class="layui-tabs-item layui-show">
 				{include file="/customer/view_trace" /}
 			</div>
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/customer/view_chance" /}
 			</div>
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/customer/view_contact" /}
 			</div>
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/customer/view_contract" /}
 			</div>
-			<div class="layui-tab-item">
+			<div class="layui-tabs-item">
 				{include file="/customer/view_log" /}
 			</div>
 		</div>
@@ -153,9 +152,9 @@
 const customer_id = '{$detail.id}';
 const moduleInit = ['tool','oaPicker','uploadPlus','oaEdit'];
 	function gouguInit() {
-		var form = layui.form,tool=layui.tool, upload = layui.upload,element = layui.element,uploadPlus = layui.uploadPlus;	
+		var form = layui.form,tool=layui.tool, upload = layui.upload,tabs = layui.tabs,uploadPlus = layui.uploadPlus;	
 		trace();
-		element.on('tab(customer)', function(data){
+		tabs.on('afterChange(customerTab)', function(data){
 			let index = data.index;
 			if(index == 1){
 				chance();	

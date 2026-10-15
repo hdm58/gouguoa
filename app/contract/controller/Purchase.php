@@ -449,11 +449,11 @@ class Purchase extends BaseController
 				$detail['payment'] = Db::name('TicketPayment')->field('t.*,a.name as admin')
 					->alias('t')
 					->join('Admin a', 'a.id = t.admin_id', 'LEFT')
-					->where([['t.ticket_id','=',$id],['t.status','=',2]])
+					->where([['t.purchase_id','=',$id],['t.status','=',2]])
 					->order('t.pay_time desc')
 					->select();
 					
-				$has_payment = Db::name('TicketPayment')->where([['ticket_id','=',$id],['status','=',2]])->sum('amount');
+				$has_payment = Db::name('TicketPayment')->where([['purchase_id','=',$id],['status','=',2]])->sum('amount');
 				$detail['has_payment'] = sprintf("%.2f",$has_payment);
 				$detail['no_payment'] = sprintf("%.2f",($detail['cost']*100 - $has_payment*100)/100);
 			}

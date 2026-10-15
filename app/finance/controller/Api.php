@@ -112,10 +112,12 @@ class Api extends BaseController
 		$param = get_params();
 		$where = array();
 		$where[] = ['delete_time', '=', 0];
-		$where[] = ['check_status', '=', 2];
-		$where[] = ['open_status', '=', 1];
 		if(!empty($param['project_id'])){
 			$where[] = ['project_id', '=', $param['project_id']];
+		}
+		else{
+			$where[] = ['check_status', '=', 2];
+			$where[] = ['open_status', '=', 1];	
 		}
 		$model = new Invoice();
 		$list = $model->datalist($param,$where);
@@ -128,11 +130,12 @@ class Api extends BaseController
 		$param = get_params();
 		$where = array();
 		$where[] = ['delete_time', '=', 0];
-		$where[] = ['check_status', '=', 2];
-		$where[] = ['open_status', '=', 1];
-		$where[] = ['invoice_type','>',0];
 		if(!empty($param['project_id'])){
 			$where[] = ['project_id', '=', $param['project_id']];
+		}
+		else{
+			$where[] = ['check_status', '=', 2];
+			$where[] = ['open_status', '=', 1];	
 		}
 		$model = new Ticket();
 		$list = $model->datalist($param,$where);

@@ -1,8 +1,8 @@
 {extend name="../../base/view/common/base" /}
 {block name="style"}
 <style>
-.layui-tab-title .layui-this{background-color:#fff;}
-.layui-tab-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
+.layui-tabs-header{background-color:#FAFAFA; font-weight:600}
+.layui-tabs-card,.layui-card{box-shadow:0 0 0 0 rgb(0 0 0 / 10%); border-radius:0; border-top:none;}
 .layui-card-tips {color: #969696;}
 .layui-card-value {padding: 4px 0 16px;font-size: 18px;color: #1E9FFF;}
 
@@ -48,7 +48,7 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">任务状态</td>
-			<td class="click-edit check-status-color-{$detail.status}" data-types="dropdown" data-field="status" data-array="status" data-text="{$detail.status}">{$detail.status_name}</td>
+			<td class="click-edit" data-types="dropdown" data-field="status" data-array="status" data-text="{$detail.status}"><span class="status-color-{$detail.status}">{$detail.status_name}</span></td>
 			<td class="layui-td-gray-2">实际完成日期</td>
 			<td>{eq name="$detail.over_time" value="0"}-{else/}{$detail.over_time|date='Y-m-d'}{/eq}</td>
 			<td class="layui-td-gray">实际工时</td>
@@ -76,23 +76,23 @@
 	</table>
 	
 
-	<div class="layui-tab layui-tab-card" style="margin:0;" lay-filter="docDemoTabBrief">
-		<ul class="layui-tab-title">
+	<div class="layui-tabs layui-tabs-card layui-panel" style="margin:0;" lay-filter="docDemoTabBrief">
+		<ul class="layui-tabs-header">
 			<li class="layui-this">工作日志({$detail.schedules})</li>
 			<li>员工评论(<span id="commentTotal">0</span>)</li>
 			<li>操作日志(<span id="logListTotal">0</span>)</li>
 		</ul>
-		<div class="layui-tab-content py-1 px-3" style="background-color:#fff;">
-			<div class="layui-tab-item layui-show py-2">
+		<div class="layui-tabs-body" style="background-color:#fff;padding:0;">
+			<div class="layui-tabs-item layui-show p-3">
 				<table class="layui-hide" id="table_work" lay-filter="table_work"></table>
 			</div>
-			<div class="layui-tab-item comment-list">
+			<div class="layui-tabs-item comment-list p-3">
 				<div class="comment-input my-2">
 					<input type="text" id="commentInput" readonly placeholder="发表一下你的看法" class="layui-input" value="">
 				</div>
 				<div id="commentBox"></div>
 			</div>
-			<div class="layui-tab-item logs-list">
+			<div class="layui-tabs-item logs-list">
 				<div id="logList" class="log-timeline p-3"></div>
 			</div>
 		</div>
@@ -129,9 +129,8 @@
 		let edit_callback = function(e){
 			layer.msg(e.msg);
 			if(e.code==0){
-				setTimeout(function(){
-					location.reload();
-				},1000)
+				tool.reload(1000);
+				parent.layui.taskTable.reload();
 			}			
 		}
 		//附件上传
@@ -158,7 +157,8 @@
 			dropdown:{
 				status:status_array,
 				priority:priority_array
-			}
+			},
+			callback:edit_callback
 		});
 		
 		//工作日志相关

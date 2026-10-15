@@ -78,7 +78,8 @@
 .layui-letter-span.on{color:#FF6347;}
 .layui-letter-span:hover{color:#1e9fff;}
 .layui-tags-all{float: right; font-weight: 200; background-color:#1e9fff; color:#fff; border-radius: 3px; padding: 2px 6px; font-size: 12px; cursor: pointer; display: none;}
-
+.layui-badge{padding:0 3px;}
+/*reset layui*/
 .layui-data-none{padding:12px 0; color:#969696; text-align:center; font-size:12px;}
 .gougu-data-none{background:url(../images/data-none.png) no-repeat center center; background-size:auto 80%;}
 
@@ -218,17 +219,36 @@ a.tab-a:hover,a:hover,a.open-a:hover,a.link-a:hover,a.right-a:hover{color:#1A75F
 .layui-color-9{color:#383D41 !important;}/*中性灰*/
 .layui-color-10{color:#969696 !important;}/*灰黑*/
 
-.status-color-0{color:#FF5823 !important;}/*亮红*/
-.status-color-1{color:#1A75FF !important;}/*亮蓝*/
-.status-color-2{color:#16b777 !important;}/*亮绿*/
-.status-color-3{color:#7860C0 !important;}/*亮紫*/
+.record-color-0{color:#1A75FF !important;}/*亮蓝*/
+.record-color-1{color:#16b777 !important;}/*亮绿*/
+.record-color-2{color:#FF5823 !important;}/*亮红*/
+.record-color-3{color:#9F6000 !important;}/*橙黄*/
 
-.check-status-color-0{color:#856404 !important;}/*待提交,柔和黄色，提醒关注*/
-.check-status-color-1{color:#1A75FF !important;}/*审核中,浅蓝，表示进行中*/
-.check-status-color-2{color:#16b777 !important;}/*已通过,浅绿，成功/完成*/
-.check-status-color-3{color:#721C24 !important;}/*已拒绝,浅红，表示拒绝*/
-.check-status-color-4{color:#383D41 !important;}/*已撤销,中性灰，取消操作*/
-.check-status-color-5{color:#9F6000 !important;}/*反确认,橙黄，需注意但非错误*/
+.status-color-0,
+.status-color-1,
+.status-color-2,
+.status-color-3,
+.status-color-4,
+.status-color-5,
+.check-status-color-0,
+.check-status-color-1,
+.check-status-color-2,
+.check-status-color-3,
+.check-status-color-4,
+.check-status-color-5{align-items: center; border-radius: 4px;display: inline-flex;font-size: 12px;justify-content: center; line-height:2; min-width: 72px; padding:0 6px;white-space: pre-line;}
+.check-status-color-0{color:#856404!important; background-color:#FEF5E6;}/*待提交,黄色，提醒关注*/
+.check-status-color-1{color:#1A75FF!important; background-color:#EBF2FE;}/*审核中,浅蓝，表示进行中*/
+.check-status-color-2{color:#16b777!important; background-color:#E8F9EF}/*已通过,浅绿，成功/完成*/
+.check-status-color-3{color:#ff5722!important; background-color:#FDECEC}/*已拒绝,浅红，表示拒绝*/
+.check-status-color-4{color:#64748B!important; background-color:#E8E9EB}/*已撤销,中性灰，取消操作*/
+.check-status-color-5{color:#A855F7!important; background-color:#F6EEFE}/*反确认,蓝紫，需注意*/
+
+.status-color-0{color:#ff5722!important; background-color:#FDECEC}/*浅红，表示未开始*/
+.status-color-1{color:#ff5722!important; background-color:#FDECEC;}/*浅红，表示未开始*/
+.status-color-2{color:#1A75FF!important; background-color:#EBF2FE}/*浅蓝，表示已完成*/
+.status-color-3{color:#16b777!important; background-color:#E8F9EF}/*浅绿，表示已完成*/
+.status-color-4{color:#A855F7!important; background-color:#F6EEFE}/*蓝紫，表示已拒绝*/
+.status-color-5{color:#64748B!important; background-color:#E8E9EB}/*中性灰，表示已关闭*/
 
 .black{color:#182b50}
 

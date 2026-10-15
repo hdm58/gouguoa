@@ -24,7 +24,16 @@ function project_invoice(){
 		page: true, //开启分页
 		limit: 20,
 		cols: [[
-					{
+					{field:'check_status',title: '审批状态',width:90, align:'center',templet: function(d){
+							var html = '<span class="check-status-color-'+d.check_status+'">'+d.check_status_str+'</span>';
+							return html;
+						}
+					},{
+						field: 'admin_name',
+						title: '申请员工',
+						align: 'center',
+						width: 80
+					},{
 						field: 'amount',
 						title: '发票金额(元)',
 						align: 'right',
@@ -58,15 +67,9 @@ function project_invoice(){
 							}
 							return html;
 						}
-					},
-					{
-						field: 'admin_name',
-						title: '申请员工',
-						align: 'center',
-						width: 80
 					},{
 						field: 'department',
-						title: '申请部门',
+						title: '部门',
 						align: 'center',
 						width: 100
 					},{
@@ -74,10 +77,6 @@ function project_invoice(){
 						title: '申请时间',
 						align: 'center',
 						width: 150
-					},{field:'check_status',title: '审批状态',width:100, align:'center',templet: function(d){
-							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
-							return html;
-						}
 					},{
 						field: 'check_user',
 						title: '当前审核人',
@@ -90,9 +89,9 @@ function project_invoice(){
 						templet:function(d){
 							var html='';
 							if(d.check_status==2){
-								html = '<span class="red">『未开票』</span>';
+								html = '<span class="red">未开票</span>';
 								if(d.open_status==1){
-									html = '<span class="green">『已开票』</span>';
+									html = '<span class="green">已开票</span>';
 								}
 							}
 							else{

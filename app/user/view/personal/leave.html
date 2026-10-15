@@ -71,8 +71,8 @@
 			, height: 'full-154'
 			, cols: [[
 				{ field: 'id', width: 80, title: '序号', align: 'center' }
-				,{field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
-						var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+				,{field:'check_status',title: '审批状态',width:90, align:'center',templet: function(d){
+						var html = '<span class="check-status-color-'+d.check_status+'">'+d.check_status_str+'</span>';
 						return html;
 					}
 				 }

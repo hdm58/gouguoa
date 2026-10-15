@@ -616,7 +616,7 @@ class Car extends BaseController
 					if(is_mobile()){
 						return view('qiye@/approve/add_car');
 					}
-					return view('edit');
+					return view('apply_edit');
 				}
 			}
 			if(is_mobile()){

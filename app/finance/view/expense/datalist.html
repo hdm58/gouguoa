@@ -36,7 +36,7 @@
 			</select>
 		</div>
 		<div class="layui-input-inline" style="width:175px;">
-			<input type="text" class="layui-input" id="expense_time" placeholder="选择入账月份区间" readonly name="expense_time">
+			<input type="text" class="layui-input" id="expense_time" placeholder="选择单据日期" readonly name="expense_time">
 		</div>
 		<div class="layui-input-inline" style="width:150px">
 			<input type="hidden" name="tab" value="0"/>
@@ -100,8 +100,8 @@
 						width: 110,
 						totalRow: function (d) {return d.TOTAL_ROW.cost}
 					},{
-						field:'check_status',title: '审批状态',width:110, align:'center',templet: function(d){
-							var html = '<span class="check-status-color-'+d.check_status+'">『'+d.check_status_str+'』</span>';
+						field:'check_status',title: '审批状态',width:90, align:'center',templet: function(d){
+							var html = '<span class="check-status-color-'+d.check_status+'">'+d.check_status_str+'</span>';
 							return html;
 						}
 					},

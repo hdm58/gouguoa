@@ -29,7 +29,7 @@ layui.define(['tool'], function (exports) {
 		'template':{
 			title:'选择消息模板',
 			url:'/api/index/get_template',
-			area: ['600px', '568px'],
+			area: ['600px', '572px'],
 			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'消息模板名称'}]
 		},
 		'workcate':{
@@ -64,7 +64,7 @@ layui.define(['tool'], function (exports) {
 		'chance':{
 			title:'选择销售机会',
 			url:'/customer/api/get_chance',
-			area: ['600px', '568px'],
+			area: ['600px', '572px'],
 			cols:[{field:'id',width:90,title:'ID号',align:'center'},{field:'title',title:'机会主题'},{field:'belong_name',title:'归属人',width:80,align:'center'},{field:'stage_name',title:'当前阶段',width:100,align:'center'},{field:'discovery_time',title:'发现时间',width:100,align:'center'}]
 		},
 		'supplier':{
@@ -76,7 +76,7 @@ layui.define(['tool'], function (exports) {
 		'contract':{
 			title:'选择销售合同',
 			url:'/contract/api/get_contract',
-			area: ['800px', '568px'],
+			area: ['800px', '572px'],
 			cols:[{ field: 'code',width:160,title:'合同编号',align:'center'},{field:'name',title:'合同名称'},{ field:'customer',title:'关联客户',width: 240}]
 		},
 		'product':{
@@ -87,7 +87,7 @@ layui.define(['tool'], function (exports) {
 		'purchase':{
 			title:'选择采购合同',
 			url:'/contract/api/get_purchase',
-			area: ['800px', '568px'],
+			area: ['800px', '572px'],
 			cols:[{ field: 'code',width:160,title:'合同编号',align:'center'},{field:'name',title:'合同名称'},{ field:'supplier',title:'关联供应商',width: 240}]
 		},
 		'purchased':{
@@ -103,25 +103,25 @@ layui.define(['tool'], function (exports) {
 		'task':{
 			title:'选择任务',
 			url:'/project/api/get_task',
-			area: ['800px', '568px'],
+			area: ['800px', '572px'],
 			cols:[{field:'id',width:90,title:'ID号',align:'center'},{ field:'title',title:'任务主题'},{field:'project',width:240,title:'关联项目'}]
 		},
 		'loan':{
 			title:'选择借支冲抵',
 			url:'/finance/api/get_loan',
-			area: ['800px', '568px'],
+			area: ['800px', '572px'],
 			cols:[{field: 'id',width: 80,title:'ID号',align:'center'},{field:'cost',title:'借款金额(元)',width: 100},{field:'un_balance_cost',title:'未冲账金额(元)',width: 110},{field:'balance_cost',title:'已冲账金额(元)',width: 110},{field:'title',title:'借支主题',minWidth:200}]
 		},
 		'invoice':{
 			title:'选择销项发票',
 			url:'/finance/api/get_invoice',
-			area: ['800px', '568px'],
+			area: ['800px', '572px'],
 			cols:[{ field: 'code',width:200,title:'发票号码',align:'center'},{field:'invoice_title',title:'发票抬头'},{ field:'enterprise',title:'开票主体',width: 240}]
 		},
 		'ticket':{
 			title:'选择进项发票',
 			url:'/finance/api/get_ticket',
-			area: ['800px', '568px'],
+			area: ['800px', '572px'],
 			cols:[{ field: 'code',width:200,title:'发票号码',align:'center'},{field:'enterprise',title:'发票抬头'},{ field:'invoice_title',title:'开票主体',width: 240}]
 		},
 		'enterprise':{
@@ -380,7 +380,7 @@ layui.define(['tool'], function (exports) {
 				"ids":"",
 				"titles":"",
 				"where":map,
-				"area": ['600px', '568px'],
+				"area": ['600px', '572px'],
 				"cols":[{field: 'id',width: 80,title:'ID号',align:'center'},{field:'title',title:'名称'}],
 				"searchbar":'<form class="layui-form pb-2"><div class="layui-input-inline" style="width:420px; margin-right:5px;"><input type="text" name="keywords" placeholder="请输入关键字" class="layui-input" autocomplete="off" /></div><button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="picker">提交搜索</button><button type="reset" class="layui-btn layui-btn-reset" lay-filter="picker-reset">清空</button></form>',
 				"page":true,

@@ -15,9 +15,9 @@
 		</tr>
 		<tr>
 			<td class="layui-td-gray">开始日期<font>*</font></td>
-			<td><input type="text" name="start_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善开始日期" class="layui-input tool-time" value="{$detail.start_time|default=''}"></td>
+			<td><input type="text" name="start_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善开始日期" class="layui-input tool-time" value="{$detail.start_time_str|default=''}"></td>
 			<td class="layui-td-gray">结束日期<font>*</font></td>
-			<td><input type="text" name="end_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善结束日期" class="layui-input tool-time" value="{$detail.end_time|default=''}"></td>
+			<td><input type="text" name="end_time" readonly placeholder="请选择" lay-verify="required" lay-reqText="请完善结束日期" class="layui-input tool-time" value="{$detail.end_time_str|default=''}"></td>
 			<td class="layui-td-gray">所需工时<font>*</font></td>
 			<td><input type="text" name="hours" placeholder="请输入" lay-verify="required|number" lay-reqText="请完善所需工时" class="layui-input" value="{$detail.hours|default=''}"></td>
 		</tr>

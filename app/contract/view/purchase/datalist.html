@@ -122,8 +122,8 @@
 					align: 'center',
 					sort: true,
 					width: 80
-				},{ field: 'check_status', title: '审批状态', align: 'center', width: 110, templet: function (d) {
-					var html = '<span class="check-status-color-' + d.check_status + '">『' + d.status_name + '』</span>';
+				},{ field: 'check_status', title: '审批状态', align: 'center', width: 90, templet: function (d) {
+					var html = '<span class="check-status-color-' + d.check_status + '">' + d.status_name + '</span>';
 					return html;
 					}
 				},{
