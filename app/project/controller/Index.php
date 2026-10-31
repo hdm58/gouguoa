@@ -98,6 +98,50 @@ class Index extends BaseController
     }
 	
     /**
+    * 快到期列表
+    */
+    public function expiringlist()
+    {
+		$param = get_params();
+		$uid = $this->uid;
+		$auth = isAuth($uid,'project_admin','conf_1');
+        if (request()->isAjax()) {
+			$where = array();
+			$whereOr = array();
+			$dids_son = get_leader_departments($uid);
+			$delay_day = valueAuth('project_admin','conf_10');
+			if(empty($delay_day)){
+				$delay_day = 3;
+			}
+			$delay_day_time = time()+$delay_day*60*60*24;
+			$where[] = ['delete_time', '=', 0];
+			$where[] = ['status','<',3];
+			$where[] = ['end_time','<',$delay_day_time];
+			if (!empty($param['cate_id'])) {
+                $where[] = ['cate_id', '=', $param['cate_id']];
+            }
+			if (!empty($param['importance'])) {
+                $where[] = ['importance', '=', $param['importance']];
+            }
+			if (!empty($param['keywords'])) {
+				$where[] = ['name|content', 'like', '%' . $param['keywords'] . '%'];
+			}
+			if($auth == 0){
+				$whereOr[] = ['admin_id', '=', $uid];//我创建的项目
+				$whereOr[] = ['director_uid', '=', $uid];//我负责的项目
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',uids)")];//我参与的项目
+				$whereOr[] = ['did','in',$dids_son];//我下属的项目
+			}
+            $list = $this->model->datalist($param,$where,$whereOr);
+            return table_assign(0, '', $list);
+        }
+        else{
+			View::assign('auth', $auth);
+            return view();
+        }
+    }
+	
+    /**
     * 添加/编辑
     */
     public function add()

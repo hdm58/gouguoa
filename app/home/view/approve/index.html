@@ -44,12 +44,7 @@
 	<script>
 	const moduleInit = ['tool'];
 	function gouguInit() {
-		var table = layui.table, tool = layui.tool ,element=layui.element;
-			
-		element.on('tab(tab)', function(data){
-			layui.pageTable.reload({where:{status:data.index},page:{curr:1}});
-			return false;
-		});			
+		var table = layui.table, tool = layui.tool;		
 			
 		layui.pageTable = table.render({
 			elem: '#test'

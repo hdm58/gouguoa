@@ -138,8 +138,6 @@ class Contract extends BaseController
 			if($auth == 0){
 				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
 				$whereOr[] = ['did','in',$dids_son];//我下属的合同
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
@@ -183,14 +181,13 @@ class Contract extends BaseController
 			if($auth == 0){
 				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
 				$whereOr[] = ['did','in',$dids_son];//我下属的合同
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('delay_num', valueAuth('contract_admin','conf_10'));
             return view();
         }
     }
@@ -227,14 +224,54 @@ class Contract extends BaseController
 			if($auth == 0){
 				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
 				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_uids)")];
-				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',check_history_uids)")];
 				$whereOr[] = ['did','in',$dids_son];//我下属的合同
 			}
             $list = $this->model->datalist($param,$where,$whereOr);
             return table_assign(0, '', $list);
         }
         else{
+			View::assign('delay_num', valueAuth('contract_admin','conf_10'));
+            return view();
+        }
+    }
+	
+	public function expiringlist()
+    {
+		$param = get_params();
+        if (request()->isAjax()) {
+			$uid = $this->uid;
+			//是否是合同管理员
+			$auth = isAuth($uid,'contract_admin','conf_1');
+			$dids_son = get_leader_departments($uid);
+			$delay_day = valueAuth('contract_admin','conf_10');
+			if(empty($delay_day)){
+				$delay_day = 30;
+			}
+			$delay_time = time()+$delay_day*60*60*24;
+            $where = [];
+            $whereOr = [];
+			$where[]=['delete_time','=',0];
+			$where[]=['check_status','=',2];
+			$where[]=['end_time','<',$delay_time];
+			if (!empty($param['keywords'])) {
+                $where[] = ['id|name|code', 'like', '%' . $param['keywords'] . '%'];
+            }
+			if (!empty($param['types'])) {
+                $where[] = ['types', '=',$param['types']];
+            }
+			if (!empty($param['cate_id'])) {
+                $where[] = ['cate_id', '=',$param['cate_id']];
+            }
+			if($auth == 0){
+				$whereOr[] =['admin_id|prepared_uid|sign_uid|keeper_uid', '=', $uid];
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',share_ids)")];
+				$whereOr[] = ['did','in',$dids_son];//我下属的合同
+			}
+            $list = $this->model->datalist($param,$where,$whereOr);
+            return table_assign(0, '', $list);
+        }
+        else{
+			View::assign('delay_num', valueAuth('contract_admin','conf_10'));
             return view();
         }
     }

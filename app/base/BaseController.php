@@ -67,12 +67,15 @@ abstract class BaseController
         $this->did = 0;//员工部门id
         $this->pid = 0;//员工上级主管id
         $this->poid = 0;//员工主部门id
+		/*
 		$this->fingerprint = md5(
             Request::ip() .
             Request::header('user-agent', '') .
             Request::header('accept-language', '') .
             Request::header('accept-encoding', '')
         );
+		*/
+		$this->fingerprint = md5(Request::ip());
         // 控制器初始化
         $this->initialize();
     }

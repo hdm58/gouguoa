@@ -314,8 +314,8 @@ class Index extends BaseController
 					if (!empty($whereContractOr))	
 						$query->whereOr($whereContractOr);
 					})->count(),
-            'id' => 349,
-            'url' => '/contract/contract/datalist',
+            'id' => 518,
+            'url' => '/contract/contract/expiringlist',
         );
         $todue[] = array(
             'name' => '快到期的采购合同',
@@ -324,8 +324,8 @@ class Index extends BaseController
 						->where(function ($query) use($wherePurchaseOr) {
 							$query->whereOr($wherePurchaseOr);
 						})->count(),
-            'id' => 353,
-            'url' => '/contract/purchase/datalist',
+            'id' => 519,
+            'url' => '/contract/purchase/expiringlist',
         );
 		$delay_day_b = valueAuth('project_admin','conf_10');
 		if(empty($delay_day_b)){
@@ -341,8 +341,8 @@ class Index extends BaseController
 						$query->whereOr($whereProjectOr);
 					})
 					->count(),
-            'id' => 373,
-            'url' => '/project/index/datalist',
+            'id' => 520,
+            'url' => '/project/index/expiringlist',
         );
         $todue[] = array(
             'name' => '快到期的任务',
@@ -354,8 +354,8 @@ class Index extends BaseController
 					$query->whereOr($whereProjectTaskOr);
 				})
 			->count(),
-            'id' => 378,
-            'url' => '/project/task/datalist',
+            'id' => 521,
+            'url' => '/project/task/expiringlist',
         );
 		
 		View::assign('layouts',$layouts_array);

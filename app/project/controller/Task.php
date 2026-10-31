@@ -102,6 +102,53 @@ class Task extends BaseController
             return view();
         }
     }
+	
+    /**
+    * 快到期任务
+    */
+    public function expiringlist()
+    {
+		$param = get_params();
+		$uid = $this->uid;
+		$auth = isAuth($uid,'project_admin','conf_1');
+        if (request()->isAjax()) {
+			$where = array();
+			$whereOr = array();
+			$dids_son = get_leader_departments($uid);
+			$delay_day = valueAuth('project_admin','conf_10');
+			if(empty($delay_day)){
+				$delay_day = 3;
+			}
+			$delay_day_time = time()+$delay_day*60*60*24;
+			$where[] = ['delete_time', '=', 0];
+			$where[] = ['status','<',3];
+			$where[] = ['end_time','<',$delay_day_time];
+			if (!empty($param['priority'])) {
+				$where[] = ['priority', '=', $param['priority']];
+			}
+			if (!empty($param['work_id'])) {
+				$where[] = ['work_id', '=', $param['work_id']];
+			}
+			if(!empty($param['project_id'])){
+				$where[] = ['project_id', '=', $param['project_id']];			
+			}
+			if (!empty($param['keywords'])) {
+				$where[] = ['title|content', 'like', '%' . $param['keywords'] . '%'];
+			}
+			if($auth == 0){
+				$whereOr[] = ['admin_id', '=', $uid];//我创建的任务
+				$whereOr[] = ['director_uid', '=', $uid];//我负责的任务
+				$whereOr[] = ['', 'exp', Db::raw("FIND_IN_SET('{$uid}',assist_admin_ids)")];//我参与的任务
+				$whereOr[] = ['did','in',$dids_son];//我下属的任务
+			}
+            $list = $this->model->datalist($param,$where,$whereOr);
+            return table_assign(0, '', $list);
+        }
+        else{
+			View::assign('auth', $auth);
+            return view();
+        }
+    }
 
     //添加
     public function add()

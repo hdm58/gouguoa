@@ -27,7 +27,7 @@ function layoutProblems(table){
 			{field:'emergent',title: '紧急程度',width:80,align:'center', templet: function (d) {
 					var html = '<span>-</span>';
 					if(d.emergent > 0){
-						html = '<span class="check-status-color-' + d.emergent + '">'+d.emergent_name+'</span>';
+						html = '<span class="layui-badge layui-bg-'+d.emergent+'">'+d.emergent_name+'</span>';
 					}
 					return html;
 				}},

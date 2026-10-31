@@ -24,6 +24,7 @@ use app\home\model\Leaves;
 use app\home\model\Trips;
 use app\home\model\Outs;
 use app\adm\model\Seal;
+use app\adm\model\CarUse;
 use app\user\model\PersonalQuit;
 use app\user\model\DepartmentChange;
 use app\user\model\Talent;
@@ -85,6 +86,12 @@ class Export extends BaseController
 			$model = new Seal();
 			$detail= $model->getById($id);
 			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的用章审批单';
+		}
+		//用车审批
+		if($types=='car_use'){
+			$model = new CarUse();
+			$detail= $model->getById($id);
+			$name = to_date($detail['create_time'],'Ymd').$detail['admin_name'].'提交的用用车批单';
 		}
 		//离职审批
 		if($types=='personal_quit'){

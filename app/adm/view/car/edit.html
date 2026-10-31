@@ -132,6 +132,9 @@
 			if(data.field.types == 0){
 				data.field.driver=0;
 			}
+			if(data.field.price == ''){
+				data.field.price=0;
+			}
 			let callback = function (e) {
 				layer.msg(e.msg);
 				if (e.code == 0) {

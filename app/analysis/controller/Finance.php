@@ -24,6 +24,113 @@ use think\facade\View;
 class Finance extends BaseController
 {		
     /**
+    * 报销数据分析
+    */
+    public function expenselist()
+    {
+		$param = get_params();	
+        if (request()->isAjax()) {
+			$year = isset($param['year']) ? $param['year'] : date('Y');
+			$types = isset($param['types']) ? $param['types'] : 0;
+			$year_start=strtotime("{$year}-01-01");
+			$year_end=strtotime("{$year}-12-31 23:59:59");
+			if($types==1){
+				// 初始化月份列表
+				$months = [];
+				$expenses = [];
+				for ($i = 1; $i <= 12; $i++) {
+					$monthStr = sprintf("%02d", $i);
+					$months[] = $i . "月";
+					$month_start=strtotime("{$year}-{$monthStr}-01");
+					$month_end=strtotime(date('Y-m-t',$month_start).' 23:59:59');
+					$expense = Db::name('Expense')->where([['expense_time','between',[$month_start,$month_end]],['check_status','=',2],['delete_time','=',0]])->sum('cost');
+					$expenses[] = $expense;
+				}
+				$result = [
+					'title' => [
+						'text' => '每月报销分析'
+					],
+					'legend' => [
+						'报销'
+					],
+					'xaxis' => $months,
+					'yaxis' => [
+						[
+							'type' => 'value',
+							'axisLabel' => [
+								'formatter' => '{value}'
+							]
+						]
+					],
+					'series' => [
+						[
+							'name' => '报销金额',
+							'type' => 'bar',
+							'barWidth'=>'50%',
+							'data' => $expenses
+						]
+					]
+				];
+				return to_assign(0, '', $result);
+			}
+			if($types==2){
+				$data = [];
+				$cates = get_base_data('ExpenseCate');
+				$expenseids = Db::name('Expense')->where([['expense_time','between',[$year_start,$year_end]],['check_status','=',2],['delete_time','=',0]])->column('id');
+				foreach ($cates as $cate) {
+					$data[] = [
+						'name' => $cate['title'],
+						'value' => Db::name('ExpenseInterfix')->where([['exid','in',$expenseids],['cate_id','=',$cate['id']]])->sum('amount')
+					];
+				}
+
+				$result = [
+					'title' => [
+						'text' => '报销类型'
+					],
+					'series' => [
+						'data' => $data
+					]
+				];
+				return to_assign(0, '', $result);
+			}
+			if($types==3){
+				$names = [];
+				$amountData = [];
+				$department = Db::name('Department')->where('status',1)->select();
+				foreach ($department as $val) {
+					$names[] = $val['title'];
+					$amountData[] =  Db::name('Expense')->where([['check_status','=',2],['delete_time','=',0],['did','=',$val['id']]])->sum('cost');
+				}
+				// 构建响应
+				$result = [
+					'title' => [
+						'text' => '部门报销排行'
+					],
+					'legend' => ['部门报销排行'],
+					'yAxis' => $names,
+					'series' => [
+						[
+							'name' => '报销金额',
+							'type' => 'bar',
+							'barWidth'=>'12',
+							'label' => [
+								'show' => true,
+								'position' => 'right',
+								'valueAnimation' => true,
+								'formatter' => '{c} 元'
+							],
+							'data' => $amountData
+						]
+					]
+				];
+				return to_assign(0, '', $result);
+			}
+        }else{			
+			return view();
+		}
+    } 
+	/**
     * 发票数据分析
     */
     public function invoicelist()

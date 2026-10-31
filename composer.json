@@ -22,7 +22,7 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "ext-zip": "*",
-        "topthink/framework": "^8.1.2",
+        "topthink/framework": "^8.1.4",
 		"topthink/think-orm": "^4.0.5",
 		"topthink/think-filesystem": "^3.0",
         "topthink/think-multi-app": "^1.0",
@@ -35,7 +35,7 @@
         "firebase/php-jwt": "^7.0",
         "phpoffice/phpspreadsheet": "^1.2",
         "phpoffice/phpword": "^1.2",
-		"mpdf/mpdf": "^8.1",
+		"mpdf/mpdf": "^8.3",
 		"alibabacloud/dysmsapi-20170525":"^4.3"
     },
     "require-dev": {

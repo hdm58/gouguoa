@@ -1,0 +1,150 @@
+{extend name="../../base/view/common/base" /}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<form class="layui-form gg-form-bar border" style="border-bottom:0" id="barsearchform" lay-filter="barsearchform">
+		<div class="layui-input-inline" style="width:132px;">
+			<select name="importance">
+				<option value="">项目重要程度</option>
+				<option value="1">低</option>
+				<option value="2">中</option>
+				<option value="3">高</option>
+			</select>
+		</div>
+		<div class="layui-input-inline" style="width:136px;">
+            <select name="cate_id">
+                <option value="">项目类别</option>
+                {volist name = ":get_base_data('ProjectCate')" id="vo"}
+                <option value="{$vo.id}">{$vo.title}</option>
+                {/volist}
+            </select>
+        </div>
+		<div class="layui-input-inline" style="width:300px">
+			<input type="text" name="keywords" placeholder="关键字,项目名称/项目描述" class="layui-input" autocomplete="off" />
+		</div>
+		<div class="layui-input-inline" style="width:150px">
+			<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="table-search"><i class="layui-icon layui-icon-search mr-1"></i>搜索</button>
+			<button type="reset" class="layui-btn layui-btn-reset" lay-filter="table-reset">清空</button>
+		</div>
+	</form>
+	<table class="layui-hide" id="table_project" lay-filter="table_project"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+  	<h3>快到期的项目</h3>
+  </div>
+</script>
+
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script>
+	const auth = {$auth};
+	const moduleInit = ['tool','tablePlus','oaPicker'];
+	function gouguInit() {
+		var table = layui.tablePlus, form = layui.form, tool = layui.tool, tabs = layui.tabs;		
+		layui.pageTable = table.render({
+			elem: "#table_project"
+			,toolbar: "#toolbarDemo"
+			,url: "/project/index/expiringlist"
+			,page: true
+			,limit: 20
+			,cellMinWidth: 80
+			,height: 'full-115'
+			,cols: [[
+				{field:'id',width:80, title: 'ID号', align:'center'}
+				,{ field: 'status', title: '项目状态', align: 'center', width: 90, templet: function (d) {
+						var html = '<span class="status-color-' + d.status + '">' + d.status_name + '</span>';
+						return html;
+					}
+				}
+				,{field:'score',title: '项目评分',width:80,align:'center'}
+				,{field:'cate',title: '项目类别',width:100,align:'center'}
+				,{field:'name',title: '项目名称', minWidth: 300,templet:function(d){
+					var html = '<span class="layui-badge layui-bg-'+d.importance+'">'+d.importance_name+'</span> <a data-href="/project/index/view/id/'+d.id+'.html" class="side-a">'+d.title+'</a>';
+					return html;
+				},exportTemplet: function(d, obj){
+					return d.name;
+				}}
+				,{field:'director_name',title: '负责人',width:80,align:'center'}
+				,{ field:'range_time', title: '项目计划周期', align: 'center', width: 180}
+				,{field:'step',title: '当前阶段及负责人',align: 'center',width: 160}
+				,{field:'tasks_unfinish', align: 'center', style: 'color: #91CC75;', width: 86, 'title': '进行中任务' }
+				,{field:'tasks_finish', align: 'center', style: 'color: #FAC858;', width: 86, 'title': '已完成任务' }
+				,{field:'tasks_pensent', align: 'center', style: 'color: #EE6666;', width: 86, 'title': '任务完成率' }
+				,{field:'admin_name',title: '创建人',width:80,align:'center'}
+				,{field:'create_time', title: '创建时间',width:150,align:'center'}
+				,{width:120,fixed:'right',title: '操作', align:'center',ignoreExport:true,templet: function(d){
+					var html='';
+					var btn1='<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">详细</a>';
+					var btn2='<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>';
+					var btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>';
+					if(d.status==3){
+						btn2='';
+						btn3='<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="affirm">反确认完成</a>';
+					}
+					if(auth == 1 || d.admin_id == login_admin || d.director_uid == login_admin){
+						return '<div class="layui-btn-group">'+btn1+btn2+btn3+'</div>';
+					}
+					else{
+						return btn1
+					}
+				}}
+			]]
+		});
+			
+		table.on('tool(table_project)',function (obj) {
+			var data = obj.data;
+			if (obj.event === 'view') {
+				tool.side("/project/index/view?id="+data.id);
+			}
+			if (obj.event === 'edit') {
+				tool.side("/project/index/add?id="+data.id);
+			}
+			if (obj.event === 'affirm') {
+				let callback = function (e) {
+					layer.msg(e.msg);
+					if(e.code==0){
+						layui.pageTable.reload();
+					}
+				}
+				layer.open({
+					type: 1,
+					title: '请输入反确认的原因或理由',
+					area: ['500px', '252px'],
+					content: '<div style="padding:5px;"><textarea class="layui-textarea" id="remarkTextarea" style="width: 100%; height:132px;"></textarea></div>',
+					btnAlign: 'c',
+					btn: ['确认操作'],
+					yes: function (index) {
+						let remark = $("#remarkTextarea").val();
+						if (remark != '') {
+							tool.post("/project/api/step_check", {id: data.id,check:3,content:remark}, callback);
+							layer.close(index);
+						} else {
+							layer.msg('请输入原因或理由');
+						}
+					}
+				})
+			}
+			if (obj.event === 'del') {
+				tool.ask('确定要删除该项目吗?', function (index) {
+					let callback = function (e) {
+						layer.msg(e.msg);
+						if (e.code == 0) {
+							obj.del();
+						}
+					}
+					tool.delete("/project/index/del", { id: data.id }, callback);
+					layer.close(index);
+				});
+			}
+			return false;
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

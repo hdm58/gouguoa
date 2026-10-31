@@ -837,15 +837,6 @@ class Api extends BaseController
 						'axisLabel' => [
 							'formatter' => '{value} 元'
 						]
-					],
-					[
-						'type' => 'value',
-						'name' => '增长率',
-						'min' => '0',
-						'interval' => '20',
-						'axisLabel' => [
-							'formatter' => '{value} %'
-						]
 					]
 				],
 				'series' => [
@@ -882,12 +873,6 @@ class Api extends BaseController
 							]
 						],
 						'data' => $data2025
-					],
-					[
-						'name' => '同比增长率',
-						'type' => 'line',
-						'yAxisIndex' => '1',
-						'data' => $datapersent
 					]
 				]
 			];
@@ -910,15 +895,6 @@ class Api extends BaseController
 						'interval' => '10',
 						'axisLabel' => [
 							'formatter' => '{value} 元'
-						]
-					],
-					[
-						'type' => 'value',
-						'name' => '增长率',
-						'min' => '0',
-						'interval' => '20',
-						'axisLabel' => [
-							'formatter' => '{value} %'
 						]
 					]
 				],
@@ -956,12 +932,6 @@ class Api extends BaseController
 							]
 						],
 						'data' => $data2025
-					],
-					[
-						'name' => '同比增长率',
-						'type' => 'line',
-						'yAxisIndex' => '1',
-						'data' => $datapersent
 					]
 				]
 			];
@@ -1064,15 +1034,6 @@ class Api extends BaseController
 						'axisLabel' => [
 							'formatter' => '{value} 元'
 						]
-					],
-					[
-						'type' => 'value',
-						'name' => '增长率',
-						'min' => '0',
-						'interval' => '20',
-						'axisLabel' => [
-							'formatter' => '{value} %'
-						]
 					]
 				],
 				'series' => [
@@ -1109,12 +1070,6 @@ class Api extends BaseController
 							]
 						],
 						'data' => $data2025
-					],
-					[
-						'name' => '同比增长率',
-						'type' => 'line',
-						'yAxisIndex' => '1',
-						'data' => $datapersent
 					]
 				]
 			];
@@ -1137,15 +1092,6 @@ class Api extends BaseController
 						'interval' => '10',
 						'axisLabel' => [
 							'formatter' => '{value} 元'
-						]
-					],
-					[
-						'type' => 'value',
-						'name' => '增长率',
-						'min' => '0',
-						'interval' => '20',
-						'axisLabel' => [
-							'formatter' => '{value} %'
 						]
 					]
 				],
@@ -1183,12 +1129,6 @@ class Api extends BaseController
 							]
 						],
 						'data' => $data2025
-					],
-					[
-						'name' => '同比增长率',
-						'type' => 'line',
-						'yAxisIndex' => '1',
-						'data' => $datapersent
 					]
 				]
 			];

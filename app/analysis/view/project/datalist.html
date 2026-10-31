@@ -1,0 +1,393 @@
+{extend name="../../base/view/common/base" /}
+{block name="style"}
+<style type="text/css">	
+.layui-card{border-radius:4px;}
+.card-title{display: flex;align-items: center; padding:6px 0}
+
+.layui-card-box{display: flex; align-items: center; padding-top:12px;}
+.card-num{padding:10px 12px; font-size:30px;}
+.card-tips{color:#999;}
+.layui-badge-bg{position:absolute; top:30px; right:20px; padding:0 12px; border-radius:12px;}
+.layui-card-tips{flex:1; text-align:center;}
+
+.card-progress{padding:12px 0;margin-top:14px;}
+.card-progress .layui-progress{margin-top:16px;}
+
+.card-body{padding:20px 16px;display: flex; align-items: center;}
+.ring-container {position: relative;width: 90px; height:90px;border-radius: 50%;display: flex;
+	justify-content: center;
+	align-items: center; 
+	flex-shrink: 0;
+}
+.ring-container::after {content: "";position: absolute;width: 80%;height: 80%;background-color: #ffffff;border-radius: 50%;}
+.percent-text {position: relative; z-index: 1; font-size: 16px;font-weight: bold;}
+.content{margin-left: 12px; display: flex; flex-direction: column;justify-content: center;}
+.title {font-size: 14px; color: #1d2129; font-weight: 600;}
+.count-row {display: flex;align-items: baseline;}
+.count-num {font-size: 24px; font-weight: bold; margin-right: 4px; }
+.count-unit { font-size: 14px; color: #4e5969;}
+.desc{font-size: 12px; color: #86909c;  margin: 0; line-height: 1.4;}
+
+.tab-header{padding:12px; position:absolute;top:8px; right:12px;z-index:99;}
+.tab-header .layui-btn.layui-this{border-color: #1E9FFF; background-color:#1E9FFF; color: #fff;}
+</style>
+{/block}
+<!-- 主体 -->
+{block name="body"}
+
+<div class="p-page">
+	<div class="layui-row layui-col-space16">
+		<div class="layui-col-md4">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div style="text-align:center;align-items: center; border-bottom:1px solid #eeeeee; padding:3px 0;">
+						项目总数<br><strong class="blue" style="font-size:24px;">{$project_count}</strong>
+					</div>
+					<div class="layui-card-box">
+						<div class="layui-card-tips">进行中<br><span class="blue" style="font-size:20px;">{$project_count_2}</span></div>
+						<div class="layui-card-tips">已完成<br><span class="green" style="font-size:20px;">{$project_count_3}</span></div>
+						<div class="layui-card-tips">已关闭<br><span class="yellow" style="font-size:20px;">{$project_count_4}</span></div>
+						<div class="layui-card-tips">未开始<br><span class="red" style="font-size:20px;">{$project_count_1}</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="layui-col-md4">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div style="text-align:center;align-items: center; border-bottom:1px solid #eeeeee; padding:3px 0;">
+						任务总数<br><strong class="blue" style="font-size:24px;">{$task_count}</strong>
+					</div>
+					<div class="layui-card-box">
+						<div class="layui-card-tips">进行中<br><span class="blue" style="font-size:20px;">{$task_count_2}</span></div>
+						<div class="layui-card-tips">已完成<br><span class="green" style="font-size:20px;">{$task_count_3}</span></div>
+						<div class="layui-card-tips">已关闭<br><span class="yellow" style="font-size:20px;">{$task_count_4}</span></div>
+						<div class="layui-card-tips">未开始<br><span class="red" style="font-size:20px;">{$task_count_1}</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div style="text-align:center;align-items: center; border-bottom:1px solid #eeeeee; padding:3px 0;">
+						工作记录总数<br><strong class="blue" style="font-size:24px;">{$schedule_count}</strong>
+					</div>
+					<div class="layui-card-box">
+						<div class="layui-card-tips">外勤工作<br><span class="blue" style="font-size:20px;">{$schedule_count_1}</span></div>
+						<div class="layui-card-tips">案头工作<br><span class="green" style="font-size:20px;">{$schedule_count_2}</span></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div style="text-align:center;align-items: center; border-bottom:1px solid #eeeeee; padding:3px 0;">
+						工作总工时<br><strong class="blue" style="font-size:24px;">{$schedule_hour}</strong>
+					</div>
+					<div class="layui-card-box">
+						<div class="layui-card-tips">外勤工作<br><span class="blue" style="font-size:20px;">{$schedule_hour_1}</span></div>
+						<div class="layui-card-tips">案头工作<br><span class="green" style="font-size:20px;">{$schedule_hour_2}</span></div>
+					</div>
+				</div>
+			</div>
+		</div>			
+	</div>			
+	
+	<div class="layui-row layui-col-space12">
+		<div class="layui-col-md12">	
+		<form id="analysisForm" class="layui-form border bg-white p-3">
+			<div class="layui-input-inline" style="width:100px;">
+				<input type="text" class="layui-input tool-time" data-type="year" placeholder="选择年度" readonly name="year" value="2026">
+				<input type="hidden" name="types" value="0">
+			</div>
+			<div class="layui-input-inline" style="width: 150px;">
+				<button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="webform">提交查询</button>
+				<button type="reset" class="layui-btn layui-btn-reset" lay-filter="reset">重置</button>
+			</div>
+		</form>			
+		</div>
+	</div>
+	
+	<div class="layui-row layui-col-space16">				
+		<div class="layui-col-md4">
+			<div class="layui-row layui-col-space16">
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div class="layui-card-body card-body">
+							<div class="ring-container" id="projects_ring" style="background: conic-gradient(#16b777 0%, #f0f0f0 0);">
+								<span class="percent-text" style="color:#16b777" id="projects_b">0.00%</span>
+							</div>
+							<div class="content">
+								<h3 class="title">项目完成率</h3>
+								<div class="count-row">
+									<span class="count-num" style="color:#16b777" id="projects_a">0</span>/ <span class="count-unit" id="projects">0</span>
+								</div>
+								<p class="desc">已完成的项目</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div class="layui-card-body card-body">
+							<div class="ring-container" id="tasks_ring" style="background: conic-gradient(#1e9fff 0%, #f0f0f0 0);">
+								<span class="percent-text" style="color:#1e9fff" id="tasks_b">0.00%</span>
+							</div>
+							<div class="content">
+								<h3 class="title">任务完成率</h3>
+								<div class="count-row">
+									<span class="count-num" style="color:#1e9fff" id="tasks_a">0</span>/ <span class="count-unit" id="tasks">0</span>
+								</div>
+								<p class="desc">已完成的任务</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="layui-row pt-4">
+				<div class="layui-card">
+					<div class="layui-card-body">
+						<h3>任务达成率</h3>
+						<div class="card-progress">
+							<strong class="green">正常</strong>（<span id="normal">0</span>件）
+							<div class="layui-progress" lay-showpercent="true" lay-filter="demo">
+							  <div class="layui-progress-bar" id="tasks_d" lay-percent="0.00%"></div>
+							</div>
+						</div>
+						<div class="card-progress">
+							<strong class="red">超时</strong>（<span id="delay">0</span>件）
+							<div class="layui-progress" lay-showpercent="true" lay-filter="demo">
+							  <div class="layui-progress-bar layui-bg-red" id="tasks_c" lay-percent="0.00%"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			 </div>
+		</div>
+			 
+		<div class="layui-col-md8">
+			<div class="layui-card">
+				 <div id="barA" class="chart-box" style="width: 100%;height:360px;" data-type="bar" data-types="1" data-url="/analysis/project/datalist"></div>
+			</div>
+		</div>
+	</div>
+			
+	<div class="layui-row layui-col-space16">				
+		<div class="layui-col-md4">
+			<div class="layui-card">
+				<div id="pieA" class="chart-box" style="width: 100%;height:360px;" data-type="pie" data-types="3" data-url="/analysis/project/datalist"></div>
+			</div>
+		</div>
+		<div class="layui-col-md4">
+			<div class="layui-card">
+				<div id="pieB" class="chart-box" style="width: 100%;height:360px;" data-type="pie" data-types="4" data-url="/analysis/project/datalist"></div>
+			</div>
+		</div>
+			 
+		<div class="layui-col-md4">
+			<div class="layui-card">
+				<div id="pieC" class="chart-box" style="width: 100%;height:360px;" data-type="pie" data-types="5" data-url="/analysis/project/datalist"></div>
+			</div>
+		</div>	
+	 </div>	
+		
+	<div class="layui-row layui-col-space16">				
+		<div class="layui-col-md4">
+			<div class="layui-card">
+				<div id="pieD" class="chart-box" style="width: 100%;height:360px;" data-type="pie" data-types="6" data-url="/analysis/project/datalist"></div>
+			</div>
+		</div>		
+		<div class="layui-col-md8">
+			<div class="layui-card">
+				<div id="barB" class="chart-box" style="width: 100%;height:360px;" data-type="bar" data-types="2" data-url="/analysis/project/datalist"></div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}
+<!-- /主体 -->
+
+<!-- 脚本 -->
+{block name="script"}
+<script src="/static/assets/third_party/echart/echarts.min.js"></script>
+<script>
+	const moduleInit = ['tool','laydatePlus','oaPicker'];
+	const charts = [];
+	//加载有数据
+    function initBoxData() {
+		var index = layer.load(0, {shade: false});
+		setTimeout(function(){
+			layer.close(index);
+		}, 1000);
+		$('[name="types"]').val(0);
+		var searchData=$('#analysisForm').serialize();
+		$.ajax({
+            type: "POST",
+            url: "/analysis/project/datalist",
+            data: searchData,
+            dataType: "json",
+            async: false,
+            success: function (e) {
+				if(e.code==0){
+					$('#projects').text(e.data.projects);
+					$('#projects_a').text(e.data.projects_a);
+					$('#projects_b').text(e.data.projects_b+'%');
+					$('#projects_ring').css({'background':'conic-gradient(#16b777 '+e.data.projects_b+'%, #f0f0f0 0)'});
+					
+					$('#tasks').text(e.data.tasks);
+					$('#tasks_a').text(e.data.tasks_a);
+					$('#tasks_b').text(e.data.tasks_b+'%');
+					$('#tasks_ring').css({'background':'conic-gradient(#1e9fff '+e.data.tasks_b+'%, #f0f0f0 0)'});
+					
+					$('#delay').text(e.data.delay);
+					$('#normal').text(e.data.normal);
+					$('#tasks_c').attr('lay-percent',e.data.tasks_c+'%');
+					$('#tasks_d').attr('lay-percent',e.data.tasks_d+'%');
+					layui.element.render('progress', 'demo');
+				}
+            },
+            complete: function () {
+
+            }
+        });
+		
+        $('.chart-box').each(function(){
+            var id  =$(this).attr("id");
+            ajaxCharts(id);
+        });
+    }
+
+	var chartsData={
+		"title": {
+			"text": "客户行业"
+		},
+		"series": {}
+	};
+	
+    function ajaxCharts(id) {
+        var that=$('#'+id+'');
+        var type=that.data('type');
+        var types=that.data('types');
+        var target=that.attr('data-url');
+		$('[name="types"]').val(types);
+        var searchData=$('#analysisForm').serialize();
+        $.ajax({
+            type: "POST",
+            url: target,
+            data: searchData,
+            dataType: "json",
+            async: false,
+            success: function (e) {
+				if(e.code==0){
+					chartsData=e.data;
+				}
+            },
+            complete: function () {
+
+            }
+        });
+
+		// 基于准备好的dom，初始化echarts实例
+		var myChart = echarts.init(document.getElementById(id));
+		switch (type) {
+           case 'bar':
+                option = {
+                    title: {
+                        text: chartsData.title.text,
+						left: '12px',
+						top:'12px'
+                    },
+					grid: {
+						top: '60px',
+						left: '20px',
+						right: '20px',
+						bottom: '12px',
+						containLabel: true
+					},
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#999'
+                            }
+                        }
+                    },
+                    legend: {
+                        data: chartsData.legend
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: chartsData.xaxis,
+                            axisTick: {
+								alignWithLabel: true
+							}
+                        }
+                    ],
+                    yAxis:chartsData.yaxis,
+                    series:chartsData.series
+                };
+				myChart.setOption(option);
+				charts.push(myChart);
+            break;
+			case 'pie':
+				option = {
+					title: {
+						text: chartsData.title.text,
+						left: '10px',
+						top:'12px'
+					},
+					tooltip: {
+						trigger: 'item'
+					},
+					legend: {
+						orient: 'vertical',
+						top: '36px',
+					    right: '12px',
+					},
+					series: [
+						{
+							// name: 'Access From',
+							type: 'pie',
+							radius: '50%',
+							data:chartsData.series.data,
+							emphasis: {
+								itemStyle: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}
+					]
+				};
+				myChart.setOption(option);
+				charts.push(myChart);
+			break;
+		}
+
+	}
+	
+	function gouguInit() {
+		var tool = layui.tool,form  = layui.form, laydatePlus = layui.laydatePlus;
+		var diff_time = new laydatePlus({'target':'diff_time'});
+		initBoxData();
+		//监听提交
+		form.on('submit(webform)', function (data) {
+			initBoxData();
+			return false;
+		});
+		$(window).on('resize', function () {
+			charts.forEach(function (c) {
+				c.resize(); 
+			})
+		});
+	}
+</script>
+{/block}
+<!-- /脚本 -->

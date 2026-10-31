@@ -35,14 +35,7 @@
 	const auth = {$auth};
 	const moduleInit = ['tool','tablePlus','laydatePlus'];
 	function gouguInit() {
-		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus, element = layui.element;
-		//tab切换
-		element.on('tab(tab)', function(data){
-			$('[name="tab"]').val(data.index);
-			$("#barsearchform")[0].reset();
-			layui.pageTable.reload({where:{tab:data.index},page:{curr:1}});
-			return false;
-		});
+		var table = layui.tablePlus, tool = layui.tool, laydatePlus = layui.laydatePlus;
 		
 		//日期范围
 		var diff_time = new laydatePlus({'target':'diff_time'});

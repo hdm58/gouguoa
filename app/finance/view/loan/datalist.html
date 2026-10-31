@@ -136,18 +136,19 @@
 					{
 						field: 'plan_time',
 						title: '计划归还日期',
-						align: 'center',
 						width: 180,
 						templet: function(d){							
 							var html = d.plan_time;
-							if(d.delay<1 && d.loan_time<2 && d.back_status==0){
-								html+=  '<span class="red" style="font-size:12px;"> (到期，待归还)</span>';
-							}
-							if(d.back_status==1){
-								html+=  '<span class="green" style="font-size:12px;"> (已归还)</span>';
-							}
-							if(d.back_status==2){
-								html+=  '<span class="green" style="font-size:12px;"> (无需归还)</span>';
+							if(d.status==2){
+								if(d.delay<1 && d.loan_time<2 && d.back_status==0){
+									html+=  '<span class="red" style="font-size:12px;"> (到期，待归还)</span>';
+								}
+								if(d.back_status==1){
+									html+=  '<span class="green" style="font-size:12px;"> (已归还)</span>';
+								}
+								if(d.back_status==2){
+									html+=  '<span class="green" style="font-size:12px;"> (无需归还)</span>';
+								}
 							}
 							return html;
 						}
@@ -178,12 +179,12 @@
 					},{
 						field: 'check_user',
 						title: '当前审核人',
-						minWidth: 120
+						minWidth: 100
 					},{
 						field: 'status',
 						title: '打款状态',
 						align: 'center',
-						width: 90,
+						width: 80,
 						templet:function(d){
 							var html='-';
 							if(d.status==1){
